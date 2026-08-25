@@ -1,0 +1,114 @@
+@startuml 04-pedido-e-entrega
+title Módulo 4 — Pedido, Entrega e Rastreio
+left to right direction
+hide empty members
+skinparam classAttributeIconSize 0
+skinparam class<<externo>> {
+    BackgroundColor #F0F0F0
+    BorderColor #A0A0A0
+    FontColor #707070
+}
+
+class Pedido {
+    - id: Long
+    - numero: String
+    - dataCriacao: LocalDateTime
+    - subtotal: BigDecimal
+    - desconto: BigDecimal
+    - valorFrete: BigDecimal
+    - total: BigDecimal
+    - codigoRastreio: String
+    - previsaoEntrega: LocalDate
+}
+class Item {
+    - id: Long
+    - quantidade: Integer
+    - valorUnitario: BigDecimal
+    - descontoUnitario: BigDecimal
+}
+class EnderecoEntrega {
+    - id: Long
+    - destinatario: String
+    - rua: String
+    - numero: String
+    - complemento: String
+    - bairro: String
+    - cep: String
+    - telefoneEntrega: String
+}
+class Frete {
+    - id: Long
+    - valor: BigDecimal
+    - prazoDiasUteis: Integer
+    - transportadora: String
+}
+class HistoricoStatusPedido {
+    - id: Long
+    - descricao: String
+    - localidade: String
+    - dataRegistro: LocalDateTime
+}
+class NotaFiscal {
+    - id: Long
+    - numero: String
+    - chaveAcesso: String
+    - dataEmissao: LocalDateTime
+    - urlPdf: String
+}
+enum StatusPedido {
+    AGUARDANDO_PAGAMENTO
+    PAGO
+    EM_SEPARACAO
+    ENVIADO
+    ENTREGUE
+    CANCELADO
+}
+enum TipoFrete {
+    EXPRESSO
+    PADRAO
+    RETIRADA_SHOWROOM
+}
+class Usuario <<externo>> {
+    - id: Long
+}
+class Produto <<externo>> {
+    - id: Long
+}
+class VariacaoProduto <<externo>> {
+    - id: Long
+}
+class CupomDesconto <<externo>> {
+    - id: Long
+    - codigo: String
+}
+class Cidade <<externo>> {
+    - id: Long
+}
+class Pagamento <<externo>> {
+    - id: Long
+}
+
+Pedido "*" -- "1" Usuario
+Pedido "1" *-- "*" Item
+Pedido "*" -- "0..1" CupomDesconto
+Pedido "1" *-- "1" EnderecoEntrega
+Pedido "1" *-- "1" Frete
+Pedido "1" *-- "*" HistoricoStatusPedido
+Pedido "1" -- "0..1" NotaFiscal
+Pedido "*" --> "1" StatusPedido
+Pedido "1" *-- "1" Pagamento
+Item "*" --> "1" Produto
+Item "*" --> "0..1" VariacaoProduto
+Frete "*" --> "1" TipoFrete
+HistoricoStatusPedido "*" --> "1" StatusPedido
+EnderecoEntrega "*" -- "1" Cidade
+
+note bottom of EnderecoEntrega
+  Snapshot do endereço no momento
+  da compra — não referencia
+  Endereco (módulo 1).
+end note
+note bottom of Pagamento
+  Detalhado no módulo 5.
+end note
+@enduml

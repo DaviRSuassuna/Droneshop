@@ -1,0 +1,83 @@
+@startuml 06-atendimento
+title Módulo 6 — Atendimento e Vendas Corporativas
+left to right direction
+hide empty members
+skinparam classAttributeIconSize 0
+skinparam class<<externo>> {
+    BackgroundColor #F0F0F0
+    BorderColor #A0A0A0
+    FontColor #707070
+}
+
+class Chamado {
+    - id: Long
+    - protocolo: String
+    - nome: String
+    - email: String
+    - descricao: String
+    - dataAbertura: LocalDateTime
+    - autorizaWhatsapp: boolean
+}
+class SolicitacaoCorporativa {
+    - id: Long
+    - responsavel: String
+    - emailCorporativo: String
+    - empresa: String
+    - cnpj: String
+    - mensagem: String
+    - dataSolicitacao: LocalDateTime
+    - aceitaConteudos: boolean
+}
+enum AssuntoChamado {
+    ENTREGA_RASTREIO
+    TROCA_DEVOLUCAO
+    GARANTIA_REPARO
+    DUVIDA_TECNICA
+    NOTA_FISCAL
+}
+enum StatusChamado {
+    ABERTO
+    EM_ANALISE
+    AGUARDANDO_CLIENTE
+    RESOLVIDO
+    FECHADO
+}
+enum SetorAtuacao {
+    MAPEAMENTO
+    AGRONEGOCIO
+    INSPECAO_SEGURANCA
+    AUDIOVISUAL
+    ORGAO_PUBLICO
+}
+enum TamanhoOperacao {
+    ATE_3
+    DE_4_A_10
+    DE_11_A_30
+    ACIMA_DE_30
+}
+class Usuario <<externo>> {
+    - id: Long
+}
+class UsuarioAdministrativo <<externo>> {
+    - id: Long
+}
+class Pedido <<externo>> {
+    - id: Long
+    - numero: String
+}
+
+Chamado "*" -- "0..1" Usuario
+Chamado "*" -- "0..1" Pedido
+Chamado "*" --> "1" AssuntoChamado
+Chamado "*" --> "1" StatusChamado
+Chamado "*" -- "0..1" UsuarioAdministrativo : responsável >
+SolicitacaoCorporativa "*" --> "1" SetorAtuacao
+SolicitacaoCorporativa "*" --> "0..1" TamanhoOperacao
+SolicitacaoCorporativa "*" -- "0..1" UsuarioAdministrativo : consultor >
+
+note bottom of Chamado
+  Chamado sem login usa nome/e-mail
+  do formulário; logado, herda do
+  Usuario (módulo 1).
+end note
+@enduml
