@@ -1,0 +1,74 @@
+@startuml 03-carrinho-e-lista-de-desejos
+title Módulo 3 — Carrinho, Lista de desejos e Cupons
+left to right direction
+hide empty members
+skinparam classAttributeIconSize 0
+skinparam class<<externo>> {
+    BackgroundColor #F0F0F0
+    BorderColor #A0A0A0
+    FontColor #707070
+}
+
+class Carrinho {
+    - id: Long
+    - dataCriacao: LocalDateTime
+    - dataAtualizacao: LocalDateTime
+    - subtotal: BigDecimal
+}
+class ItemCarrinho {
+    - id: Long
+    - quantidade: Integer
+    - valorUnitario: BigDecimal
+}
+class ListaDesejos {
+    - id: Long
+    - dataAtualizacao: LocalDateTime
+}
+class ItemListaDesejos {
+    - id: Long
+    - dataInclusao: LocalDate
+    - precoNaInclusao: BigDecimal
+}
+class CupomDesconto {
+    - id: Long
+    - codigo: String
+    - descricao: String
+    - valorDesconto: BigDecimal
+    - percentualDesconto: BigDecimal
+    - dataValidade: LocalDate
+    - ativo: boolean
+}
+class Usuario <<externo>> {
+    - id: Long
+}
+class Produto <<externo>> {
+    - id: Long
+    - preco: BigDecimal
+}
+class VariacaoProduto <<externo>> {
+    - id: Long
+}
+class Categoria <<externo>> {
+    - id: Long
+}
+
+Usuario "1" *-- "0..1" Carrinho
+Usuario "1" *-- "1" ListaDesejos
+Carrinho "1" *-- "*" ItemCarrinho
+Carrinho "*" -- "0..1" CupomDesconto
+ItemCarrinho "*" --> "1" Produto
+ItemCarrinho "*" --> "0..1" VariacaoProduto
+ListaDesejos "1" *-- "*" ItemListaDesejos
+ItemListaDesejos "*" --> "1" Produto
+CupomDesconto "1" o-- "*" Produto
+CupomDesconto "1" o-- "*" Categoria
+
+note bottom of ItemListaDesejos
+  precoNaInclusao permite exibir
+  "caiu R$ 500 desde que você salvou".
+end note
+note bottom of CupomDesconto
+  Reaproveitado no módulo 4
+  (Pedido) após o checkout.
+end note
+@enduml

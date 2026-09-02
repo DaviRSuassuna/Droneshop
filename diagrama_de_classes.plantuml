@@ -1,0 +1,243 @@
+@startuml AeriaEcommerceDrones
+
+title Aeria | E-commerce de drones - Diagrama de classes
+
+abstract class Produto {
+    - id: UUID
+    - nome: String
+    - sku: String
+    - preco: Decimal
+    - estoque: Integer
+    - status: StatusProduto
+    + atualizarEstoque(qtd: Integer)
+    + publicar()
+}
+
+class Drone {
+    - autonomiaMin: Integer
+    - alcanceKm: Decimal
+    - resolucaoVideo: String
+    - pesoGramas: Integer
+    - tipo: TipoDrone
+    + consultarEspecificacoes()
+}
+
+class Acessorio {
+    - tipo: TipoAcessorio
+    - compatibilidade: String
+    + validarCompatibilidade(drone: Drone)
+}
+
+class Marca {
+    - id: UUID
+    - nome: String
+    - pais: String
+    - status: Boolean
+    + editar()
+}
+
+class Categoria {
+    - id: UUID
+    - nome: String
+    - slug: String
+    - ordem: Integer
+    + listarProdutos()
+}
+
+class Avaliacao {
+    - nota: Integer
+    - comentario: String
+    - criadoEm: DateTime
+    + publicar()
+}
+
+class Carrinho {
+    - id: UUID
+    - criadoEm: DateTime
+    + adicionarProduto(produto: Produto, qtd: Integer)
+    + removerItem(item: ItemCarrinho)
+    + calcularTotal()
+    + aplicarCupom(cupom: Cupom)
+}
+
+class ItemCarrinho {
+    - quantidade: Integer
+    - precoUnitario: Decimal
+    + calcularSubtotal()
+}
+
+class ListaDesejos {
+    - id: UUID
+    - criadoEm: DateTime
+    + adicionarProduto(produto: Produto)
+    + removerProduto(produto: Produto)
+    + moverParaCarrinho(produto: Produto)
+}
+
+class Cupom {
+    - codigo: String
+    - tipoDesconto: TipoDesconto
+    - valor: Decimal
+    - validade: Date
+    + validar()
+    + calcularDesconto(subtotal: Decimal)
+}
+
+class Pedido {
+    - id: UUID
+    - numero: String
+    - criadoEm: DateTime
+    - status: StatusPedido
+    - total: Decimal
+    + calcularTotal()
+    + confirmar()
+    + alterarStatus(status: StatusPedido)
+}
+
+class ItemPedido {
+    - quantidade: Integer
+    - precoUnitario: Decimal
+    - subtotal: Decimal
+    + calcularSubtotal()
+}
+
+class Pagamento {
+    - id: UUID
+    - metodo: MetodoPagamento
+    - valor: Decimal
+    - status: StatusPagamento
+    + autorizar()
+    + estornar()
+}
+
+class Cliente {
+    - id: UUID
+    - nome: String
+    - email: String
+    - telefone: String
+    + editarPerfil()
+    + consultarPedidos()
+}
+
+class Endereco {
+    - id: UUID
+    - destinatario: String
+    - logradouro: String
+    - cidade: String
+    - estado: String
+    - cep: String
+    - principal: Boolean
+    + validar()
+}
+
+class Entrega {
+    - modalidade: String
+    - custo: Decimal
+    - prazo: Date
+    - codigoRastreio: String
+    - status: StatusEntrega
+    + rastrear()
+    + atualizarStatus()
+}
+
+class EventoRastreio {
+    - descricao: String
+    - ocorridoEm: DateTime
+    - local: String
+}
+
+class UsuarioAdmin {
+    - id: UUID
+    - nome: String
+    - email: String
+    - papel: PapelAdmin
+    - ativo: Boolean
+    + gerenciarCatalogo()
+    + gerenciarPedidos()
+}
+
+enum StatusProduto {
+  RASCUNHO
+  PUBLICADO
+  INATIVO
+}
+enum StatusPedido {
+  PENDENTE
+  PAGO
+  SEPARACAO
+  ENVIADO
+  ENTREGUE
+  CANCELADO
+}
+enum StatusPagamento {
+  PENDENTE
+  APROVADO
+  RECUSADO
+  ESTORNADO
+}
+enum StatusEntrega {
+  AGUARDANDO
+  EM_TRANSITO
+  ENTREGUE
+}
+enum MetodoPagamento {
+  PIX
+  CARTAO
+  BOLETO
+}
+enum TipoDrone {
+  PROFISSIONAL
+  COMPACTO
+  FPV
+  AGRICOLA
+}
+enum TipoAcessorio {
+  BATERIA
+  HELICE
+  CARREGADOR
+  CASE
+  CONTROLE
+}
+enum TipoDesconto {
+  PERCENTUAL
+  VALOR_FIXO
+}
+enum PapelAdmin {
+  ADMIN
+  OPERADOR
+  CATALOG
+}
+
+' Especializacoes e catalogo
+Produto <|-- Drone
+Produto <|-- Acessorio
+Marca "1" -- "0..*" Produto : fabrica
+Categoria "1" -- "0..*" Produto : classifica
+Categoria "0..1" -- "0..*" Categoria : categoria pai
+Produto "1" -- "0..*" Avaliacao : recebe
+Cliente "1" -- "0..*" Avaliacao : escreve
+Drone "0..*" -- "0..*" Acessorio : compativel com
+
+' Jornada de compra
+Cliente "1" *-- "1" Carrinho : possui
+Carrinho "1" *-- "1..*" ItemCarrinho : contem
+ItemCarrinho "0..*" --> "1" Produto : referencia
+Cliente "1" *-- "1" ListaDesejos : possui
+ListaDesejos "0..*" --> "0..*" Produto : salva
+Carrinho "0..*" --> "0..1" Cupom : aplica
+Cliente "1" -- "0..*" Pedido : realiza
+Pedido "1" *-- "1..*" ItemPedido : contem
+ItemPedido "0..*" --> "1" Produto : vende
+Pedido "1" *-- "1" Pagamento : recebe
+
+' Endereco e entrega
+Cliente "1" *-- "1..*" Endereco : cadastra
+Pedido "1" *-- "1" Entrega : possui
+Entrega "1" *-- "0..*" EventoRastreio : registra
+Entrega "1" --> "1" Endereco : entrega em
+
+' Operacao administrativa
+UsuarioAdmin "0..*" ..> Produto : administra
+UsuarioAdmin "0..*" ..> Pedido : atualiza status
+
+@enduml

@@ -1,0 +1,122 @@
+@startuml 01-identidade-e-acesso
+title Módulo 1 — Identidade, Acesso e Endereços
+left to right direction
+hide empty members
+skinparam classAttributeIconSize 0
+
+abstract class Pessoa {
+    - id: Long
+    - nome: String
+    - email: String
+    - telefone: String
+    - dataNascimento: LocalDate
+}
+class PessoaFisica {
+    - sobrenome: String
+    - cpf: String
+}
+class PessoaJuridica {
+    - razaoSocial: String
+    - nomeFantasia: String
+    - cnpj: String
+    - inscricaoEstadual: String
+}
+class Usuario {
+    - id: Long
+    - email: String
+    - senha: String
+    - keycloakId: String
+    - dataCadastro: LocalDateTime
+    - clienteDesde: LocalDate
+    - aceitaNewsletter: boolean
+}
+class UsuarioAdministrativo {
+    - equipe: String
+    - observacoesInternas: String
+    - autenticacaoDoisFatores: boolean
+    - conviteEnviado: boolean
+    - fotoPerfil: String
+}
+class PermissaoModulo {
+    - id: Long
+    - podeVer: boolean
+    - podeEditar: boolean
+    - podeExcluir: boolean
+}
+class TokenRecuperacaoSenha {
+    - id: Long
+    - token: String
+    - dataExpiracao: LocalDateTime
+    - usado: boolean
+}
+class Endereco {
+    - id: Long
+    - apelido: String
+    - destinatario: String
+    - rua: String
+    - numero: String
+    - complemento: String
+    - bairro: String
+    - cep: String
+    - telefoneEntrega: String
+    - padraoEntrega: boolean
+    - usarComoCobranca: boolean
+}
+class Cidade {
+    - id: Long
+    - nome: String
+}
+class Estado {
+    - id: Long
+    - nome: String
+    - sigla: String
+}
+enum Perfil {
+    ROLE_ADMIN
+    ROLE_USER
+    ROLE_CATALOGO
+    ROLE_OPERACOES
+    ROLE_ATENDIMENTO
+    ROLE_SOMENTE_LEITURA
+}
+enum ModuloSistema {
+    PRODUTOS
+    MARCAS
+    CATEGORIAS
+    PEDIDOS
+    USUARIOS
+    RELATORIOS
+}
+enum StatusUsuario {
+    ATIVO
+    INATIVO
+    SUSPENSO
+}
+enum PerfilPiloto {
+    RECREATIVO
+    PROFISSIONAL
+    CORPORATIVO
+}
+
+Pessoa <|-- PessoaFisica
+Pessoa <|-- PessoaJuridica
+Usuario <|-- UsuarioAdministrativo
+Usuario "1" -- "0..1" PessoaFisica
+Usuario "1" -- "0..1" PessoaJuridica
+Usuario "*" -- "*" Perfil
+Usuario "*" --> "1" StatusUsuario
+Usuario "*" --> "0..1" PerfilPiloto
+Usuario "1" *-- "*" TokenRecuperacaoSenha
+UsuarioAdministrativo "1" *-- "*" PermissaoModulo
+PermissaoModulo "*" --> "1" ModuloSistema
+PessoaFisica "1" o-- "*" Endereco
+PessoaJuridica "1" o-- "*" Endereco
+Endereco "*" -- "1" Cidade
+Cidade "*" -- "1" Estado
+
+note bottom of Usuario
+  Referenciado pelos módulos
+  3 (Carrinho), 4 (Pedido),
+  5 (Pagamento) e 6 (Atendimento).
+end note
+@enduml
