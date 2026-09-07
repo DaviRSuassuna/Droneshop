@@ -5,6 +5,15 @@
   "compilerOptions": {
     "types": []
   },
+<<<<<<< HEAD
   "include": ["src/**/*.ts"],
   "exclude": ["src/**/*.spec.ts"]
+=======
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "src/**/*.spec.ts"
+  ]
+>>>>>>> ed3d54b (Criação do frontend(telas) com o Angular)
 }

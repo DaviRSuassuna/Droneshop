@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 # DroneshopWeb
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.8.
+=======
+# Frontend
+
+This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.5.
+>>>>>>> ed3d54b (Criação do frontend(telas) com o Angular)
 
 ## Development server
 

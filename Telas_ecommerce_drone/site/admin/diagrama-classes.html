@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diagrama de classes · Aeria</title>
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/theme.js"></script>
+<style>
+.diagram-intro{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:24px}
+.diagram-meta{display:flex;align-items:center;gap:8px;color:var(--dim2);font-size:11.5px}
+.uml-board{position:relative;min-width:1080px;min-height:1020px;padding:54px 34px 42px;background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:auto;background-image:linear-gradient(var(--line-s) 1px,transparent 1px),linear-gradient(90deg,var(--line-s) 1px,transparent 1px);background-size:32px 32px}
+.uml-board:before{content:"MODELO DE DOMÍNIO · AERIA ECOMMERCE";position:absolute;top:20px;left:34px;font:500 10px/1 ui-monospace,Menlo,monospace;letter-spacing:.16em;color:var(--mute)}
+.uml-group{position:absolute;top:50px;font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--acc)}
+.uml-group.catalog{left:34px}.uml-group.order{left:430px}.uml-group.account{left:800px}
+.uml-class{position:absolute;width:220px;background:var(--bg2);border:1px solid var(--b3);border-radius:7px;box-shadow:0 12px 22px rgba(0,0,0,.14);overflow:hidden}
+.uml-class.core{border-color:var(--acc-b);box-shadow:0 0 0 1px var(--acc-t),0 12px 22px rgba(0,0,0,.14)}
+.uml-class h2{margin:0;padding:13px 14px 11px;background:var(--tint);font:400 14px/1 'Sora','Helvetica Neue',sans-serif;color:var(--pure)}
+.uml-class.core h2{background:var(--acc-t);color:var(--acc)}
+.uml-kind{display:block;margin-top:5px;font:400 9px/1 ui-monospace,Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.uml-class section{padding:10px 14px;border-top:1px solid var(--line)}
+.uml-class ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:5px}
+.uml-class li{font:300 10.5px/1.25 ui-monospace,Menlo,monospace;color:var(--ink2)}
+.uml-class li span{color:var(--dim2)}
+.uml-class .methods li{color:var(--acc)}
+.uml-class .methods li:before{content:"+ ";color:var(--mute)}
+.uml-class .attributes li:before{content:"- ";color:var(--mute)}
+#produto{left:34px;top:88px}#marca{left:34px;top:368px}#categoria{left:34px;top:640px}
+#pedido{left:430px;top:88px}#item-pedido{left:430px;top:392px}#pagamento{left:430px;top:700px}
+#cliente{left:800px;top:88px}#endereco{left:800px;top:368px}#entrega{left:800px;top:640px}
+.uml-lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.uml-lines line{stroke:var(--b5);stroke-width:1.2}.uml-lines line.core-line{stroke:var(--acc);stroke-width:1.5}.uml-lines text{font:400 10px ui-monospace,Menlo,monospace;fill:var(--dim2)}
+.diagram-foot{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(300px,.6fr);gap:20px;margin-top:20px}
+.legend-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;color:var(--dim2);font:400 11px ui-monospace,Menlo,monospace}.legend-grid b{display:block;margin-bottom:4px;color:var(--ink)}
+.scope{font-size:11.5px;line-height:1.65;color:var(--dim2)}
+@media (max-width:700px){.pad{padding-left:16px;padding-right:16px}.diagram-intro{align-items:flex-start;flex-direction:column;gap:10px}.diagram-foot{grid-template-columns:1fr}.legend-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header class="tb">
+  <div class="tb-l">
+    <a class="tb-brand" href="index.html">ADMIN</a>
+    <nav class="tb-nav">
+      <a href="index.html">Dashboard</a><a href="produtos.html">Produtos</a><a href="marcas.html">Marcas</a><a href="categorias.html">Categorias</a><a href="pedidos.html">Pedidos</a><a href="usuarios.html">Usuários</a>
+    </nav>
+  </div>
+  <div class="tb-r"><span class="tb-search">Buscar no painel</span><a href="../index.html">Ver loja ↗</a><span class="avatar">MR</span></div>
+</header>
+<main class="pad">
+  <div class="diagram-intro">
+    <div><h1 class="h1 big">Diagrama de classes</h1><div class="crumb">Modelo de domínio · catálogo, compra e conta</div></div>
+    <div class="diagram-meta"><span class="chip">UML</span><span>visualização resumida · fonte completa</span><a class="btn sm" href="diagrama-classes.puml">Abrir fonte PlantUML</a></div>
+  </div>
+  <section class="uml-board" aria-label="Diagrama UML do e-commerce Aeria">
+    <span class="uml-group catalog">Catálogo</span><span class="uml-group order">Compra</span><span class="uml-group account">Conta e entrega</span>
+    <svg class="uml-lines" viewBox="0 0 1080 1020" preserveAspectRatio="none" aria-hidden="true">
+      <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--b5)"/></marker><marker id="arrow-core" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--acc)"/></marker></defs>
+      <line x1="254" y1="180" x2="430" y2="180" class="core-line" marker-end="url(#arrow-core)"/><text x="276" y="169">1          0..*</text>
+      <line x1="144" y1="312" x2="144" y2="368" marker-end="url(#arrow)"/><text x="153" y="345">0..1</text>
+      <line x1="144" y1="592" x2="144" y2="640" marker-end="url(#arrow)"/><text x="153" y="622">0..1</text>
+      <line x1="540" y1="308" x2="540" y2="392" class="core-line" marker-end="url(#arrow-core)"/><text x="551" y="354">1          1..*</text>
+      <line x1="540" y1="622" x2="540" y2="700" marker-end="url(#arrow)"/><text x="551" y="670">1          1</text>
+      <line x1="650" y1="180" x2="800" y2="180" class="core-line" marker-end="url(#arrow-core)"/><text x="674" y="169">1          1</text>
+      <line x1="760" y1="245" x2="800" y2="430" marker-end="url(#arrow)"/><text x="763" y="330">1          1..*</text>
+      <line x1="650" y1="232" x2="800" y2="704" class="core-line" marker-end="url(#arrow-core)"/><text x="686" y="470">1          1</text>
+      <line x1="254" y1="438" x2="430" y2="438" marker-end="url(#arrow)"/><text x="277" y="427">1          1</text>
+      <line x1="650" y1="804" x2="800" y2="804" marker-end="url(#arrow)"/><text x="678" y="793">1          1..*</text>
+    </svg>
+    <article class="uml-class core" id="produto"><h2>Produto<span class="uml-kind">entidade</span></h2><section class="attributes"><ul><li>id: UUID</li><li>nome: String</li><li>sku: String</li><li>preco: Decimal</li><li>estoque: Integer</li><li>status: StatusProduto</li></ul></section><section class="methods"><ul><li>atualizarEstoque()</li><li>publicar()</li></ul></section></article>
+    <article class="uml-class" id="marca"><h2>Marca<span class="uml-kind">entidade</span></h2><section class="attributes"><ul><li>id: UUID</li><li>nome: String</li><li>pais: String</li><li>status: Boolean</li></ul></section><section class="methods"><ul><li>editar()</li></ul></section></article>
+    <article class="uml-class" id="categoria"><h2>Categoria<span class="uml-kind">entidade</span></h2><section class="attributes"><ul><li>id: UUID</li><li>nome: String</li><li>slug: String</li><li>ordem: Integer</li></ul></section><section class="methods"><ul><li>listarProdutos()</li></ul></section></article>
+    <article class="uml-class core" id="pedido"><h2>Pedido<span class="uml-kind">agregado raiz</span></h2><section class="attributes"><ul><li>id: UUID</li><li>numero: String</li><li>criadoEm: DateTime</li><li>status: StatusPedido</li><li>total: Decimal</li></ul></section><section class="methods"><ul><li>calcularTotal()</li><li>alterarStatus()</li><li>confirmar()</li></ul></section></article>
+    <article class="uml-class" id="item-pedido"><h2>ItemPedido<span class="uml-kind">entidade</span></h2><section class="attributes"><ul><li>quantidade: Integer</li><li>precoUnitario: Decimal</li><li>subtotal: Decimal</li></ul></section><section class="methods"><ul><li>calcularSubtotal()</li></ul></section></article>
+    <article class="uml-class" id="pagamento"><h2>Pagamento<span class="uml-kind">entidade</span></h2><section class="attributes"><ul><li>id: UUID</li><li>metodo: MetodoPagamento</li><li>valor: Decimal</li><li>status: StatusPagamento</li></ul></section><section class="methods"><ul><li>autorizar()</li><li>estornar()</li></ul></section></article>
+    <article class="uml-class core" id="cliente"><h2>Cliente<span class="uml-kind">entidade</span></h2><section class="attributes"><ul><li>id: UUID</li><li>nome: String</li><li>email: String</li><li>telefone: String</li></ul></section><section class="methods"><ul><li>editarPerfil()</li><li>consultarPedidos()</li></ul></section></article>
+    <article class="uml-class" id="endereco"><h2>Endereco<span class="uml-kind">entidade</span></h2><section class="attributes"><ul><li>id: UUID</li><li>destinatario: String</li><li>logradouro: String</li><li>cidade: String</li><li>principal: Boolean</li></ul></section><section class="methods"><ul><li>validar()</li></ul></section></article>
+    <article class="uml-class" id="entrega"><h2>Entrega<span class="uml-kind">entidade</span></h2><section class="attributes"><ul><li>modalidade: String</li><li>prazo: Date</li><li>codigoRastreio: String</li><li>status: StatusEntrega</li></ul></section><section class="methods"><ul><li>rastrear()</li><li>atualizarStatus()</li></ul></section></article>
+  </section>
+  <div class="diagram-foot"><section class="card p2"><div class="card-h"><span class="card-t">Legenda</span><span class="card-n">Leitura das relações</span></div><div class="legend-grid"><div><b>1</b>exatamente um</div><div><b>0..1</b>zero ou um</div><div><b>1..*</b>um ou muitos</div><div><b>0..*</b>zero ou muitos</div></div></section><section class="card p2"><div class="eyebrow">Escopo</div><p class="scope" style="margin:0">Modelo inferido das telas da loja e do painel administrativo. As classes representam o domínio esperado para uma futura API, não implementações JavaScript existentes.</p></section></div>
+</main>
+</body>
+</html>

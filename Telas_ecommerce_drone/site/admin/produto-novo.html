@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cadastrar drone · Admin Aeria</title>
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<header class="tb">
+  <div class="tb-l">
+    <a class="tb-brand" href="index.html">ADMIN</a>
+    <nav class="tb-nav">
+      <a href="index.html">Dashboard</a>
+      <a href="produtos.html" class="on">Produtos</a>
+      <a href="marcas.html">Marcas</a>
+      <a href="categorias.html">Categorias</a>
+      <a href="pedidos.html">Pedidos</a>
+      <a href="usuarios.html">Usuários</a>
+    </nav>
+  </div>
+  <div class="tb-r">
+    <span class="tb-search">Buscar no painel</span>
+    <a href="../index.html">Ver loja ↗</a>
+    <span class="avatar">MR</span>
+  </div>
+</header>
+<div class="pad cols">
+  <div class="main">
+    <div><h1 class="h1 big">Cadastrar drone</h1><div class="crumb"><a href="produtos.html">← Produtos</a> · Novo item</div></div>
+    <section class="card p"><div class="card-h"><span class="card-t">Informações básicas</span><span class="card-n">6 campos obrigatórios</span></div><div class="g2"><div class="f full"><label>Nome do produto <span class="req">*</span></label><input type="text" placeholder="Ex: Falcon X2 Pro"></div><div class="f"><label>Marca <span class="req">*</span></label><select><option>Selecione a marca</option><option>Aerion</option><option>Skyline</option><option>Vortex</option><option>Atlas</option><option>Heron</option><option>Sparrow</option></select></div><div class="f"><label>Modelo <span class="req">*</span></label><input type="text" placeholder="Ex: FX2-2026"></div><div class="f"><label>SKU <span class="req">*</span></label><input type="text" placeholder="DRN-FX2P-0042 · auto-gerado"></div><div class="f"><label>Categoria <span class="req">*</span></label><select><option>Drones profissionais</option><option>Compactos</option><option>FPV / Corrida</option><option>Agrícolas</option><option>Mapeamento</option><option>Iniciantes</option></select></div><div class="f"><label>Status <span class="req">*</span></label><select><option>Rascunho</option><option>Ativo</option><option>Inativo</option></select></div><div class="f full"><label>Descrição curta</label><input type="text" placeholder="Resumo de até 160 caracteres"></div><div class="f full"><label>Descrição completa <span class="req">*</span></label><textarea placeholder="Texto completo exibido na página do produto"></textarea></div></div></section>
+    <section class="card p"><div class="card-h"><span class="card-t">Especificações técnicas</span><span class="card-n">Voo · câmera · bateria · sensores</span></div><div class="g2"><div class="f"><label>Peso (g) <span class="req">*</span></label><input type="text" placeholder="Ex: 895"></div><div class="f"><label>Dimensões (mm)</label><input type="text" placeholder="Dobrado 214×110×89 · aberto 347×283×107"></div><div class="f"><label>Autonomia de voo (min) <span class="req">*</span></label><input type="text" placeholder="Ex: 43"></div><div class="f"><label>Alcance de transmissão (km) <span class="req">*</span></label><input type="text" placeholder="Ex: 15"></div><div class="f"><label>Velocidade máxima (km/h)</label><input type="text" placeholder="Ex: 72"></div><div class="fhead full"><span>Câmera</span><i></i></div><div class="f"><label>Resolução (MP)</label><input type="text" placeholder="Ex: 48"></div><div class="f"><label>Sensor</label><select><option>1/1.3" CMOS</option><option>1" CMOS</option><option>4/3 CMOS</option></select></div><div class="f"><label>Resolução de vídeo</label><select><option>4K 60 fps</option><option>4K 30 fps</option><option>5.1K 50 fps</option></select></div><div class="f"><label>Estabilização</label><select><option>Gimbal mecânico 3 eixos</option><option>Gimbal 2 eixos</option><option>Eletrônica</option></select></div><div class="fhead full"><span>Bateria</span><i></i></div><div class="f"><label>Tipo</label><select><option>LiPo 4S</option><option>LiPo 3S</option><option>Li-ion</option></select></div><div class="f"><label>Capacidade (mAh)</label><input type="text" placeholder="Ex: 5000"></div><div class="f"><label>Tempo de carregamento (min)</label><input type="text" placeholder="Ex: 80"></div><div class="fhead full"><span>Navegação e segurança</span><i></i></div><label class="ck full"><input type="checkbox" checked> GPS integrado (GPS + GLONASS)</label><label class="ck full"><input type="checkbox" checked> Sensores anticolisão omnidirecionais</label></div></section>
+    <section class="card p"><div class="card-h"><span class="card-t">Preço e estoque</span><span class="card-n">Campos de frete condicionais</span></div><div class="g2"><div class="f"><label>Preço de venda (R$) <span class="req">*</span></label><input type="text" placeholder="0,00"></div><div class="f"><label>Preço promocional (R$)</label><input type="text" placeholder="Opcional"></div><div class="f"><label>Quantidade em estoque <span class="req">*</span></label><input type="text" placeholder="0"></div><div class="f"><label>Garantia</label><select><option>12 meses</option><option>6 meses</option><option>24 meses</option></select></div><label class="ck full"><input type="checkbox"> Usar peso/dimensões diferentes para frete</label><div class="f"><label>Peso para frete (kg)</label><input type="text" placeholder="Campo condicional"></div><div class="f"><label>Dimensões da embalagem (cm)</label><input type="text" placeholder="Campo condicional"></div></div></section>
+    <details class="card p"><summary style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;list-style:none"><span class="card-t">Mostrar mais opções</span><span class="dim">Expandir ▾</span></summary><div class="g2" style="margin-top:20px"><div class="f"><label>Subcategoria</label><select><option>Selecione</option></select></div><div class="f"><label>Certificação ANAC</label><select><option>Classe 3 · registro SISANT</option></select></div><div class="f full"><label>Compatibilidade com acessórios</label><input type="text" placeholder="Baterias, hélices, gimbals…"></div><div class="f"><label>Custo (R$) — uso interno</label><input type="text" placeholder="0,00"></div><div class="f"><label>Margem (%) — uso interno</label><input type="text" placeholder="Calculado automaticamente"></div><div class="f"><label>Estoque mínimo</label><input type="text" placeholder="Alerta ao atingir"></div><div class="f"><label>Vídeo demonstrativo (URL)</label><input type="text" placeholder="https://"></div><div class="f"><label>Manual em PDF</label><label class="up">Arraste um arquivo ou clique<small>Arquivo até 20 MB</small><input type="file" hidden></label></div><div class="f full"><label>Tags / SEO</label><input type="text" placeholder="drone, 4k, profissional"></div><div class="f"><label>Fornecedor</label><select><option>Selecione</option></select></div><div class="f"><label>Data de lançamento</label><input type="text" placeholder="dd/mm/aaaa"></div><label class="ck full"><input type="checkbox"> Produto em destaque</label></div></details>
+    <p class="legend">Campos com <span class="req">*</span> são obrigatórios</p>
+  </div>
+  <aside class="rail">
+    <section class="card p2"><div class="eyebrow">Publicação</div><div class="stack"><div class="f"><label>Status <span class="req">*</span></label><select><option>Rascunho</option><option>Ativo</option><option>Inativo</option></select></div><div class="f"><label>Categoria <span class="req">*</span></label><select><option>Drones profissionais</option></select></div><label class="ck full"><input type="checkbox"> Produto em destaque</label></div></section>
+    <section class="card p2"><div class="eyebrow">Mídia</div><div class="stack"><div class="f"><label>Imagem principal <span class="req">*</span></label><label class="up">Arraste um arquivo ou clique<small>JPG ou PNG · mín. 1200×1200 px</small><input type="file" hidden></label></div><div class="f"><label>Galeria de imagens adicionais</label><label class="up">Arraste um arquivo ou clique<small>Até 8 imagens · arraste para ordenar</small><input type="file" hidden></label></div></div></section>
+    <section class="card p2"><div class="eyebrow">Pendências</div><div style="display:flex;flex-direction:column;gap:9px"><span class="warn">3 campos obrigatórios vazios</span><span style="font-size:12px;color:var(--mute)">Peso · Imagem principal · Preço de venda</span></div></section>
+  </aside>
+</div>
+<div class="actionbar"><span class="sub">Rascunho salvo automaticamente há 2 min</span><div class="actions"><button class="btn">Salvar rascunho</button><button class="btn p">Publicar drone</button></div></div>
+</body>
+</html>

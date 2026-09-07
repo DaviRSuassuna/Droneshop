@@ -1,0 +1,105 @@
+@startuml
+' filepath: docs/diagrama-classes.puml
+
+class Customer {
+  -id: Long
+  -name: String
+  -email: String
+  -password: String
+}
+
+class Address {
+  -id: Long
+  -street: String
+  -number: String
+  -city: String
+  -state: String
+  -zipCode: String
+}
+
+class Category {
+  -id: Long
+  -name: String
+}
+
+class Product {
+  -id: Long
+  -name: String
+  -description: String
+  -price: BigDecimal
+  -stock: Integer
+  -imageUrl: String
+}
+
+class Cart {
+  -id: Long
+  -createdAt: LocalDateTime
+  +calculateTotal(): BigDecimal
+}
+
+class CartItem {
+  -id: Long
+  -quantity: Integer
+  -unitPrice: BigDecimal
+  +calculateSubtotal(): BigDecimal
+}
+
+class Order {
+  -id: Long
+  -createdAt: LocalDateTime
+  -total: BigDecimal
+  -status: OrderStatus
+  +calculateTotal(): BigDecimal
+}
+
+class OrderItem {
+  -id: Long
+  -quantity: Integer
+  -unitPrice: BigDecimal
+  +calculateSubtotal(): BigDecimal
+}
+
+class Payment {
+  -id: Long
+  -method: PaymentMethod
+  -status: PaymentStatus
+  -transactionId: String
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  PIX
+  CREDIT_CARD
+  DEBIT_CARD
+  BOLETO
+}
+
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  DECLINED
+  REFUNDED
+}
+
+Customer "1" o-- "0..*" Address
+Customer "1" -- "0..1" Cart
+Customer "1" -- "0..*" Order
+
+Category "1" -- "0..*" Product
+
+Cart "1" *-- "1..*" CartItem
+CartItem "*" --> "1" Product
+
+Order "1" *-- "1..*" OrderItem
+OrderItem "*" --> "1" Product
+Order "1" *-- "1" Payment
+Order "1" --> "1" Address : shippingAddress
+
+@enduml

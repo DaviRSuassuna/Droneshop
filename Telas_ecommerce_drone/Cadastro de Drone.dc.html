@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas"><style>body{margin:0;background:#EDEBE7;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:500 13px/1.2 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#1a1a1a}.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:300 11.5px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(0,0,0,.6)}.dv-card{max-width:100%;background:#0A0A0A;border:1px solid rgba(0,0,0,.12);border-radius:10px;overflow:hidden}.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}.dv-next{margin:22px 0 0;font:300 12px/1.5 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(0,0,0,.5)}a{color:#1a1a1a}a:hover{color:#2a78d6}</style></helmet>
+
+<section class="dv-turn" id="t1">
+  <div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Cadastro de drone — admin · versão definitiva (desktop)</span></div>
+  <div class="dv-opts">
+
+    <div class="dv-opt" id="1b">
+      <div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Formulário + trilho lateral fixo (status, mídia, pendências) · barra de ações no rodapé · <strong>padrão desktop do admin</strong></div>
+      <div class="dv-card" style="width:1240px;height:820px;overflow:auto;position:relative">
+        <dc-import name="AdminNav" active="Produtos" hint-size="100%,52px"></dc-import>
+        <div style="display:flex;align-items:flex-start;gap:24px;padding:26px 28px 96px">
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:24px">
+            <div>
+              <div style="font:200 26px/1.15 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7;letter-spacing:.005em">Cadastrar drone</div>
+              <div style="margin-top:7px;font:300 12.5px/1.5 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#7C7C82"><a href="Admin.dc.html#1a" style="color:#7C7C82;text-decoration:none">← Produtos</a> · Novo item</div>
+            </div>
+            <div style="background:#141416;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:22px 24px 26px">
+              <div style="font:200 17px/1.2 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7;margin-bottom:20px">Informações básicas</div>
+              <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 20px">
+                <sc-for list="{{ basic }}" as="f" hint-placeholder-count="8"><div style="grid-column:{{ f.span }}"><dc-import name="Field" label="{{ f.label }}" ph="{{ f.ph }}" req="{{ f.req }}" is-head="{{ f.isHead }}" is-text="{{ f.isText }}" is-select="{{ f.isSelect }}" is-area="{{ f.isArea }}" is-upload="{{ f.isUpload }}" is-check="{{ f.isCheck }}" hint-size="100%,64px"></dc-import></div></sc-for>
+              </div>
+            </div>
+            <div style="background:#141416;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:22px 24px 26px">
+              <div style="font:200 17px/1.2 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7;margin-bottom:20px">Especificações técnicas</div>
+              <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 20px">
+                <sc-for list="{{ specs }}" as="f" hint-placeholder-count="10"><div style="grid-column:{{ f.span }}"><dc-import name="Field" label="{{ f.label }}" ph="{{ f.ph }}" req="{{ f.req }}" is-head="{{ f.isHead }}" is-text="{{ f.isText }}" is-select="{{ f.isSelect }}" is-area="{{ f.isArea }}" is-upload="{{ f.isUpload }}" is-check="{{ f.isCheck }}" hint-size="100%,64px"></dc-import></div></sc-for>
+              </div>
+            </div>
+            <div style="background:#141416;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:22px 24px 26px">
+              <div style="font:200 17px/1.2 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7;margin-bottom:20px">Preço e estoque</div>
+              <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 20px">
+                <sc-for list="{{ price }}" as="f" hint-placeholder-count="7"><div style="grid-column:{{ f.span }}"><dc-import name="Field" label="{{ f.label }}" ph="{{ f.ph }}" req="{{ f.req }}" is-head="{{ f.isHead }}" is-text="{{ f.isText }}" is-select="{{ f.isSelect }}" is-area="{{ f.isArea }}" is-upload="{{ f.isUpload }}" is-check="{{ f.isCheck }}" hint-size="100%,64px"></dc-import></div></sc-for>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;background:#141416;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:18px 24px">
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <span style="font:200 16px/1.2 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">Mostrar mais opções</span>
+                <span style="font:300 11.5px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#6E6E73">Subcategoria, ANAC, custo/margem, SEO, fornecedor, destaque…</span>
+              </div>
+              <span style="display:flex;align-items:center;gap:8px;font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#9A9AA0">Expandir ▾</span>
+            </div>
+          </div>
+          <div style="position:sticky;top:78px;width:320px;flex:none;display:flex;flex-direction:column;gap:20px">
+            <div style="background:#141416;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:20px">
+              <div style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#7C7C82;margin-bottom:16px">Publicação</div>
+              <div style="display:flex;flex-direction:column;gap:14px">
+                <sc-for list="{{ sidebarStatus }}" as="f" hint-placeholder-count="2"><dc-import name="Field" label="{{ f.label }}" ph="{{ f.ph }}" req="{{ f.req }}" is-select="{{ f.isSelect }}" is-text="{{ f.isText }}" is-check="{{ f.isCheck }}" hint-size="100%,64px"></dc-import></sc-for>
+              </div>
+            </div>
+            <div style="background:#141416;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:20px">
+              <div style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#7C7C82;margin-bottom:16px">Mídia</div>
+              <div style="display:flex;flex-direction:column;gap:16px">
+                <sc-for list="{{ media }}" as="f" hint-placeholder-count="2"><dc-import name="Field" label="{{ f.label }}" ph="{{ f.ph }}" req="{{ f.req }}" is-upload="{{ f.isUpload }}" hint-size="100%,140px"></dc-import></sc-for>
+              </div>
+            </div>
+            <div style="background:#141416;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:20px">
+              <div style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#7C7C82;margin-bottom:14px">Pendências</div>
+              <div style="display:flex;flex-direction:column;gap:9px">
+                <span style="font:300 12px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#FF6B4A">3 campos obrigatórios vazios</span>
+                <span style="font:300 12px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#7C7C82">Peso · Imagem principal · Preço de venda</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="position:sticky;bottom:0;display:flex;align-items:center;justify-content:space-between;padding:14px 28px;background:rgba(10,10,10,.94);backdrop-filter:blur(8px);border-top:1px solid rgba(255,255,255,.08)">
+          <span style="font:300 11.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#5E5E64">Rascunho salvo automaticamente há 2 min</span>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="display:flex;align-items:center;height:36px;padding:0 16px;border:1px solid rgba(255,255,255,.22);border-radius:6px;font:400 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#E5E5EA">Salvar rascunho</span>
+            <span style="display:flex;align-items:center;height:36px;padding:0 20px;background:#FFFFFF;border-radius:6px;font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#0A0A0A">Publicar drone</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <p class="dv-next">Testar em seguida: "mostrar os estados de erro e validação do <a class="dv-oid" href="#1b">1b</a>" · "expandir a seção Mostrar mais opções" · "criar as páginas de Empresas e Suporte no storefront"</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const T = (label, ph, req, span) => ({ label, ph: ph || "", req: !!req, span: span || "auto", isText: true });
+    const S = (label, ph, req, span) => ({ label, ph: ph || "", req: !!req, span: span || "auto", isSelect: true });
+    const A = (label, ph, req) => ({ label, ph: ph || "", req: !!req, span: "1 / -1", isArea: true });
+    const U = (label, ph, req, span) => ({ label, ph: ph || "", req: !!req, span: span || "1 / -1", isUpload: true });
+    const C = (label, span) => ({ label, span: span || "1 / -1", isCheck: true });
+    const H = (label) => ({ label, span: "1 / -1", isHead: true });
+
+    return {
+      basic: [
+        T("Nome do produto", "Ex: Falcon X2 Pro", 1, "1 / -1"),
+        S("Marca", "Selecione a marca", 1),
+        T("Modelo", "Ex: FX2-2026", 1),
+        T("SKU", "DRN-FX2P-0042 · auto-gerado", 1),
+        S("Categoria", "Drones profissionais", 1),
+        S("Status", "Rascunho · Ativo · Inativo", 1),
+        T("Descrição curta", "Resumo de até 160 caracteres"),
+        A("Descrição completa", "Texto completo exibido na página do produto", 1)
+      ],
+      specs: [
+        T("Peso (g)", "Ex: 895", 1),
+        T("Dimensões (mm)", "Dobrado 214×110×89 · aberto 347×283×107"),
+        T("Autonomia de voo (min)", "Ex: 43", 1),
+        T("Alcance de transmissão (km)", "Ex: 15", 1),
+        T("Velocidade máxima (km/h)", "Ex: 72"),
+        H("Câmera"),
+        T("Resolução (MP)", "Ex: 48"),
+        S("Sensor", "1/1.3\" CMOS"),
+        S("Resolução de vídeo", "4K 60 fps"),
+        S("Estabilização", "Gimbal mecânico 3 eixos"),
+        H("Bateria"),
+        S("Tipo", "LiPo 4S"),
+        T("Capacidade (mAh)", "Ex: 5000"),
+        T("Tempo de carregamento (min)", "Ex: 80"),
+        H("Navegação e segurança"),
+        C("GPS integrado (GPS + GLONASS)"),
+        C("Sensores anticolisão omnidirecionais")
+      ],
+      price: [
+        T("Preço de venda (R$)", "0,00", 1),
+        T("Preço promocional (R$)", "Opcional"),
+        T("Quantidade em estoque", "0", 1),
+        S("Garantia", "12 meses"),
+        C("Usar peso/dimensões diferentes para frete"),
+        T("Peso para frete (kg)", "Campo condicional"),
+        T("Dimensões da embalagem (cm)", "Campo condicional")
+      ],
+      media: [
+        U("Imagem principal", "JPG ou PNG · mín. 1200×1200 px", 1),
+        U("Galeria de imagens adicionais", "Até 8 imagens · arraste para ordenar")
+      ],
+      more: [
+        S("Subcategoria", "Selecione"),
+        S("Certificação ANAC", "Classe 3 · registro SISANT"),
+        T("Compatibilidade com acessórios", "Baterias, hélices, gimbals…", 0, "1 / -1"),
+        T("Custo (R$) — uso interno", "0,00"),
+        T("Margem (%) — uso interno", "Calculado automaticamente"),
+        T("Estoque mínimo", "Alerta ao atingir"),
+        T("Vídeo demonstrativo (URL)", "https://"),
+        U("Manual em PDF", "Arquivo até 20 MB"),
+        T("Tags / SEO", "drone, 4k, profissional", 0, "1 / -1"),
+        S("Fornecedor", "Selecione"),
+        T("Data de lançamento", "dd/mm/aaaa"),
+        C("Produto em destaque")
+      ],
+      sidebarStatus: [
+        S("Status", "Rascunho · Ativo · Inativo", 1),
+        S("Categoria", "Drones profissionais", 1),
+        C("Produto em destaque")
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

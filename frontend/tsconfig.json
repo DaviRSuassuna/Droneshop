@@ -23,9 +23,12 @@
   "references": [
     {
       "path": "./tsconfig.app.json"
+<<<<<<< HEAD
     },
     {
       "path": "./tsconfig.spec.json"
+=======
+>>>>>>> ed3d54b (Criação do frontend(telas) com o Angular)
     }
   ]
 }

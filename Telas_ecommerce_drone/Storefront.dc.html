@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&display=swap" rel="stylesheet"><style>body{margin:0;background:#EDEBE7;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:500 13px/1.2 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#1a1a1a}.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:300 11.5px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(0,0,0,.6)}.dv-card{max-width:100%;background:#0A0A0A;border:1px solid rgba(0,0,0,.12);border-radius:10px;overflow:hidden}.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}.dv-next{margin:22px 0 0;font:300 12px/1.5 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(0,0,0,.5)}a{color:#1a1a1a}a:hover{color:#2a78d6}</style></helmet>
+
+<section class="dv-turn" id="t3">
+  <div class="dv-thd"><a class="dv-tid" href="#t3">3</a><span class="dv-tname">Storefront · lote 3 — área da conta: perfil, pedidos/rastreamento e lista de desejos</span></div>
+  <div class="dv-opts">
+
+    <div class="dv-opt" id="3a">
+      <div class="dv-olabel"><a class="dv-oid" href="#3a">3a</a>Perfil · dados pessoais, senha, endereços e meios de pagamento salvos</div>
+      <div class="dv-card" style="width:1440px;height:900px;overflow:auto">
+        <dc-import name="StorefrontNav" active="" hint-size="100%,64px"></dc-import>
+        <div style="display:grid;grid-template-columns:262px minmax(0,1fr);gap:36px;padding:34px 34px 50px;align-items:start">
+          <div style="position:sticky;top:88px"><dc-import name="AccountMenu" active="Perfil e dados" hint-size="100%,340px"></dc-import></div>
+          <div style="display:flex;flex-direction:column;gap:24px">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <span style="font:300 11.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#6E6E73"><a href="Storefront.dc.html#1a" style="color:#6E6E73;text-decoration:none">Home</a> · Minha conta</span>
+              <span style="font:200 32px/1.1 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#FFFFFF">Perfil e dados</span>
+            </div>
+            <div style="background:#101012;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:24px">
+              <div style="font:200 19px/1.2 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7;margin-bottom:18px">Dados pessoais</div>
+              <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px">
+                <sc-for list="{{ profileFields }}" as="f" hint-placeholder-count="6"><div style="grid-column:{{ f.span }}"><dc-import name="Field" label="{{ f.label }}" ph="{{ f.ph }}" req="{{ f.req }}" is-text="{{ f.isText }}" is-select="{{ f.isSelect }}" is-check="{{ f.isCheck }}" hint-size="100%,64px"></dc-import></div></sc-for>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:20px">
+                <span style="font:300 11px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#6E6E73">Campos com <span style="color:#FF6B4A">*</span> são obrigatórios</span>
+                <span style="display:flex;align-items:center;height:40px;padding:0 20px;background:#FFFFFF;border-radius:6px;font:400 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#0A0A0A">Salvar alterações</span>
+              </div>
+            </div>
+            <div style="background:#101012;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:24px">
+              <div style="font:200 19px/1.2 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7;margin-bottom:18px">Trocar senha</div>
+              <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px">
+                <sc-for list="{{ passwordFields }}" as="f" hint-placeholder-count="3"><dc-import name="Field" label="{{ f.label }}" ph="{{ f.ph }}" req="{{ f.req }}" is-text="{{ f.isText }}" hint-size="100%,64px"></dc-import></sc-for>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:20px">
+                <span style="font:300 11.5px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#6E6E73">Mínimo 8 caracteres, com letras e números</span>
+                <span style="display:flex;align-items:center;height:40px;padding:0 20px;border:1px solid rgba(255,255,255,.22);border-radius:6px;font:400 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">Atualizar senha</span>
+              </div>
+            </div>
+            <div style="background:#101012;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:24px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px">
+                <span style="font:200 19px/1.2 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">Endereços salvos</span>
+                <span style="font:300 11.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#3B7AF0">+ Novo endereço</span>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px">
+                <sc-for list="{{ savedAddresses }}" as="a" hint-placeholder-count="2">
+                  <div style="display:flex;flex-direction:column;gap:9px;padding:18px;border:1px solid rgba(255,255,255,.09);border-radius:8px">
+                    <div style="display:flex;align-items:center;gap:9px">
+                      <span style="font:300 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">{{ a.title }}</span>
+                      <sc-if value="{{ a.isDefault }}" hint-placeholder-val="{{ false }}"><span style="padding:3px 8px;border-radius:20px;background:rgba(59,122,240,.14);font:300 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#3B7AF0">Padrão</span></sc-if>
+                    </div>
+                    <span style="font:300 11.5px/1.6 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8A8A8F">{{ a.line1 }}<br>{{ a.line2 }}</span>
+                    <div style="display:flex;align-items:center;gap:14px;margin-top:4px">
+                      <span style="font:300 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#9A9AA0;text-decoration:underline">Editar</span>
+                      <span style="font:300 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#6E6E73;text-decoration:underline">Remover</span>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="background:#101012;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:24px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px">
+                <span style="font:200 19px/1.2 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">Meios de pagamento salvos</span>
+                <span style="font:300 11.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#3B7AF0">+ Novo cartão</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <sc-for list="{{ savedCards }}" as="c" hint-placeholder-count="2">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 18px;border:1px solid rgba(255,255,255,.09);border-radius:8px">
+                    <div style="display:flex;align-items:center;gap:14px">
+                      <span style="display:flex;align-items:center;justify-content:center;width:46px;height:30px;border-radius:5px;background:repeating-linear-gradient(135deg,#17171B 0 6px,#101014 6px 12px);font:400 8px/1 ui-monospace,Menlo,monospace;color:#6E6E73">logo</span>
+                      <div style="display:flex;flex-direction:column;gap:4px">
+                        <span style="font:400 12px/1.2 ui-monospace,Menlo,monospace;color:#F5F5F7">{{ c.masked }}</span>
+                        <span style="font:300 11px/1.2 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#7C7C82">{{ c.holder }} · validade {{ c.expiry }}</span>
+                      </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:14px">
+                      <sc-if value="{{ c.isDefault }}" hint-placeholder-val="{{ false }}"><span style="padding:3px 8px;border-radius:20px;background:rgba(59,122,240,.14);font:300 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#3B7AF0">Padrão</span></sc-if>
+                      <span style="font:300 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#6E6E73;text-decoration:underline">Remover</span>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+        <dc-import name="StorefrontFooter" hint-size="100%,300px"></dc-import>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="3b">
+      <div class="dv-olabel"><a class="dv-oid" href="#3b">3b</a>Meus pedidos · lista com status e detalhe com timeline de rastreio</div>
+      <div class="dv-card" style="width:1440px;height:900px;overflow:auto">
+        <dc-import name="StorefrontNav" active="" hint-size="100%,64px"></dc-import>
+        <div style="display:grid;grid-template-columns:262px minmax(0,1fr);gap:36px;padding:34px 34px 50px;align-items:start">
+          <div style="position:sticky;top:88px"><dc-import name="AccountMenu" active="Meus pedidos" hint-size="100%,340px"></dc-import></div>
+          <div style="display:flex;flex-direction:column;gap:24px">
+            <div style="display:flex;align-items:flex-end;justify-content:space-between">
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <span style="font:300 11.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#6E6E73"><a href="Storefront.dc.html#1a" style="color:#6E6E73;text-decoration:none">Home</a> · Minha conta · Pedidos</span>
+                <span style="font:200 32px/1.1 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#FFFFFF">Meus pedidos</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;width:200px;height:38px;padding:0 12px;background:#0C0C0E;border:1px solid rgba(255,255,255,.10);border-radius:6px">
+                <span style="font:300 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#C9C9CE">Últimos 12 meses</span>
+                <span style="font:400 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8A8A8F">▾</span>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <sc-for list="{{ customerOrders }}" as="o" hint-placeholder-count="4">
+                <div style="display:flex;flex-direction:column;gap:14px;padding:20px 22px;background:#101012;border:1px solid {{ o.border }};border-radius:10px">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:16px">
+                    <div style="display:flex;align-items:center;gap:12px">
+                      <span style="padding:4px 8px;background:rgba(255,255,255,.06);border-radius:5px;font:400 11.5px/1.3 ui-monospace,Menlo,monospace;color:#F5F5F7">{{ o.code }}</span>
+                      <span style="font:300 11.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#7C7C82">{{ o.date }} · {{ o.items }}</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:16px">
+                      <span style="display:flex;align-items:center;gap:8px">
+                        <span style="width:7px;height:7px;border-radius:50%;background:{{ o.dot }}"></span>
+                        <span style="font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#C9C9CE">{{ o.status }}</span>
+                      </span>
+                      <span style="font:300 14px/1 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#FFFFFF">{{ o.total }}</span>
+                    </div>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06)">
+                    <div style="display:flex;align-items:center;gap:10px">
+                      <sc-for list="{{ o.thumbs }}" as="t" hint-placeholder-count="3">
+                        <span style="display:flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:6px;background:repeating-linear-gradient(135deg,#151518 0 7px,#0E0E11 7px 14px);font:400 8px/1 ui-monospace,Menlo,monospace;color:#5E5E64">foto</span>
+                      </sc-for>
+                      <span style="font:300 11.5px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8A8A8F">{{ o.summary }}</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px">
+                      <span style="display:flex;align-items:center;height:34px;padding:0 14px;border:1px solid rgba(255,255,255,.18);border-radius:6px;font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#E5E5EA">Nota fiscal</span>
+                      <span style="display:flex;align-items:center;height:34px;padding:0 16px;background:{{ o.ctaBg }};border:1px solid {{ o.ctaBorder }};border-radius:6px;font:400 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:{{ o.ctaFg }}">{{ o.cta }}</span>
+                    </div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;align-items:start;padding-top:6px">
+              <div style="background:#101012;border:1px solid rgba(255,255,255,.09);border-radius:10px;padding:24px">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+                  <span style="font:200 19px/1.2 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">Rastreio do pedido</span>
+                  <span style="padding:4px 8px;background:rgba(255,255,255,.06);border-radius:5px;font:400 11px/1.3 ui-monospace,Menlo,monospace;color:#C9C9CE">#PD-2026-00318</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:16px">
+                  <sc-for list="{{ trackingSteps }}" as="t" hint-placeholder-count="5">
+                    <div style="display:flex;align-items:flex-start;gap:13px">
+                      <span style="width:9px;height:9px;margin-top:4px;border-radius:50%;background:{{ t.dot }}"></span>
+                      <div style="display:flex;flex-direction:column;gap:4px">
+                        <span style="font:300 12.5px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:{{ t.fg }}">{{ t.label }}</span>
+                        <span style="font:300 11px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#6E6E73">{{ t.when }}</span>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.06)">
+                  <span style="display:flex;align-items:center;height:38px;padding:0 16px;background:#FFFFFF;border-radius:6px;font:400 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#0A0A0A">Copiar código de rastreio</span>
+                  <span style="display:flex;align-items:center;height:38px;padding:0 16px;border:1px solid rgba(255,255,255,.20);border-radius:6px;font:300 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">Falar com o suporte</span>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:16px">
+                <div style="background:#101012;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:22px">
+                  <div style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#7C7C82;margin-bottom:14px">Entrega</div>
+                  <span style="font:300 12px/1.7 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#C9C9CE">Rua das Acácias, 412 — apto 71<br>Pinheiros · São Paulo / SP</span>
+                  <div style="margin-top:12px;font:300 11.5px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#3B7AF0">Previsão: 25/08</div>
+                </div>
+                <div style="background:#101012;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:22px">
+                  <div style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#7C7C82;margin-bottom:14px">Resumo</div>
+                  <div style="display:flex;flex-direction:column;gap:10px">
+                    <sc-for list="{{ confirmSummary }}" as="s" hint-placeholder-count="5">
+                      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:14px">
+                        <span style="font:300 12px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:{{ s.fg }}">{{ s.label }}</span>
+                        <span style="font:300 12px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:{{ s.fg }}">{{ s.value }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <dc-import name="StorefrontFooter" hint-size="100%,300px"></dc-import>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="3c">
+      <div class="dv-olabel"><a class="dv-oid" href="#3c">3c</a>Lista de desejos · grid salvo com mover para o carrinho</div>
+      <div class="dv-card" style="width:1440px;height:900px;overflow:auto">
+        <dc-import name="StorefrontNav" active="" hint-size="100%,64px"></dc-import>
+        <div style="display:grid;grid-template-columns:262px minmax(0,1fr);gap:36px;padding:34px 34px 50px;align-items:start">
+          <div style="position:sticky;top:88px"><dc-import name="AccountMenu" active="Lista de desejos" hint-size="100%,340px"></dc-import></div>
+          <div style="display:flex;flex-direction:column;gap:24px">
+            <div style="display:flex;align-items:flex-end;justify-content:space-between">
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <span style="font:300 11.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#6E6E73"><a href="Storefront.dc.html#1a" style="color:#6E6E73;text-decoration:none">Home</a> · Minha conta · Favoritos</span>
+                <span style="font:200 32px/1.1 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#FFFFFF">Lista de desejos</span>
+                <span style="font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8A8A8F">6 produtos salvos · 2 com queda de preço</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="display:flex;align-items:center;height:38px;padding:0 15px;border:1px solid rgba(255,255,255,.20);border-radius:6px;font:300 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">Compartilhar lista</span>
+                <a href="Storefront.dc.html#2a" style="display:flex;align-items:center;height:38px;padding:0 18px;background:#FFFFFF;border-radius:6px;font:400 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#0A0A0A;text-decoration:none">Mover tudo para o carrinho</a>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px">
+              <sc-for list="{{ wishlist }}" as="p" hint-placeholder-count="6">
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <dc-import name="ProductCard" title="{{ p.name }}" tagline="{{ p.tagline }}" price="{{ p.price }}" old-price="{{ p.oldPrice }}" installments="{{ p.installments }}" badge="{{ p.badge }}" href="Storefront.dc.html#1d" hint-size="100%,330px"></dc-import>
+                  <div style="display:flex;align-items:center;gap:10px">
+                    <a href="Storefront.dc.html#2a" style="flex:1;display:flex;align-items:center;justify-content:center;height:40px;background:#FFFFFF;border-radius:6px;font:400 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#0A0A0A;text-decoration:none">Mover para o carrinho</a>
+                    <span style="display:flex;align-items:center;justify-content:center;width:40px;height:40px;border:1px solid rgba(255,255,255,.18);border-radius:6px;font:300 13px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8A8A8F">✕</span>
+                  </div>
+                  <span style="font:300 11px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:{{ p.noteFg }}">{{ p.note }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+        <dc-import name="StorefrontFooter" hint-size="100%,300px"></dc-import>
+      </div>
+    </div>
+
+  </div>
+  <p class="dv-next">Testar em seguida: "revisar tudo e limpar as variações antigas do cadastro de drone" · "criar as páginas de Empresas e Suporte" · "começar as versões mobile, tela por tela"</p>
+</section>
+
+<section class="dv-turn" id="t2">
+  <div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">Storefront · lote 2 — carrinho, checkout e confirmação (fluxo de compra fechado)</span></div>
+  <div class="dv-opts">
+
+    <div class="dv-opt" id="2a">
+      <div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>Carrinho · itens, cupom, frete estimado e resumo fixo</div>
+      <div class="dv-card" style="width:1440px;height:900px;overflow:auto">
+        <dc-import name="StorefrontNav" active="" cart-count="{{ 3 }}" hint-size="100%,64px"></dc-import>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:36px;padding:34px 34px 50px;align-items:start">
+          <div style="display:flex;flex-direction:column;gap:22px">
+            <div style="display:flex;align-items:baseline;justify-content:space-between">
+              <span style="font:200 32px/1.1 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#FFFFFF">Carrinho</span>
+              <a href="Storefront.dc.html#1c" style="font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#9A9AA0;text-decoration:none">Continuar comprando →</a>
+            </div>
+            <div style="display:flex;flex-direction:column;background:#101012;border:1px solid rgba(255,255,255,.07);border-radius:10px;overflow:hidden">
+              <sc-for list="{{ cartItems }}" as="i" hint-placeholder-count="3">
+                <div style="display:grid;grid-template-columns:96px minmax(0,1fr) 130px 120px;align-items:center;gap:20px;padding:20px;border-bottom:1px solid rgba(255,255,255,.05)">
+                  <a href="Storefront.dc.html#1d" style="display:flex;align-items:center;justify-content:center;height:80px;border-radius:8px;background:repeating-linear-gradient(135deg,#151518 0 7px,#0E0E11 7px 14px);font:400 9.5px/1 ui-monospace,Menlo,monospace;color:#5E5E64;text-decoration:none">foto</a>
+                  <div style="display:flex;flex-direction:column;gap:7px;min-width:0">
+                    <a href="Storefront.dc.html#1d" style="font:300 15px/1.2 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7;text-decoration:none">{{ i.name }}</a>
+                    <span style="font:300 11.5px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#7C7C82">{{ i.spec }}</span>
+                    <div style="display:flex;align-items:center;gap:14px;margin-top:2px">
+                      <span style="font:300 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#6E6E73">{{ i.stock }}</span>
+                      <span style="font:300 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#6E6E73;text-decoration:underline">Remover</span>
+                      <span style="font:300 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#6E6E73;text-decoration:underline">Salvar na wishlist</span>
+                    </div>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;height:38px;padding:0 12px;border:1px solid rgba(255,255,255,.16);border-radius:6px">
+                    <span style="font:300 14px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#9A9AA0">−</span>
+                    <span style="font:300 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">{{ i.qty }}</span>
+                    <span style="font:300 14px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#9A9AA0">+</span>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:4px;justify-self:end;text-align:right">
+                    <span style="font:300 15px/1 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#FFFFFF">{{ i.total }}</span>
+                    <span style="font:300 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#6E6E73">{{ i.unit }} cada</span>
+                  </div>
+                </div>
+              </sc-for>
+              <div style="display:flex;align-items:center;gap:12px;padding:18px 20px">
+                <div style="flex:1;display:flex;align-items:center;height:40px;padding:0 12px;background:#0C0C0E;border:1px solid rgba(255,255,255,.10);border-radius:6px;font:300 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#66666C">Cupom de desconto</div>
+                <span style="display:flex;align-items:center;height:40px;padding:0 18px;border:1px solid rgba(255,255,255,.22);border-radius:6px;font:300 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">Aplicar</span>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <span style="font:200 20px/1.2 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">Quem levou este drone também comprou</span>
+              <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px">
+                <sc-for list="{{ upsell }}" as="p" hint-placeholder-count="3">
+                  <dc-import name="ProductCard" title="{{ p.name }}" tagline="{{ p.tagline }}" price="{{ p.price }}" installments="{{ p.installments }}" href="Storefront.dc.html#1d" hint-size="100%,330px"></dc-import>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+          <div style="position:sticky;top:88px;display:flex;flex-direction:column;gap:16px">
+            <div style="background:#101012;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:24px">
+              <div style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#7C7C82;margin-bottom:18px">Resumo</div>
+              <div style="display:flex;flex-direction:column;gap:11px">
+                <sc-for list="{{ cartSummary }}" as="s" hint-placeholder-count="4">
+                  <div style="display:flex;align-items:baseline;justify-content:space-between">
+                    <span style="font:300 12.5px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:{{ s.fg }}">{{ s.label }}</span>
+                    <span style="font:300 12.5px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:{{ s.fg }}">{{ s.value }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:18px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08)">
+                <span style="font:300 13px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#C9C9CE">Total</span>
+                <span style="font:200 28px/1 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#FFFFFF">R$ 15.181</span>
+              </div>
+              <div style="margin-top:7px;font:300 11.5px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#7C7C82">12× de R$ 1.265 sem juros · R$ 14.422 no Pix</div>
+              <a href="Storefront.dc.html#2b" style="display:flex;align-items:center;justify-content:center;height:48px;margin-top:20px;background:#FFFFFF;border-radius:6px;font:400 13.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#0A0A0A;text-decoration:none">Finalizar compra</a>
+            </div>
+            <div style="background:#101012;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:20px 24px">
+              <div style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#7C7C82;margin-bottom:14px">Frete estimado</div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <div style="flex:1;display:flex;align-items:center;height:38px;padding:0 12px;background:#0C0C0E;border:1px solid rgba(255,255,255,.10);border-radius:6px;font:300 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#66666C">CEP 00000-000</div>
+                <span style="display:flex;align-items:center;height:38px;padding:0 14px;border:1px solid rgba(255,255,255,.22);border-radius:6px;font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">Calcular</span>
+              </div>
+              <div style="margin-top:14px;display:flex;flex-direction:column;gap:9px">
+                <sc-for list="{{ shippingPreview }}" as="s" hint-placeholder-count="2">
+                  <div style="display:flex;align-items:baseline;justify-content:space-between">
+                    <span style="font:300 12px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#9A9AA0">{{ s.label }}</span>
+                    <span style="font:300 12px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">{{ s.value }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+        <dc-import name="StorefrontFooter" hint-size="100%,300px"></dc-import>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="2b">
+      <div class="dv-olabel"><a class="dv-oid" href="#2b">2b</a>Checkout · endereço, frete e pagamento (Pix, cartão, boleto) em etapa única</div>
+      <div class="dv-card" style="width:1440px;height:900px;overflow:auto">
+        <dc-import name="StorefrontNav" active="" cart-count="{{ 3 }}" hint-size="100%,64px"></dc-import>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:36px;padding:34px 34px 50px;align-items:start">
+          <div style="display:flex;flex-direction:column;gap:26px">
+            <div style="display:flex;flex-direction:column;gap:18px">
+              <span style="font:200 32px/1.1 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#FFFFFF">Finalizar compra</span>
+              <div style="display:flex;align-items:center;gap:14px">
+                <sc-for list="{{ steps }}" as="s" hint-placeholder-count="3">
+                  <span style="display:flex;align-items:center;gap:9px">
+                    <span style="display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;border:1px solid {{ s.border }};background:{{ s.bg }};font:400 10.5px/1 ui-monospace,Menlo,monospace;color:{{ s.numFg }}">{{ s.num }}</span>
+                    <span style="font:300 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:{{ s.fg }}">{{ s.label }}</span>
+                  </span>
+                  <span style="width:26px;height:1px;background:rgba(255,255,255,.12)"></span>
+                </sc-for>
+              </div>
+            </div>
+            <div style="background:#101012;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:24px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px">
+                <span style="font:200 19px/1.2 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">Endereço de entrega</span>
+                <span style="font:300 11.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#3B7AF0">+ Novo endereço</span>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px">
+                <sc-for list="{{ addresses }}" as="a" hint-placeholder-count="2">
+                  <div style="display:flex;flex-direction:column;gap:7px;padding:16px;border:1px solid {{ a.border }};border-radius:8px;background:{{ a.bg }}">
+                    <div style="display:flex;align-items:center;gap:9px">
+                      <span style="width:14px;height:14px;border-radius:50%;border:1px solid {{ a.dotBorder }};background:{{ a.dotBg }}"></span>
+                      <span style="font:300 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">{{ a.title }}</span>
+                    </div>
+                    <span style="font:300 11.5px/1.6 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8A8A8F">{{ a.line1 }}<br>{{ a.line2 }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="margin-top:18px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px">
+                <sc-for list="{{ addressFields }}" as="f" hint-placeholder-count="4"><div style="grid-column:{{ f.span }}"><dc-import name="Field" label="{{ f.label }}" ph="{{ f.ph }}" req="{{ f.req }}" is-text="{{ f.isText }}" is-select="{{ f.isSelect }}" is-check="{{ f.isCheck }}" hint-size="100%,64px"></dc-import></div></sc-for>
+              </div>
+              <div style="margin-top:16px;font:300 11px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#6E6E73">Campos com <span style="color:#FF6B4A">*</span> são obrigatórios</div>
+            </div>
+            <div style="background:#101012;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:24px">
+              <div style="font:200 19px/1.2 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7;margin-bottom:18px">Frete</div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <sc-for list="{{ shippingOptions }}" as="s" hint-placeholder-count="3">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 18px;border:1px solid {{ s.border }};border-radius:8px;background:{{ s.bg }}">
+                    <div style="display:flex;align-items:center;gap:12px">
+                      <span style="width:14px;height:14px;border-radius:50%;border:1px solid {{ s.dotBorder }};background:{{ s.dotBg }}"></span>
+                      <div style="display:flex;flex-direction:column;gap:4px">
+                        <span style="font:300 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">{{ s.label }}</span>
+                        <span style="font:300 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#7C7C82">{{ s.eta }}</span>
+                      </div>
+                    </div>
+                    <span style="font:300 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:{{ s.priceFg }}">{{ s.price }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="background:#101012;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:24px">
+              <div style="font:200 19px/1.2 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7;margin-bottom:18px">Forma de pagamento</div>
+              <div style="display:flex;gap:10px;margin-bottom:20px">
+                <sc-for list="{{ payTabs }}" as="t" hint-placeholder-count="3">
+                  <span style="flex:1;display:flex;flex-direction:column;gap:5px;padding:14px;border:1px solid {{ t.border }};border-radius:8px;background:{{ t.bg }}">
+                    <span style="font:300 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">{{ t.label }}</span>
+                    <span style="font:300 11px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#7C7C82">{{ t.hint }}</span>
+                  </span>
+                </sc-for>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px">
+                <sc-for list="{{ cardFields }}" as="f" hint-placeholder-count="5"><div style="grid-column:{{ f.span }}"><dc-import name="Field" label="{{ f.label }}" ph="{{ f.ph }}" req="{{ f.req }}" is-text="{{ f.isText }}" is-select="{{ f.isSelect }}" is-check="{{ f.isCheck }}" hint-size="100%,64px"></dc-import></div></sc-for>
+              </div>
+            </div>
+          </div>
+          <div style="position:sticky;top:88px;display:flex;flex-direction:column;gap:16px">
+            <div style="background:#101012;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:24px">
+              <div style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#7C7C82;margin-bottom:16px">Seu pedido · 3 itens</div>
+              <div style="display:flex;flex-direction:column;gap:12px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.07)">
+                <sc-for list="{{ cartItems }}" as="i" hint-placeholder-count="3">
+                  <div style="display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:12px">
+                    <span style="display:flex;align-items:center;justify-content:center;height:40px;border-radius:6px;background:repeating-linear-gradient(135deg,#151518 0 7px,#0E0E11 7px 14px);font:400 8.5px/1 ui-monospace,Menlo,monospace;color:#5E5E64">foto</span>
+                    <span style="display:flex;flex-direction:column;gap:3px;min-width:0">
+                      <span style="font:300 12px/1.2 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ i.name }}</span>
+                      <span style="font:300 10.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#6E6E73">{{ i.qty }} un</span>
+                    </span>
+                    <span style="font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#C9C9CE">{{ i.total }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:11px;padding-top:16px">
+                <sc-for list="{{ checkoutSummary }}" as="s" hint-placeholder-count="4">
+                  <div style="display:flex;align-items:baseline;justify-content:space-between">
+                    <span style="font:300 12.5px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:{{ s.fg }}">{{ s.label }}</span>
+                    <span style="font:300 12.5px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:{{ s.fg }}">{{ s.value }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08)">
+                <span style="font:300 13px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#C9C9CE">Total</span>
+                <span style="font:200 28px/1 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#FFFFFF">R$ 15.181</span>
+              </div>
+              <a href="Storefront.dc.html#2c" style="display:flex;align-items:center;justify-content:center;height:48px;margin-top:20px;background:#FFFFFF;border-radius:6px;font:400 13.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#0A0A0A;text-decoration:none">Pagar R$ 15.181</a>
+              <a href="Storefront.dc.html#2a" style="display:flex;align-items:center;justify-content:center;height:40px;margin-top:10px;font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#9A9AA0;text-decoration:none">← Voltar ao carrinho</a>
+            </div>
+            <div style="padding:18px 22px;background:#101012;border:1px solid rgba(255,255,255,.07);border-radius:10px;font:300 11.5px/1.6 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#7C7C82">Compra protegida · dados do cartão processados pelo adquirente, não armazenados pela Aeria.</div>
+          </div>
+        </div>
+        <dc-import name="StorefrontFooter" hint-size="100%,300px"></dc-import>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="2c">
+      <div class="dv-olabel"><a class="dv-oid" href="#2c">2c</a>Confirmação do pedido · número, prazo, resumo e próximos passos</div>
+      <div class="dv-card" style="width:1440px;height:900px;overflow:auto">
+        <dc-import name="StorefrontNav" active="" cart-count="{{ 0 }}" hint-size="100%,64px"></dc-import>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:64px 34px 40px;background:linear-gradient(180deg,#111114 0%,#0A0A0A 100%)">
+          <span style="display:flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;border:1px solid rgba(59,122,240,.55);background:rgba(59,122,240,.12);font:300 20px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#3B7AF0">✓</span>
+          <span style="font:200 40px/1.1 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#FFFFFF;text-align:center">Pedido confirmado</span>
+          <span style="font:300 13.5px/1.6 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#9A9AA0;text-align:center;max-width:520px;text-wrap:pretty">Pagamento aprovado no Pix. Enviamos os detalhes para marina.ribeiro@email.com e você pode acompanhar cada etapa pelo painel da sua conta.</span>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+            <span style="padding:7px 13px;background:rgba(255,255,255,.06);border-radius:6px;font:400 13px/1 ui-monospace,Menlo,monospace;color:#F5F5F7">#PD-2026-00322</span>
+            <span style="font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#7C7C82">22/08/2026 · 3 itens</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;margin-top:16px">
+            <a href="Storefront.dc.html#3b" style="display:flex;align-items:center;height:46px;padding:0 24px;background:#FFFFFF;border-radius:6px;font:400 13.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#0A0A0A;text-decoration:none">Acompanhar pedido</a>
+            <a href="Storefront.dc.html#1a" style="display:flex;align-items:center;height:46px;padding:0 22px;border:1px solid rgba(255,255,255,.24);border-radius:6px;font:300 13.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7;text-decoration:none">Voltar para a home</a>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:36px;padding:44px 34px 50px;align-items:start">
+          <div style="display:flex;flex-direction:column;gap:24px">
+            <div style="background:#101012;border:1px solid rgba(255,255,255,.07);border-radius:10px;overflow:hidden">
+              <div style="padding:20px 22px 12px;font:200 19px/1.2 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">Itens do pedido</div>
+              <sc-for list="{{ cartItems }}" as="i" hint-placeholder-count="3">
+                <div style="display:grid;grid-template-columns:72px minmax(0,1fr) 90px 110px;align-items:center;gap:18px;padding:16px 22px;border-top:1px solid rgba(255,255,255,.05)">
+                  <span style="display:flex;align-items:center;justify-content:center;height:62px;border-radius:7px;background:repeating-linear-gradient(135deg,#151518 0 7px,#0E0E11 7px 14px);font:400 9px/1 ui-monospace,Menlo,monospace;color:#5E5E64">foto</span>
+                  <span style="display:flex;flex-direction:column;gap:5px;min-width:0">
+                    <span style="font:300 13.5px/1.2 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">{{ i.name }}</span>
+                    <span style="font:300 11px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#7C7C82">{{ i.spec }}</span>
+                  </span>
+                  <span style="font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#9A9AA0">{{ i.qty }} un</span>
+                  <span style="justify-self:end;font:300 13px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">{{ i.total }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="background:#101012;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:24px">
+              <div style="font:200 19px/1.2 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7;margin-bottom:18px">Próximos passos</div>
+              <div style="display:flex;flex-direction:column;gap:16px">
+                <sc-for list="{{ nextSteps }}" as="s" hint-placeholder-count="4">
+                  <div style="display:flex;align-items:flex-start;gap:13px">
+                    <span style="width:9px;height:9px;margin-top:4px;border-radius:50%;background:{{ s.dot }}"></span>
+                    <div style="display:flex;flex-direction:column;gap:4px">
+                      <span style="font:300 12.5px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:{{ s.fg }}">{{ s.label }}</span>
+                      <span style="font:300 11.5px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#6E6E73">{{ s.detail }}</span>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div style="background:#101012;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:24px">
+              <div style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#7C7C82;margin-bottom:16px">Pagamento e entrega</div>
+              <div style="display:flex;flex-direction:column;gap:11px">
+                <sc-for list="{{ confirmSummary }}" as="s" hint-placeholder-count="5">
+                  <div style="display:flex;align-items:baseline;justify-content:space-between;gap:14px">
+                    <span style="font:300 12.5px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:{{ s.fg }}">{{ s.label }}</span>
+                    <span style="font:300 12.5px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:{{ s.fg }};text-align:right">{{ s.value }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="background:#101012;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:24px">
+              <div style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#7C7C82;margin-bottom:14px">Entrega em</div>
+              <span style="font:300 12.5px/1.7 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#C9C9CE">Marina Ribeiro<br>Rua das Acácias, 412 — apto 71<br>Pinheiros · São Paulo / SP<br>05422-030</span>
+              <div style="margin-top:14px;font:300 11.5px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#3B7AF0">Previsão: 26 a 28 de agosto</div>
+            </div>
+            <a href="Storefront.dc.html#1c" style="display:flex;align-items:center;justify-content:center;height:44px;border:1px solid rgba(255,255,255,.20);border-radius:6px;font:300 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7;text-decoration:none">Continuar comprando</a>
+          </div>
+        </div>
+        <dc-import name="StorefrontFooter" hint-size="100%,300px"></dc-import>
+      </div>
+    </div>
+
+  </div>
+  <p class="dv-next">Testar em seguida: "seguir para perfil, histórico/rastreamento e wishlist" · "mostrar o checkout no estado Pix com QR code" · "carrinho vazio como estado alternativo"</p>
+</section>
+
+<section class="dv-turn" id="t1">
+  <div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Storefront · lote 1 — home, login/cadastro, listagem e PDP (desktop) · cabeçalho e rodapé persistentes</span></div>
+  <div class="dv-opts">
+
+    <div class="dv-opt" id="1a">
+      <div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Home · hero de produto, atalhos de categoria, lançamentos e ofertas</div>
+      <div class="dv-card" style="width:1440px;height:900px;overflow:auto">
+        <dc-import name="StorefrontNav" active="Ofertas" hint-size="100%,64px"></dc-import>
+        <div style="display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);align-items:center;gap:40px;padding:64px 34px 56px;background:linear-gradient(180deg,#111114 0%,#0A0A0A 100%)">
+          <div style="display:flex;flex-direction:column;gap:22px">
+            <span style="align-self:flex-start;padding:5px 11px;border:1px solid rgba(255,255,255,.16);border-radius:20px;font:300 10.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#C9C9CE">Lançamento 2026</span>
+            <span style="font:200 58px/1.05 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#FFFFFF;letter-spacing:-.01em">Falcon X2 Pro</span>
+            <span style="font:300 15px/1.6 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#9A9AA0;max-width:420px;text-wrap:pretty">43 minutos de voo, transmissão de 15 km e câmera 4K 60 fps com gimbal de três eixos.</span>
+            <div style="display:flex;align-items:center;gap:14px;margin-top:6px">
+              <a href="Storefront.dc.html#1d" style="display:flex;align-items:center;height:46px;padding:0 26px;background:#FFFFFF;border-radius:6px;font:400 13.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#0A0A0A;text-decoration:none">Comprar · R$ 12.499</a>
+              <a href="Storefront.dc.html#1d" style="display:flex;align-items:center;height:46px;padding:0 22px;border:1px solid rgba(255,255,255,.24);border-radius:6px;font:300 13.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7;text-decoration:none">Ver especificações</a>
+            </div>
+            <div style="display:flex;align-items:center;gap:28px;margin-top:14px">
+              <sc-for list="{{ heroSpecs }}" as="s" hint-placeholder-count="3">
+                <span style="display:flex;flex-direction:column;gap:5px">
+                  <span style="font:200 22px/1 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">{{ s.value }}</span>
+                  <span style="font:300 10.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#6E6E73">{{ s.label }}</span>
+                </span>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;height:430px;border-radius:12px;background:repeating-linear-gradient(135deg,#17171B 0 8px,#101014 8px 16px)">
+            <span style="padding:6px 12px;background:rgba(10,10,10,.7);border-radius:4px;font:400 11px/1 ui-monospace,Menlo,monospace;color:#8A8A8F">vídeo/foto do drone em voo · 16:9</span>
+          </div>
+        </div>
+        <div style="padding:46px 34px 10px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px">
+            <span style="font:200 24px/1.2 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">Categorias</span>
+            <a href="Storefront.dc.html#1c" style="font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#9A9AA0;text-decoration:none">Ver tudo →</a>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:18px">
+            <sc-for list="{{ categories }}" as="c" hint-placeholder-count="5">
+              <a href="Storefront.dc.html#1c" style="display:flex;flex-direction:column;gap:12px;padding:16px;background:#101012;border:1px solid rgba(255,255,255,.07);border-radius:10px;text-decoration:none">
+                <span style="display:flex;align-items:center;justify-content:center;height:104px;border-radius:7px;background:repeating-linear-gradient(135deg,#151518 0 7px,#0E0E11 7px 14px);font:400 10px/1 ui-monospace,Menlo,monospace;color:#6E6E73">imagem</span>
+                <span style="font:300 13px/1.2 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">{{ c.label }}</span>
+                <span style="font:300 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#6E6E73">{{ c.count }}</span>
+              </a>
+            </sc-for>
+          </div>
+        </div>
+        <div style="padding:46px 34px 10px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px">
+            <span style="font:200 24px/1.2 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">Lançamentos e ofertas</span>
+            <a href="Storefront.dc.html#1c" style="font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#9A9AA0;text-decoration:none">Ver todos os drones →</a>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px">
+            <sc-for list="{{ featured }}" as="p" hint-placeholder-count="4">
+              <dc-import name="ProductCard" title="{{ p.name }}" tagline="{{ p.tagline }}" price="{{ p.price }}" old-price="{{ p.oldPrice }}" installments="{{ p.installments }}" badge="{{ p.badge }}" href="Storefront.dc.html#1d" hint-size="100%,330px"></dc-import>
+            </sc-for>
+          </div>
+        </div>
+        <div style="padding:46px 34px 56px">
+          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px">
+            <sc-for list="{{ promos }}" as="b" hint-placeholder-count="2">
+              <a href="Storefront.dc.html#1c" style="display:flex;flex-direction:column;justify-content:flex-end;gap:10px;height:200px;padding:26px;border-radius:10px;background:repeating-linear-gradient(135deg,#141418 0 8px,#0D0D10 8px 16px);border:1px solid rgba(255,255,255,.07);text-decoration:none">
+                <span style="font:300 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#3B7AF0">{{ b.eyebrow }}</span>
+                <span style="font:200 26px/1.15 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#FFFFFF">{{ b.title }}</span>
+                <span style="font:300 12.5px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#9A9AA0">{{ b.sub }}</span>
+              </a>
+            </sc-for>
+          </div>
+        </div>
+        <dc-import name="StorefrontFooter" hint-size="100%,300px"></dc-import>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1b">
+      <div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Login / cadastro de cliente · alternância entre os dois estados</div>
+      <div class="dv-card" style="width:1440px;height:900px;overflow:auto">
+        <dc-import name="StorefrontNav" active="" hint-size="100%,64px"></dc-import>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) 470px;gap:0;min-height:660px">
+          <div style="display:flex;flex-direction:column;justify-content:flex-end;gap:14px;padding:44px;background:repeating-linear-gradient(135deg,#141418 0 8px,#0D0D10 8px 16px)">
+            <span style="padding:6px 12px;align-self:flex-start;background:rgba(10,10,10,.7);border-radius:4px;font:400 11px/1 ui-monospace,Menlo,monospace;color:#8A8A8F">imagem editorial · drone em campo aberto</span>
+            <span style="font:200 34px/1.15 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#FFFFFF;max-width:420px">Sua conta Aeria acompanha cada voo.</span>
+            <span style="font:300 13px/1.6 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8A8A8F;max-width:420px">Pedidos, garantia estendida, registro ANAC e histórico de manutenção em um só lugar.</span>
+          </div>
+          <div style="padding:44px 40px;border-left:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;gap:26px">
+            <div style="display:flex;align-items:center;gap:0;border-bottom:1px solid rgba(255,255,255,.09)">
+              <sc-for list="{{ authTabs }}" as="t" hint-placeholder-count="2">
+                <span style="padding:12px 4px;margin-right:24px;border-bottom:2px solid {{ t.bd }};font:300 14px/1 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:{{ t.fg }}">{{ t.label }}</span>
+              </sc-for>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <sc-for list="{{ loginFields }}" as="f" hint-placeholder-count="2"><dc-import name="Field" label="{{ f.label }}" ph="{{ f.ph }}" req="{{ f.req }}" is-text="{{ f.isText }}" is-check="{{ f.isCheck }}" hint-size="100%,64px"></dc-import></sc-for>
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <span style="display:flex;align-items:center;gap:9px"><span style="width:15px;height:15px;border:1px solid rgba(255,255,255,.22);border-radius:3px;background:#0C0C0E"></span><span style="font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#C9C9CE">Manter conectado</span></span>
+                <a href="Storefront.dc.html#1b" style="font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#3B7AF0;text-decoration:none">Esqueci minha senha</a>
+              </div>
+              <a href="Storefront.dc.html#1a" style="display:flex;align-items:center;justify-content:center;height:46px;background:#FFFFFF;border-radius:6px;font:400 13.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#0A0A0A;text-decoration:none">Entrar</a>
+              <span style="font:300 11px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#6E6E73;text-align:center">Campos com <span style="color:#FF6B4A">*</span> são obrigatórios</span>
+            </div>
+            <div style="border-top:1px solid rgba(255,255,255,.07);padding-top:24px;display:flex;flex-direction:column;gap:16px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between">
+                <span style="font:300 14px/1 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">Criar conta</span>
+                <span style="padding:3px 8px;background:rgba(255,255,255,.06);border-radius:4px;font:400 10px/1.3 ui-monospace,Menlo,monospace;color:#7C7C82">estado alternativo da aba</span>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px">
+                <sc-for list="{{ signupFields }}" as="f" hint-placeholder-count="6"><div style="grid-column:{{ f.span }}"><dc-import name="Field" label="{{ f.label }}" ph="{{ f.ph }}" req="{{ f.req }}" is-text="{{ f.isText }}" is-select="{{ f.isSelect }}" is-check="{{ f.isCheck }}" hint-size="100%,64px"></dc-import></div></sc-for>
+              </div>
+              <a href="Storefront.dc.html#1a" style="display:flex;align-items:center;justify-content:center;height:46px;border:1px solid rgba(255,255,255,.24);border-radius:6px;font:300 13.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7;text-decoration:none">Criar conta</a>
+            </div>
+          </div>
+        </div>
+        <dc-import name="StorefrontFooter" hint-size="100%,300px"></dc-import>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1c">
+      <div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Listagem e busca · filtros por marca, preço, uso, alcance e autonomia</div>
+      <div class="dv-card" style="width:1440px;height:900px;overflow:auto">
+        <dc-import name="StorefrontNav" active="Drones" hint-size="100%,64px"></dc-import>
+        <div style="display:flex;align-items:flex-start;gap:32px;padding:32px 34px 56px">
+          <div style="width:262px;flex:none;display:flex;flex-direction:column;gap:22px">
+            <div style="display:flex;align-items:baseline;justify-content:space-between">
+              <span style="font:300 13px/1 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">Filtros</span>
+              <span style="font:300 11.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#6E6E73">Limpar</span>
+            </div>
+            <sc-for list="{{ filterGroups }}" as="g" hint-placeholder-count="4">
+              <div style="display:flex;flex-direction:column;gap:12px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.07)">
+                <span style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#7C7C82">{{ g.title }}</span>
+                <sc-for list="{{ g.options }}" as="o" hint-placeholder-count="4">
+                  <span style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+                    <span style="display:flex;align-items:center;gap:9px">
+                      <span style="width:15px;height:15px;border:1px solid rgba(255,255,255,.22);border-radius:3px;background:{{ o.bg }}"></span>
+                      <span style="font:300 12.5px/1.2 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#C9C9CE">{{ o.label }}</span>
+                    </span>
+                    <span style="font:400 10px/1 ui-monospace,Menlo,monospace;color:#5E5E64">{{ o.count }}</span>
+                  </span>
+                </sc-for>
+              </div>
+            </sc-for>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <span style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#7C7C82">Faixa de preço</span>
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="flex:1;display:flex;align-items:center;height:34px;padding:0 10px;background:#0C0C0E;border:1px solid rgba(255,255,255,.10);border-radius:6px;font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#66666C">R$ 690</span>
+                <span style="font:300 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#5E5E64">até</span>
+                <span style="flex:1;display:flex;align-items:center;height:34px;padding:0 10px;background:#0C0C0E;border:1px solid rgba(255,255,255,.10);border-radius:6px;font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#66666C">R$ 50.000</span>
+              </div>
+              <span style="position:relative;display:block;height:3px;border-radius:2px;background:rgba(255,255,255,.10)"><span style="position:absolute;left:12%;right:38%;top:0;bottom:0;border-radius:2px;background:#3B7AF0"></span></span>
+            </div>
+          </div>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:20px">
+            <div style="display:flex;align-items:flex-end;justify-content:space-between">
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <span style="font:300 11.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#6E6E73"><a href="Storefront.dc.html#1a" style="color:#6E6E73;text-decoration:none">Home</a> · Drones</span>
+                <span style="font:200 30px/1.1 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#FFFFFF">Drones</span>
+                <span style="font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8A8A8F">148 produtos · resultados para "4k"</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;width:220px;height:38px;padding:0 12px;background:#0C0C0E;border:1px solid rgba(255,255,255,.10);border-radius:6px">
+                <span style="font:300 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#C9C9CE">Ordenar: relevância</span>
+                <span style="font:400 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8A8A8F">▾</span>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:9px">
+              <sc-for list="{{ activeFilters }}" as="c" hint-placeholder-count="3">
+                <span style="display:flex;align-items:center;gap:7px;padding:6px 11px;background:rgba(255,255,255,.06);border-radius:20px;font:300 11.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#C9C9CE">{{ c }} <span style="color:#7C7C82">×</span></span>
+              </sc-for>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px">
+              <sc-for list="{{ gridProducts }}" as="p" hint-placeholder-count="9">
+                <dc-import name="ProductCard" title="{{ p.name }}" tagline="{{ p.tagline }}" price="{{ p.price }}" old-price="{{ p.oldPrice }}" installments="{{ p.installments }}" badge="{{ p.badge }}" href="Storefront.dc.html#1d" hint-size="100%,330px"></dc-import>
+              </sc-for>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:center;padding-top:8px">
+              <span style="display:flex;align-items:center;height:42px;padding:0 26px;border:1px solid rgba(255,255,255,.22);border-radius:6px;font:300 13px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">Carregar mais 9 produtos</span>
+            </div>
+          </div>
+        </div>
+        <dc-import name="StorefrontFooter" hint-size="100%,300px"></dc-import>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1d">
+      <div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>PDP · galeria, painel de compra, especificações, avaliações e acessórios</div>
+      <div class="dv-card" style="width:1440px;height:900px;overflow:auto">
+        <dc-import name="StorefrontNav" active="Drones" hint-size="100%,64px"></dc-import>
+        <div style="padding:26px 34px 0;font:300 11.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#6E6E73"><a href="Storefront.dc.html#1a" style="color:#6E6E73;text-decoration:none">Home</a> · <a href="Storefront.dc.html#1c" style="color:#6E6E73;text-decoration:none">Drones</a> · Falcon X2 Pro</div>
+        <div style="display:grid;grid-template-columns:minmax(0,1.25fr) 420px;gap:40px;padding:22px 34px 50px">
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="position:relative;display:flex;align-items:center;justify-content:center;height:460px;border-radius:12px;background:repeating-linear-gradient(135deg,#17171B 0 8px,#101014 8px 16px)">
+              <span style="padding:6px 12px;background:rgba(10,10,10,.7);border-radius:4px;font:400 11px/1 ui-monospace,Menlo,monospace;color:#8A8A8F">foto principal · fundo estúdio</span>
+              <span style="position:absolute;bottom:16px;left:16px;display:flex;align-items:center;gap:8px;padding:7px 13px;border-radius:20px;background:rgba(10,10,10,.72);border:1px solid rgba(255,255,255,.14);font:300 11.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">▶ Vídeo do produto · 45 s</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px">
+              <sc-for list="{{ thumbs }}" as="t" hint-placeholder-count="5">
+                <span style="display:flex;align-items:center;justify-content:center;height:84px;border-radius:8px;border:1px solid {{ t.border }};background:repeating-linear-gradient(135deg,#151518 0 7px,#0E0E11 7px 14px);font:400 9.5px/1 ui-monospace,Menlo,monospace;color:#5E5E64">{{ t.label }}</span>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:18px">
+            <span style="font:300 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#3B7AF0">Aerion · profissional</span>
+            <span style="font:200 38px/1.1 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#FFFFFF">Falcon X2 Pro</span>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="font:300 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">★★★★☆</span>
+              <span style="font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8A8A8F">4,6 · 128 avaliações</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px;padding:18px 0;border-top:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07)">
+              <span style="font:200 32px/1 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#FFFFFF">R$ 12.499</span>
+              <span style="font:300 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8A8A8F">12× de R$ 1.041 sem juros · R$ 11.874 no Pix</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:11px">
+              <span style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#7C7C82">Versão</span>
+              <div style="display:flex;gap:10px">
+                <sc-for list="{{ variants }}" as="v" hint-placeholder-count="3">
+                  <span style="flex:1;display:flex;flex-direction:column;gap:5px;padding:12px;border:1px solid {{ v.border }};border-radius:8px;background:{{ v.bg }}">
+                    <span style="font:300 12.5px/1.2 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">{{ v.label }}</span>
+                    <span style="font:300 11px/1.2 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#7C7C82">{{ v.price }}</span>
+                  </span>
+                </sc-for>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="display:flex;align-items:center;gap:16px;height:46px;padding:0 14px;border:1px solid rgba(255,255,255,.16);border-radius:6px">
+                <span style="font:300 15px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#9A9AA0">−</span>
+                <span style="font:300 13px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">1</span>
+                <span style="font:300 15px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#9A9AA0">+</span>
+              </div>
+              <a href="Storefront.dc.html#2a" style="flex:1;display:flex;align-items:center;justify-content:center;height:46px;background:#FFFFFF;border-radius:6px;font:400 13.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#0A0A0A;text-decoration:none">Adicionar ao carrinho</a>
+            </div>
+            <a href="Storefront.dc.html#1b" style="display:flex;align-items:center;justify-content:center;height:44px;border:1px solid rgba(255,255,255,.20);border-radius:6px;font:300 13px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7;text-decoration:none">♡ Salvar na lista de desejos</a>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+              <sc-for list="{{ assurances }}" as="a" hint-placeholder-count="3">
+                <span style="font:300 11.5px/1.5 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8A8A8F">{{ a }}</span>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+        <div style="padding:0 34px 50px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px">
+            <span style="font:200 24px/1.2 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">Especificações técnicas</span>
+            <span style="font:300 11.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#6E6E73">Comparar com outros modelos →</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 46px">
+            <sc-for list="{{ specTable }}" as="s" hint-placeholder-count="10">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:20px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+                <span style="font:300 12.5px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#7C7C82">{{ s.label }}</span>
+                <span style="font:300 12.5px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7;text-align:right">{{ s.value }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:320px minmax(0,1fr);gap:40px;padding:0 34px 50px">
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <span style="font:200 24px/1.2 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">Avaliações</span>
+            <span style="font:200 44px/1 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#FFFFFF">4,6</span>
+            <span style="font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8A8A8F">128 avaliações verificadas</span>
+            <div style="display:flex;flex-direction:column;gap:7px;margin-top:6px">
+              <sc-for list="{{ ratingBars }}" as="r" hint-placeholder-count="5">
+                <span style="display:flex;align-items:center;gap:10px">
+                  <span style="width:14px;font:300 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#7C7C82">{{ r.stars }}</span>
+                  <span style="position:relative;flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.08)"><span style="position:absolute;left:0;top:0;bottom:0;width:{{ r.pct }};border-radius:2px;background:rgba(255,255,255,.55)"></span></span>
+                  <span style="width:30px;text-align:right;font:400 10px/1 ui-monospace,Menlo,monospace;color:#5E5E64">{{ r.count }}</span>
+                </span>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <sc-for list="{{ reviews }}" as="r" hint-placeholder-count="2">
+              <div style="display:flex;flex-direction:column;gap:8px;padding:18px 20px;background:#101012;border:1px solid rgba(255,255,255,.07);border-radius:10px">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <span style="font:300 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">{{ r.author }}</span>
+                  <span style="font:300 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#6E6E73">{{ r.when }}</span>
+                </div>
+                <span style="font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#C9C9CE">{{ r.stars }}</span>
+                <span style="font:300 12.5px/1.6 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#9A9AA0;text-wrap:pretty">{{ r.text }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="padding:0 34px 56px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px">
+            <span style="font:200 24px/1.2 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">Acessórios compatíveis</span>
+            <a href="Storefront.dc.html#1c" style="font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#9A9AA0;text-decoration:none">Ver todos →</a>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px">
+            <sc-for list="{{ accessories }}" as="p" hint-placeholder-count="4">
+              <dc-import name="ProductCard" title="{{ p.name }}" tagline="{{ p.tagline }}" price="{{ p.price }}" installments="{{ p.installments }}" href="Storefront.dc.html#1d" hint-size="100%,330px"></dc-import>
+            </sc-for>
+          </div>
+        </div>
+        <dc-import name="StorefrontFooter" hint-size="100%,300px"></dc-import>
+      </div>
+    </div>
+
+  </div>
+  <p class="dv-next">Testar em seguida: "seguir para carrinho, checkout e confirmação" · "trocar o acento azul por laranja no storefront" · "mostrar a PDP com produto esgotado"</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const P = (name, tagline, price, installments, oldPrice, badge) => ({ name, tagline, price, installments, oldPrice: oldPrice || "", badge: badge || "" });
+    const T = (label, ph, req, span) => ({ label, ph: ph || "", req: !!req, span: span || "auto", isText: true });
+    const S = (label, ph, req, span) => ({ label, ph: ph || "", req: !!req, span: span || "auto", isSelect: true });
+    const C = (label) => ({ label, span: "1 / -1", isCheck: true });
+    const opt = (label, count, on) => ({ label, count, bg: on ? "rgba(255,255,255,.85)" : "#0C0C0E" });
+
+    return {
+      heroSpecs: [
+        { value: "43 min", label: "autonomia" },
+        { value: "15 km", label: "transmissão" },
+        { value: "4K 60", label: "vídeo" }
+      ],
+      categories: [
+        { label: "Profissionais", count: "24 modelos" },
+        { label: "Compactos", count: "31 modelos" },
+        { label: "FPV / Corrida", count: "18 modelos" },
+        { label: "Agrícolas", count: "9 modelos" },
+        { label: "Acessórios", count: "142 itens" }
+      ],
+      featured: [
+        P("Nimbus Mini 3", "34 min · 10 km · 4K 30fps", "R$ 4.290", "12× de R$ 357 sem juros", "R$ 4.790", "Oferta"),
+        P("Falcon X2 Pro", "43 min · 15 km · 4K 60fps", "R$ 12.499", "12× de R$ 1.041 sem juros", "", "Novo"),
+        P("Heron Survey Pro", "38 min · 12 km · RTK", "R$ 28.400", "12× de R$ 2.366 sem juros", "", ""),
+        P("Sparrow Kids", "18 min · 2 km · 2.7K", "R$ 690", "6× de R$ 115 sem juros", "R$ 890", "Oferta")
+      ],
+      promos: [
+        { eyebrow: "Semana do piloto", title: "Até 20% em kits com bateria extra", sub: "Válido até 31/08 ou enquanto durar o estoque" },
+        { eyebrow: "Aeria para empresas", title: "Frota, treinamento e nota fiscal PJ", sub: "Consultoria dedicada para mapeamento e agro" }
+      ],
+      authTabs: [
+        { label: "Entrar", fg: "#FFFFFF", bd: "#FFFFFF" },
+        { label: "Criar conta", fg: "#7C7C82", bd: "transparent" }
+      ],
+      loginFields: [
+        T("E-mail", "voce@email.com", 1, "1 / -1"),
+        T("Senha", "••••••••", 1, "1 / -1")
+      ],
+      signupFields: [
+        T("Nome completo", "Como no documento", 1, "1 / -1"),
+        T("E-mail", "voce@email.com", 1),
+        T("CPF / CNPJ", "000.000.000-00", 1),
+        T("Senha", "Mínimo 8 caracteres", 1),
+        T("Confirmar senha", "Repita a senha", 1),
+        C("Quero receber novidades e ofertas por e-mail")
+      ],
+      filterGroups: [
+        { title: "Marca", options: [opt("Aerion", "24", true), opt("Skyline", "31", false), opt("Vortex", "18", false), opt("Atlas", "9", false), opt("Heron", "12", false)] },
+        { title: "Uso", options: [opt("Profissional", "42", true), opt("Lazer", "58", false), opt("Corrida FPV", "18", false), opt("Agro / mapeamento", "21", false)] },
+        { title: "Alcance de transmissão", options: [opt("Até 5 km", "37", false), opt("5 – 10 km", "44", false), opt("10 – 15 km", "51", false), opt("Acima de 15 km", "16", false)] },
+        { title: "Autonomia de voo", options: [opt("Até 20 min", "29", false), opt("20 – 35 min", "62", true), opt("Acima de 35 min", "57", false)] }
+      ],
+      activeFilters: ["Marca: Aerion", "Uso: Profissional", "20 – 35 min"],
+      gridProducts: [
+        P("Falcon X2 Pro", "43 min · 15 km · 4K 60fps", "R$ 12.499", "12× de R$ 1.041", "", "Novo"),
+        P("Falcon X2 Standard", "38 min · 12 km · 4K 30fps", "R$ 8.990", "12× de R$ 749", "", ""),
+        P("Nimbus Mini 3", "34 min · 10 km · 4K 30fps", "R$ 4.290", "12× de R$ 357", "R$ 4.790", "Oferta"),
+        P("Nimbus Mini 3 Combo", "34 min · 3 baterias · maleta", "R$ 5.780", "12× de R$ 481", "", ""),
+        P("Heron Survey Pro", "38 min · 12 km · RTK", "R$ 28.400", "12× de R$ 2.366", "", ""),
+        P("Vortex FPV Racer", "12 min · 4 km · 120 km/h", "R$ 3.150", "10× de R$ 315", "", ""),
+        P("Atlas Agro 10L", "22 min · tanque 10 L", "R$ 46.900", "12× de R$ 3.908", "", ""),
+        P("Sparrow Kids", "18 min · 2 km · 2.7K", "R$ 690", "6× de R$ 115", "R$ 890", "Oferta"),
+        P("Nimbus Air 2", "30 min · 8 km · 4K 30fps", "R$ 6.450", "12× de R$ 537", "", "")
+      ],
+      thumbs: [
+        { label: "frente", border: "rgba(255,255,255,.28)" },
+        { label: "dobrado", border: "rgba(255,255,255,.08)" },
+        { label: "gimbal", border: "rgba(255,255,255,.08)" },
+        { label: "controle", border: "rgba(255,255,255,.08)" },
+        { label: "em voo", border: "rgba(255,255,255,.08)" }
+      ],
+      variants: [
+        { label: "Padrão", price: "R$ 12.499", border: "#FFFFFF", bg: "rgba(255,255,255,.06)" },
+        { label: "Fly More", price: "R$ 15.290", border: "rgba(255,255,255,.14)", bg: "transparent" },
+        { label: "Enterprise", price: "R$ 19.900", border: "rgba(255,255,255,.14)", bg: "transparent" }
+      ],
+      assurances: [
+        "Entrega em até 5 dias úteis para São Paulo · frete grátis acima de R$ 999",
+        "Garantia de 12 meses + 30 dias para troca sem custo",
+        "Registro SISANT/ANAC orientado pela nossa equipe"
+      ],
+      specTable: [
+        { label: "Peso", value: "895 g" },
+        { label: "Dimensões (dobrado)", value: "214 × 110 × 89 mm" },
+        { label: "Autonomia de voo", value: "43 min" },
+        { label: "Alcance de transmissão", value: "15 km" },
+        { label: "Velocidade máxima", value: "72 km/h" },
+        { label: "Sensor da câmera", value: "1/1.3\" CMOS · 48 MP" },
+        { label: "Resolução de vídeo", value: "4K 60 fps · D-Log M" },
+        { label: "Estabilização", value: "Gimbal mecânico de 3 eixos" },
+        { label: "Bateria", value: "LiPo 4S · 5.000 mAh" },
+        { label: "Tempo de carregamento", value: "80 min" },
+        { label: "Navegação", value: "GPS + GLONASS" },
+        { label: "Sensores", value: "Anticolisão omnidirecional" }
+      ],
+      ratingBars: [
+        { stars: "5★", pct: "72%", count: "92" },
+        { stars: "4★", pct: "18%", count: "23" },
+        { stars: "3★", pct: "6%", count: "8" },
+        { stars: "2★", pct: "3%", count: "4" },
+        { stars: "1★", pct: "1%", count: "1" }
+      ],
+      reviews: [
+        { author: "Rafael M. · compra verificada", when: "há 3 semanas", stars: "★★★★★", text: "Autonomia real ficou perto dos 40 minutos em voo com vento moderado. O gimbal segura bem o horizonte em rajadas." },
+        { author: "Juliana P. · compra verificada", when: "há 1 mês", stars: "★★★★☆", text: "Imagem excelente e transmissão estável a 8 km. Senti falta de uma maleta rígida no kit padrão." }
+      ],
+      profileFields: [
+        T("Nome completo", "Marina Ribeiro", 1),
+        T("E-mail", "marina.ribeiro@email.com", 1),
+        T("CPF", "000.000.000-00", 1),
+        T("Telefone / WhatsApp", "(11) 98812-4477", 1),
+        T("Data de nascimento", "dd/mm/aaaa"),
+        S("Perfil de piloto", "Profissional · registro SISANT ativo"),
+        C("Quero receber novidades, ofertas e conteúdos sobre voo")
+      ],
+      passwordFields: [
+        T("Senha atual", "••••••••", 1),
+        T("Nova senha", "Mínimo 8 caracteres", 1),
+        T("Confirmar nova senha", "Repita a nova senha", 1)
+      ],
+      savedAddresses: [
+        { title: "Casa", line1: "Rua das Acácias, 412 — apto 71", line2: "Pinheiros · São Paulo / SP · 05422-030", isDefault: true },
+        { title: "Estúdio", line1: "Av. Paulista, 1.578 — conj. 902", line2: "Bela Vista · São Paulo / SP · 01310-200", isDefault: false }
+      ],
+      savedCards: [
+        { masked: "•••• •••• •••• 4417", holder: "MARINA R RIBEIRO", expiry: "09/29", isDefault: true },
+        { masked: "•••• •••• •••• 8032", holder: "MARINA R RIBEIRO", expiry: "03/28", isDefault: false }
+      ],
+      customerOrders: [
+        { code: "#PD-2026-00318", date: "21/08/2026", items: "3 itens", status: "Em separação", dot: "#3B7AF0", total: "R$ 14.870", summary: "Falcon X2 Pro + 2 acessórios", thumbs: [1, 2, 3], cta: "Rastrear pedido", ctaBg: "#FFFFFF", ctaBorder: "#FFFFFF", ctaFg: "#0A0A0A", border: "rgba(255,255,255,.16)" },
+        { code: "#PD-2026-00291", date: "02/07/2026", items: "1 item", status: "Entregue", dot: "#5FA97F", total: "R$ 4.290", summary: "Nimbus Mini 3", thumbs: [1], cta: "Comprar de novo", ctaBg: "transparent", ctaBorder: "rgba(255,255,255,.22)", ctaFg: "#F5F5F7", border: "rgba(255,255,255,.07)" },
+        { code: "#PD-2026-00244", date: "18/05/2026", items: "2 itens", status: "Entregue", dot: "#5FA97F", total: "R$ 1.039", summary: "Bateria extra + filtros ND", thumbs: [1, 2], cta: "Comprar de novo", ctaBg: "transparent", ctaBorder: "rgba(255,255,255,.22)", ctaFg: "#F5F5F7", border: "rgba(255,255,255,.07)" },
+        { code: "#PD-2025-00187", date: "09/12/2025", items: "1 item", status: "Cancelado", dot: "#FF6B4A", total: "R$ 3.150", summary: "Vortex FPV Racer", thumbs: [1], cta: "Ver detalhes", ctaBg: "transparent", ctaBorder: "rgba(255,255,255,.22)", ctaFg: "#F5F5F7", border: "rgba(255,255,255,.07)" }
+      ],
+      trackingSteps: [
+        { label: "Pedido confirmado", when: "21/08/2026 · 14:32", dot: "#3B7AF0", fg: "#C9C9CE" },
+        { label: "Pagamento aprovado", when: "21/08/2026 · 14:35", dot: "#3B7AF0", fg: "#C9C9CE" },
+        { label: "Em separação no CD São Paulo", when: "22/08/2026 · 09:10", dot: "#FFFFFF", fg: "#F5F5F7" },
+        { label: "Enviado · BR937482910DR", when: "previsto para hoje", dot: "rgba(255,255,255,.20)", fg: "#6E6E73" },
+        { label: "Entregue", when: "previsto para 25/08", dot: "rgba(255,255,255,.20)", fg: "#6E6E73" }
+      ],
+      wishlist: [
+        { ...P("Heron Survey Pro", "38 min · 12 km · RTK", "R$ 28.400", "12× de R$ 2.366"), note: "Salvo em 14/08 · em estoque", noteFg: "#6E6E73" },
+        { ...P("Nimbus Mini 3", "34 min · 10 km · 4K 30fps", "R$ 4.290", "12× de R$ 357", "R$ 4.790", "Baixou"), note: "Caiu R$ 500 desde que você salvou", noteFg: "#3B7AF0" },
+        { ...P("Maleta rígida Falcon", "EVA · comporta 3 baterias", "R$ 690", "6× de R$ 115"), note: "Salvo em 02/08 · em estoque", noteFg: "#6E6E73" },
+        { ...P("Atlas Agro 10L", "22 min · tanque 10 L", "R$ 46.900", "12× de R$ 3.908"), note: "Sob consulta · fale com vendas PJ", noteFg: "#6E6E73" },
+        { ...P("Carregador 3 baterias", "100 W · 80 min por ciclo", "R$ 890", "6× de R$ 148", "R$ 990", "Baixou"), note: "Caiu R$ 100 desde que você salvou", noteFg: "#3B7AF0" },
+        { ...P("Vortex FPV Racer", "12 min · 4 km · 120 km/h", "R$ 3.150", "10× de R$ 315"), note: "Esgotado · avisaremos quando voltar", noteFg: "#FF6B4A" }
+      ],
+      cartItems: [
+        { name: "Falcon X2 Pro", spec: "Versão Padrão · 43 min · 4K 60fps", stock: "Em estoque", qty: "1", unit: "R$ 12.499", total: "R$ 12.499" },
+        { name: "Bateria extra Falcon X2", spec: "LiPo 4S · 5.000 mAh", stock: "Em estoque", qty: "2", unit: "R$ 1.190", total: "R$ 2.380" },
+        { name: "Filtros ND (kit 4)", spec: "ND8 / ND16 / ND32 / ND64", stock: "Últimas 3 unidades", qty: "1", unit: "R$ 349", total: "R$ 349" }
+      ],
+      upsell: [
+        P("Maleta rígida Falcon", "EVA · comporta 3 baterias", "R$ 690", "6× de R$ 115"),
+        P("Hélices de reposição", "Par de baixo ruído", "R$ 189", "à vista no Pix"),
+        P("Carregador 3 baterias", "100 W · 80 min por ciclo", "R$ 890", "6× de R$ 148")
+      ],
+      cartSummary: [
+        { label: "Subtotal (3 itens)", value: "R$ 15.228", fg: "#9A9AA0" },
+        { label: "Cupom PILOTO10", value: "− R$ 139", fg: "#3B7AF0" },
+        { label: "Frete expresso", value: "R$ 92", fg: "#9A9AA0" },
+        { label: "Impostos", value: "Inclusos", fg: "#9A9AA0" }
+      ],
+      shippingPreview: [
+        { label: "Expresso · 3 dias úteis", value: "R$ 92" },
+        { label: "Padrão · 7 dias úteis", value: "Grátis" }
+      ],
+      steps: [
+        { num: "1", label: "Endereço", fg: "#F5F5F7", bg: "#FFFFFF", border: "#FFFFFF", numFg: "#0A0A0A" },
+        { num: "2", label: "Frete", fg: "#F5F5F7", bg: "rgba(255,255,255,.10)", border: "rgba(255,255,255,.28)", numFg: "#F5F5F7" },
+        { num: "3", label: "Pagamento", fg: "#7C7C82", bg: "transparent", border: "rgba(255,255,255,.16)", numFg: "#7C7C82" }
+      ],
+      addresses: [
+        { title: "Casa · principal", line1: "Rua das Acácias, 412 — apto 71", line2: "Pinheiros · São Paulo / SP · 05422-030", border: "#FFFFFF", bg: "rgba(255,255,255,.05)", dotBorder: "#FFFFFF", dotBg: "#FFFFFF" },
+        { title: "Estúdio", line1: "Av. Paulista, 1.578 — conj. 902", line2: "Bela Vista · São Paulo / SP · 01310-200", border: "rgba(255,255,255,.10)", bg: "transparent", dotBorder: "rgba(255,255,255,.28)", dotBg: "transparent" }
+      ],
+      addressFields: [
+        T("CEP", "05422-030", 1),
+        T("Número", "412", 1),
+        T("Complemento", "Apto 71"),
+        S("Quem recebe", "Marina Ribeiro", 1),
+        C("Salvar este endereço para próximas compras")
+      ],
+      shippingOptions: [
+        { label: "Expresso Aeria", eta: "Receba em 3 dias úteis · até 26/08", price: "R$ 92", priceFg: "#F5F5F7", border: "#FFFFFF", bg: "rgba(255,255,255,.05)", dotBorder: "#FFFFFF", dotBg: "#FFFFFF" },
+        { label: "Padrão", eta: "Receba em 7 dias úteis · até 01/09", price: "Grátis", priceFg: "#3B7AF0", border: "rgba(255,255,255,.10)", bg: "transparent", dotBorder: "rgba(255,255,255,.28)", dotBg: "transparent" },
+        { label: "Retirar no showroom", eta: "Pinheiros · disponível amanhã", price: "Grátis", priceFg: "#3B7AF0", border: "rgba(255,255,255,.10)", bg: "transparent", dotBorder: "rgba(255,255,255,.28)", dotBg: "transparent" }
+      ],
+      payTabs: [
+        { label: "Cartão de crédito", hint: "até 12× sem juros", border: "#FFFFFF", bg: "rgba(255,255,255,.05)" },
+        { label: "Pix", hint: "5% de desconto", border: "rgba(255,255,255,.10)", bg: "transparent" },
+        { label: "Boleto", hint: "vence em 3 dias", border: "rgba(255,255,255,.10)", bg: "transparent" }
+      ],
+      cardFields: [
+        T("Número do cartão", "0000 0000 0000 0000", 1, "1 / -1"),
+        T("Nome impresso no cartão", "Como aparece no cartão", 1, "1 / -1"),
+        T("Validade", "MM/AA", 1),
+        T("CVV", "000", 1),
+        S("Parcelamento", "12× de R$ 1.265 sem juros", 1, "1 / -1"),
+        T("CPF do titular", "000.000.000-00", 1, "1 / -1")
+      ],
+      checkoutSummary: [
+        { label: "Subtotal", value: "R$ 15.228", fg: "#9A9AA0" },
+        { label: "Cupom PILOTO10", value: "− R$ 139", fg: "#3B7AF0" },
+        { label: "Frete expresso", value: "R$ 92", fg: "#9A9AA0" }
+      ],
+      nextSteps: [
+        { label: "Pagamento aprovado", detail: "Pix confirmado em 22/08 às 10:12", dot: "#3B7AF0", fg: "#F5F5F7" },
+        { label: "Separação e conferência", detail: "CD São Paulo · até 1 dia útil", dot: "rgba(255,255,255,.30)", fg: "#C9C9CE" },
+        { label: "Envio com código de rastreio", detail: "Você recebe o código por e-mail e WhatsApp", dot: "rgba(255,255,255,.18)", fg: "#8A8A8F" },
+        { label: "Registro ANAC (opcional)", detail: "Nossa equipe orienta o cadastro SISANT do seu drone", dot: "rgba(255,255,255,.18)", fg: "#8A8A8F" }
+      ],
+      confirmSummary: [
+        { label: "Forma de pagamento", value: "Pix · à vista", fg: "#9A9AA0" },
+        { label: "Subtotal", value: "R$ 15.228", fg: "#9A9AA0" },
+        { label: "Cupom PILOTO10", value: "− R$ 139", fg: "#3B7AF0" },
+        { label: "Frete expresso", value: "R$ 92", fg: "#9A9AA0" },
+        { label: "Total pago", value: "R$ 14.422", fg: "#F5F5F7" }
+      ],
+      accessories: [
+        P("Bateria extra Falcon X2", "5.000 mAh · 43 min", "R$ 1.190", "6× de R$ 198"),
+        P("Maleta rígida Falcon", "EVA · comporta 3 baterias", "R$ 690", "6× de R$ 115"),
+        P("Filtros ND (kit 4)", "ND8 / ND16 / ND32 / ND64", "R$ 349", "3× de R$ 116"),
+        P("Hélices de reposição", "Par de baixo ruído", "R$ 189", "à vista no Pix")
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
