@@ -1,0 +1,164 @@
+<app-admin-nav />
+
+@if (carregando()) {
+  <div class="pad">
+    <span class="sub">Carregando marca…</span>
+  </div>
+} @else {
+  <div class="pad cols">
+    <div class="main">
+      <div>
+        <h1 class="h1 big">{{ modoEdicao() ? 'Editar marca' : 'Cadastrar marca' }}</h1>
+        <div class="crumb">
+          Catálogo · <a routerLink="/admin/marcas">Marcas</a> ·
+          {{ modoEdicao() ? 'Editar marca' : 'Nova marca' }}
+        </div>
+      </div>
+
+      @if (erroGeral()) {
+        <div class="card p" style="border-color: var(--warn-b)">
+          <span class="warn">{{ erroGeral() }}</span>
+        </div>
+      }
+
+      <section class="card p" [formGroup]="form">
+        <div class="card-t" style="margin-bottom: 20px">Dados da marca</div>
+        <div class="g2">
+          <div class="f full">
+            <label>Nome da marca <span class="req">*</span></label>
+            <input type="text" placeholder="Ex: Aerion" formControlName="nome" />
+            @if (campoInvalido('nome')) {
+              <span class="warn">{{ mensagemErro('nome') }}</span>
+            }
+          </div>
+          <div class="f">
+            <label>País de origem <span class="req">*</span></label>
+            <input type="text" placeholder="Ex: Brasil" formControlName="paisOrigem" />
+            @if (campoInvalido('paisOrigem')) {
+              <span class="warn">{{ mensagemErro('paisOrigem') }}</span>
+            }
+          </div>
+          <div class="f">
+            <label>Site oficial</label>
+            <input type="text" placeholder="https://" formControlName="siteOficial" />
+            @if (campoInvalido('siteOficial')) {
+              <span class="warn">{{ mensagemErro('siteOficial') }}</span>
+            }
+          </div>
+          <div class="f full">
+            <label>Descrição</label>
+            <textarea
+              placeholder="Breve histórico e posicionamento da marca"
+              formControlName="descricao"
+            ></textarea>
+            @if (campoInvalido('descricao')) {
+              <span class="warn">{{ mensagemErro('descricao') }}</span>
+            }
+          </div>
+        </div>
+        <p class="legend">
+          Campos com <span class="req">*</span> são obrigatórios para publicar (status Ativa ou
+          Inativa)
+        </p>
+      </section>
+    </div>
+
+    <aside class="rail" [formGroup]="form">
+      <section class="card p2">
+        <div class="eyebrow">Publicação</div>
+        <div class="stack">
+          <div class="f">
+            <label>Status <span class="req">*</span></label>
+            <select formControlName="status">
+              <option value="RASCUNHO">Rascunho</option>
+              <option value="ATIVA">Ativa</option>
+              <option value="INATIVA">Inativa</option>
+            </select>
+            @if (campoInvalido('status')) {
+              <span class="warn">{{ mensagemErro('status') }}</span>
+            }
+          </div>
+          <div class="f">
+            <label>Slug</label>
+            <input
+              type="text"
+              placeholder="gerado a partir do nome, se vazio"
+              formControlName="slug"
+            />
+            @if (campoInvalido('slug')) {
+              <span class="warn">{{ mensagemErro('slug') }}</span>
+            }
+          </div>
+          <label class="ck full">
+            <input type="checkbox" formControlName="destacarHome" /> Exibir na home do storefront
+          </label>
+        </div>
+      </section>
+
+      <section class="card p2">
+        <div class="eyebrow">Logo</div>
+        <div class="f">
+          <label>URL do logo <span class="req">*</span></label>
+          <input type="text" placeholder="https://…/logo.svg" formControlName="logoUrl" />
+          @if (campoInvalido('logoUrl')) {
+            <span class="warn">{{ mensagemErro('logoUrl') }}</span>
+          }
+        </div>
+        @if (form.controls.logoUrl.value) {
+          <div
+            style="
+              margin-top: 12px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              height: 80px;
+              border: 1px solid var(--line);
+              border-radius: 6px;
+              background: var(--field);
+            "
+          >
+            <img
+              [src]="form.controls.logoUrl.value"
+              alt="Pré-visualização do logo"
+              style="max-height: 56px; max-width: 90%; object-fit: contain"
+            />
+          </div>
+        }
+      </section>
+
+      @if (pendencias().length > 0) {
+        <section class="card p2">
+          <div class="eyebrow">Pendências</div>
+          <div style="display: flex; flex-direction: column; gap: 9px">
+            <span class="warn">{{ pendencias().length }} campo(s) obrigatório(s) vazio(s)</span>
+            <span style="font-size: 12px; color: var(--mute)">{{ pendencias().join(' · ') }}</span>
+          </div>
+        </section>
+      }
+
+      @if (modoEdicao()) {
+        <section class="card p2">
+          <div class="eyebrow">Zona de risco</div>
+          <button
+            class="btn d"
+            type="button"
+            style="width: 100%"
+            (click)="excluir()"
+            [disabled]="excluindo()"
+          >
+            {{ excluindo() ? 'Excluindo…' : 'Excluir marca' }}
+          </button>
+        </section>
+      }
+    </aside>
+  </div>
+
+  <div class="actionbar">
+    <a class="btn" routerLink="/admin/marcas">Cancelar</a>
+    <div class="actions">
+      <button class="btn p" type="button" (click)="salvar()" [disabled]="salvando()">
+        {{ salvando() ? 'Salvando…' : 'Salvar' }}
+      </button>
+    </div>
+  </div>
+}

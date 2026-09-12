@@ -1,0 +1,22 @@
+<header class="tb">
+  <div class="tb-l">
+    <a class="tb-brand" routerLink="/admin/marcas">ADMIN</a>
+    <nav class="tb-nav">
+      @for (item of itens; track item.rotulo) {
+        @if (item.rota) {
+          <a [routerLink]="item.rota" routerLinkActive="on">{{ item.rotulo }}</a>
+        } @else {
+          <span class="tb-nav-em-breve" title="Em construção">{{ item.rotulo }}</span>
+        }
+      }
+    </nav>
+  </div>
+  <div class="tb-r">
+    <span class="tb-search">Buscar no painel</span>
+    <span class="avatar">DR</span>
+  </div>
+</header>
+
+<button type="button" class="theme-t" (click)="alternarTema()">
+  {{ tema() === 'light' ? '◑ Tema claro' : '◐ Tema escuro' }}
+</button>

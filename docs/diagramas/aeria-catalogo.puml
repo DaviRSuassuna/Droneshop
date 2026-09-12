@@ -16,7 +16,13 @@ end note
 
 class Marca {
   -nome: String
+  -slug: String
+  -paisOrigem: String
+  -siteOficial: String
+  -descricao: String
   -logoUrl: String
+  -ativa: boolean
+  -destacarHome: boolean
 }
 
 class Categoria {
