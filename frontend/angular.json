@@ -7,41 +7,11 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-<<<<<<< HEAD
     "droneshop-web": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss"
-=======
-    "frontend": {
-      "projectType": "application",
-      "schematics": {
-        "@schematics/angular:component": {
-          "style": "scss",
-          "skipTests": true
-        },
-        "@schematics/angular:class": {
-          "skipTests": true
-        },
-        "@schematics/angular:directive": {
-          "skipTests": true
-        },
-        "@schematics/angular:guard": {
-          "skipTests": true
-        },
-        "@schematics/angular:interceptor": {
-          "skipTests": true
-        },
-        "@schematics/angular:pipe": {
-          "skipTests": true
-        },
-        "@schematics/angular:resolver": {
-          "skipTests": true
-        },
-        "@schematics/angular:service": {
-          "skipTests": true
->>>>>>> ed3d54b (Criação do frontend(telas) com o Angular)
         }
       },
       "root": "",
@@ -60,13 +30,7 @@
                 "input": "public"
               }
             ],
-<<<<<<< HEAD
             "styles": ["src/styles.scss"]
-=======
-            "styles": [
-              "src/styles.scss"
-            ]
->>>>>>> ed3d54b (Criação do frontend(telas) com o Angular)
           },
           "configurations": {
             "production": {
@@ -87,7 +51,6 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
-<<<<<<< HEAD
               "sourceMap": true,
               "fileReplacements": [
                 {
@@ -95,16 +58,12 @@
                   "with": "src/environments/environment.development.ts"
                 }
               ]
-=======
-              "sourceMap": true
->>>>>>> ed3d54b (Criação do frontend(telas) com o Angular)
             }
           },
           "defaultConfiguration": "production"
         },
         "serve": {
           "builder": "@angular/build:dev-server",
-<<<<<<< HEAD
           "configurations": {
             "production": {
               "buildTarget": "droneshop-web:build:production"
@@ -117,20 +76,15 @@
         },
         "test": {
           "builder": "@angular/build:unit-test"
-=======
-          "options": {
-            "proxyConfig": "proxy.conf.json"
-          },
           "configurations": {
             "production": {
-              "buildTarget": "frontend:build:production"
+              "buildTarget": "droneshop-web:build:production"
             },
             "development": {
-              "buildTarget": "frontend:build:development"
+              "buildTarget": "droneshop-web:build:development"
             }
           },
           "defaultConfiguration": "development"
->>>>>>> ed3d54b (Criação do frontend(telas) com o Angular)
         }
       }
     }

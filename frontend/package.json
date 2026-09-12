@@ -1,9 +1,5 @@
 {
-<<<<<<< HEAD
   "name": "droneshop-web",
-=======
-  "name": "frontend",
->>>>>>> ed3d54b (Criação do frontend(telas) com o Angular)
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -25,7 +21,6 @@
     "tslib": "^2.3.0"
   },
   "devDependencies": {
-<<<<<<< HEAD
     "@angular/build": "^22.1.8",
     "@angular/cli": "^22.1.8",
     "@angular/compiler-cli": "^22.1.0",
@@ -35,12 +30,3 @@
     "vitest": "^4.0.8"
   }
 }
-=======
-    "@angular/build": "^22.1.5",
-    "@angular/cli": "^22.1.5",
-    "@angular/compiler-cli": "^22.1.0",
-    "prettier": "^3.8.1",
-    "typescript": "~6.0.2"
-  }
-}
->>>>>>> ed3d54b (Criação do frontend(telas) com o Angular)

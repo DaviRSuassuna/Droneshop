@@ -1,0 +1,37 @@
+<app-admin-nav />
+
+<div class="pagebar">
+  <div style="display: flex; align-items: baseline; gap: 12px">
+    <h1 class="h1">Categorias</h1>
+    <span class="sub">@if (!carregando()) { {{ categoriasFiltradas().length }} de {{ categorias().length }} categorias }</span>
+  </div>
+  <a class="btn p" routerLink="/admin/categorias/novo">Nova categoria</a>
+</div>
+
+<div class="pad-t" style="display: flex; flex-direction: column; gap: 16px">
+  <div class="filters">
+    <div class="f grow"><input type="text" placeholder="Buscar por nome ou slug" [value]="termoBusca()" (input)="aoDigitarBusca($any($event.target).value)" /></div>
+    <div class="f"><select [value]="filtroStatus()" (change)="aoMudarStatus($any($event.target).value)"><option value="">Status</option><option value="ATIVA">Ativa</option><option value="INATIVA">Inativa</option><option value="RASCUNHO">Rascunho</option></select></div>
+  </div>
+
+  @if (carregando()) {
+    <div class="tbl"><div class="pager"><span>Carregando categorias…</span></div></div>
+  } @else if (erro()) {
+    <div class="tbl"><div class="pager"><span class="warn">{{ erro() }}</span><button class="btn sm" type="button" (click)="carregarCategorias()">Tentar novamente</button></div></div>
+  } @else {
+    <div class="tbl">
+      <div class="trow head" style="grid-template-columns: minmax(0, 1fr) 180px 110px 118px 64px"><span>Categoria</span><span>Categoria pai</span><span>Ordem</span><span>Status</span><span></span></div>
+      @for (categoria of categoriasPagina(); track categoria.id) {
+        <a class="trow" style="grid-template-columns: minmax(0, 1fr) 180px 110px 118px 64px" [routerLink]="['/admin/categorias', categoria.id, 'editar']">
+          <span class="cell-name"><b>{{ categoria.nome || '(sem nome)' }}</b><span class="chip">{{ categoria.slug }}</span></span>
+          <span class="dim">{{ categoria.categoriaPaiNome || 'Raiz' }}</span>
+          <span class="ink">{{ categoria.ordemExibicao }}</span>
+          <span class="status"><span class="dot" [style.background]="categoria.status === 'ATIVA' ? 'var(--ok)' : categoria.status === 'INATIVA' ? 'var(--dim2)' : 'var(--warn)'"></span>{{ statusLabel(categoria.status) }}</span>
+          <span style="justify-self: end"><button class="btn sm d" type="button" (click)="excluir($event, categoria)">Excluir</button></span>
+        </a>
+      }
+      @if (categoriasPagina().length === 0) { <div class="pager"><span>Nenhuma categoria encontrada com os filtros atuais.</span></div> }
+      <div class="pager"><span>Exibindo {{ intervaloExibido() }} de {{ categoriasFiltradas().length }}</span><span class="pages"><a (click)="paginaAnterior()" [style.opacity]="pagina() === 0 ? 0.4 : 1">‹</a><span>Página {{ pagina() + 1 }} de {{ totalPaginas() }}</span><a (click)="proximaPagina()" [style.opacity]="pagina() + 1 >= totalPaginas() ? 0.4 : 1">›</a></span></div>
+    </div>
+  }
+</div>

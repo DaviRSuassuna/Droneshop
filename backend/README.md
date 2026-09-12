@@ -6,6 +6,17 @@ If you want to learn more about Quarkus, please visit its website: <https://quar
 
 ## Running the application in dev mode
 
+Antes de iniciar o Quarkus, suba o PostgreSQL definido em `compose.yaml`:
+
+```shell
+cd backend
+docker compose up -d postgres
+```
+
+O banco usa `droneshopdb`, usuário `droneshop_user`, senha `123456` e porta
+`5432`. Em seguida, execute `./mvnw quarkus:dev`. No perfil `dev`, o Quarkus
+recria as tabelas pelas entidades e carrega o `import.sql`.
+
 You can run your application in dev mode that enables live coding using:
 
 ```shell script
