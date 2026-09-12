@@ -1,9 +1,9 @@
 # PRD: Aeria Drones
 
 **Produto:** E-commerce de drones e acessórios (storefront + painel administrativo)
-**Versão do documento:** 1.2
+**Versão do documento:** 1.3
 **Status:** rascunho para validação
-**Base:** protótipo de 24 telas + diagramas de classes `aeria-ecommerce.puml` e `aeria-administrativo.puml`
+**Base:** protótipo de 36 telas + 8 diagramas de classes por contexto delimitado, em `diagramas/`
 
 ---
 
@@ -45,7 +45,7 @@ Um detalhe estrutural: **a conta é única e os perfis são acumuláveis**. `Usu
 
 ### 4.1 Catálogo
 
-Produto se divide em **Drone** e **Acessório**, com atributos próprios de cada tipo. As especificações técnicas são **colunas fixas e tipadas** na entidade, não atributo dinâmico (ver D14): em `Drone` são peso, dimensões dobrado/aberto, autonomia, alcance, velocidade máxima, resolução de foto, sensor, resolução de vídeo, estabilização, tipo e capacidade de bateria, tempo de carregamento, GPS, anticolisão, exigência e classe ANAC, registro SISANT. Spec nova é migration, e o preço disso é assumido conscientemente. Todo produto pertence a uma marca, uma categoria (hierárquica) e um fornecedor.
+Produto se divide em **Drone** e **Acessório**, com atributos próprios de cada tipo. As especificações técnicas são **colunas fixas e tipadas** na entidade, não atributo dinâmico (ver D14): em `Drone` são peso, dimensões dobrado/aberto, autonomia, alcance, velocidade máxima, resolução de foto, sensor, resolução de vídeo, estabilização, tipo e capacidade de bateria, tempo de carregamento, GPS, anticolisão, exigência e classe ANAC, registro SISANT. Spec nova é migration, e o preço disso é assumido conscientemente. Todo produto pertence a uma marca, uma categoria (hierárquica) e um fornecedor. A compatibilidade entre acessório e produto é **relação N:N**, não texto descritivo (ver D17): é ela que alimenta a lista de acessórios compatíveis na página do drone e a sugestão do carrinho.
 
 A **unidade vendável é a variante**, não o produto: "Padrão", "Fly More", "Enterprise" têm SKU, preço, custo e estoque próprios. Produto sem opções tem uma variante única. Isso existe porque uma configuração pode esgotar enquanto outra continua disponível.
 
@@ -269,7 +269,7 @@ Verificação de e-mail, recuperação de senha por token (só se aplica a quem 
 
 | # | Decisão |
 |---|---|
-| D1 | Login por e-mail e senha, não por CPF/CNPJ. Documento fica no `PerfilCliente`, pedido no cadastro/checkout. `login.html` a ajustar. |
+| D1 | Login por e-mail e senha, não por CPF/CNPJ. Documento fica no `PerfilCliente`, pedido no cadastro/checkout. Aplicado: o formulário de entrada de `login.html` usa e-mail e senha, e o documento é pedido apenas na aba de criação de conta. |
 | D2 | Pagamento via **Mercado Pago em modo sandbox**, permanentemente: projeto não processa dinheiro real. |
 | D3 | NF-e **simulada**, sem certificado digital, sem SEFAZ, sem emissor terceirizado. `emitir()` gera identificadores fictícios localmente. |
 | D4 | Frete em modelo **híbrido**: cotação em tempo real via agregador de transportadoras para expressa/padrão; tabela própria (`RegraFrete`) só para retirada no showroom e como fallback se a integração cair. |
@@ -285,11 +285,12 @@ Verificação de e-mail, recuperação de senha por token (só se aplica a quem 
 | D14 | **Specs técnicas como colunas fixas** e tipadas em `Drone`, não atributo dinâmico. Ganha filtro por faixa, validação e comparação diretos; perde a capacidade de o admin criar spec nova sem deploy. Aceito por ser projeto de estudo. |
 | D15 | **Garantia por produto** em meses; `ConfiguracaoLoja.prazoGarantiaDias` vira apenas o valor padrão sugerido no cadastro. |
 | D16 | **Peso e dimensão desdobrados**: `Drone.pesoGramas` e `dimensoesDobrado`/`dimensoesAberto` são spec de exibição e filtro; `VarianteProduto.pesoEmbalagemKg` e as três dimensões da caixa são o que cota frete. No kit, derivados da soma dos componentes com sobrescrita opcional. |
+| D17 | **Compatibilidade como relação N:N** entre `Acessorio` e `Produto`, substituindo o campo texto `Acessorio.compatibilidade`. Como `Acessorio` herda de `Produto`, o mesmo vínculo cobre acessório-drone (bateria e modelo) e acessório-acessório (carregador e bateria). O vínculo é recíproco: aparece nos dois cadastros e habilita filtro real, em vez de depender de nome digitado sem erro. Fecha a pendência P1. |
+| D18 | **Contato do fornecedor em três colunas**: `Fornecedor.contato` vira `nomeContato`, `emailContato` e `telefoneContato`. Permite busca por e-mail ou telefone e validação de formato, que a string única não permitia. |
 
 ## 11. Pendências em aberto
 
 | # | Pendência |
 |---|---|
-| P1 | `Acessorio.compatibilidade` é texto livre e só existe no acessório. A tela de drone tinha um campo "compatibilidade com acessórios" que foi removido: definir se compatibilidade vira relação N:N entre produtos ou continua descritiva no acessório. |
 | P2 | Margem (%) aparece na tela como campo calculado a partir de custo e preço. Não é coluna, é derivação, mas ainda não está especificado se é margem bruta sobre custo ou sobre preço. |
-| P3 | Restante das 24 telas ainda não foi revisado contra o modelo v1.2. Só a tela de cadastro de drone foi atualizada. |
+| P3 | O painel administrativo foi revisado e completado (20 telas, todo CRUD com listagem e formulário). As 16 telas do storefront ainda não foram revisadas contra o modelo v1.3. |
