@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:32px;height:64px;padding:0 34px;background:rgba(10,10,10,.92);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.07)">
+  <div style="display:flex;align-items:center;gap:34px">
+    <a href="Storefront.dc.html#1a" style="font:300 17px/1 'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.28em;color:#FFFFFF;text-decoration:none">AERIA</a>
+    <div style="display:flex;align-items:center;gap:24px">
+      <sc-for list="{{ items }}" as="i" hint-placeholder-count="5">
+        <a href="{{ i.href }}" style="font:300 13px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:{{ i.fg }};text-decoration:none;padding:22px 0;border-bottom:2px solid {{ i.bd }}">{{ i.label }}</a>
+      </sc-for>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:16px">
+    <div style="display:flex;align-items:center;width:230px;height:34px;padding:0 12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:18px">
+      <span style="font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#6E6E73">Buscar drones e acessórios</span>
+    </div>
+    <a href="Storefront.dc.html#3a" style="font:300 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#C9C9CE;text-decoration:none">Conta</a>
+    <a href="Storefront.dc.html#2a" style="display:flex;align-items:center;gap:8px;height:34px;padding:0 14px;border:1px solid rgba(255,255,255,.16);border-radius:18px;text-decoration:none">
+      <span style="font:300 12.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#F5F5F7">Carrinho</span>
+      <span style="display:flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#3B7AF0;font:500 10.5px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#FFFFFF">{{ cartCount }}</span>
+    </a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1200,&quot;height&quot;:72},&quot;active&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Drones&quot;,&quot;Acessórios&quot;,&quot;Empresas&quot;,&quot;Suporte&quot;,&quot;Ofertas&quot;],&quot;default&quot;:&quot;Drones&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;cartCount&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:2,&quot;min&quot;:0,&quot;max&quot;:99,&quot;tsType&quot;:&quot;number&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const active = this.props.active || "";
+    const defs = [
+      ["Drones", "Storefront.dc.html#1c"],
+      ["Acessórios", "Storefront.dc.html#1c"],
+      ["Empresas", "Storefront.dc.html#1c"],
+      ["Suporte", "Storefront.dc.html#1a"],
+      ["Ofertas", "Storefront.dc.html#1a"]
+    ];
+    return {
+      cartCount: this.props.cartCount ?? 2,
+      items: defs.map(([label, href]) => ({
+        label, href,
+        fg: label === active ? "#FFFFFF" : "#8A8A8F",
+        bd: label === active ? "#FFFFFF" : "transparent"
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>
