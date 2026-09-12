@@ -1,0 +1,168 @@
+@startuml aeria-catalogo
+
+title Aeria Catálogo
+
+abstract class DefaultEntity <<MappedSuperclass>> {
+  -id: Long
+  -criadoEm: LocalDateTime
+  -atualizadoEm: LocalDateTime
+}
+
+note bottom of DefaultEntity
+  Todas as classes herdam
+  de DefaultEntity, exceto
+  as marcadas <<Embeddable>>
+end note
+
+class Marca {
+  -nome: String
+  -logoUrl: String
+}
+
+class Categoria {
+  -nome: String
+  -slug: String
+}
+
+class Fornecedor {
+  -razaoSocial: String
+  -cnpj: String
+  -contato: String
+}
+
+enum StatusProduto {
+  RASCUNHO
+  ATIVO
+  INATIVO
+}
+
+abstract class Produto {
+  -status: StatusProduto
+  -nome: String
+  -modelo: String
+  -descricaoCurta: String
+  -descricao: String
+  -slug: String
+  -metaTitle: String
+  -metaDescription: String
+  -tags: String
+  -destaque: boolean
+  -garantiaMeses: int
+  -dataLancamento: LocalDate
+}
+note right of Produto
+  garantiaMeses sobrepõe o padrão de
+  ConfiguracaoLoja.prazoGarantiaDias (D15)
+end note
+
+class Drone {
+  -pesoGramas: int
+  -dimensoesDobrado: String
+  -dimensoesAberto: String
+  -autonomiaMinutos: int
+  -alcanceMetros: int
+  -velocidadeMaximaKmh: int
+  -resolucaoFotoMp: int
+  -tipoSensor: String
+  -resolucaoVideo: String
+  -estabilizacao: String
+  -tipoBateria: String
+  -capacidadeBateriaMah: int
+  -tempoCarregamentoMinutos: int
+  -gpsIntegrado: boolean
+  -sensoresAnticolisao: boolean
+  -exigeRegistroAnac: boolean
+  -classeAnac: String
+  -registroSisant: String
+}
+note right of Drone
+  Specs como colunas fixas e tipadas (D14).
+  pesoGramas é spec de exibição e filtro;
+  o peso que cota frete fica na variante
+end note
+
+class Acessorio {
+  -tipoAcessorio: String
+  -compatibilidade: String
+}
+
+class VarianteProduto {
+  -sku: String
+  -nome: String
+  -precoAdicional: BigDecimal
+  -custoAquisicao: BigDecimal
+  -estoqueFisico: Integer
+  -estoqueMinimo: Integer
+  -pesoEmbalagemKg: BigDecimal
+  -alturaEmbalagemCm: int
+  -larguraEmbalagemCm: int
+  -comprimentoEmbalagemCm: int
+  -ehKit: boolean
+  -ativa: boolean
+}
+note right of VarianteProduto
+  estoqueFisico é nulo quando ehKit=true:
+  disponibilidade do kit é derivada do
+  mínimo entre componentes disponíveis.
+  Peso e dimensões são os da EMBALAGEM,
+  base da cotação de frete (D16); no kit,
+  derivados dos componentes salvo sobrescrita
+end note
+note bottom of VarianteProduto
+  Reserva, MovimentoEstoque e UnidadeIndividual
+  pendem da variante e estão em aeria-estoque.puml
+end note
+
+class ComponenteKit {
+  -quantidade: int
+}
+
+enum TipoMidia {
+  IMAGEM
+  VIDEO
+  MANUAL_PDF
+}
+
+class MidiaProduto {
+  -tipo: TipoMidia
+  -url: String
+  -principal: boolean
+  -ordem: int
+  -altText: String
+}
+
+enum EscopoPromocao {
+  PRODUTO
+  CARRINHO
+  FRETE
+}
+
+class Promocao {
+  -escopo: EscopoPromocao
+  -nome: String
+  -dataInicio: LocalDateTime
+  -dataFim: LocalDateTime
+  -percentualDesconto: BigDecimal
+  -valorDesconto: BigDecimal
+  -valorMinimoCarrinho: BigDecimal
+  -ativa: boolean
+}
+
+class TermoBuscado {
+  -termo: String
+  -quantidadeResultados: int
+}
+
+Produto <|-- Drone
+Produto <|-- Acessorio
+Categoria "0..1" -- "*" Categoria : categoriaPai
+Produto "*" --> "1" Marca
+Produto "*" --> "1" Categoria
+Produto "*" --> "1" Fornecedor
+Produto "1" *-- "1..*" VarianteProduto
+Produto "1" o-- "*" MidiaProduto
+VarianteProduto "1" *-- "*" ComponenteKit : componentes (se kit)
+ComponenteKit "*" --> "1" VarianteProduto : componente
+Promocao "*" --> "*" VarianteProduto : escopo produto
+
+@enduml

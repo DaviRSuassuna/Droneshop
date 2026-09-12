@@ -1,0 +1,100 @@
+@startuml aeria-compra
+
+title Aeria Compra
+
+abstract class DefaultEntity <<MappedSuperclass>> {
+  -id: Long
+  -criadoEm: LocalDateTime
+  -atualizadoEm: LocalDateTime
+}
+
+note bottom of DefaultEntity
+  Todas as classes herdam
+  de DefaultEntity, exceto
+  as marcadas <<Embeddable>>
+end note
+
+enum StatusCarrinho {
+  ATIVO
+  ABANDONADO
+  CONVERTIDO
+  EXPIRADO
+}
+
+class Carrinho {
+  -status: StatusCarrinho
+  -tokenSessao: String
+}
+
+class ItemCarrinho {
+  -quantidade: int
+  -precoUnitarioMomento: BigDecimal
+}
+
+class ListaDesejos {
+}
+
+class ItemListaDesejos {
+  -adicionadoEm: LocalDateTime
+}
+
+enum TipoDescontoCupom {
+  PERCENTUAL
+  VALOR_FIXO
+}
+
+class Cupom {
+  -tipoDesconto: TipoDescontoCupom
+  -codigo: String
+  -valor: BigDecimal
+  -dataInicio: LocalDateTime
+  -dataFim: LocalDateTime
+  -valorMinimo: BigDecimal
+  -limiteTotalUso: int
+  -limitePorCliente: int
+}
+
+class UsoCupom {
+  -dataUso: LocalDateTime
+}
+
+class Categoria <<externo>> {
+  aeria-catalogo.puml
+}
+
+class Marca <<externo>> {
+  aeria-catalogo.puml
+}
+
+class Pedido <<externo>> {
+  aeria-pedido.puml
+}
+
+class PerfilCliente <<externo>> {
+  aeria-identidade.puml
+}
+
+class Reserva <<externo>> {
+  aeria-estoque.puml
+}
+
+class VarianteProduto <<externo>> {
+  aeria-catalogo.puml
+}
+
+Carrinho "0..1" --> "0..1" PerfilCliente
+Carrinho "*" --> "0..1" Cupom : cupomAplicado
+Carrinho "1" *-- "*" ItemCarrinho
+ItemCarrinho "*" --> "1" VarianteProduto
+ItemCarrinho "1" o-- "0..1" Reserva
+PerfilCliente "1" *-- "0..1" ListaDesejos
+ListaDesejos "1" *-- "*" ItemListaDesejos
+ItemListaDesejos "*" --> "1" VarianteProduto
+Cupom "1" *-- "*" UsoCupom
+UsoCupom "*" --> "1" PerfilCliente
+UsoCupom "*" --> "1" Pedido
+Cupom "*" --> "*" Categoria : restrição
+Cupom "*" --> "*" Marca : restrição
+Cupom "*" --> "*" VarianteProduto : restrição produto
+
+@enduml
