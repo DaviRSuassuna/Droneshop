@@ -16,3 +16,18 @@ insert into marca (nome, slug, pais_origem, site_oficial, descricao, logo_url, s
     ('Sparrow', 'sparrow', 'China', 'https://sparrow-tech.cn', 'Linha descontinuada, mantida apenas para suporte a produtos já vendidos.', 'https://cdn.aeriadrones.com/marcas/sparrow.png', 'INATIVA', false);
 insert into marca (nome, slug, pais_origem, site_oficial, descricao, logo_url, status, destacar_home) values
     ('', 'rascunho-1', '', null, null, '', 'RASCUNHO', false);
+
+insert into categoria (nome, slug, categoria_pai_id, ordem_exibicao, descricao, status, exibir_menu, icone_url) values
+    ('Drones', 'drones', null, 1, 'Todos os modelos de drone comercializados pela loja.', 'ATIVA', true, 'https://cdn.aeriadrones.com/categorias/drones.svg');
+insert into categoria (nome, slug, categoria_pai_id, ordem_exibicao, descricao, status, exibir_menu, icone_url) values
+    ('Acessórios', 'acessorios', null, 2, 'Baterias, hélices, cases e demais itens complementares.', 'ATIVA', true, 'https://cdn.aeriadrones.com/categorias/acessorios.svg');
+insert into categoria (nome, slug, categoria_pai_id, ordem_exibicao, descricao, status, exibir_menu, icone_url) values
+    ('Drones profissionais', 'drones-profissionais', 1, 1, 'Modelos voltados para inspeção, topografia e mapeamento.', 'ATIVA', true, null);
+insert into categoria (nome, slug, categoria_pai_id, ordem_exibicao, descricao, status, exibir_menu, icone_url) values
+    ('Drones compactos', 'drones-compactos', 1, 2, 'Modelos leves e portáteis para uso recreativo e criação de conteúdo.', 'ATIVA', true, null);
+insert into categoria (nome, slug, categoria_pai_id, ordem_exibicao, descricao, status, exibir_menu, icone_url) values
+    ('Baterias', 'baterias', 2, 1, 'Baterias originais e de reposição.', 'ATIVA', false, null);
+insert into categoria (nome, slug, categoria_pai_id, ordem_exibicao, descricao, status, exibir_menu, icone_url) values
+    ('Hélices', 'helices', 2, 2, null, 'INATIVA', false, null);
+insert into categoria (nome, slug, categoria_pai_id, ordem_exibicao, descricao, status, exibir_menu, icone_url) values
+    ('', 'rascunho-categoria-1', null, 0, null, 'RASCUNHO', false, null);

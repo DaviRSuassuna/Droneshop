@@ -17,5 +17,26 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./admin/catalogo/marcas/cadastro/marca-cadastro').then((m) => m.MarcaCadastro),
   },
+  {
+    path: 'admin/categorias',
+    loadComponent: () =>
+      import('./admin/catalogo/categorias/listagem/categorias-listagem').then(
+        (m) => m.CategoriasListagem,
+      ),
+  },
+  {
+    path: 'admin/categorias/novo',
+    loadComponent: () =>
+      import('./admin/catalogo/categorias/cadastro/categoria-cadastro').then(
+        (m) => m.CategoriaCadastro,
+      ),
+  },
+  {
+    path: 'admin/categorias/:id/editar',
+    loadComponent: () =>
+      import('./admin/catalogo/categorias/cadastro/categoria-cadastro').then(
+        (m) => m.CategoriaCadastro,
+      ),
+  },
   { path: '**', redirectTo: 'admin/marcas' },
 ];
