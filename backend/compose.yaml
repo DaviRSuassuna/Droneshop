@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: docker.io/postgres:16
+    container_name: droneshop-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: droneshopdb
+      POSTGRES_USER: droneshop_user
+      POSTGRES_PASSWORD: "123456"
+    ports:
+      - "5432:5432"
+    volumes:
+      - droneshop-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  droneshop-postgres-data:

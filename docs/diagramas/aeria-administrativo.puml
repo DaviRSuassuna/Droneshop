@@ -1,0 +1,150 @@
+@startuml aeria-administrativo
+
+title Aeria Administrativo
+
+abstract class DefaultEntity <<MappedSuperclass>> {
+  -id: Long
+  -criadoEm: LocalDateTime
+  -atualizadoEm: LocalDateTime
+}
+
+note bottom of DefaultEntity
+  Todas as classes herdam
+  de DefaultEntity, exceto
+  as marcadas <<Embeddable>>
+end note
+
+class Usuario <<externo>> {
+  aeria-identidade.puml
+}
+
+package "Papéis e Permissões" {
+  enum PapelAdministrativo {
+    ADMIN
+    OPERADOR
+    CATALOGO
+    ATENDIMENTO
+    SOMENTE_LEITURA
+  }
+
+  class PerfilAdministrativo {
+    -papel: PapelAdministrativo
+    -twoFAHabilitado: boolean
+    -twoFASecret: String
+  }
+
+  enum ModuloSistema {
+    CATALOGO
+    ESTOQUE
+    PEDIDO
+    PAGAMENTO
+    DEVOLUCAO
+    ATENDIMENTO
+    NOTIFICACAO
+    ADMINISTRACAO
+  }
+
+  class PermissaoModulo {
+    -modulo: ModuloSistema
+    -podeVer: boolean
+    -podeEditar: boolean
+    -podeExcluir: boolean
+  }
+  note bottom of PermissaoModulo
+    Herdada por padrão do papel;
+    ajustável individualmente por usuário
+  end note
+}
+
+package "Auditoria" {
+  enum AcaoAuditoria {
+    CRIACAO
+    ATUALIZACAO
+    EXCLUSAO
+    LOGIN
+    MUDANCA_STATUS
+  }
+
+  class LogAuditoria {
+    -acao: AcaoAuditoria
+    -entidade: String
+    -entidadeId: Long
+    -campo: String
+    -valorAnterior: String
+    -valorNovo: String
+    -ip: String
+    -dataHora: LocalDateTime
+  }
+}
+
+package "Configuração" {
+  class ConfiguracaoLoja {
+    -dadosFiscais: String
+    -cepOrigemFrete: String
+    -remetentePadrao: String
+    -prazoArrependimentoDias: int
+    -prazoGarantiaDias: int
+    -prazoAnaliseDevolucaoDiasUteis: int
+    -freteReversoPorContaLoja: boolean
+  }
+  note bottom of ConfiguracaoLoja
+    Registro único (singleton):
+    parâmetros da política de devolução (D8)
+  end note
+}
+
+package "Notificações" {
+  class TemplateNotificacao {
+    -codigo: String
+    -assunto: String
+    -corpoTemplate: String
+    -versao: int
+    -ativo: boolean
+  }
+  note bottom of TemplateNotificacao
+    Editável pelo administrador,
+    com variáveis, sem novo deploy
+  end note
+
+  enum CategoriaNotificacao {
+    TRANSACIONAL
+    MARKETING
+  }
+
+  enum StatusEnvioNotificacao {
+    ENVIADA
+    ENTREGUE
+    ABERTA
+    BOUNCE
+    SPAM
+    FALHA
+  }
+
+  class Notificacao {
+    -categoria: CategoriaNotificacao
+    -statusEnvio: StatusEnvioNotificacao
+    -textoRenderizado: String
+    -identificadorProvedor: String
+  }
+  note bottom of Notificacao
+    Envio real via Resend (plano gratuito).
+    textoRenderizado é histórico do que
+    foi efetivamente enviado
+  end note
+
+  class PreferenciaNotificacao {
+    -tipoNotificacao: String
+    -habilitado: boolean
+  }
+}
+
+' Usuario o-- PerfilAdministrativo também consta em aeria-identidade.puml,
+' repetida aqui para leitura isolada deste arquivo
+Usuario "1" o-- "0..1" PerfilAdministrativo
+PerfilAdministrativo "1" *-- "*" PermissaoModulo
+LogAuditoria "*" --> "1" Usuario : autor
+Notificacao "*" --> "1" TemplateNotificacao
+Notificacao "*" --> "1" Usuario : destinatario
+Usuario "1" *-- "*" PreferenciaNotificacao
+
+@enduml

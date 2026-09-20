@@ -1,0 +1,196 @@
+@startuml aeria-pedido
+
+title Aeria Pedido
+
+abstract class DefaultEntity <<MappedSuperclass>> {
+  -id: Long
+  -criadoEm: LocalDateTime
+  -atualizadoEm: LocalDateTime
+}
+
+note bottom of DefaultEntity
+  Todas as classes herdam
+  de DefaultEntity, exceto
+  as marcadas <<Embeddable>>
+end note
+
+' Enum compartilhado, replicado em cada diagrama que o usa
+enum OrigemRegistro {
+  MANUAL
+  SISTEMA
+  INTEGRACAO
+}
+note right of OrigemRegistro
+  D11: MANUAL tem autor preenchido;
+  SISTEMA e INTEGRACAO, autor nulo
+end note
+
+enum StatusPedido {
+  PENDENTE
+  PAGO
+  SEPARACAO
+  ENVIADO
+  ENTREGUE
+  EM_DEVOLUCAO
+  DEVOLVIDO
+  CANCELADO
+}
+
+class Pedido {
+  -status: StatusPedido
+  -valorTotal: BigDecimal
+  -valorFrete: BigDecimal
+  -valorDesconto: BigDecimal
+}
+
+class ItemPedido {
+  -quantidade: int
+  -precoUnitarioCongelado: BigDecimal
+}
+
+class HistoricoStatusPedido {
+  -statusAnterior: StatusPedido
+  -statusNovo: StatusPedido
+  -origem: OrigemRegistro
+  -observacao: String
+}
+
+enum ModalidadeEntrega {
+  EXPRESSA
+  PADRAO
+  RETIRADA_SHOWROOM
+}
+
+enum OrigemCalculoFrete {
+  INTEGRACAO_AGREGADOR
+  REGRA_FRETE
+}
+
+class Entrega {
+  -modalidade: ModalidadeEntrega
+  -origemCalculo: OrigemCalculoFrete
+  -transportadora: String
+  -codigoServicoTransportadora: String
+  -custoCongelado: BigDecimal
+  -prazoCongeladoDias: int
+  -codigoRastreio: String
+}
+
+class EventoRastreio {
+  -descricao: String
+  -localizacao: String
+  -dataHora: LocalDateTime
+}
+
+class EnderecoPedido <<Embeddable>> {
+  -destinatario: String
+  -logradouro: String
+  -numero: String
+  -complemento: String
+  -bairro: String
+  -cidade: String
+  -uf: String
+  -cep: String
+}
+note bottom of EnderecoPedido
+  Fotografia do endereço no momento da compra.
+  Editar ou excluir o Endereco do cliente
+  não altera pedidos já feitos (RN15)
+end note
+
+enum OrigemDesconto {
+  CUPOM
+  PROMOCAO
+}
+
+class DescontoPedido {
+  -origem: OrigemDesconto
+  -descricao: String
+  -valor: BigDecimal
+}
+note bottom of DescontoPedido
+  Dá procedência a Pedido.valorDesconto:
+  quanto veio de cada cupom/promoção (RN13)
+end note
+
+class RegraFrete {
+  -modalidade: ModalidadeEntrega
+  -custoFixo: BigDecimal
+  -prazoDias: int
+  -cepOrigem: String
+}
+note bottom of RegraFrete
+  Usada só para retirada no showroom
+  e como fallback se a integração cair
+end note
+
+enum TipoOrigemNota {
+  VENDA
+  DEVOLUCAO
+}
+
+class NotaFiscal {
+  -tipoOrigem: TipoOrigemNota
+  -numero: String
+  -serie: String
+  -chaveAcesso: String
+  -xmlUrl: String
+  -danfeUrl: String
+  -dataEmissao: LocalDateTime
+}
+note bottom of NotaFiscal
+  Simulada: emitir() gera identificadores
+  fictícios localmente. Sem certificado A1,
+  sem SEFAZ, sem emissor terceirizado
+end note
+
+class Cupom <<externo>> {
+  aeria-compra.puml
+}
+
+class Devolucao <<externo>> {
+  aeria-pagamento.puml
+}
+
+class Endereco <<externo>> {
+  aeria-identidade.puml
+}
+
+class Pagamento <<externo>> {
+  aeria-pagamento.puml
+}
+
+class PerfilCliente <<externo>> {
+  aeria-identidade.puml
+}
+
+class Promocao <<externo>> {
+  aeria-catalogo.puml
+}
+
+class Usuario <<externo>> {
+  aeria-identidade.puml
+}
+
+class VarianteProduto <<externo>> {
+  aeria-catalogo.puml
+}
+
+Pedido "*" --> "1" PerfilCliente
+Pedido "1" *-- "1" EnderecoPedido : enderecoEntrega (congelado)
+Pedido "*" --> "0..1" Endereco : endereço de origem (referência)
+Pedido "1" *-- "*" DescontoPedido
+DescontoPedido "*" --> "0..1" Cupom
+DescontoPedido "*" --> "0..1" Promocao
+Pedido "1" *-- "1..*" ItemPedido
+ItemPedido "*" --> "1" VarianteProduto
+Pedido "1" *-- "*" HistoricoStatusPedido
+HistoricoStatusPedido "*" --> "0..1" Usuario : autor (só se MANUAL)
+Pedido "1" *-- "1" Entrega
+Entrega "1" *-- "*" EventoRastreio
+Entrega "*" ..> "0..1" RegraFrete : usa (fallback/retirada)
+Pedido "1" *-- "1..*" Pagamento
+Pedido "1" *-- "*" NotaFiscal
+Pedido "1" *-- "*" Devolucao
+
+@enduml

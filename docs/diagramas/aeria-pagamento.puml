@@ -1,0 +1,128 @@
+@startuml aeria-pagamento
+
+title Aeria Pagamento
+
+abstract class DefaultEntity <<MappedSuperclass>> {
+  -id: Long
+  -criadoEm: LocalDateTime
+  -atualizadoEm: LocalDateTime
+}
+
+note bottom of DefaultEntity
+  Todas as classes herdam
+  de DefaultEntity, exceto
+  as marcadas <<Embeddable>>
+end note
+
+' Enum compartilhado, replicado em cada diagrama que o usa
+enum OrigemRegistro {
+  MANUAL
+  SISTEMA
+  INTEGRACAO
+}
+note right of OrigemRegistro
+  D11: MANUAL tem autor preenchido;
+  SISTEMA e INTEGRACAO, autor nulo
+end note
+
+enum MetodoPagamento {
+  PIX
+  CARTAO
+  BOLETO
+  FATURAMENTO_PJ
+}
+
+enum StatusPagamento {
+  PENDENTE
+  APROVADO
+  RECUSADO
+  ESTORNADO
+  ESTORNADO_PARCIAL
+}
+
+class Pagamento {
+  -metodo: MetodoPagamento
+  -status: StatusPagamento
+  -valor: BigDecimal
+  -vigente: boolean
+  -gatewayTransacaoId: String
+}
+note bottom of Pagamento
+  Gateway: Mercado Pago em modo sandbox
+  (permanente, sem dinheiro real)
+end note
+
+class CartaoSalvo {
+  -tokenGateway: String
+  -ultimosDigitos: String
+  -bandeira: String
+  -validade: String
+}
+note bottom of CartaoSalvo
+  Nunca armazena o número completo
+  do cartão (RN11)
+end note
+
+class Estorno {
+  -valor: BigDecimal
+  -motivo: String
+}
+
+enum StatusDevolucao {
+  SOLICITADA
+  EM_ANALISE
+  APROVADA
+  RECUSADA
+  POSTAGEM_REVERSA
+  RECEBIDA
+  REEMBOLSADA
+  CONCLUIDA
+}
+
+enum ResolucaoDevolucao {
+  REEMBOLSO
+  TROCA
+  REPARO
+}
+
+class Devolucao {
+  -status: StatusDevolucao
+  -resolucao: ResolucaoDevolucao
+  -motivo: String
+  -dataSolicitacao: LocalDateTime
+  -dataConclusao: LocalDateTime
+}
+
+class ItemDevolucao {
+  -quantidade: int
+}
+
+class HistoricoDevolucao {
+  -statusAnterior: StatusDevolucao
+  -statusNovo: StatusDevolucao
+  -origem: OrigemRegistro
+  -observacao: String
+}
+
+class ItemPedido <<externo>> {
+  aeria-pedido.puml
+}
+
+class NotaFiscal <<externo>> {
+  aeria-pedido.puml
+}
+
+class Usuario <<externo>> {
+  aeria-identidade.puml
+}
+
+Pagamento "*" --> "0..1" CartaoSalvo : cartão utilizado
+Pagamento "1" *-- "*" Estorno
+Devolucao "1" *-- "1..*" ItemDevolucao
+ItemDevolucao "*" --> "1" ItemPedido
+Devolucao "1" *-- "*" HistoricoDevolucao
+HistoricoDevolucao "*" --> "0..1" Usuario : autor (só se MANUAL)
+Devolucao "0..1" --> "*" NotaFiscal : pode gerar
+Devolucao "0..1" --> "*" Estorno : pode gerar
+
+@enduml

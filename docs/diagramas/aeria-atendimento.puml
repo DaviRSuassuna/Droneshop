@@ -1,0 +1,98 @@
+@startuml aeria-atendimento
+
+title Aeria Atendimento
+
+abstract class DefaultEntity <<MappedSuperclass>> {
+  -id: Long
+  -criadoEm: LocalDateTime
+  -atualizadoEm: LocalDateTime
+}
+
+note bottom of DefaultEntity
+  Todas as classes herdam
+  de DefaultEntity, exceto
+  as marcadas <<Embeddable>>
+end note
+
+package "Atendimento" {
+  enum StatusChamado {
+    ABERTO
+    EM_ANDAMENTO
+    ENCERRADO
+  }
+
+  class Chamado {
+    -status: StatusChamado
+    -assunto: String
+    -protocolo: String
+  }
+
+  enum TipoAutorMensagem {
+    CLIENTE
+    ATENDENTE
+  }
+
+  class MensagemChamado {
+    -tipoAutor: TipoAutorMensagem
+    -texto: String
+  }
+}
+
+package "Avaliações" {
+  enum StatusModeracao {
+    PENDENTE
+    APROVADA
+    REJEITADA
+  }
+
+  class Avaliacao {
+    -status: StatusModeracao
+    -nota: int
+    -comentario: String
+    -compraVerificada: boolean
+  }
+
+  class Pergunta {
+    -status: StatusModeracao
+    -texto: String
+  }
+
+  class RespostaPergunta {
+    -texto: String
+  }
+}
+
+class ItemPedido <<externo>> {
+  aeria-pedido.puml
+}
+
+class Pedido <<externo>> {
+  aeria-pedido.puml
+}
+
+class PerfilCliente <<externo>> {
+  aeria-identidade.puml
+}
+
+class Produto <<externo>> {
+  aeria-catalogo.puml
+}
+
+class Usuario <<externo>> {
+  aeria-identidade.puml
+}
+
+Chamado "*" --> "1" PerfilCliente
+Chamado "0..1" --> "0..1" Pedido
+Chamado "*" --> "0..1" Usuario : atendente
+Chamado "1" *-- "1..*" MensagemChamado
+MensagemChamado "*" --> "1" Usuario : autor
+Avaliacao "*" --> "1" PerfilCliente
+Avaliacao "*" --> "1" Produto
+Avaliacao "0..1" --> "0..1" ItemPedido : origem (compra verificada)
+Pergunta "*" --> "1" PerfilCliente
+Pergunta "*" --> "1" Produto
+Pergunta "1" *-- "*" RespostaPergunta
+RespostaPergunta "*" --> "1" Usuario : autor
+
+@enduml

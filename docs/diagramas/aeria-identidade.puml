@@ -1,0 +1,96 @@
+@startuml aeria-identidade
+
+title Aeria Identidade
+
+abstract class DefaultEntity <<MappedSuperclass>> {
+  -id: Long
+  -criadoEm: LocalDateTime
+  -atualizadoEm: LocalDateTime
+}
+
+note bottom of DefaultEntity
+  Todas as classes herdam
+  de DefaultEntity, exceto
+  as marcadas <<Embeddable>>
+end note
+
+class Usuario {
+  -email: String
+  -senhaHash: String
+  -emailVerificado: boolean
+  -ativo: boolean
+}
+
+enum ProvedorSocial {
+  GOOGLE
+}
+
+class ContaSocial {
+  -provedor: ProvedorSocial
+  -identificadorExterno: String
+}
+
+enum TipoPessoa {
+  PF
+  PJ
+}
+
+class PerfilCliente {
+  -tipoPessoa: TipoPessoa
+  -nome: String
+  -documento: String
+  -telefone: String
+}
+
+class Endereco {
+  -apelido: String
+  -logradouro: String
+  -numero: String
+  -complemento: String
+  -bairro: String
+  -cidade: String
+  -uf: String
+  -cep: String
+  -principal: boolean
+}
+
+enum PerfilAtivo {
+  CLIENTE
+  ADMINISTRATIVO
+}
+
+class SessaoUsuario {
+  -perfilAtivo: PerfilAtivo
+  -token: String
+  -expiraEm: LocalDateTime
+  -revogada: boolean
+}
+
+class ConsentimentoLGPD {
+  -tipo: String
+  -versao: String
+  -dataConsentimento: LocalDateTime
+}
+
+class PerfilAdministrativo <<externo>> {
+  aeria-administrativo.puml
+}
+
+class CartaoSalvo <<externo>> {
+  aeria-pagamento.puml
+}
+
+class ListaDesejos <<externo>> {
+  aeria-compra.puml
+}
+
+Usuario "1" *-- "*" ContaSocial
+Usuario "1" o-- "0..1" PerfilCliente
+Usuario "1" o-- "0..1" PerfilAdministrativo
+Usuario "1" *-- "*" SessaoUsuario
+Usuario "1" *-- "*" ConsentimentoLGPD
+PerfilCliente "1" *-- "*" Endereco
+PerfilCliente "1" *-- "0..1" ListaDesejos
+PerfilCliente "1" *-- "*" CartaoSalvo
+
+@enduml

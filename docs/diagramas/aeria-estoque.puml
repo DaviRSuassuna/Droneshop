@@ -1,0 +1,97 @@
+@startuml aeria-estoque
+
+title Aeria Estoque
+
+abstract class DefaultEntity <<MappedSuperclass>> {
+  -id: Long
+  -criadoEm: LocalDateTime
+  -atualizadoEm: LocalDateTime
+}
+
+note bottom of DefaultEntity
+  Todas as classes herdam
+  de DefaultEntity, exceto
+  as marcadas <<Embeddable>>
+end note
+
+' Enum compartilhado, replicado em cada diagrama que o usa
+enum OrigemRegistro {
+  MANUAL
+  SISTEMA
+  INTEGRACAO
+}
+note right of OrigemRegistro
+  D11: MANUAL tem autor preenchido;
+  SISTEMA e INTEGRACAO, autor nulo
+end note
+
+enum StatusReserva {
+  ATIVA
+  CONFIRMADA
+  EXPIRADA
+}
+
+class Reserva {
+  -status: StatusReserva
+  -quantidade: int
+  -expiraEm: LocalDateTime
+}
+note bottom of Reserva
+  Criada ao entrar no checkout;
+  referenciada por ItemCarrinho
+  (aeria-compra.puml)
+end note
+
+enum TipoMovimento {
+  ENTRADA
+  SAIDA
+  AJUSTE
+  DEVOLUCAO
+  PERDA
+}
+
+class MovimentoEstoque {
+  -tipo: TipoMovimento
+  -origem: OrigemRegistro
+  -quantidade: int
+  -saldoResultante: int
+  -observacao: String
+}
+
+enum StatusUnidade {
+  DISPONIVEL
+  RESERVADA
+  VENDIDA
+  DEVOLVIDA
+}
+
+class UnidadeIndividual {
+  -status: StatusUnidade
+  -numeroSerie: String
+  -registroAnac: String
+  -validadeGarantia: LocalDate
+}
+note bottom of UnidadeIndividual
+  Um ItemPedido com quantidade N
+  recebe N unidades na expedição (RN12/RN14)
+end note
+
+class VarianteProduto <<externo>> {
+  aeria-catalogo.puml
+}
+
+class ItemPedido <<externo>> {
+  aeria-pedido.puml
+}
+
+class Usuario <<externo>> {
+  aeria-identidade.puml
+}
+
+VarianteProduto "1" *-- "*" Reserva
+VarianteProduto "1" *-- "*" MovimentoEstoque
+VarianteProduto "1" *-- "*" UnidadeIndividual
+MovimentoEstoque "*" --> "0..1" Usuario : autor (só se MANUAL)
+UnidadeIndividual "*" --> "0..1" ItemPedido : vendida em
+
+@enduml
