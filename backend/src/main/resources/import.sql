@@ -31,3 +31,14 @@ insert into categoria (nome, slug, categoria_pai_id, ordem_exibicao, descricao, 
     ('Hélices', 'helices', 2, 2, null, 'INATIVA', false, null);
 insert into categoria (nome, slug, categoria_pai_id, ordem_exibicao, descricao, status, exibir_menu, icone_url) values
     ('', 'rascunho-categoria-1', null, 0, null, 'RASCUNHO', false, null);
+
+insert into fornecedor (razao_social, cnpj, nome_contato, email_contato, telefone_contato, status) values
+    ('Aerion Brasil Importação Ltda.', '12.345.678/0001-95', 'Paulo Serra', 'comercial@aerion.com.br', '(11) 3456-7890', 'ATIVO');
+insert into fornecedor (razao_social, cnpj, nome_contato, email_contato, telefone_contato, status) values
+    ('Skyline Trading Co.', '98.765.432/0001-98', 'Ana Yamada', 'ana.yamada@skyline.co', '(11) 2345-6789', 'ATIVO');
+insert into fornecedor (razao_social, cnpj, nome_contato, email_contato, telefone_contato, status) values
+    ('Vortex Indústria de Drones S.A.', '45.902.113/0001-10', 'Rodrigo Lemos', 'rodrigo@vortexdrones.com.br', '(48) 3222-1100', 'ATIVO');
+insert into fornecedor (razao_social, cnpj, nome_contato, email_contato, telefone_contato, status) values
+    ('Atlas Agro Equipamentos', '31.556.804/0001-03', 'Carla Nunes', 'carla@atlasagro.com.br', null, 'ATIVO');
+insert into fornecedor (razao_social, cnpj, nome_contato, email_contato, telefone_contato, status) values
+    ('Heron Aeronáutica Europa', '07.118.290/0001-11', 'Marc Girard', 'm.girard@heron.eu', '+33 1 4000 0000', 'INATIVO');

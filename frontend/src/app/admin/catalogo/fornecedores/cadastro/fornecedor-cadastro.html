@@ -1,0 +1,144 @@
+<app-admin-nav />
+
+@if (carregando()) {
+  <div class="pad">
+    <span class="sub">Carregando fornecedor…</span>
+  </div>
+} @else {
+  <div class="pad cols">
+    <div class="main">
+      <div>
+        <h1 class="h1 big">{{ modoEdicao() ? 'Editar fornecedor' : 'Cadastrar fornecedor' }}</h1>
+        <div class="crumb">
+          Catálogo · <a routerLink="/admin/fornecedores">Fornecedores</a> ·
+          {{ modoEdicao() ? 'Editar fornecedor' : 'Novo fornecedor' }}
+        </div>
+      </div>
+
+      @if (erroGeral()) {
+        <div class="card p" style="border-color: var(--warn-b)">
+          <span class="warn">{{ erroGeral() }}</span>
+        </div>
+      }
+
+      <section class="card p" [formGroup]="form">
+        <div class="card-t" style="margin-bottom: 20px">Dados cadastrais</div>
+        <div class="g2">
+          <div class="f full">
+            <label>Razão social <span class="req">*</span></label>
+            <input
+              type="text"
+              placeholder="Ex: Aerion Brasil Importação Ltda."
+              formControlName="razaoSocial"
+            />
+            @if (campoInvalido('razaoSocial')) {
+              <span class="warn">{{ mensagemErro('razaoSocial') }}</span>
+            }
+          </div>
+          <div class="f">
+            <label>CNPJ <span class="req">*</span></label>
+            <input type="text" placeholder="00.000.000/0001-00" formControlName="cnpj" />
+            @if (campoInvalido('cnpj')) {
+              <span class="warn">{{ mensagemErro('cnpj') }}</span>
+            }
+          </div>
+        </div>
+        <p class="legend">Campos com <span class="req">*</span> são obrigatórios</p>
+      </section>
+
+      <section class="card p" [formGroup]="form">
+        <div class="card-t" style="margin-bottom: 20px">Contato comercial</div>
+        <div class="g2">
+          <div class="f">
+            <label>Nome do contato <span class="req">*</span></label>
+            <input type="text" placeholder="Ex: Paulo Serra" formControlName="nomeContato" />
+            @if (campoInvalido('nomeContato')) {
+              <span class="warn">{{ mensagemErro('nomeContato') }}</span>
+            }
+          </div>
+          <div class="f">
+            <label>Telefone do contato</label>
+            <input type="text" placeholder="(11) 0000-0000" formControlName="telefoneContato" />
+            @if (campoInvalido('telefoneContato')) {
+              <span class="warn">{{ mensagemErro('telefoneContato') }}</span>
+            }
+          </div>
+          <div class="f full">
+            <label>E-mail do contato <span class="req">*</span></label>
+            <input
+              type="email"
+              placeholder="comercial@fornecedor.com.br"
+              formControlName="emailContato"
+            />
+            @if (campoInvalido('emailContato')) {
+              <span class="warn">{{ mensagemErro('emailContato') }}</span>
+            }
+          </div>
+        </div>
+        <p class="legend">
+          Contato em três colunas próprias (D18): permite busca por e-mail e validação de formato.
+        </p>
+      </section>
+    </div>
+
+    <aside class="rail" [formGroup]="form">
+      <section class="card p2">
+        <div class="eyebrow">Situação</div>
+        <div class="stack">
+          <div class="f">
+            <label>Status <span class="req">*</span></label>
+            <select formControlName="status">
+              <option value="ATIVO">Ativo</option>
+              <option value="INATIVO">Inativo</option>
+            </select>
+            @if (campoInvalido('status')) {
+              <span class="warn">{{ mensagemErro('status') }}</span>
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="card p2">
+        <div class="eyebrow">Por que este cadastro existe</div>
+        <p style="margin: 0; font-size: 12px; line-height: 1.7; color: var(--dim)">
+          Fornecedor é <strong>campo obrigatório</strong> na tela de cadastro de produto. Sem pelo
+          menos um fornecedor ativo, nenhum drone ou acessório pode ser publicado.
+        </p>
+      </section>
+
+      @if (pendencias().length > 0) {
+        <section class="card p2">
+          <div class="eyebrow">Pendências</div>
+          <div style="display: flex; flex-direction: column; gap: 9px">
+            <span class="warn">{{ pendencias().length }} campo(s) obrigatório(s) vazio(s)</span>
+            <span style="font-size: 12px; color: var(--mute)">{{ pendencias().join(' · ') }}</span>
+          </div>
+        </section>
+      }
+
+      @if (modoEdicao()) {
+        <section class="card p2">
+          <div class="eyebrow">Zona de risco</div>
+          <button
+            class="btn d"
+            type="button"
+            style="width: 100%"
+            (click)="excluir()"
+            [disabled]="excluindo()"
+          >
+            {{ excluindo() ? 'Excluindo…' : 'Excluir fornecedor' }}
+          </button>
+        </section>
+      }
+    </aside>
+  </div>
+
+  <div class="actionbar">
+    <a class="btn" routerLink="/admin/fornecedores">Cancelar</a>
+    <div class="actions">
+      <button class="btn p" type="button" (click)="salvar()" [disabled]="salvando()">
+        {{ salvando() ? 'Salvando…' : 'Salvar fornecedor' }}
+      </button>
+    </div>
+  </div>
+}
