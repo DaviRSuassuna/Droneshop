@@ -3,6 +3,7 @@ package br.com.droneshop.catalogo.resource;
 import java.util.List;
 
 import br.com.droneshop.catalogo.dto.MarcaDTO;
+import br.com.droneshop.catalogo.dto.MarcaResponseDTO;
 import br.com.droneshop.catalogo.model.Marca;
 import br.com.droneshop.catalogo.service.MarcaService;
 import jakarta.inject.Inject;
@@ -27,33 +28,35 @@ public class MarcaResource {
     MarcaService service;
 
     @GET
-    public List<Marca> buscarTodos(@QueryParam("page") @DefaultValue("0") int page,
+    public List<MarcaResponseDTO> buscarTodos(@QueryParam("page") @DefaultValue("0") int page,
                                     @QueryParam("pageSize") @DefaultValue("100") int pageSize) {
-        return service.findAll(page, pageSize);
+        return service.findAll(page, pageSize).stream().map(MarcaResponseDTO::valueOf).toList();
     }
 
     @GET
     @Path("/nome/{nome}")
-    public List<Marca> buscarPorNome(@PathParam("nome") String nome, @QueryParam("page") @DefaultValue("0") int page,
+    public List<MarcaResponseDTO> buscarPorNome(@PathParam("nome") String nome, @QueryParam("page") @DefaultValue("0") int page,
                                     @QueryParam("pageSize") @DefaultValue("100") int pageSize) {
-        return service.findByNome(nome, page, pageSize);
+        return service.findByNome(nome, page, pageSize).stream().map(MarcaResponseDTO::valueOf).toList();
     }
 
     @GET
     @Path("/{id}")
-    public Marca buscarPorId(@PathParam("id") Long id) {
-        return service.findById(id);
+    public MarcaResponseDTO buscarPorId(@PathParam("id") Long id) {
+        Marca marca = service.findById(id);
+        return (marca == null) ? null : MarcaResponseDTO.valueOf(marca);
     }
 
     @GET
     @Path("/slug/{slug}")
-    public Marca buscarPorSlug(@PathParam("slug") String slug) {
-        return service.findBySlug(slug);
+    public MarcaResponseDTO buscarPorSlug(@PathParam("slug") String slug) {
+        Marca marca = service.findBySlug(slug);
+        return (marca == null) ? null : MarcaResponseDTO.valueOf(marca);
     }
 
     @POST
-    public Marca incluir(MarcaDTO dto) {
-        return service.create(dto);
+    public MarcaResponseDTO incluir(MarcaDTO dto) {
+        return MarcaResponseDTO.valueOf(service.create(dto));
     }
 
     @PUT

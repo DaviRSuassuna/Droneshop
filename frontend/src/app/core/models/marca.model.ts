@@ -1,6 +1,6 @@
 export type StatusMarca = 'RASCUNHO' | 'ATIVA' | 'INATIVA';
 
-/** Espelha o retorno da API (entidade Marca serializada pelo backend). */
+/** Espelha o MarcaResponseDTO devolvido pela API. */
 export interface Marca {
   id: number;
   nome: string;
@@ -11,8 +11,6 @@ export interface Marca {
   logoUrl: string;
   status: StatusMarca;
   destacarHome: boolean;
-  dataCadastro?: string;
-  dataAlteracao?: string;
 }
 
 /** Espelha o MarcaDTO aceito pelo POST /marcas e PUT /marcas/{id}. */

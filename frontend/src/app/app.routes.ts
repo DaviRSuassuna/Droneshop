@@ -38,5 +38,26 @@ export const routes: Routes = [
         (m) => m.CategoriaCadastro,
       ),
   },
+  {
+    path: 'admin/fornecedores',
+    loadComponent: () =>
+      import('./admin/catalogo/fornecedores/listagem/fornecedores-listagem').then(
+        (m) => m.FornecedoresListagem,
+      ),
+  },
+  {
+    path: 'admin/fornecedores/novo',
+    loadComponent: () =>
+      import('./admin/catalogo/fornecedores/cadastro/fornecedor-cadastro').then(
+        (m) => m.FornecedorCadastro,
+      ),
+  },
+  {
+    path: 'admin/fornecedores/:id/editar',
+    loadComponent: () =>
+      import('./admin/catalogo/fornecedores/cadastro/fornecedor-cadastro').then(
+        (m) => m.FornecedorCadastro,
+      ),
+  },
   { path: '**', redirectTo: 'admin/marcas' },
 ];
