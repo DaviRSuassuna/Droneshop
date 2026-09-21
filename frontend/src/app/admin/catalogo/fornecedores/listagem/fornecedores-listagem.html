@@ -1,0 +1,131 @@
+<app-admin-nav />
+
+<div class="pagebar">
+  <div style="display: flex; align-items: baseline; gap: 12px">
+    <h1 class="h1">Fornecedores</h1>
+    <span class="sub">
+      @if (!carregando()) {
+        {{ fornecedoresFiltrados().length }} de {{ fornecedores().length }}
+        {{ fornecedores().length === 1 ? 'fornecedor' : 'fornecedores' }}
+      }
+    </span>
+  </div>
+  <div class="actions">
+    <button
+      class="btn"
+      type="button"
+      (click)="exportarCsv()"
+      [disabled]="carregando() || fornecedoresFiltrados().length === 0"
+    >
+      Exportar CSV
+    </button>
+    <a class="btn p" routerLink="/admin/fornecedores/novo">Novo fornecedor</a>
+  </div>
+</div>
+
+<div class="pad-t" style="display: flex; flex-direction: column; gap: 16px">
+  <div class="filters">
+    <div class="f grow">
+      <input
+        type="text"
+        placeholder="Buscar por razão social ou CNPJ"
+        [value]="termoBusca()"
+        (input)="aoDigitarBusca($any($event.target).value)"
+      />
+    </div>
+    <div class="f">
+      <select [value]="filtroStatus()" (change)="aoMudarStatus($any($event.target).value)">
+        <option value="">Status</option>
+        <option value="ATIVO">Ativo</option>
+        <option value="INATIVO">Inativo</option>
+      </select>
+    </div>
+  </div>
+
+  <p class="legend" style="margin: 0">
+    Fornecedor é campo obrigatório no cadastro de produto. Sem pelo menos um registro ativo,
+    nenhum produto pode ser publicado.
+  </p>
+
+  @if (carregando()) {
+    <div class="tbl">
+      <div class="pager"><span>Carregando fornecedores…</span></div>
+    </div>
+  } @else if (erro()) {
+    <div class="tbl">
+      <div class="pager">
+        <span class="warn">{{ erro() }}</span>
+        <button class="btn sm" type="button" (click)="carregarFornecedores()">
+          Tentar novamente
+        </button>
+      </div>
+    </div>
+  } @else {
+    <div class="tbl">
+      <div
+        class="trow head"
+        style="grid-template-columns: minmax(0, 1fr) 260px 150px 118px 64px"
+      >
+        <span>Fornecedor</span>
+        <span>Contato comercial</span>
+        <span>Telefone</span>
+        <span>Status</span>
+        <span></span>
+      </div>
+
+      @for (fornecedor of fornecedoresPagina(); track fornecedor.id) {
+        <a
+          class="trow"
+          style="grid-template-columns: minmax(0, 1fr) 260px 150px 118px 64px"
+          [routerLink]="['/admin/fornecedores', fornecedor.id, 'editar']"
+        >
+          <span class="cell-name">
+            <b>{{ fornecedor.razaoSocial }}</b>
+            <span class="chip">{{ fornecedor.cnpj }}</span>
+          </span>
+          <span class="cell-name">
+            <b style="font-size: 12.5px">{{ fornecedor.nomeContato }}</b>
+            <span class="chip">{{ fornecedor.emailContato }}</span>
+          </span>
+          <span class="dim">{{ fornecedor.telefoneContato || '—' }}</span>
+          <span class="status">
+            <span
+              class="dot"
+              [style.background]="fornecedor.status === 'ATIVO' ? 'var(--ok)' : 'var(--dim2)'"
+            ></span>
+            {{ statusLabel(fornecedor.status) }}
+          </span>
+          <span style="justify-self: end">
+            <button class="btn sm d" type="button" (click)="excluir($event, fornecedor)">
+              Excluir
+            </button>
+          </span>
+        </a>
+      }
+
+      @if (fornecedoresPagina().length === 0) {
+        <div class="pager"><span>Nenhum fornecedor encontrado com os filtros atuais.</span></div>
+      }
+
+      <div class="pager">
+        <span>Exibindo {{ intervaloExibido() }} de {{ fornecedoresFiltrados().length }}</span>
+        <span class="pages">
+          <a
+            [class.on]="false"
+            (click)="paginaAnterior()"
+            [style.opacity]="pagina() === 0 ? 0.4 : 1"
+            [style.cursor]="pagina() === 0 ? 'default' : 'pointer'"
+            >‹</a
+          >
+          <span>Página {{ pagina() + 1 }} de {{ totalPaginas() }}</span>
+          <a
+            (click)="proximaPagina()"
+            [style.opacity]="pagina() + 1 >= totalPaginas() ? 0.4 : 1"
+            [style.cursor]="pagina() + 1 >= totalPaginas() ? 'default' : 'pointer'"
+            >›</a
+          >
+        </span>
+      </div>
+    </div>
+  }
+</div>
