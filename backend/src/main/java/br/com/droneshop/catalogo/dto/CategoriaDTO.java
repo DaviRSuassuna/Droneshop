@@ -17,8 +17,6 @@ public final class CategoriaDTO {
     @Length(max = 110, message = "O campo deve ter no máximo 110 caracteres (back).")
     private final String slug;
 
-    private final Long categoriaPaiId;
-
     @PositiveOrZero(message = "O campo deve ser maior ou igual a zero (back).")
     private final Integer ordemExibicao;
 
@@ -34,11 +32,10 @@ public final class CategoriaDTO {
     @Length(max = 255, message = "O campo deve ter no máximo 255 caracteres (back).")
     private final String iconeUrl;
 
-    public CategoriaDTO(String nome, String slug, Long categoriaPaiId, Integer ordemExibicao,
+    public CategoriaDTO(String nome, String slug, Integer ordemExibicao,
                         String descricao, String status, Boolean exibirMenu, String iconeUrl) {
         this.nome = nome;
         this.slug = slug;
-        this.categoriaPaiId = categoriaPaiId;
         this.ordemExibicao = ordemExibicao;
         this.descricao = descricao;
         this.status = status;
@@ -52,10 +49,6 @@ public final class CategoriaDTO {
 
     public String getSlug() {
         return slug;
-    }
-
-    public Long getCategoriaPaiId() {
-        return categoriaPaiId;
     }
 
     public Integer getOrdemExibicao() {

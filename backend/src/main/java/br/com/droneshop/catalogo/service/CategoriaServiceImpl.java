@@ -33,7 +33,6 @@ public class CategoriaServiceImpl implements CategoriaService {
         Categoria novaCategoria = new Categoria();
         novaCategoria.setNome(valorOuVazio(dto.getNome()));
         novaCategoria.setSlug(slug);
-        novaCategoria.setCategoriaPai(resolverCategoriaPai(dto.getCategoriaPaiId(), null));
         novaCategoria.setOrdemExibicao(valorOuZero(dto.getOrdemExibicao()));
         novaCategoria.setDescricao(dto.getDescricao());
         novaCategoria.setStatus(status);
@@ -59,7 +58,6 @@ public class CategoriaServiceImpl implements CategoriaService {
 
         edicaoCategoria.setNome(valorOuVazio(dto.getNome()));
         edicaoCategoria.setSlug(slug);
-        edicaoCategoria.setCategoriaPai(resolverCategoriaPai(dto.getCategoriaPaiId(), id));
         edicaoCategoria.setOrdemExibicao(valorOuZero(dto.getOrdemExibicao()));
         edicaoCategoria.setDescricao(dto.getDescricao());
         edicaoCategoria.setStatus(status);
@@ -88,20 +86,6 @@ public class CategoriaServiceImpl implements CategoriaService {
 
         if (!erros.isEmpty())
             throw new ValidationException("Preencha os campos obrigatórios para publicar a categoria.", erros);
-    }
-
-    // a categoria pai precisa existir e nao pode ser a propria categoria em edicao
-    private Categoria resolverCategoriaPai(Long categoriaPaiId, Long idAtual) {
-        if (categoriaPaiId == null)
-            return null;
-        if (categoriaPaiId.equals(idAtual))
-            throw ValidationException.of("categoriaPaiId", "Uma categoria não pode ser pai dela mesma.");
-
-        Categoria pai = categoriaRepository.findById(categoriaPaiId);
-        if (pai == null)
-            throw ValidationException.of("categoriaPaiId", "Categoria pai não encontrada.");
-
-        return pai;
     }
 
     private String valorOuVazio(String valor) {

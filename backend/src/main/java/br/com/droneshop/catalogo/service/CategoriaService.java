@@ -9,7 +9,7 @@ import jakarta.validation.Valid;
 public interface CategoriaService {
 
     Categoria create(@Valid CategoriaDTO categoria);
-    void update(long id, CategoriaDTO categoria);
+    void update(long id, @Valid CategoriaDTO categoria);
     void delete(long id);
     Categoria findById(long id);
     Categoria findBySlug(String slug);

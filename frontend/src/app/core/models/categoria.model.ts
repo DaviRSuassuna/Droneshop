@@ -5,8 +5,6 @@ export interface Categoria {
   id: number;
   nome: string;
   slug: string;
-  categoriaPaiId: number | null;
-  categoriaPaiNome: string | null;
   ordemExibicao: number;
   descricao: string | null;
   status: StatusCategoria;
@@ -18,7 +16,6 @@ export interface Categoria {
 export interface CategoriaDTO {
   nome: string;
   slug: string;
-  categoriaPaiId: number | null;
   ordemExibicao: number;
   descricao: string;
   status: StatusCategoria;

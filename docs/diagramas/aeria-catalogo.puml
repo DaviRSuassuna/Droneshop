@@ -30,6 +30,11 @@ class Categoria {
   -slug: String
 }
 
+class Subcategoria {
+  -nome: String
+  -slug: String
+}
+
 class Fornecedor {
   -razaoSocial: String
   -cnpj: String
@@ -161,9 +166,9 @@ class TermoBuscado {
 
 Produto <|-- Drone
 Produto <|-- Acessorio
-Categoria "0..1" -- "*" Categoria : categoriaPai
+Subcategoria "*" --> "1" Categoria
 Produto "*" --> "1" Marca
-Produto "*" --> "1" Categoria
+Produto "*" --> "1" Subcategoria
 Produto "*" --> "1" Fornecedor
 Produto "1" *-- "1..*" VarianteProduto
 Produto "1" o-- "*" MidiaProduto

@@ -22,6 +22,8 @@ public class CategoriaRepository implements PanacheRepository<Categoria> {
         return find("SELECT c FROM Categoria c WHERE c.nome LIKE ?1 ORDER BY c.ordemExibicao, c.nome ", "%" + nome + "%");
     }
 
+
+
     @Override
     public PanacheQuery<Categoria> findAll() {
         return find("SELECT c FROM Categoria c ORDER BY c.ordemExibicao, c.nome");

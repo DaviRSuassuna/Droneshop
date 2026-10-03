@@ -5,7 +5,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AdminNav } from '../../../../layout/admin/admin-nav/admin-nav';
 import { CategoriaService } from '../../../../core/services/categoria.service';
-import { Categoria, CategoriaDTO, StatusCategoria } from '../../../../core/models/categoria.model';
+import { CategoriaDTO, StatusCategoria } from '../../../../core/models/categoria.model';
 import { ProblemDetail } from '../../../../core/models/problem.model';
 
 @Component({
@@ -30,23 +30,15 @@ export class CategoriaCadastro implements OnInit {
   readonly erroGeral = signal<string | null>(null);
   readonly errosCampo = signal<Record<string, string>>({});
 
-  readonly categorias = signal<Categoria[]>([]);
-
   readonly form = this.fb.nonNullable.group({
     nome: [''],
     slug: [''],
-    categoriaPaiId: [null as number | null],
     ordemExibicao: [0],
     descricao: [''],
     iconeUrl: [''],
     status: ['RASCUNHO' as StatusCategoria, Validators.required],
     exibirMenu: [false],
   });
-
-  // opções de categoria pai: todas menos a própria categoria em edição
-  readonly categoriasPaiDisponiveis = computed(() =>
-    this.categorias().filter((c) => c.id !== this.categoriaId()),
-  );
 
   readonly pendencias = computed(() => {
     const v = this.form.getRawValue();
@@ -58,21 +50,12 @@ export class CategoriaCadastro implements OnInit {
   });
 
   ngOnInit(): void {
-    this.carregarCategorias();
-
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       const id = Number(idParam);
       this.categoriaId.set(id);
       this.carregarCategoria(id);
     }
-  }
-
-  private carregarCategorias(): void {
-    this.categoriaService.listar(0, 500).subscribe({
-      next: (categorias) => this.categorias.set(categorias),
-      error: () => this.categorias.set([]),
-    });
   }
 
   private carregarCategoria(id: number): void {
@@ -87,7 +70,6 @@ export class CategoriaCadastro implements OnInit {
         this.form.patchValue({
           nome: categoria.nome,
           slug: categoria.slug,
-          categoriaPaiId: categoria.categoriaPaiId,
           ordemExibicao: categoria.ordemExibicao,
           descricao: categoria.descricao ?? '',
           iconeUrl: categoria.iconeUrl ?? '',
@@ -119,7 +101,6 @@ export class CategoriaCadastro implements OnInit {
     const dto: CategoriaDTO = {
       nome: v.nome.trim(),
       slug: v.slug.trim(),
-      categoriaPaiId: v.categoriaPaiId,
       ordemExibicao: Number(v.ordemExibicao),
       descricao: v.descricao.trim(),
       iconeUrl: v.iconeUrl.trim(),
@@ -153,7 +134,7 @@ export class CategoriaCadastro implements OnInit {
       error: () => {
         this.excluindo.set(false);
         this.erroGeral.set(
-          'Não foi possível excluir esta categoria. Ela pode estar vinculada a produtos ou subcategorias.',
+          'Não foi possível excluir esta categoria. Ela pode ter subcategorias vinculadas.',
         );
       },
     });

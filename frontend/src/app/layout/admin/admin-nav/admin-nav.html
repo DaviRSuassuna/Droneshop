@@ -13,10 +13,15 @@
   </div>
   <div class="tb-r">
     <span class="tb-search">Buscar no painel</span>
+    <button
+      type="button"
+      class="theme-t"
+      (click)="alternarTema()"
+      [attr.aria-label]="tema() === 'light' ? 'Mudar para tema escuro' : 'Mudar para tema claro'"
+      [title]="tema() === 'light' ? 'Mudar para tema escuro' : 'Mudar para tema claro'"
+    >
+      {{ tema() === 'light' ? '◐' : '◑' }}
+    </button>
     <span class="avatar">DR</span>
   </div>
 </header>
-
-<button type="button" class="theme-t" (click)="alternarTema()">
-  {{ tema() === 'light' ? '◑ Tema claro' : '◐ Tema escuro' }}
-</button>
