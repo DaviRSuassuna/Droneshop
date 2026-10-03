@@ -1,6 +1,8 @@
+import { Endereco, EnderecoDTO } from './endereco.model';
+
 export type StatusFornecedor = 'ATIVO' | 'INATIVO';
 
-/** Espelha o FornecedorResponseDTO devolvido pela API. */
+/** Espelha o FornecedorResponseDTO devolvido pela API (CNPJ, telefone e CEP só com dígitos). */
 export interface Fornecedor {
   id: number;
   razaoSocial: string;
@@ -8,6 +10,7 @@ export interface Fornecedor {
   nomeContato: string;
   emailContato: string;
   telefoneContato: string | null;
+  endereco: Endereco | null;
   status: StatusFornecedor;
 }
 
@@ -18,5 +21,6 @@ export interface FornecedorDTO {
   nomeContato: string;
   emailContato: string;
   telefoneContato: string;
+  endereco: EnderecoDTO;
   status: StatusFornecedor;
 }

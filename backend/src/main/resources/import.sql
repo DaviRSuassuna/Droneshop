@@ -35,16 +35,18 @@ insert into subcategoria (nome, slug, categoria_id, ordem_exibicao, descricao, s
 insert into subcategoria (nome, slug, categoria_id, ordem_exibicao, descricao, status) values
     ('Hélices', 'helices', 2, 2, null, 'INATIVA');
 
-insert into fornecedor (razao_social, cnpj, nome_contato, email_contato, telefone_contato, status) values
-    ('Aerion Brasil Importação Ltda.', '12.345.678/0001-95', 'Paulo Serra', 'comercial@aerion.com.br', '(11) 3456-7890', 'ATIVO');
-insert into fornecedor (razao_social, cnpj, nome_contato, email_contato, telefone_contato, status) values
-    ('Skyline Trading Co.', '98.765.432/0001-98', 'Ana Yamada', 'ana.yamada@skyline.co', '(11) 2345-6789', 'ATIVO');
-insert into fornecedor (razao_social, cnpj, nome_contato, email_contato, telefone_contato, status) values
-    ('Vortex Indústria de Drones S.A.', '45.902.113/0001-10', 'Rodrigo Lemos', 'rodrigo@vortexdrones.com.br', '(48) 3222-1100', 'ATIVO');
-insert into fornecedor (razao_social, cnpj, nome_contato, email_contato, telefone_contato, status) values
-    ('Atlas Agro Equipamentos', '31.556.804/0001-03', 'Carla Nunes', 'carla@atlasagro.com.br', null, 'ATIVO');
-insert into fornecedor (razao_social, cnpj, nome_contato, email_contato, telefone_contato, status) values
-    ('Heron Aeronáutica Europa', '07.118.290/0001-11', 'Marc Girard', 'm.girard@heron.eu', '+33 1 4000 0000', 'INATIVO');
+-- fornecedores: CNPJ, telefone e CEP so com digitos; endereco ficticio em municipio real
+-- (o municipio e buscado pelo codigo IBGE, carregado antes por localidades.sql)
+insert into fornecedor (razao_social, cnpj, nome_contato, email_contato, telefone_contato, cep, logradouro, numero, complemento, bairro, municipio_id, status) values
+    ('Aerion Brasil Importação Ltda.', '12345678000195', 'Paulo Serra', 'comercial@aerion.com.br', '1134567890', '01310100', 'Avenida Paulista', '1578', 'Conjunto 42', 'Bela Vista', (select id from municipio where codigo_ibge = 3550308), 'ATIVO');
+insert into fornecedor (razao_social, cnpj, nome_contato, email_contato, telefone_contato, cep, logradouro, numero, complemento, bairro, municipio_id, status) values
+    ('Skyline Trading Co.', '98765432000198', 'Ana Yamada', 'ana.yamada@skyline.co', '1123456789', '13015904', 'Rua Barão de Jaguara', '1481', null, 'Centro', (select id from municipio where codigo_ibge = 3509502), 'ATIVO');
+insert into fornecedor (razao_social, cnpj, nome_contato, email_contato, telefone_contato, cep, logradouro, numero, complemento, bairro, municipio_id, status) values
+    ('Vortex Indústria de Drones S.A.', '45902113000110', 'Rodrigo Lemos', 'rodrigo@vortexdrones.com.br', '4832221100', '88010400', 'Rua Felipe Schmidt', '515', 'Sala 801', 'Centro', (select id from municipio where codigo_ibge = 4205407), 'ATIVO');
+insert into fornecedor (razao_social, cnpj, nome_contato, email_contato, telefone_contato, cep, logradouro, numero, complemento, bairro, municipio_id, status) values
+    ('Atlas Agro Equipamentos', '31556804000103', 'Carla Nunes', 'carla@atlasagro.com.br', null, '77001002', 'Quadra 104 Norte Avenida LO 2', '12', null, 'Plano Diretor Norte', (select id from municipio where codigo_ibge = 1721000), 'ATIVO');
+insert into fornecedor (razao_social, cnpj, nome_contato, email_contato, telefone_contato, cep, logradouro, numero, complemento, bairro, municipio_id, status) values
+    ('Heron Aeronáutica Europa', '07118290000111', 'Marc Girard', 'm.girard@heron.eu', null, '20040020', 'Avenida Rio Branco', '156', 'Sala 1201', 'Centro', (select id from municipio where codigo_ibge = 3304557), 'INATIVO');
 
 -- produtos (marca_id / subcategoria_id / fornecedor_id seguem a ordem dos inserts acima;
 -- fornecedor = mesma posicao da marca, exceto Sparrow, que usa a Skyline Trading)

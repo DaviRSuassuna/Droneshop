@@ -3,13 +3,16 @@ import { RouterLink } from '@angular/router';
 import { AdminNav } from '../../../../layout/admin/admin-nav/admin-nav';
 import { FornecedorService } from '../../../../core/services/fornecedor.service';
 import { Fornecedor, StatusFornecedor } from '../../../../core/models/fornecedor.model';
+import { CnpjPipe, formatarCnpj } from '../../../../shared/pipes/cnpj.pipe';
+import { CepPipe } from '../../../../shared/pipes/cep.pipe';
+import { TelefonePipe, formatarTelefone } from '../../../../shared/pipes/telefone.pipe';
 
 const TAMANHO_PAGINA = 10;
 
 @Component({
   selector: 'app-fornecedores-listagem',
   standalone: true,
-  imports: [RouterLink, AdminNav],
+  imports: [RouterLink, AdminNav, CnpjPipe, CepPipe, TelefonePipe],
   templateUrl: './fornecedores-listagem.html',
   styleUrl: './fornecedores-listagem.scss',
 })
@@ -118,13 +121,24 @@ export class FornecedoresListagem implements OnInit {
 
   exportarCsv(): void {
     const linhas = [
-      ['Razao social', 'CNPJ', 'Nome do contato', 'E-mail do contato', 'Telefone do contato', 'Status'],
+      [
+        'Razao social',
+        'CNPJ',
+        'Nome do contato',
+        'E-mail do contato',
+        'Telefone do contato',
+        'Municipio',
+        'UF',
+        'Status',
+      ],
       ...this.fornecedoresFiltrados().map((f) => [
         f.razaoSocial,
-        f.cnpj,
+        formatarCnpj(f.cnpj),
         f.nomeContato,
         f.emailContato,
-        f.telefoneContato ?? '',
+        formatarTelefone(f.telefoneContato),
+        f.endereco?.municipio.nome ?? '',
+        f.endereco?.municipio.estado.sigla ?? '',
         this.statusLabel(f.status),
       ]),
     ];

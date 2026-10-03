@@ -24,22 +24,31 @@
       <section class="card p" [formGroup]="form">
         <div class="card-t" style="margin-bottom: 20px">Dados cadastrais</div>
         <div class="g2">
-          <div class="f full">
-            <label>Razão social <span class="req">*</span></label>
+          <div class="f full" [class.erro]="invalido('razaoSocial')">
+            <label for="razaoSocial">Razão social <span class="req">*</span></label>
             <input
+              id="razaoSocial"
               type="text"
+              maxlength="150"
               placeholder="Ex: Aerion Brasil Importação Ltda."
               formControlName="razaoSocial"
             />
-            @if (campoInvalido('razaoSocial')) {
-              <span class="warn">{{ mensagemErro('razaoSocial') }}</span>
+            @if (resolveErrorMessage('razaoSocial'); as msg) {
+              <span class="warn">{{ msg }}</span>
             }
           </div>
-          <div class="f">
-            <label>CNPJ <span class="req">*</span></label>
-            <input type="text" placeholder="00.000.000/0001-00" formControlName="cnpj" />
-            @if (campoInvalido('cnpj')) {
-              <span class="warn">{{ mensagemErro('cnpj') }}</span>
+          <div class="f" [class.erro]="invalido('cnpj')">
+            <label for="cnpj">CNPJ <span class="req">*</span></label>
+            <input
+              id="cnpj"
+              type="text"
+              inputmode="numeric"
+              placeholder="00.000.000/0001-00"
+              formControlName="cnpj"
+              appMascara="cnpj"
+            />
+            @if (resolveErrorMessage('cnpj'); as msg) {
+              <span class="warn">{{ msg }}</span>
             }
           </div>
         </div>
@@ -47,31 +56,175 @@
       </section>
 
       <section class="card p" [formGroup]="form">
+        <div class="card-t" style="margin-bottom: 20px">Endereço</div>
+        <div class="g2" formGroupName="endereco">
+          <div class="f" [class.erro]="invalido('endereco.cep')">
+            <label for="end-cep">CEP <span class="req">*</span></label>
+            <div class="cep-row">
+              <input
+                id="end-cep"
+                type="text"
+                inputmode="numeric"
+                placeholder="00000-000"
+                formControlName="cep"
+                appMascara="cep"
+              />
+              <button
+                class="btn"
+                type="button"
+                (click)="buscarCep()"
+                [disabled]="buscandoCep()"
+              >
+                {{ buscandoCep() ? 'Buscando…' : 'Buscar' }}
+              </button>
+            </div>
+            @if (resolveErrorMessage('endereco.cep'); as msg) {
+              <span class="warn">{{ msg }}</span>
+            } @else if (avisoCep(); as aviso) {
+              <span class="aviso-cep" [class]="aviso.tipo">{{ aviso.texto }}</span>
+            } @else {
+              <span class="aviso-cep" style="color: var(--mute)">
+                A busca preenche o endereço automaticamente. Todos os campos continuam editáveis.
+              </span>
+            }
+          </div>
+          <div class="f"></div>
+
+          <div class="f full" [class.erro]="invalido('endereco.logradouro')">
+            <label for="end-logradouro">Logradouro <span class="req">*</span></label>
+            <input
+              id="end-logradouro"
+              type="text"
+              maxlength="150"
+              placeholder="Ex: Avenida Paulista"
+              formControlName="logradouro"
+            />
+            @if (resolveErrorMessage('endereco.logradouro'); as msg) {
+              <span class="warn">{{ msg }}</span>
+            }
+          </div>
+
+          <div class="f" [class.erro]="invalido('endereco.numero')">
+            <label for="end-numero">Número <span class="req">*</span></label>
+            <input
+              id="end-numero"
+              type="text"
+              maxlength="10"
+              placeholder="Ex: 1578 ou S/N"
+              formControlName="numero"
+            />
+            @if (resolveErrorMessage('endereco.numero'); as msg) {
+              <span class="warn">{{ msg }}</span>
+            }
+          </div>
+          <div class="f" [class.erro]="invalido('endereco.complemento')">
+            <label for="end-complemento">Complemento</label>
+            <input
+              id="end-complemento"
+              type="text"
+              maxlength="60"
+              placeholder="Ex: Sala 801"
+              formControlName="complemento"
+            />
+            @if (resolveErrorMessage('endereco.complemento'); as msg) {
+              <span class="warn">{{ msg }}</span>
+            }
+          </div>
+
+          <div class="f full" [class.erro]="invalido('endereco.bairro')">
+            <label for="end-bairro">Bairro <span class="req">*</span></label>
+            <input
+              id="end-bairro"
+              type="text"
+              maxlength="80"
+              placeholder="Ex: Centro"
+              formControlName="bairro"
+            />
+            @if (resolveErrorMessage('endereco.bairro'); as msg) {
+              <span class="warn">{{ msg }}</span>
+            }
+          </div>
+
+          <div class="f" [class.erro]="invalido('endereco.idEstado')">
+            <label for="end-estado">Estado <span class="req">*</span></label>
+            <select id="end-estado" formControlName="idEstado">
+              <option [ngValue]="null">Selecione o estado</option>
+              @for (estado of estados(); track estado.id) {
+                <option [ngValue]="estado.id">{{ estado.nome }} ({{ estado.sigla }})</option>
+              }
+            </select>
+            @if (resolveErrorMessage('endereco.idEstado'); as msg) {
+              <span class="warn">{{ msg }}</span>
+            }
+          </div>
+          <div class="f" [class.erro]="invalido('endereco.idMunicipio')">
+            <label for="end-municipio">Município <span class="req">*</span></label>
+            <select id="end-municipio" formControlName="idMunicipio">
+              <option [ngValue]="null">
+                {{
+                  carregandoMunicipios()
+                    ? 'Carregando municípios…'
+                    : municipios().length
+                      ? 'Selecione o município'
+                      : 'Escolha o estado primeiro'
+                }}
+              </option>
+              @for (municipio of municipios(); track municipio.id) {
+                <option [ngValue]="municipio.id">{{ municipio.nome }}</option>
+              }
+            </select>
+            @if (resolveErrorMessage('endereco.idMunicipio'); as msg) {
+              <span class="warn">{{ msg }}</span>
+            }
+          </div>
+        </div>
+        <p class="legend">
+          Município e Estado são cadastros do IBGE: o endereço guarda a referência ao município, não
+          o nome da cidade em texto.
+        </p>
+      </section>
+
+      <section class="card p" [formGroup]="form">
         <div class="card-t" style="margin-bottom: 20px">Contato comercial</div>
         <div class="g2">
-          <div class="f">
-            <label>Nome do contato <span class="req">*</span></label>
-            <input type="text" placeholder="Ex: Paulo Serra" formControlName="nomeContato" />
-            @if (campoInvalido('nomeContato')) {
-              <span class="warn">{{ mensagemErro('nomeContato') }}</span>
-            }
-          </div>
-          <div class="f">
-            <label>Telefone do contato</label>
-            <input type="text" placeholder="(11) 0000-0000" formControlName="telefoneContato" />
-            @if (campoInvalido('telefoneContato')) {
-              <span class="warn">{{ mensagemErro('telefoneContato') }}</span>
-            }
-          </div>
-          <div class="f full">
-            <label>E-mail do contato <span class="req">*</span></label>
+          <div class="f" [class.erro]="invalido('nomeContato')">
+            <label for="nomeContato">Nome do contato <span class="req">*</span></label>
             <input
+              id="nomeContato"
+              type="text"
+              maxlength="100"
+              placeholder="Ex: Paulo Serra"
+              formControlName="nomeContato"
+            />
+            @if (resolveErrorMessage('nomeContato'); as msg) {
+              <span class="warn">{{ msg }}</span>
+            }
+          </div>
+          <div class="f" [class.erro]="invalido('telefoneContato')">
+            <label for="telefoneContato">Telefone do contato</label>
+            <input
+              id="telefoneContato"
+              type="text"
+              inputmode="numeric"
+              placeholder="(11) 0000-0000"
+              formControlName="telefoneContato"
+              appMascara="telefone"
+            />
+            @if (resolveErrorMessage('telefoneContato'); as msg) {
+              <span class="warn">{{ msg }}</span>
+            }
+          </div>
+          <div class="f full" [class.erro]="invalido('emailContato')">
+            <label for="emailContato">E-mail do contato <span class="req">*</span></label>
+            <input
+              id="emailContato"
               type="email"
+              maxlength="150"
               placeholder="comercial@fornecedor.com.br"
               formControlName="emailContato"
             />
-            @if (campoInvalido('emailContato')) {
-              <span class="warn">{{ mensagemErro('emailContato') }}</span>
+            @if (resolveErrorMessage('emailContato'); as msg) {
+              <span class="warn">{{ msg }}</span>
             }
           </div>
         </div>
@@ -85,14 +238,14 @@
       <section class="card p2">
         <div class="eyebrow">Situação</div>
         <div class="stack">
-          <div class="f">
-            <label>Status <span class="req">*</span></label>
-            <select formControlName="status">
+          <div class="f" [class.erro]="invalido('status')">
+            <label for="status">Status <span class="req">*</span></label>
+            <select id="status" formControlName="status">
               <option value="ATIVO">Ativo</option>
               <option value="INATIVO">Inativo</option>
             </select>
-            @if (campoInvalido('status')) {
-              <span class="warn">{{ mensagemErro('status') }}</span>
+            @if (resolveErrorMessage('status'); as msg) {
+              <span class="warn">{{ msg }}</span>
             }
           </div>
         </div>

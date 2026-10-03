@@ -3,8 +3,12 @@ package br.com.droneshop.catalogo.dto;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.br.CNPJ;
 
+import br.com.droneshop.endereco.dto.EnderecoDTO;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 public final class FornecedorDTO {
 
@@ -29,20 +33,28 @@ public final class FornecedorDTO {
     @Length(max = 150, message = "O campo deve ter no máximo 150 caracteres (back).")
     private final String emailContato;
 
-    @Length(max = 20, message = "O campo deve ter no máximo 20 caracteres (back).")
+    // opcional; com ou sem mascara: DDD + 8 ou 9 digitos. O service guarda so os digitos
+    @Pattern(regexp = "^$|^\\(?\\d{2}\\)?\\s?\\d{4,5}-?\\d{4}$",
+             message = "Telefone inválido. Use (00) 0000-0000 ou (00) 00000-0000 (back).")
     private final String telefoneContato;
+
+    // @Valid faz o Bean Validation descer para os campos do endereco
+    @NotNull(message = "Informe o endereço (back).")
+    @Valid
+    private final EnderecoDTO endereco;
 
     // valor esperado: "ATIVO" ou "INATIVO"
     @NotBlank(message = "O campo deve ser informado (back).")
     private final String status;
 
     public FornecedorDTO(String razaoSocial, String cnpj, String nomeContato, String emailContato,
-                         String telefoneContato, String status) {
+                         String telefoneContato, EnderecoDTO endereco, String status) {
         this.razaoSocial = razaoSocial;
         this.cnpj = cnpj;
         this.nomeContato = nomeContato;
         this.emailContato = emailContato;
         this.telefoneContato = telefoneContato;
+        this.endereco = endereco;
         this.status = status;
     }
 
@@ -64,6 +76,10 @@ public final class FornecedorDTO {
 
     public String getTelefoneContato() {
         return telefoneContato;
+    }
+
+    public EnderecoDTO getEndereco() {
+        return endereco;
     }
 
     public String getStatus() {

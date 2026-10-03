@@ -1,3 +1,29 @@
 :host {
   display: block;
 }
+
+/* campo com erro (validação do front ou erro "api" vindo do back) */
+.f.erro input,
+.f.erro select {
+  border-color: var(--warn-b);
+}
+
+.cep-row {
+  display: flex;
+  gap: 8px;
+}
+.cep-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.aviso-cep {
+  font-size: 12px;
+  line-height: 1.5;
+}
+.aviso-cep.ok {
+  color: var(--ok);
+}
+.aviso-cep.warn {
+  color: var(--warn);
+}

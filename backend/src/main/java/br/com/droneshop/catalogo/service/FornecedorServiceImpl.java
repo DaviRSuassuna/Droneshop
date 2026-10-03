@@ -6,7 +6,12 @@ import br.com.droneshop.catalogo.dto.FornecedorDTO;
 import br.com.droneshop.catalogo.model.Fornecedor;
 import br.com.droneshop.catalogo.model.StatusFornecedor;
 import br.com.droneshop.catalogo.repository.FornecedorRepository;
+import br.com.droneshop.endereco.dto.EnderecoDTO;
+import br.com.droneshop.endereco.model.Endereco;
+import br.com.droneshop.endereco.model.Municipio;
+import br.com.droneshop.endereco.repository.MunicipioRepository;
 import br.com.droneshop.exception.ValidationException;
+import br.com.droneshop.util.Documentos;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -17,6 +22,9 @@ public class FornecedorServiceImpl implements FornecedorService {
 
     @Inject
     FornecedorRepository fornecedorRepository;
+
+    @Inject
+    MunicipioRepository municipioRepository;
 
     @Override
     @Transactional
@@ -31,7 +39,8 @@ public class FornecedorServiceImpl implements FornecedorService {
         novoFornecedor.setCnpj(cnpj);
         novoFornecedor.setNomeContato(dto.getNomeContato().trim());
         novoFornecedor.setEmailContato(dto.getEmailContato().trim());
-        novoFornecedor.setTelefoneContato(valorOuNulo(dto.getTelefoneContato()));
+        novoFornecedor.setTelefoneContato(Documentos.somenteDigitosOuNulo(dto.getTelefoneContato()));
+        novoFornecedor.setEndereco(montarEndereco(dto.getEndereco()));
         novoFornecedor.setStatus(status);
 
         // realizando inclusao
@@ -49,12 +58,15 @@ public class FornecedorServiceImpl implements FornecedorService {
         validarCnpjUnico(cnpj, id);
 
         Fornecedor edicaoFornecedor = fornecedorRepository.findById(id);
+        if (edicaoFornecedor == null)
+            throw ValidationException.of("id", "Fornecedor não encontrado.");
 
         edicaoFornecedor.setRazaoSocial(dto.getRazaoSocial().trim());
         edicaoFornecedor.setCnpj(cnpj);
         edicaoFornecedor.setNomeContato(dto.getNomeContato().trim());
         edicaoFornecedor.setEmailContato(dto.getEmailContato().trim());
-        edicaoFornecedor.setTelefoneContato(valorOuNulo(dto.getTelefoneContato()));
+        edicaoFornecedor.setTelefoneContato(Documentos.somenteDigitosOuNulo(dto.getTelefoneContato()));
+        edicaoFornecedor.setEndereco(montarEndereco(dto.getEndereco()));
         edicaoFornecedor.setStatus(status);
     }
 
@@ -76,13 +88,29 @@ public class FornecedorServiceImpl implements FornecedorService {
             throw ValidationException.of("cnpj", "Já existe um fornecedor cadastrado com esse CNPJ.");
     }
 
-    // o @CNPJ do DTO aceita com ou sem mascara; aqui padroniza para 00.000.000/0000-00
+    // o @CNPJ do DTO aceita com ou sem mascara; aqui guarda so os digitos,
     // para que a unicidade nao dependa de como o usuario digitou
     private String normalizarCnpj(String cnpj) {
-        String digitos = cnpj.replaceAll("\\D", "");
-        if (digitos.length() != 14)
-            return cnpj.trim();
-        return digitos.replaceFirst("(\\d{2})(\\d{3})(\\d{3})(\\d{4})(\\d{2})", "$1.$2.$3/$4-$5");
+        return Documentos.somenteDigitos(cnpj);
+    }
+
+    // o DTO ja foi validado (@Valid); aqui normaliza o CEP e resolve o Municipio pelo id
+    private Endereco montarEndereco(EnderecoDTO dto) {
+        Endereco endereco = new Endereco();
+        endereco.setCep(Documentos.somenteDigitos(dto.getCep()));
+        endereco.setLogradouro(dto.getLogradouro().trim());
+        endereco.setNumero(dto.getNumero().trim());
+        endereco.setComplemento(valorOuNulo(dto.getComplemento()));
+        endereco.setBairro(dto.getBairro().trim());
+        endereco.setMunicipio(buscarMunicipioOuFalhar(dto.getIdMunicipio()));
+        return endereco;
+    }
+
+    private Municipio buscarMunicipioOuFalhar(Long idMunicipio) {
+        Municipio municipio = municipioRepository.findById(idMunicipio);
+        if (municipio == null)
+            throw ValidationException.of("idMunicipio", "Município não encontrado.");
+        return municipio;
     }
 
     @Override
