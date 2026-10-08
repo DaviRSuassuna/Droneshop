@@ -26,21 +26,9 @@
         <div class="g2">
           <div class="f full">
             <label>Nome da categoria <span class="req">*</span></label>
-            <input type="text" placeholder="Ex: Drones profissionais" formControlName="nome" />
+            <input type="text" placeholder="Ex: Drones" formControlName="nome" />
             @if (campoInvalido('nome')) {
               <span class="warn">{{ mensagemErro('nome') }}</span>
-            }
-          </div>
-          <div class="f">
-            <label>Categoria pai</label>
-            <select formControlName="categoriaPaiId">
-              <option [ngValue]="null">Nenhuma (categoria raiz)</option>
-              @for (categoria of categoriasPaiDisponiveis(); track categoria.id) {
-                <option [ngValue]="categoria.id">{{ categoria.nome || '(sem nome)' }}</option>
-              }
-            </select>
-            @if (campoInvalido('categoriaPaiId')) {
-              <span class="warn">{{ mensagemErro('categoriaPaiId') }}</span>
             }
           </div>
           <div class="f">

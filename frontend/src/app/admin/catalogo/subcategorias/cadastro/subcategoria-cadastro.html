@@ -1,0 +1,128 @@
+<app-admin-nav />
+
+@if (carregando()) {
+  <div class="pad">
+    <span class="sub">Carregando subcategoria…</span>
+  </div>
+} @else {
+  <div class="pad cols">
+    <div class="main">
+      <div>
+        <h1 class="h1 big">
+          {{ modoEdicao() ? 'Editar subcategoria' : 'Cadastrar subcategoria' }}
+        </h1>
+        <div class="crumb">
+          Catálogo · <a routerLink="/admin/subcategorias">Subcategorias</a> ·
+          {{ modoEdicao() ? 'Editar subcategoria' : 'Nova subcategoria' }}
+        </div>
+      </div>
+
+      @if (erroGeral()) {
+        <div class="card p" style="border-color: var(--warn-b)">
+          <span class="warn">{{ erroGeral() }}</span>
+        </div>
+      }
+
+      <section class="card p" [formGroup]="form">
+        <div class="card-t" style="margin-bottom: 20px">Dados da subcategoria</div>
+        <div class="g2">
+          <div class="f full">
+            <label for="nome">Nome da subcategoria <span class="req">*</span></label>
+            <input
+              id="nome"
+              type="text"
+              placeholder="Ex: Drones profissionais"
+              formControlName="nome"
+            />
+            @if (campoInvalido('nome')) {
+              <span class="warn">{{ mensagemErro('nome') }}</span>
+            }
+          </div>
+          <div class="f">
+            <label for="categoriaId">Categoria <span class="req">*</span></label>
+            <select id="categoriaId" formControlName="categoriaId">
+              <option [ngValue]="null">Selecione a categoria</option>
+              @for (categoria of categorias(); track categoria.id) {
+                <option [ngValue]="categoria.id">{{ categoria.nome }}</option>
+              }
+            </select>
+            @if (campoInvalido('categoriaId')) {
+              <span class="warn">{{ mensagemErro('categoriaId') }}</span>
+            }
+          </div>
+          <div class="f">
+            <label for="ordemExibicao">Ordem de exibição</label>
+            <input id="ordemExibicao" type="number" min="0" formControlName="ordemExibicao" />
+            @if (campoInvalido('ordemExibicao')) {
+              <span class="warn">{{ mensagemErro('ordemExibicao') }}</span>
+            }
+          </div>
+          <div class="f full">
+            <label for="descricao">Descrição</label>
+            <textarea
+              id="descricao"
+              placeholder="Texto exibido no topo da listagem do storefront"
+              formControlName="descricao"
+            ></textarea>
+            @if (campoInvalido('descricao')) {
+              <span class="warn">{{ mensagemErro('descricao') }}</span>
+            }
+          </div>
+        </div>
+        <p class="legend">Campos com <span class="req">*</span> são obrigatórios</p>
+      </section>
+    </div>
+
+    <aside class="rail" [formGroup]="form">
+      <section class="card p2">
+        <div class="eyebrow">Publicação</div>
+        <div class="stack">
+          <div class="f">
+            <label for="status">Status <span class="req">*</span></label>
+            <select id="status" formControlName="status">
+              <option value="RASCUNHO">Rascunho</option>
+              <option value="ATIVA">Ativa</option>
+              <option value="INATIVA">Inativa</option>
+            </select>
+          </div>
+          <div class="f">
+            <label for="slug">Slug</label>
+            <input
+              id="slug"
+              type="text"
+              placeholder="gerado a partir do nome, se vazio"
+              formControlName="slug"
+            />
+            @if (campoInvalido('slug')) {
+              <span class="warn">{{ mensagemErro('slug') }}</span>
+            }
+          </div>
+        </div>
+      </section>
+
+      @if (modoEdicao()) {
+        <section class="card p2">
+          <div class="eyebrow">Zona de risco</div>
+          <button
+            class="btn d"
+            type="button"
+            style="width: 100%"
+            (click)="excluir()"
+            [disabled]="excluindo()"
+          >
+            {{ excluindo() ? 'Excluindo…' : 'Excluir subcategoria' }}
+          </button>
+        </section>
+      }
+    </aside>
+  </div>
+
+  <div class="actionbar">
+    <a class="btn" routerLink="/admin/subcategorias">Cancelar</a>
+    <div class="actions">
+      <button class="btn p" type="button" (click)="salvar()" [disabled]="salvando()">
+        {{ salvando() ? 'Salvando…' : 'Salvar' }}
+      </button>
+    </div>
+  </div>
+}

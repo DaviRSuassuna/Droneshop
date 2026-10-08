@@ -27,8 +27,7 @@ public class CategoriaResource {
     @Inject
     CategoriaService service;
 
-    // Categoria e serializada via CategoriaResponseDTO (e nao como entidade, igual
-    // MarcaResource) porque o autorrelacionamento categoriaPai geraria JSON aninhado.
+    // Categoria e serializada via CategoriaResponseDTO, no mesmo padrao de MarcaResource.
 
     @GET
     public List<CategoriaResponseDTO> buscarTodos(@QueryParam("page") @DefaultValue("0") int page,

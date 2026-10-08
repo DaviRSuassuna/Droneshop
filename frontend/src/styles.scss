@@ -1509,28 +1509,198 @@ a.trow:hover {
     linear-gradient(45deg, transparent 50%, var(--dim2) 50%),
     linear-gradient(135deg, var(--dim2) 50%, transparent 50%);
 }
+/* botao de tema: agora fica no topo (antes era flutuante e cobria a tabela) */
 .theme-t {
-  position: fixed;
-  right: 18px;
-  bottom: 18px;
-  z-index: 60;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  height: 38px;
-  padding: 0 15px;
-  border-radius: 20px;
-  border: 1px solid var(--b3);
-  background: var(--veil);
-  backdrop-filter: blur(8px);
-  color: var(--ink);
-  font:
-    300 12px/1 'Helvetica Neue',
-    Helvetica,
-    Arial,
-    sans-serif;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--b2);
+  background: none;
+  color: var(--ink2);
+  font-size: 15px;
+  line-height: 1;
   cursor: pointer;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
 }
 .theme-t:hover {
   border-color: var(--b5);
+  color: var(--ink);
+}
+
+/* ---------- AJUSTES DE UX (listagens) ---------- */
+:focus-visible {
+  outline: 2px solid var(--acc);
+  outline-offset: 2px;
+}
+.f input:focus-visible,
+.f select:focus-visible,
+.f textarea:focus-visible {
+  outline: none;
+  border-color: var(--acc);
+  box-shadow: 0 0 0 3px var(--acc-t);
+}
+.btn {
+  transition:
+    border-color 0.15s,
+    background-color 0.15s,
+    color 0.15s;
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.btn.d:hover {
+  border-color: var(--warn);
+  color: var(--warn);
+  background: rgba(255, 107, 74, 0.08);
+}
+/* botao de excluir da linha fica discreto e aparece ao passar o mouse */
+.btn.ghost {
+  border-color: transparent;
+  color: var(--mute);
+}
+a.trow:hover .btn.ghost,
+.btn.ghost:focus-visible {
+  border-color: var(--warn-b);
+  color: var(--warn);
+}
+a.trow {
+  transition: background-color 0.12s;
+}
+.pagebar-t {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.stack-l {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.dim.sm {
+  font-size: 11px;
+}
+.star {
+  margin-left: 6px;
+  font-size: 11px;
+  color: var(--acc);
+}
+.chips {
+  flex-wrap: wrap;
+}
+button.tag {
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-family: inherit;
+}
+button.tag:hover {
+  border-color: var(--b3);
+}
+button.tag span {
+  font-size: 13px;
+  line-height: 1;
+  color: var(--mute);
+}
+button.link {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: var(--acc);
+  cursor: pointer;
+}
+button.link:hover {
+  text-decoration: underline;
+}
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 44px 16px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--mute);
+  border-bottom: 1px solid var(--line-s);
+}
+.empty b {
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--ink);
+}
+.empty .btn {
+  margin-top: 6px;
+}
+.tbl.is-loading .trow:not(.head) {
+  opacity: 0.45;
+  transition: opacity 0.15s;
+}
+.pager-info {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.pager-size {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pager-size select {
+  height: 28px;
+  padding: 0 8px;
+  background: var(--field);
+  border: 1px solid var(--b2);
+  border-radius: 5px;
+  color: var(--ink);
+  font: inherit;
+}
+.pages button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--b2);
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  color: var(--ink2);
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+.pages button:hover:not(:disabled):not(.on) {
+  border-color: var(--b5);
+  color: var(--ink);
+}
+.pages button.on {
+  background: var(--pure);
+  border-color: var(--pure);
+  color: var(--bg);
+  cursor: default;
+}
+[data-theme='light'] .pages button.on {
+  background: var(--btn-fill);
+  border-color: var(--btn-fill);
+  color: #fff;
+}
+.pages button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.pages .gap {
+  min-width: 18px;
+  text-align: center;
+  color: var(--mute);
 }

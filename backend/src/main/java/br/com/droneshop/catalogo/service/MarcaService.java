@@ -9,7 +9,7 @@ import jakarta.validation.Valid;
 public interface MarcaService {
 
     Marca create(@Valid MarcaDTO marca);
-    void update(long id, MarcaDTO marca);
+    void update(long id, @Valid MarcaDTO marca);
     void delete(long id);
     Marca findById(long id);
     Marca findBySlug(String slug);

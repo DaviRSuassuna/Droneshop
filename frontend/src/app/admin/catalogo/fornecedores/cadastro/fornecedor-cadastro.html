@@ -1,0 +1,297 @@
+<app-admin-nav />
+
+@if (carregando()) {
+  <div class="pad">
+    <span class="sub">Carregando fornecedor…</span>
+  </div>
+} @else {
+  <div class="pad cols">
+    <div class="main">
+      <div>
+        <h1 class="h1 big">{{ modoEdicao() ? 'Editar fornecedor' : 'Cadastrar fornecedor' }}</h1>
+        <div class="crumb">
+          Catálogo · <a routerLink="/admin/fornecedores">Fornecedores</a> ·
+          {{ modoEdicao() ? 'Editar fornecedor' : 'Novo fornecedor' }}
+        </div>
+      </div>
+
+      @if (erroGeral()) {
+        <div class="card p" style="border-color: var(--warn-b)">
+          <span class="warn">{{ erroGeral() }}</span>
+        </div>
+      }
+
+      <section class="card p" [formGroup]="form">
+        <div class="card-t" style="margin-bottom: 20px">Dados cadastrais</div>
+        <div class="g2">
+          <div class="f full" [class.erro]="invalido('razaoSocial')">
+            <label for="razaoSocial">Razão social <span class="req">*</span></label>
+            <input
+              id="razaoSocial"
+              type="text"
+              maxlength="150"
+              placeholder="Ex: Aerion Brasil Importação Ltda."
+              formControlName="razaoSocial"
+            />
+            @if (resolveErrorMessage('razaoSocial'); as msg) {
+              <span class="warn">{{ msg }}</span>
+            }
+          </div>
+          <div class="f" [class.erro]="invalido('cnpj')">
+            <label for="cnpj">CNPJ <span class="req">*</span></label>
+            <input
+              id="cnpj"
+              type="text"
+              inputmode="numeric"
+              placeholder="00.000.000/0001-00"
+              formControlName="cnpj"
+              appMascara="cnpj"
+            />
+            @if (resolveErrorMessage('cnpj'); as msg) {
+              <span class="warn">{{ msg }}</span>
+            }
+          </div>
+        </div>
+        <p class="legend">Campos com <span class="req">*</span> são obrigatórios</p>
+      </section>
+
+      <section class="card p" [formGroup]="form">
+        <div class="card-t" style="margin-bottom: 20px">Endereço</div>
+        <div class="g2" formGroupName="endereco">
+          <div class="f" [class.erro]="invalido('endereco.cep')">
+            <label for="end-cep">CEP <span class="req">*</span></label>
+            <div class="cep-row">
+              <input
+                id="end-cep"
+                type="text"
+                inputmode="numeric"
+                placeholder="00000-000"
+                formControlName="cep"
+                appMascara="cep"
+              />
+              <button
+                class="btn"
+                type="button"
+                (click)="buscarCep()"
+                [disabled]="buscandoCep()"
+              >
+                {{ buscandoCep() ? 'Buscando…' : 'Buscar' }}
+              </button>
+            </div>
+            @if (resolveErrorMessage('endereco.cep'); as msg) {
+              <span class="warn">{{ msg }}</span>
+            } @else if (avisoCep(); as aviso) {
+              <span class="aviso-cep" [class]="aviso.tipo">{{ aviso.texto }}</span>
+            } @else {
+              <span class="aviso-cep" style="color: var(--mute)">
+                A busca preenche o endereço automaticamente. Todos os campos continuam editáveis.
+              </span>
+            }
+          </div>
+          <div class="f"></div>
+
+          <div class="f full" [class.erro]="invalido('endereco.logradouro')">
+            <label for="end-logradouro">Logradouro <span class="req">*</span></label>
+            <input
+              id="end-logradouro"
+              type="text"
+              maxlength="150"
+              placeholder="Ex: Avenida Paulista"
+              formControlName="logradouro"
+            />
+            @if (resolveErrorMessage('endereco.logradouro'); as msg) {
+              <span class="warn">{{ msg }}</span>
+            }
+          </div>
+
+          <div class="f" [class.erro]="invalido('endereco.numero')">
+            <label for="end-numero">Número <span class="req">*</span></label>
+            <input
+              id="end-numero"
+              type="text"
+              maxlength="10"
+              placeholder="Ex: 1578 ou S/N"
+              formControlName="numero"
+            />
+            @if (resolveErrorMessage('endereco.numero'); as msg) {
+              <span class="warn">{{ msg }}</span>
+            }
+          </div>
+          <div class="f" [class.erro]="invalido('endereco.complemento')">
+            <label for="end-complemento">Complemento</label>
+            <input
+              id="end-complemento"
+              type="text"
+              maxlength="60"
+              placeholder="Ex: Sala 801"
+              formControlName="complemento"
+            />
+            @if (resolveErrorMessage('endereco.complemento'); as msg) {
+              <span class="warn">{{ msg }}</span>
+            }
+          </div>
+
+          <div class="f full" [class.erro]="invalido('endereco.bairro')">
+            <label for="end-bairro">Bairro <span class="req">*</span></label>
+            <input
+              id="end-bairro"
+              type="text"
+              maxlength="80"
+              placeholder="Ex: Centro"
+              formControlName="bairro"
+            />
+            @if (resolveErrorMessage('endereco.bairro'); as msg) {
+              <span class="warn">{{ msg }}</span>
+            }
+          </div>
+
+          <div class="f" [class.erro]="invalido('endereco.idEstado')">
+            <label for="end-estado">Estado <span class="req">*</span></label>
+            <select id="end-estado" formControlName="idEstado">
+              <option [ngValue]="null">Selecione o estado</option>
+              @for (estado of estados(); track estado.id) {
+                <option [ngValue]="estado.id">{{ estado.nome }} ({{ estado.sigla }})</option>
+              }
+            </select>
+            @if (resolveErrorMessage('endereco.idEstado'); as msg) {
+              <span class="warn">{{ msg }}</span>
+            }
+          </div>
+          <div class="f" [class.erro]="invalido('endereco.idMunicipio')">
+            <label for="end-municipio">Município <span class="req">*</span></label>
+            <select id="end-municipio" formControlName="idMunicipio">
+              <option [ngValue]="null">
+                {{
+                  carregandoMunicipios()
+                    ? 'Carregando municípios…'
+                    : municipios().length
+                      ? 'Selecione o município'
+                      : 'Escolha o estado primeiro'
+                }}
+              </option>
+              @for (municipio of municipios(); track municipio.id) {
+                <option [ngValue]="municipio.id">{{ municipio.nome }}</option>
+              }
+            </select>
+            @if (resolveErrorMessage('endereco.idMunicipio'); as msg) {
+              <span class="warn">{{ msg }}</span>
+            }
+          </div>
+        </div>
+        <p class="legend">
+          Município e Estado são cadastros do IBGE: o endereço guarda a referência ao município, não
+          o nome da cidade em texto.
+        </p>
+      </section>
+
+      <section class="card p" [formGroup]="form">
+        <div class="card-t" style="margin-bottom: 20px">Contato comercial</div>
+        <div class="g2">
+          <div class="f" [class.erro]="invalido('nomeContato')">
+            <label for="nomeContato">Nome do contato <span class="req">*</span></label>
+            <input
+              id="nomeContato"
+              type="text"
+              maxlength="100"
+              placeholder="Ex: Paulo Serra"
+              formControlName="nomeContato"
+            />
+            @if (resolveErrorMessage('nomeContato'); as msg) {
+              <span class="warn">{{ msg }}</span>
+            }
+          </div>
+          <div class="f" [class.erro]="invalido('telefoneContato')">
+            <label for="telefoneContato">Telefone do contato</label>
+            <input
+              id="telefoneContato"
+              type="text"
+              inputmode="numeric"
+              placeholder="(11) 0000-0000"
+              formControlName="telefoneContato"
+              appMascara="telefone"
+            />
+            @if (resolveErrorMessage('telefoneContato'); as msg) {
+              <span class="warn">{{ msg }}</span>
+            }
+          </div>
+          <div class="f full" [class.erro]="invalido('emailContato')">
+            <label for="emailContato">E-mail do contato <span class="req">*</span></label>
+            <input
+              id="emailContato"
+              type="email"
+              maxlength="150"
+              placeholder="comercial@fornecedor.com.br"
+              formControlName="emailContato"
+            />
+            @if (resolveErrorMessage('emailContato'); as msg) {
+              <span class="warn">{{ msg }}</span>
+            }
+          </div>
+        </div>
+        <p class="legend">
+          Contato em três colunas próprias (D18): permite busca por e-mail e validação de formato.
+        </p>
+      </section>
+    </div>
+
+    <aside class="rail" [formGroup]="form">
+      <section class="card p2">
+        <div class="eyebrow">Situação</div>
+        <div class="stack">
+          <div class="f" [class.erro]="invalido('status')">
+            <label for="status">Status <span class="req">*</span></label>
+            <select id="status" formControlName="status">
+              <option value="ATIVO">Ativo</option>
+              <option value="INATIVO">Inativo</option>
+            </select>
+            @if (resolveErrorMessage('status'); as msg) {
+              <span class="warn">{{ msg }}</span>
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="card p2">
+        <div class="eyebrow">Por que este cadastro existe</div>
+        <p style="margin: 0; font-size: 12px; line-height: 1.7; color: var(--dim)">
+          Fornecedor é <strong>campo obrigatório</strong> na tela de cadastro de produto. Sem pelo
+          menos um fornecedor ativo, nenhum drone ou acessório pode ser publicado.
+        </p>
+      </section>
+
+      @if (pendencias().length > 0) {
+        <section class="card p2">
+          <div class="eyebrow">Pendências</div>
+          <div style="display: flex; flex-direction: column; gap: 9px">
+            <span class="warn">{{ pendencias().length }} campo(s) obrigatório(s) vazio(s)</span>
+            <span style="font-size: 12px; color: var(--mute)">{{ pendencias().join(' · ') }}</span>
+          </div>
+        </section>
+      }
+
+      @if (modoEdicao()) {
+        <section class="card p2">
+          <div class="eyebrow">Zona de risco</div>
+          <button
+            class="btn d"
+            type="button"
+            style="width: 100%"
+            (click)="excluir()"
+            [disabled]="excluindo()"
+          >
+            {{ excluindo() ? 'Excluindo…' : 'Excluir fornecedor' }}
+          </button>
+        </section>
+      }
+    </aside>
+  </div>
+
+  <div class="actionbar">
+    <a class="btn" routerLink="/admin/fornecedores">Cancelar</a>
+    <div class="actions">
+      <button class="btn p" type="button" (click)="salvar()" [disabled]="salvando()">
+        {{ salvando() ? 'Salvando…' : 'Salvar fornecedor' }}
+      </button>
+    </div>
+  </div>
+}

@@ -5,8 +5,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Categoria extends DefaultEntity {
@@ -16,10 +14,6 @@ public class Categoria extends DefaultEntity {
 
     @Column(length = 110, nullable = false, unique = true)
     private String slug;
-
-    @ManyToOne
-    @JoinColumn(name = "categoria_pai_id")
-    private Categoria categoriaPai;
 
     @Column(nullable = false, name = "ordem_exibicao")
     private Integer ordemExibicao;
@@ -51,14 +45,6 @@ public class Categoria extends DefaultEntity {
 
     public void setSlug(String slug) {
         this.slug = slug;
-    }
-
-    public Categoria getCategoriaPai() {
-        return categoriaPai;
-    }
-
-    public void setCategoriaPai(Categoria categoriaPai) {
-        this.categoriaPai = categoriaPai;
     }
 
     public Integer getOrdemExibicao() {

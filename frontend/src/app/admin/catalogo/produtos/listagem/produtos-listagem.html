@@ -1,0 +1,209 @@
+<app-admin-nav />
+
+<div class="pagebar">
+  <div class="pagebar-t">
+    <h1 class="h1">Produtos</h1>
+    <span class="sub">
+      {{ total() }} {{ total() === 1 ? 'produto encontrado' : 'produtos encontrados' }}
+    </span>
+  </div>
+  <div class="actions">
+    <a class="btn p" routerLink="/admin/produtos/novo">Novo produto</a>
+  </div>
+</div>
+
+<div class="pad-t stack-l">
+  <div class="filters">
+    <div class="f grow">
+      <input
+        type="search"
+        placeholder="Buscar por nome ou modelo"
+        aria-label="Buscar por nome ou modelo"
+        [value]="termoBusca()"
+        (input)="aoDigitarBusca($any($event.target).value)"
+      />
+    </div>
+    <div class="f">
+      <select
+        aria-label="Filtrar por marca"
+        [value]="filtroMarca() ?? ''"
+        (change)="aoMudarMarca($any($event.target).value)"
+      >
+        <option value="">Todas as marcas</option>
+        @for (marca of marcas(); track marca.id) {
+          <option [value]="marca.id" [selected]="marca.id === filtroMarca()">
+            {{ marca.nome }}
+          </option>
+        }
+      </select>
+    </div>
+    <div class="f">
+      <select
+        aria-label="Filtrar por categoria"
+        [value]="filtroCategoria() ?? ''"
+        (change)="aoMudarCategoria($any($event.target).value)"
+      >
+        <option value="">Todas as categorias</option>
+        @for (categoria of categorias(); track categoria.id) {
+          <option [value]="categoria.id" [selected]="categoria.id === filtroCategoria()">
+            {{ categoria.nome }}
+          </option>
+        }
+      </select>
+    </div>
+    <div class="f">
+      <select
+        aria-label="Filtrar por subcategoria"
+        (change)="aoMudarSubcategoria($any($event.target).value)"
+      >
+        <option value="">Todas as subcategorias</option>
+        @for (sub of subcategoriasDoFiltro(); track sub.id) {
+          <option [value]="sub.id" [selected]="sub.id === filtroSubcategoria()">
+            {{ sub.nome }}
+          </option>
+        }
+      </select>
+    </div>
+    <div class="f">
+      <select
+        aria-label="Filtrar por status"
+        [value]="filtroStatus()"
+        (change)="aoMudarStatus($any($event.target).value)"
+      >
+        <option value="">Todos os status</option>
+        <option value="ATIVO">Ativo</option>
+        <option value="INATIVO">Inativo</option>
+        <option value="RASCUNHO">Rascunho</option>
+      </select>
+    </div>
+  </div>
+
+  @if (filtrosAtivos().length > 0) {
+    <div class="chips">
+      <span>Filtros ativos:</span>
+      @for (chip of filtrosAtivos(); track chip.rotulo) {
+        <button
+          type="button"
+          class="tag"
+          (click)="chip.limpar()"
+          [attr.aria-label]="'Remover ' + chip.rotulo"
+        >
+          {{ chip.rotulo }} <span aria-hidden="true">×</span>
+        </button>
+      }
+      <button type="button" class="link" (click)="limparFiltros()">Limpar tudo</button>
+    </div>
+  }
+
+  <div class="tbl" [class.is-loading]="carregando()">
+    <div class="trow head" [style.grid-template-columns]="grid">
+      <span>Produto</span>
+      <span>Marca</span>
+      <span>Subcategoria</span>
+      <span class="num">Preço</span>
+      <span>Status</span>
+      <span></span>
+    </div>
+
+    @if (erro()) {
+      <div class="empty">
+        <span class="warn">{{ erro() }}</span>
+        <button class="btn sm" type="button" (click)="carregar()">Tentar novamente</button>
+      </div>
+    } @else {
+      @for (produto of produtos(); track produto.id) {
+        <a
+          class="trow"
+          [style.grid-template-columns]="grid"
+          [routerLink]="['/admin/produtos', produto.id, 'editar']"
+        >
+          <span class="cell-name">
+            <b>
+              {{ produto.nome }}
+              @if (produto.destaque) {
+                <span class="star" title="Destaque na loja">★</span>
+              }
+            </b>
+            <span class="chip">{{ produto.modelo }}</span>
+          </span>
+          <span class="ink">{{ produto.marcaNome }}</span>
+          <span class="cell-name">
+            <span class="ink">{{ produto.subcategoriaNome }}</span>
+            <span class="dim sm">{{ produto.categoriaNome }}</span>
+          </span>
+          <span class="ink num">{{ formatarPreco(produto.preco) }}</span>
+          <span class="status">
+            <span class="dot" [style.background]="corStatus(produto.status)"></span>
+            {{ statusLabel(produto.status) }}
+          </span>
+          <span style="justify-self: end">
+            <button class="btn sm d ghost" type="button" (click)="excluir($event, produto)">
+              Excluir
+            </button>
+          </span>
+        </a>
+      } @empty {
+        @if (!carregando()) {
+          <div class="empty">
+            <b>Nenhum produto encontrado</b>
+            <span>Ajuste ou limpe os filtros para ver mais resultados.</span>
+            @if (filtrosAtivos().length > 0) {
+              <button class="btn sm" type="button" (click)="limparFiltros()">Limpar filtros</button>
+            }
+          </div>
+        } @else {
+          <div class="empty"><span>Carregando produtos…</span></div>
+        }
+      }
+    }
+
+    <div class="pager">
+      <span class="pager-info">
+        Exibindo {{ intervaloExibido() }} de {{ total() }}
+        <label class="pager-size">
+          Itens por página
+          <select
+            [value]="tamanhoPagina()"
+            (change)="aoMudarTamanhoPagina($any($event.target).value)"
+          >
+            @for (t of tamanhosPagina; track t) {
+              <option [value]="t" [selected]="t === tamanhoPagina()">{{ t }}</option>
+            }
+          </select>
+        </label>
+      </span>
+      <nav class="pages" aria-label="Paginação">
+        <button
+          type="button"
+          (click)="irParaPagina(pagina() - 1)"
+          [disabled]="pagina() === 0"
+          aria-label="Página anterior"
+        >
+          ‹
+        </button>
+        @for (p of paginasVisiveis(); track $index) {
+          @if (p === null) {
+            <span class="gap">…</span>
+          } @else {
+            <button
+              type="button"
+              [class.on]="p === pagina()"
+              [attr.aria-current]="p === pagina() ? 'page' : null"
+              (click)="irParaPagina(p)"
+            >
+              {{ p + 1 }}
+            </button>
+          }
+        }
+        <button
+          type="button"
+          (click)="irParaPagina(pagina() + 1)"
+          [disabled]="pagina() + 1 >= totalPaginas()"
+          aria-label="Próxima página"
+        >
+          ›
+        </button>
+      </nav>
+    </div>
+  </div>
+</div>

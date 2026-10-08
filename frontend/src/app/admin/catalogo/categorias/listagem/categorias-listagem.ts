@@ -21,30 +21,18 @@ export class CategoriasListagem implements OnInit {
   readonly categorias = signal<Categoria[]>([]);
 
   readonly termoBusca = signal('');
-  readonly filtroPai = signal('');
   readonly filtroStatus = signal<StatusCategoria | ''>('');
   readonly pagina = signal(0);
 
-  readonly categoriasPaiDisponiveis = computed(() => {
-    const nomes = new Set(
-      this.categorias()
-        .map((c) => c.categoriaPaiNome)
-        .filter((nome): nome is string => !!nome),
-    );
-    return Array.from(nomes).sort();
-  });
-
   readonly categoriasFiltradas = computed(() => {
     const termo = this.termoBusca().trim().toLowerCase();
-    const pai = this.filtroPai();
     const status = this.filtroStatus();
 
     return this.categorias().filter((c) => {
       const combinaTermo =
         !termo || c.nome.toLowerCase().includes(termo) || c.slug.toLowerCase().includes(termo);
-      const combinaPai = !pai || c.categoriaPaiNome === pai;
       const combinaStatus = !status || c.status === status;
-      return combinaTermo && combinaPai && combinaStatus;
+      return combinaTermo && combinaStatus;
     });
   });
 
@@ -89,11 +77,6 @@ export class CategoriasListagem implements OnInit {
     this.pagina.set(0);
   }
 
-  aoMudarPai(valor: string): void {
-    this.filtroPai.set(valor);
-    this.pagina.set(0);
-  }
-
   aoMudarStatus(valor: string): void {
     this.filtroStatus.set(valor as StatusCategoria | '');
     this.pagina.set(0);
@@ -116,9 +99,7 @@ export class CategoriasListagem implements OnInit {
     this.categoriaService.excluir(categoria.id).subscribe({
       next: () => this.categorias.update((lista) => lista.filter((c) => c.id !== categoria.id)),
       error: () =>
-        alert(
-          'Não foi possível excluir esta categoria. Ela pode estar vinculada a produtos ou subcategorias.',
-        ),
+        alert('Não foi possível excluir esta categoria. Ela pode ter subcategorias vinculadas.'),
     });
   }
 
@@ -128,11 +109,10 @@ export class CategoriasListagem implements OnInit {
 
   exportarCsv(): void {
     const linhas = [
-      ['Nome', 'Slug', 'Categoria pai', 'Ordem', 'Status', 'Exibir no menu'],
+      ['Nome', 'Slug', 'Ordem', 'Status', 'Exibir no menu'],
       ...this.categoriasFiltradas().map((c) => [
         c.nome,
         c.slug,
-        c.categoriaPaiNome ?? 'Raiz',
         String(c.ordemExibicao),
         this.statusLabel(c.status),
         c.exibirMenu ? 'Sim' : 'Nao',
