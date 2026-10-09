@@ -1,7 +1,7 @@
 # PRD: Aeria Drones
 
 **Produto:** E-commerce de drones e acessórios (storefront + painel administrativo)
-**Versão do documento:** 1.3
+**Versão do documento:** 1.4
 **Status:** rascunho para validação
 **Base:** protótipo de 36 telas + 8 diagramas de classes por contexto delimitado, em `diagramas/`
 
@@ -255,15 +255,17 @@ Verificação de e-mail, recuperação de senha por token (só se aplica a quem 
 | Taxa de devolução por motivo | Qualidade de produto ou de descrição |
 | Entrega e abertura de e-mail | Saúde do canal de notificação |
 
-## 9. Faseamento sugerido
+## 9. Faseamento
+
+O painel administrativo vem primeiro (D19): a loja só tem o que vender e o que mostrar depois que catálogo, estoque, promoções e cupons podem ser cadastrados pela operação. Marca, categoria, subcategoria e fornecedor já estão entregues. O backlog detalhado fica nas issues do GitHub, uma por tarefa, agrupadas em milestones por fase.
 
 | Fase | Entrega |
 |---|---|
-| 1 | Identidade, conta com perfis, catálogo, marca, categoria, fornecedor |
-| 2 | Estoque com reserva, carrinho anônimo, cupom, checkout, pagamento |
-| 3 | Pedido, entrega, frete, rastreio, notificações transacionais |
-| 4 | Devolução, nota fiscal, número de série, atendimento |
-| 5 | Auditoria, preferências de notificação, marketing, busca e relatórios |
+| 1 | **Painel administrativo**: login do admin, usuários com papéis e permissões, configuração da loja, catálogo completo (produto, drone, acessório, variante, kit, compatibilidade, mídia), movimento de estoque, promoções, cadastro de cupons, pedidos (listagem, detalhe e mudança de status) e dashboard |
+| 2 | **Conta do cliente e vitrine**: perfil e endereços do cliente, sessão com perfil ativo, listagem, filtros e página de produto, lista de desejos |
+| 3 | **Compra, pagamento e entrega**: reserva de estoque, carrinho anônimo, aplicação de cupom, checkout, pagamento, cartões salvos, frete, rastreio, notificações transacionais, verificação de e-mail |
+| 4 | **Pós-venda**: devolução, estorno, nota fiscal, número de série, atendimento, avaliações e perguntas |
+| 5 | **Auditoria, marketing e busca**: log de auditoria, preferências de notificação e marketing, termos buscados, comparação, 2FA, LGPD, login com Google |
 
 ## 10. Decisões registradas
 
@@ -287,6 +289,7 @@ Verificação de e-mail, recuperação de senha por token (só se aplica a quem 
 | D16 | **Peso e dimensão desdobrados**: `Drone.pesoGramas` e `dimensoesDobrado`/`dimensoesAberto` são spec de exibição e filtro; `VarianteProduto.pesoEmbalagemKg` e as três dimensões da caixa são o que cota frete. No kit, derivados da soma dos componentes com sobrescrita opcional. |
 | D17 | **Compatibilidade como relação N:N** entre `Acessorio` e `Produto`, substituindo o campo texto `Acessorio.compatibilidade`. Como `Acessorio` herda de `Produto`, o mesmo vínculo cobre acessório-drone (bateria e modelo) e acessório-acessório (carregador e bateria). O vínculo é recíproco: aparece nos dois cadastros e habilita filtro real, em vez de depender de nome digitado sem erro. Fecha a pendência P1. |
 | D18 | **Contato do fornecedor em três colunas**: `Fornecedor.contato` vira `nomeContato`, `emailContato` e `telefoneContato`. Permite busca por e-mail ou telefone e validação de formato, que a string única não permitia. |
+| D19 | **Painel administrativo primeiro.** A fase 1 entrega todas as telas do admin integradas à API antes do storefront. Pedidos entram no admin já na fase 1, alimentados por carga de dados, e passam a ser criados pelo checkout na fase 3. |
 
 ## 11. Pendências em aberto
 

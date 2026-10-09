@@ -1,0 +1,104 @@
+name: Tarefa de domínio
+description: Implementar uma classe (ou um grupo coeso de classes) do diagrama de classes.
+title: "[modulo] Classe: resumo da entrega"
+labels: ["tipo:feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Uma issue = uma branch = um PR para a `develop`.
+        Branch: `feat/<numero-da-issue>-<resumo-curto>` (ex.: `feat/12-variante-produto`).
+
+  - type: dropdown
+    id: modulo
+    attributes:
+      label: Módulo
+      options:
+        - identidade
+        - catalogo
+        - estoque
+        - compra
+        - pagamento
+        - pedido
+        - devolucao
+        - atendimento
+        - notificacao
+        - administracao
+    validations:
+      required: true
+
+  - type: input
+    id: classes
+    attributes:
+      label: Classes do diagrama
+      description: Classes e enums que esta tarefa cria ou altera.
+      placeholder: "VarianteProduto"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: diagrama
+    attributes:
+      label: Diagrama de referência
+      options:
+        - docs/diagramas/aeria-identidade.puml
+        - docs/diagramas/aeria-catalogo.puml
+        - docs/diagramas/aeria-estoque.puml
+        - docs/diagramas/aeria-compra.puml
+        - docs/diagramas/aeria-pedido.puml
+        - docs/diagramas/aeria-pagamento.puml
+        - docs/diagramas/aeria-atendimento.puml
+        - docs/diagramas/aeria-administrativo.puml
+    validations:
+      required: true
+
+  - type: input
+    id: refs
+    attributes:
+      label: Requisitos, regras e decisões (PRD)
+      placeholder: "RF03, RF11, RN18, D13, D16"
+
+  - type: textarea
+    id: descricao
+    attributes:
+      label: O que entregar
+      description: Atributos, relacionamentos e comportamento esperado, conforme o diagrama.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: backend
+    attributes:
+      label: Backend (padrão SGA)
+      options:
+        - label: Entidade JPA herdando `DefaultEntity`
+        - label: Enums no padrão `Regiao`/`RegiaoConverter`, com endpoint de leitura
+        - label: Repository (`PanacheRepository`)
+        - label: DTO de entrada com Bean Validation e DTO de saída como `record`
+        - label: Service com `@Transactional` e validações de negócio
+        - label: Resource REST com paginação `page`/`pageSize`
+        - label: Carga de dados (`import.sql`) atualizada
+
+  - type: checkboxes
+    id: frontend
+    attributes:
+      label: Frontend
+      options:
+        - label: Tela(s) do admin integradas à API
+        - label: Tela(s) do storefront integradas à API
+        - label: Não se aplica
+
+  - type: textarea
+    id: aceite
+    attributes:
+      label: Critérios de aceite
+      value: |
+        - [ ] 
+    validations:
+      required: true
+
+  - type: input
+    id: deps
+    attributes:
+      label: Depende de
+      placeholder: "#12, #13"
