@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: PRD da Aeria
+    url: https://github.com/DaviRSuassuna/droneshop/blob/develop/docs/PRD-Aeria.md
+    about: Requisitos (RF), regras (RN) e decisões (D) que as tarefas referenciam.
+  - name: Diagramas de classes
+    url: https://github.com/DaviRSuassuna/droneshop/tree/develop/docs/diagramas
+    about: Fonte principal de cada tarefa de domínio.

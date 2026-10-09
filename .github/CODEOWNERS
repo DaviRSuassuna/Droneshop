@@ -1,0 +1,4 @@
+# Todo arquivo do repositório tem o Davi como dono.
+# Com "Exigir revisão de Code Owners" ligado nos rulesets da main e da develop,
+# nenhum PR pode ser mergeado sem a aprovação dele.
+* @DaviRSuassuna

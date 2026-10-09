@@ -1,0 +1,30 @@
+name: Bug
+description: Algo que não funciona como o PRD ou o diagrama descrevem.
+title: "[bug] resumo do problema"
+labels: ["tipo:bug"]
+body:
+  - type: dropdown
+    id: modulo
+    attributes:
+      label: Módulo
+      options: [identidade, catalogo, estoque, compra, pagamento, pedido, devolucao, atendimento, notificacao, administracao, frontend]
+    validations:
+      required: true
+  - type: textarea
+    id: passos
+    attributes:
+      label: Como reproduzir
+      value: |
+        1. 
+    validations:
+      required: true
+  - type: textarea
+    id: esperado
+    attributes:
+      label: Esperado x obtido
+    validations:
+      required: true
+  - type: textarea
+    id: evidencias
+    attributes:
+      label: Logs, prints ou payload
