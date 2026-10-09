@@ -35,11 +35,55 @@ class Subcategoria {
   -slug: String
 }
 
+enum StatusFornecedor {
+  ATIVO
+  INATIVO
+}
+
 class Fornecedor {
   -razaoSocial: String
   -cnpj: String
-  -contato: String
+  -nomeContato: String
+  -emailContato: String
+  -telefoneContato: String
+  -endereco: Endereco
+  -status: StatusFornecedor
 }
+note right of Fornecedor
+  Contato em três campos (D18).
+  cnpj e telefoneContato só com dígitos;
+  a máscara fica no front
+end note
+
+class Endereco <<Embeddable>> {
+  -cep: String
+  -logradouro: String
+  -numero: String
+  -complemento: String
+  -bairro: String
+  -municipio: Municipio
+}
+note bottom of Endereco
+  Módulo endereco. Colunas embutidas na
+  tabela de quem usa (hoje, fornecedor).
+  cep só com dígitos; busca via ViaCEP
+  no backend, sem bloquear o cadastro
+end note
+
+class Municipio {
+  -nome: String
+  -codigoIbge: Integer
+}
+
+class Estado {
+  -nome: String
+  -sigla: String
+  -codigoIbge: Integer
+}
+note bottom of Estado
+  Municipio e Estado: dados oficiais do IBGE,
+  somente leitura na API (localidades.sql)
+end note
 
 enum StatusProduto {
   RASCUNHO
@@ -94,8 +138,13 @@ end note
 
 class Acessorio {
   -tipoAcessorio: String
-  -compatibilidade: String
 }
+note right of Acessorio
+  Compatibilidade é relação N:N com Produto (D17),
+  não texto. Como Acessorio é Produto, cobre
+  acessório-drone e acessório-acessório;
+  o vínculo aparece nos dois cadastros
+end note
 
 class VarianteProduto {
   -sku: String
@@ -170,6 +219,10 @@ Subcategoria "*" --> "1" Categoria
 Produto "*" --> "1" Marca
 Produto "*" --> "1" Subcategoria
 Produto "*" --> "1" Fornecedor
+Fornecedor "1" *-- "1" Endereco
+Endereco "*" --> "1" Municipio
+Municipio "*" --> "1" Estado
+Acessorio "*" -- "*" Produto : compatível com
 Produto "1" *-- "1..*" VarianteProduto
 Produto "1" o-- "*" MidiaProduto
 VarianteProduto "1" *-- "*" ComponenteKit : componentes (se kit)
