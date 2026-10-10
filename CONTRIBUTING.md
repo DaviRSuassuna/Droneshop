@@ -7,17 +7,18 @@ issue  ->  branch a partir da develop  ->  PR para develop  ->  (Davi aprova)  -
                                                          develop  ->  PR para main  ->  (Davi aprova)  ->  merge
 ```
 
-1. **Pegue uma issue** da fase atual (aba Issues > Milestones) e se atribua nela.
-2. **Crie a branch a partir da `develop`** com o número da issue:
+1. **Pegue uma issue** da fase atual (aba Issues > Milestones) e se atribua nela. Ajustes pequenos (CI, docs, configuração) podem ir sem issue.
+2. **Crie a branch a partir da `develop`**, com o número da issue quando houver:
    ```bash
    git switch develop && git pull
    git switch -c feat/12-variante-produto
    ```
-   Tipos aceitos: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`.
+   Sem issue: `chore/ajusta-gitignore`.
+   Tipos aceitos: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `ci`.
    Atalho: na issue, "Development > Create a branch" (ajuste o nome para o padrão acima, branch de origem `develop`).
 3. **Commits** em Conventional Commits, em português, com escopo:
    `feat(catalogo): cria VarianteProduto com dados de embalagem`
-4. **Abra o PR para a `develop`** com `Closes #12` na descrição. A issue fecha sozinha no merge.
+4. **Abra o PR para a `develop`** com `Closes #12` na descrição, se houver issue. Ela fecha sozinha no merge.
 5. **Revisão:** só o Davi aprova (CODEOWNERS). Sem a aprovação dele o botão de merge fica bloqueado.
 6. **Release:** quando a fase estiver estável, PR de `develop` para `main`. É o único caminho aceito para a `main`.
 
@@ -28,8 +29,8 @@ Nunca faça commit direto em `main` nem em `develop`: o push é recusado.
 | Verificação | Onde |
 |---|---|
 | PR para `main` só sai da `develop` | workflow `origem-da-branch` |
-| Branch do PR para `develop` segue `tipo/<numero>-<resumo>` | workflow `origem-da-branch` |
-| PR para `develop` tem `Closes #<numero>` | workflow `origem-da-branch` |
+| Branch do PR para `develop` segue `tipo/<resumo>` ou `tipo/<numero>-<resumo>` | workflow `origem-da-branch` |
+| PR para `develop` sem `Closes #<numero>` gera só um aviso, não bloqueia | workflow `origem-da-branch` |
 | Aprovação do Davi, push direto bloqueado, sem force push, sem apagar a branch | rulesets da `main` e da `develop` |
 
 ## Configuração do repositório

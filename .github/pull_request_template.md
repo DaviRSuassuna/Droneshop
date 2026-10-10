@@ -1,5 +1,6 @@
 ## Issue
 
+<!-- Se houver issue: Closes #<numero>. Se não houver, apague esta seção. -->
 Closes #
 
 ## O que mudou
@@ -12,7 +13,7 @@ Closes #
 
 ## Checklist
 
-- [ ] A branch saiu da `develop` e segue `tipo/<numero>-<resumo>`
+- [ ] A branch saiu da `develop` e segue `tipo/<resumo>` ou `tipo/<numero>-<resumo>`
 - [ ] Commits em Conventional Commits, em português, com escopo (ex.: `feat(catalogo): ...`)
 - [ ] Segue o diagrama de classes e o padrão SGA (`DefaultEntity`, DTO record, Panache)
 - [ ] `./mvnw test` passa no backend / `ng build` passa no frontend

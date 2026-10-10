@@ -29,14 +29,15 @@ jobs:
           fi
 
           # BASE = develop
-          if ! [[ "$HEAD" =~ ^(feat|fix|docs|refactor|test|chore)/[0-9]+-[a-z0-9._-]+$ ]]; then
-            echo "::error::Branch '$HEAD' fora do padrão tipo/<numero-da-issue>-<resumo> (ex.: feat/12-variante-produto)."
+          # O número da issue no nome da branch é opcional: tipo/<numero>-<resumo> ou tipo/<resumo>.
+          if ! [[ "$HEAD" =~ ^(feat|fix|docs|refactor|test|chore|ci)/([0-9]+-)?[a-z0-9._-]+$ ]]; then
+            echo "::error::Branch '$HEAD' fora do padrão tipo/<resumo> ou tipo/<numero-da-issue>-<resumo> (ex.: feat/12-variante-produto, chore/ajusta-gitignore)."
             exit 1
           fi
 
+          # Vincular issue é opcional: sem 'Closes #<numero>' o check passa, só com aviso.
           if ! printf '%s' "$BODY" | grep -Eiq '(close[sd]?|fix(e[sd])?|resolve[sd]?) #[0-9]+'; then
-            echo "::error::A descrição do PR precisa vincular a issue com 'Closes #<numero>'."
-            exit 1
+            echo "::notice::PR sem issue vinculada. Se ele resolve uma issue, adicione 'Closes #<numero>' na descrição."
           fi
 
           echo "PR $HEAD -> develop: ok"
