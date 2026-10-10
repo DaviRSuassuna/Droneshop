@@ -3,8 +3,8 @@
 ## Fluxo
 
 ```
-issue  ->  branch a partir da develop  ->  PR para develop  ->  (Davi aprova)  ->  merge
-                                                         develop  ->  PR para main  ->  (Davi aprova)  ->  merge
+issue  ->  branch a partir da develop  ->  PR para develop  ->  check verde  ->  merge
+                                                         develop  ->  PR para main  ->  check verde  ->  merge
 ```
 
 1. **Pegue uma issue** da fase atual (aba Issues > Milestones) e se atribua nela. Ajustes pequenos (CI, docs, configuração) podem ir sem issue.
@@ -19,7 +19,7 @@ issue  ->  branch a partir da develop  ->  PR para develop  ->  (Davi aprova)  -
 3. **Commits** em Conventional Commits, em português, com escopo:
    `feat(catalogo): cria VarianteProduto com dados de embalagem`
 4. **Abra o PR para a `develop`** com `Closes #12` na descrição, se houver issue. Ela fecha sozinha no merge.
-5. **Revisão:** só o Davi aprova (CODEOWNERS). Sem a aprovação dele o botão de merge fica bloqueado.
+5. **Revisão:** não há aprovação obrigatória. O CODEOWNERS só pede a revisão do Davi automaticamente; o merge fica liberado quando os checks passam.
 6. **Release:** quando a fase estiver estável, PR de `develop` para `main`. É o único caminho aceito para a `main`.
 
 Nunca faça commit direto em `main` nem em `develop`: o push é recusado.
@@ -31,11 +31,11 @@ Nunca faça commit direto em `main` nem em `develop`: o push é recusado.
 | PR para `main` só sai da `develop` | workflow `origem-da-branch` |
 | Branch do PR para `develop` segue `tipo/<resumo>` ou `tipo/<numero>-<resumo>` | workflow `origem-da-branch` |
 | PR para `develop` sem `Closes #<numero>` gera só um aviso, não bloqueia | workflow `origem-da-branch` |
-| Aprovação do Davi, push direto bloqueado, sem force push, sem apagar a branch | rulesets da `main` e da `develop` |
+| Merge só por PR (push direto bloqueado), sem force push, sem apagar a branch | rulesets da `main` e da `develop` |
 
 ## Configuração do repositório
 
-Já aplicado: rulesets da `main` e da `develop` (push direto, force push e exclusão bloqueados; PR com 1 aprovação de Code Owner), labels, milestones por fase e issues #3 a #48.
+Já aplicado: rulesets da `main` e da `develop` (push direto, force push e exclusão bloqueados; merge só por PR, sem aprovação obrigatória), labels, milestones por fase e issues #3 a #48.
 
 Falta, depois que estes arquivos chegarem na `develop`:
 
@@ -44,9 +44,9 @@ Falta, depois que estes arquivos chegarem na `develop`:
 
 `.github/rulesets/*.json` guarda a configuração completa, para reimportar se precisar.
 
-### Como o Davi faz merge do próprio PR
+### Por que não há aprovação obrigatória
 
-O GitHub não deixa o autor aprovar o próprio PR. Os rulesets colocam o papel **Admin** do repositório na lista de bypass em modo *pull request*: o Davi continua sem conseguir dar push direto, mas no PR dele aparece a opção "Merge without waiting for requirements to be met (bypass rules)". Colaboradores não têm esse botão.
+O GitHub não deixa o autor aprovar o próprio PR, e quase todos os PRs saem da conta do Davi. Com aprovação obrigatória, todo merge dependeria do bypass de admin, que também ignora os checks. Sem ela, o PR entra quando os checks passam. Se o time crescer, basta voltar `required_approving_review_count` para 1 e `require_code_owner_review` para `true` nos dois rulesets.
 
 ### Plano do GitHub
 
