@@ -1,0 +1,72 @@
+# CI do frontend (Angular) — roda a cada Pull Request e a cada push na develop/main.
+#
+# Etapas:
+#   0. changes  : detecta se o PR/push mexeu no frontend.
+#   1. frontend : `npm ci`, testes unitários (Vitest via `ng test`, sem watch)
+#                 e build de produção (`ng build`, confere tipos e orçamentos).
+#
+# O workflow dispara SEMPRE (sem `paths` no gatilho). Quando nada do frontend
+# mudou, o job `frontend` é PULADO pelo `if:`, e job pulado conta como sucesso
+# para os status checks obrigatórios. Com `paths` no `on:`, o check "frontend"
+# ficaria pendente para sempre em PRs só de backend ou de docs.
+#
+# Check obrigatório nos rulesets (.github/rulesets/*.json): "frontend".
+
+name: frontend
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop, main]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: frontend-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: frontend
+
+jobs:
+  changes:
+    name: detectar mudanças no frontend
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'frontend/**'
+              - '.github/workflows/frontend-ci.yml'
+
+  testes-e-build:
+    name: frontend
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: frontend/.nvmrc
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Testes unitários
+        run: npx ng test --watch=false
+
+      - name: Build de produção
+        run: npm run build

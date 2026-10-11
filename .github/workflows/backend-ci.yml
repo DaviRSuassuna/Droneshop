@@ -1,0 +1,106 @@
+# CI do backend (Quarkus) — roda a cada Pull Request e a cada push na develop/main.
+#
+# Etapas:
+#   0. changes : detecta se o PR/push mexeu no backend.
+#   1. backend : sobe um PostgreSQL 16 e roda `./mvnw verify`:
+#                - testes das issues já entregues (lista em
+#                  backend/src/test/issues-entregues.txt): BLOQUEIAM o merge;
+#                - suíte inteira: só informativa (mostra o que ainda está
+#                  vermelho nas issues não entregues), não bloqueia.
+#
+# O workflow dispara SEMPRE (sem `paths` no gatilho). Quando nada do backend
+# mudou, o job `backend` é PULADO pelo `if:`, e job pulado conta como sucesso
+# para os status checks obrigatórios. Com `paths` no `on:`, o workflow nem
+# rodaria e o check "backend" ficaria pendente para sempre em PRs só de
+# frontend ou de docs.
+#
+# Check obrigatório nos rulesets (.github/rulesets/*.json): "backend".
+
+name: backend
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop, main]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: backend-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: backend
+
+jobs:
+  changes:
+    name: detectar mudanças no backend
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+              - '.github/workflows/backend-ci.yml'
+
+  testes:
+    name: backend
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: droneshop_test
+          POSTGRES_USER: droneshop
+          # Banco descartável, só existe dentro desta máquina temporária.
+          POSTGRES_PASSWORD: droneshop
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U droneshop"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      # O %test não tem URL fixa (application.properties): aqui ele usa o
+      # Postgres do job em vez do Dev Services.
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://localhost:5432/droneshop_test
+      QUARKUS_DATASOURCE_USERNAME: droneshop
+      QUARKUS_DATASOURCE_PASSWORD: droneshop
+      QUARKUS_DATASOURCE_DEVSERVICES_ENABLED: "false"
+      TZ: America/Sao_Paulo
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+
+      # O mvnw está no repositório sem o bit de execução.
+      - run: chmod +x mvnw
+
+      - name: Testes das issues entregues (bloqueia o merge)
+        run: |
+          GRUPOS=$(grep -vE '^\s*(#|$)' src/test/issues-entregues.txt | tr -d ' \r' | paste -sd, -)
+          if [ -z "$GRUPOS" ]; then
+            echo "::notice::Nenhuma issue em src/test/issues-entregues.txt: só compila e empacota."
+            ./mvnw -B verify -DskipTests
+          else
+            echo "Rodando as etiquetas: $GRUPOS"
+            ./mvnw -B verify -Dgroups="$GRUPOS" -Dsurefire.failIfNoSpecifiedTests=false
+          fi
+
+      - name: Situação da suíte inteira (informativo, não bloqueia)
+        continue-on-error: true
+        run: ./mvnw -B test -Dsurefire.failIfNoSpecifiedTests=false 2>&1 | grep -E "Tests run:|FAIL|ERROR|BUILD" | tail -n 40
