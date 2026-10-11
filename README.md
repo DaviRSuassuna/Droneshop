@@ -26,8 +26,7 @@ droneshop/
 │   ├── PRD-Aeria.md      requisitos, regras de negócio, faseamento e decisões
 │   ├── diagramas/        8 diagramas de classes por contexto (aeria-*.puml)
 │   └── telas/            wireframes versionados (v2, v3, v4)
-├── .github/     workflows, templates de issue/PR, CODEOWNERS, rulesets
-└── CONTRIBUTING.md
+└── .github/     workflows, templates de issue/PR, rulesets
 ```
 
 ### Backend
@@ -113,4 +112,13 @@ A API libera CORS para `http://localhost:4200`.
 
 ## Contribuindo
 
-O fluxo é issue → branch a partir da `develop` → PR para a `develop` → PR `develop` → `main`, com commits em Conventional Commits em português. Detalhes em [CONTRIBUTING.md](CONTRIBUTING.md).
+O fluxo é issue → branch a partir da `develop` → PR para a `develop` → PR `develop` → `main`, com commits em Conventional Commits em português.
+
+1. **Branch:** na issue, "Development → Create a branch" com origem na `develop`. O nome sugerido pelo GitHub (`<numero>-<resumo>`) já serve.
+2. **Commits:** `tipo(escopo): resumo`, ex.: `feat(catalogo): cria VarianteProduto com dados de embalagem`.
+3. **PR para a `develop`** com `Closes #<numero>` na descrição; a issue fecha sozinha no merge.
+4. **Revisão:** 1 aprovação de qualquer colaborador com escrita. O autor não aprova o próprio PR; o admin pode usar o bypass ("Merge without waiting for requirements to be met").
+5. **CI:** os checks `backend` e `frontend` precisam passar.
+6. **Release:** quando a fase estiver estável, PR de `develop` para `main`.
+
+Push direto, force push e exclusão da `main` e da `develop` são bloqueados pelos rulesets (`.github/rulesets/*.json` guarda a configuração para reimportar).
