@@ -1,7 +1,7 @@
 # PRD: Aeria Drones
 
 **Produto:** E-commerce de drones e acessórios (storefront + painel administrativo)
-**Versão do documento:** 1.4
+**Versão do documento:** 1.5
 **Status:** rascunho para validação
 **Base:** protótipo de 36 telas + 8 diagramas de classes por contexto delimitado, em `diagramas/`
 
@@ -233,7 +233,7 @@ Verificação de e-mail, recuperação de senha por token (só se aplica a quem 
 | RNF04 | Desempenho | Listagem de catálogo paginada; busca com índice; sem meta numérica de latência definida neste estágio (projeto de testes, sem carga real a validar). |
 | RNF05 | Disponibilidade | Sem SLA formal (projeto de testes, não operação real); indisponibilidade de uma integração externa (frete, e-mail) não deve travar o restante do fluxo de compra. |
 | RNF06 | Escalabilidade | Fora de escopo deste projeto (ver Não-objetivos); o modelo (estoque por variante, DTO/Repository isolados por módulo) não impede evolução futura, mas não há meta de volume a suportar. |
-| RNF07 | Usabilidade | Interface responsiva (desktop e mobile, desktop-first no processo de design, ver `ways-of-working`); navegação e rótulos em português. |
+| RNF07 | Usabilidade | Interface responsiva: toda tela (storefront e admin) funciona no navegador do desktop e no navegador de celular (largura de 360 a 480px), ver D20. Navegação e rótulos em português. |
 | RNF08 | Acessibilidade | Boas práticas básicas (contraste, navegação por teclado, texto alternativo em imagem); sem certificação formal WCAG neste projeto. |
 | RNF09 | Compatibilidade | Navegadores modernos (Chrome, Firefox, Edge, Safari) nas duas últimas versões; sem suporte a navegadores legados. |
 | RNF10 | Observabilidade | Log estruturado de erros e das chamadas a integrações externas (gateway de pagamento, agregador de frete, provedor de e-mail); falha de integração externa é distinguível de erro interno no log. |
@@ -290,6 +290,7 @@ O painel administrativo vem primeiro (D19): a loja só tem o que vender e o que 
 | D17 | **Compatibilidade como relação N:N** entre `Acessorio` e `Produto`, substituindo o campo texto `Acessorio.compatibilidade`. Como `Acessorio` herda de `Produto`, o mesmo vínculo cobre acessório-drone (bateria e modelo) e acessório-acessório (carregador e bateria). O vínculo é recíproco: aparece nos dois cadastros e habilita filtro real, em vez de depender de nome digitado sem erro. Fecha a pendência P1. |
 | D18 | **Contato do fornecedor em três colunas**: `Fornecedor.contato` vira `nomeContato`, `emailContato` e `telefoneContato`. Permite busca por e-mail ou telefone e validação de formato, que a string única não permitia. |
 | D19 | **Painel administrativo primeiro.** A fase 1 entrega todas as telas do admin integradas à API antes do storefront. Pedidos entram no admin já na fase 1, alimentados por carga de dados, e passam a ser criados pelo checkout na fase 3. |
+| D20 | **Web responsiva, sem app nativo.** Toda tela é entregue para o navegador do desktop e para o navegador do celular (360 a 480px). O desenho continua desktop-first, mas a tela só é dada como pronta depois de conferida nas duas larguras; não há aplicativo nativo. |
 
 ## 11. Pendências em aberto
 
