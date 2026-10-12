@@ -8,7 +8,9 @@ import br.com.droneshop.catalogo.model.Categoria;
 import br.com.droneshop.catalogo.model.StatusCategoria;
 import br.com.droneshop.catalogo.model.Subcategoria;
 import br.com.droneshop.catalogo.repository.CategoriaRepository;
+import br.com.droneshop.catalogo.repository.ProdutoRepository;
 import br.com.droneshop.catalogo.repository.SubcategoriaRepository;
+import br.com.droneshop.exception.ConflitoException;
 import br.com.droneshop.exception.ResourceNotFoundException;
 import br.com.droneshop.exception.ValidationException;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
@@ -24,6 +26,9 @@ public class SubcategoriaServiceImpl implements SubcategoriaService {
 
     @Inject
     CategoriaRepository categoriaRepository;
+
+    @Inject
+    ProdutoRepository produtoRepository;
 
     @Override
     @Transactional
@@ -77,6 +82,10 @@ public class SubcategoriaServiceImpl implements SubcategoriaService {
     @Override
     @Transactional
     public void delete(long id) {
+        long emUso = produtoRepository.count("subcategoria.id", id);
+        if (emUso > 0)
+            throw new ConflitoException("Esta subcategoria tem " + emUso + (emUso == 1 ? " produto" : " produtos")
+                    + ". Inative a subcategoria em vez de excluir.");
         subcategoriaRepository.deleteById(id);
     }
 

@@ -110,8 +110,7 @@ export class FornecedoresListagem implements OnInit {
     this.fornecedorService.excluir(fornecedor.id).subscribe({
       next: () =>
         this.fornecedores.update((lista) => lista.filter((f) => f.id !== fornecedor.id)),
-      error: () =>
-        alert('Não foi possível excluir este fornecedor. Ele pode estar vinculado a produtos.'),
+      error: (err) => alert(err.error?.detail ?? 'Não foi possível excluir este fornecedor.'),
     });
   }
 

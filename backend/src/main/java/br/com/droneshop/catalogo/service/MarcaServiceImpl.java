@@ -8,6 +8,8 @@ import br.com.droneshop.catalogo.dto.MarcaDTO;
 import br.com.droneshop.catalogo.model.Marca;
 import br.com.droneshop.catalogo.model.StatusMarca;
 import br.com.droneshop.catalogo.repository.MarcaRepository;
+import br.com.droneshop.catalogo.repository.ProdutoRepository;
+import br.com.droneshop.exception.ConflitoException;
 import br.com.droneshop.exception.Problem;
 import br.com.droneshop.exception.ResourceNotFoundException;
 import br.com.droneshop.exception.ValidationException;
@@ -21,6 +23,9 @@ public class MarcaServiceImpl implements MarcaService {
 
     @Inject
     MarcaRepository marcaRepository;
+
+    @Inject
+    ProdutoRepository produtoRepository;
 
     @Override
     @Transactional
@@ -126,6 +131,10 @@ public class MarcaServiceImpl implements MarcaService {
     @Override
     @Transactional
     public void delete(long id) {
+        long emUso = produtoRepository.count("marca.id", id);
+        if (emUso > 0)
+            throw new ConflitoException("Esta marca tem " + emUso + (emUso == 1 ? " produto" : " produtos")
+                    + ". Inative a marca em vez de excluir.");
         marcaRepository.deleteById(id);
     }
 

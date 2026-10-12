@@ -8,6 +8,8 @@ import br.com.droneshop.catalogo.dto.CategoriaDTO;
 import br.com.droneshop.catalogo.model.Categoria;
 import br.com.droneshop.catalogo.model.StatusCategoria;
 import br.com.droneshop.catalogo.repository.CategoriaRepository;
+import br.com.droneshop.catalogo.repository.SubcategoriaRepository;
+import br.com.droneshop.exception.ConflitoException;
 import br.com.droneshop.exception.Problem;
 import br.com.droneshop.exception.ResourceNotFoundException;
 import br.com.droneshop.exception.ValidationException;
@@ -21,6 +23,9 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     @Inject
     CategoriaRepository categoriaRepository;
+
+    @Inject
+    SubcategoriaRepository subcategoriaRepository;
 
     @Override
     @Transactional
@@ -126,6 +131,10 @@ public class CategoriaServiceImpl implements CategoriaService {
     @Override
     @Transactional
     public void delete(long id) {
+        long emUso = subcategoriaRepository.count("categoria.id", id);
+        if (emUso > 0)
+            throw new ConflitoException("Esta categoria tem " + emUso + (emUso == 1 ? " subcategoria" : " subcategorias")
+                    + ". Inative a categoria em vez de excluir.");
         categoriaRepository.deleteById(id);
     }
 

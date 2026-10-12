@@ -107,8 +107,7 @@ export class SubcategoriasListagem implements OnInit {
 
     this.subcategoriaService.excluir(subcategoria.id).subscribe({
       next: () => this.subcategorias.update((l) => l.filter((s) => s.id !== subcategoria.id)),
-      error: () =>
-        alert('Não foi possível excluir esta subcategoria. Ela pode ter produtos vinculados.'),
+      error: (err) => alert(err.error?.detail ?? 'Não foi possível excluir esta subcategoria.'),
     });
   }
 

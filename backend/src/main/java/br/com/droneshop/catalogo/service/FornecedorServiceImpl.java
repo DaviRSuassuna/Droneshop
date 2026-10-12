@@ -6,10 +6,12 @@ import br.com.droneshop.catalogo.dto.FornecedorDTO;
 import br.com.droneshop.catalogo.model.Fornecedor;
 import br.com.droneshop.catalogo.model.StatusFornecedor;
 import br.com.droneshop.catalogo.repository.FornecedorRepository;
+import br.com.droneshop.catalogo.repository.ProdutoRepository;
 import br.com.droneshop.endereco.dto.EnderecoDTO;
 import br.com.droneshop.endereco.model.Endereco;
 import br.com.droneshop.endereco.model.Municipio;
 import br.com.droneshop.endereco.repository.MunicipioRepository;
+import br.com.droneshop.exception.ConflitoException;
 import br.com.droneshop.exception.ResourceNotFoundException;
 import br.com.droneshop.exception.ValidationException;
 import br.com.droneshop.util.Documentos;
@@ -26,6 +28,9 @@ public class FornecedorServiceImpl implements FornecedorService {
 
     @Inject
     MunicipioRepository municipioRepository;
+
+    @Inject
+    ProdutoRepository produtoRepository;
 
     @Override
     @Transactional
@@ -115,6 +120,10 @@ public class FornecedorServiceImpl implements FornecedorService {
     @Override
     @Transactional
     public void delete(long id) {
+        long emUso = produtoRepository.count("fornecedor.id", id);
+        if (emUso > 0)
+            throw new ConflitoException("Este fornecedor tem " + emUso + (emUso == 1 ? " produto" : " produtos")
+                    + ". Inative o fornecedor em vez de excluir.");
         fornecedorRepository.deleteById(id);
     }
 

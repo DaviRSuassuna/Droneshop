@@ -114,8 +114,7 @@ export class MarcasListagem implements OnInit {
 
     this.marcaService.excluir(marca.id).subscribe({
       next: () => this.marcas.update((lista) => lista.filter((m) => m.id !== marca.id)),
-      error: () =>
-        alert('Não foi possível excluir esta marca. Ela pode estar vinculada a produtos.'),
+      error: (err) => alert(err.error?.detail ?? 'Não foi possível excluir esta marca.'),
     });
   }
 
