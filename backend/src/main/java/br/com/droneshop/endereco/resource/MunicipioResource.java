@@ -3,7 +3,6 @@ package br.com.droneshop.endereco.resource;
 import java.util.List;
 
 import br.com.droneshop.endereco.dto.MunicipioResponseDTO;
-import br.com.droneshop.endereco.model.Municipio;
 import br.com.droneshop.endereco.service.MunicipioService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -30,8 +29,7 @@ public class MunicipioResource {
     @GET
     @Path("/{id}")
     public MunicipioResponseDTO buscarPorId(@PathParam("id") Long id) {
-        Municipio municipio = service.findById(id);
-        return (municipio == null) ? null : MunicipioResponseDTO.valueOf(municipio);
+        return MunicipioResponseDTO.valueOf(service.findById(id));
     }
 
 }

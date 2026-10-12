@@ -4,7 +4,6 @@ import java.util.List;
 
 import br.com.droneshop.catalogo.dto.MarcaDTO;
 import br.com.droneshop.catalogo.dto.MarcaResponseDTO;
-import br.com.droneshop.catalogo.model.Marca;
 import br.com.droneshop.catalogo.service.MarcaService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -43,15 +42,13 @@ public class MarcaResource {
     @GET
     @Path("/{id}")
     public MarcaResponseDTO buscarPorId(@PathParam("id") Long id) {
-        Marca marca = service.findById(id);
-        return (marca == null) ? null : MarcaResponseDTO.valueOf(marca);
+        return MarcaResponseDTO.valueOf(service.findById(id));
     }
 
     @GET
     @Path("/slug/{slug}")
     public MarcaResponseDTO buscarPorSlug(@PathParam("slug") String slug) {
-        Marca marca = service.findBySlug(slug);
-        return (marca == null) ? null : MarcaResponseDTO.valueOf(marca);
+        return MarcaResponseDTO.valueOf(service.findBySlug(slug));
     }
 
     @POST

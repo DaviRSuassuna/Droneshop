@@ -96,11 +96,6 @@ export class ProdutoCadastro implements OnInit {
     this.carregando.set(true);
     this.produtoService.buscarPorId(id).subscribe({
       next: (produto) => {
-        if (!produto) {
-          this.erroGeral.set('Este produto não foi encontrado.');
-          this.carregando.set(false);
-          return;
-        }
         this.form.patchValue({
           nome: produto.nome,
           modelo: produto.modelo,
@@ -115,8 +110,8 @@ export class ProdutoCadastro implements OnInit {
         });
         this.carregando.set(false);
       },
-      error: () => {
-        this.erroGeral.set('Não foi possível carregar este produto.');
+      error: (err) => {
+        this.erroGeral.set(err.status === 404 ? 'Este produto não foi encontrado.' : 'Não foi possível carregar este produto.');
         this.carregando.set(false);
       },
     });

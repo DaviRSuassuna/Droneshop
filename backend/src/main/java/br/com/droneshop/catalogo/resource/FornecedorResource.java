@@ -4,7 +4,6 @@ import java.util.List;
 
 import br.com.droneshop.catalogo.dto.FornecedorDTO;
 import br.com.droneshop.catalogo.dto.FornecedorResponseDTO;
-import br.com.droneshop.catalogo.model.Fornecedor;
 import br.com.droneshop.catalogo.service.FornecedorService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -46,16 +45,14 @@ public class FornecedorResource {
     @GET
     @Path("/{id}")
     public FornecedorResponseDTO buscarPorId(@PathParam("id") Long id) {
-        Fornecedor fornecedor = service.findById(id);
-        return (fornecedor == null) ? null : FornecedorResponseDTO.valueOf(fornecedor);
+        return FornecedorResponseDTO.valueOf(service.findById(id));
     }
 
     // CNPJ aceito com ou sem mascara (a mascara tem "/", entao na URL use so os 14 digitos)
     @GET
     @Path("/cnpj/{cnpj}")
     public FornecedorResponseDTO buscarPorCnpj(@PathParam("cnpj") String cnpj) {
-        Fornecedor fornecedor = service.findByCnpj(cnpj);
-        return (fornecedor == null) ? null : FornecedorResponseDTO.valueOf(fornecedor);
+        return FornecedorResponseDTO.valueOf(service.findByCnpj(cnpj));
     }
 
     @POST

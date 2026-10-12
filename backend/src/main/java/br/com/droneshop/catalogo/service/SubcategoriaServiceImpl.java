@@ -9,6 +9,7 @@ import br.com.droneshop.catalogo.model.StatusCategoria;
 import br.com.droneshop.catalogo.model.Subcategoria;
 import br.com.droneshop.catalogo.repository.CategoriaRepository;
 import br.com.droneshop.catalogo.repository.SubcategoriaRepository;
+import br.com.droneshop.exception.ResourceNotFoundException;
 import br.com.droneshop.exception.ValidationException;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -36,10 +37,7 @@ public class SubcategoriaServiceImpl implements SubcategoriaService {
     @Override
     @Transactional
     public void update(long id, SubcategoriaDTO dto) {
-        Subcategoria subcategoria = subcategoriaRepository.findById(id);
-        if (subcategoria == null)
-            throw ValidationException.of("id", "Subcategoria não encontrada.");
-        preencher(subcategoria, dto, id);
+        preencher(findById(id), dto, id);
     }
 
     private void preencher(Subcategoria subcategoria, SubcategoriaDTO dto, Long idAtual) {
@@ -84,7 +82,10 @@ public class SubcategoriaServiceImpl implements SubcategoriaService {
 
     @Override
     public Subcategoria findById(long id) {
-        return subcategoriaRepository.findById(id);
+        Subcategoria subcategoria = subcategoriaRepository.findById(id);
+        if (subcategoria == null)
+            throw new ResourceNotFoundException("Subcategoria não encontrada.");
+        return subcategoria;
     }
 
     // categoriaId opcional: sem ele, devolve todas as subcategorias

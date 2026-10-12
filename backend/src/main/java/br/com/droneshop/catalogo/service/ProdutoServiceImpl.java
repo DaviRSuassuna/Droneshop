@@ -12,6 +12,7 @@ import br.com.droneshop.catalogo.repository.FornecedorRepository;
 import br.com.droneshop.catalogo.repository.MarcaRepository;
 import br.com.droneshop.catalogo.repository.ProdutoRepository;
 import br.com.droneshop.catalogo.repository.SubcategoriaRepository;
+import br.com.droneshop.exception.ResourceNotFoundException;
 import br.com.droneshop.exception.ValidationException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -44,10 +45,7 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Override
     @Transactional
     public void update(long id, ProdutoDTO dto) {
-        Produto produto = produtoRepository.findById(id);
-        if (produto == null)
-            throw ValidationException.of("id", "Produto não encontrado.");
-        preencher(produto, dto, id);
+        preencher(findById(id), dto, id);
     }
 
     private void preencher(Produto produto, ProdutoDTO dto, Long idAtual) {
@@ -114,7 +112,10 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     @Override
     public Produto findById(long id) {
-        return produtoRepository.findById(id);
+        Produto produto = produtoRepository.findById(id);
+        if (produto == null)
+            throw new ResourceNotFoundException("Produto não encontrado.");
+        return produto;
     }
 
     @Override

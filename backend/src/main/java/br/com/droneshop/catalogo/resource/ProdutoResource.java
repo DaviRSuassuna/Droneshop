@@ -4,7 +4,6 @@ import java.util.List;
 
 import br.com.droneshop.catalogo.dto.ProdutoDTO;
 import br.com.droneshop.catalogo.dto.ProdutoResponseDTO;
-import br.com.droneshop.catalogo.model.Produto;
 import br.com.droneshop.catalogo.service.ProdutoService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -55,8 +54,7 @@ public class ProdutoResource {
     @GET
     @Path("/{id}")
     public ProdutoResponseDTO buscarPorId(@PathParam("id") Long id) {
-        Produto produto = service.findById(id);
-        return (produto == null) ? null : ProdutoResponseDTO.valueOf(produto);
+        return ProdutoResponseDTO.valueOf(service.findById(id));
     }
 
     @POST

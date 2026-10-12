@@ -60,11 +60,6 @@ export class SubcategoriaCadastro implements OnInit {
     this.carregando.set(true);
     this.subcategoriaService.buscarPorId(id).subscribe({
       next: (sub) => {
-        if (!sub) {
-          this.erroGeral.set('Esta subcategoria não foi encontrada.');
-          this.carregando.set(false);
-          return;
-        }
         this.form.patchValue({
           nome: sub.nome,
           slug: sub.slug,
@@ -75,8 +70,8 @@ export class SubcategoriaCadastro implements OnInit {
         });
         this.carregando.set(false);
       },
-      error: () => {
-        this.erroGeral.set('Não foi possível carregar esta subcategoria.');
+      error: (err) => {
+        this.erroGeral.set(err.status === 404 ? 'Esta subcategoria não foi encontrada.' : 'Não foi possível carregar esta subcategoria.');
         this.carregando.set(false);
       },
     });

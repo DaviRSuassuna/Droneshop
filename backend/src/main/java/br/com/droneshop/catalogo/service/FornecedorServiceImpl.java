@@ -10,6 +10,7 @@ import br.com.droneshop.endereco.dto.EnderecoDTO;
 import br.com.droneshop.endereco.model.Endereco;
 import br.com.droneshop.endereco.model.Municipio;
 import br.com.droneshop.endereco.repository.MunicipioRepository;
+import br.com.droneshop.exception.ResourceNotFoundException;
 import br.com.droneshop.exception.ValidationException;
 import br.com.droneshop.util.Documentos;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
@@ -54,12 +55,10 @@ public class FornecedorServiceImpl implements FornecedorService {
     public void update(long id, FornecedorDTO dto) {
         StatusFornecedor status = parseStatus(dto.getStatus());
 
+        Fornecedor edicaoFornecedor = findById(id);
+
         String cnpj = normalizarCnpj(dto.getCnpj());
         validarCnpjUnico(cnpj, id);
-
-        Fornecedor edicaoFornecedor = fornecedorRepository.findById(id);
-        if (edicaoFornecedor == null)
-            throw ValidationException.of("id", "Fornecedor não encontrado.");
 
         edicaoFornecedor.setRazaoSocial(dto.getRazaoSocial().trim());
         edicaoFornecedor.setCnpj(cnpj);
@@ -121,12 +120,18 @@ public class FornecedorServiceImpl implements FornecedorService {
 
     @Override
     public Fornecedor findById(long id) {
-        return fornecedorRepository.findById(id);
+        Fornecedor fornecedor = fornecedorRepository.findById(id);
+        if (fornecedor == null)
+            throw new ResourceNotFoundException("Fornecedor não encontrado.");
+        return fornecedor;
     }
 
     @Override
     public Fornecedor findByCnpj(String cnpj) {
-        return fornecedorRepository.findByCnpj(normalizarCnpj(cnpj));
+        Fornecedor fornecedor = fornecedorRepository.findByCnpj(normalizarCnpj(cnpj));
+        if (fornecedor == null)
+            throw new ResourceNotFoundException("Fornecedor não encontrado.");
+        return fornecedor;
     }
 
     @Override

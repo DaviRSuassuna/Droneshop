@@ -64,11 +64,6 @@ export class MarcaCadastro implements OnInit {
     this.carregando.set(true);
     this.marcaService.buscarPorId(id).subscribe({
       next: (marca) => {
-        if (!marca) {
-          this.erroGeral.set('Esta marca não foi encontrada.');
-          this.carregando.set(false);
-          return;
-        }
         this.form.patchValue({
           nome: marca.nome,
           slug: marca.slug,
@@ -81,8 +76,8 @@ export class MarcaCadastro implements OnInit {
         });
         this.carregando.set(false);
       },
-      error: () => {
-        this.erroGeral.set('Não foi possível carregar esta marca.');
+      error: (err) => {
+        this.erroGeral.set(err.status === 404 ? 'Esta marca não foi encontrada.' : 'Não foi possível carregar esta marca.');
         this.carregando.set(false);
       },
     });

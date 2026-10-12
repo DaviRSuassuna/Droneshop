@@ -5,6 +5,7 @@ import java.util.List;
 import br.com.droneshop.endereco.model.Municipio;
 import br.com.droneshop.endereco.repository.EstadoRepository;
 import br.com.droneshop.endereco.repository.MunicipioRepository;
+import br.com.droneshop.exception.ResourceNotFoundException;
 import br.com.droneshop.exception.ValidationException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -30,7 +31,10 @@ public class MunicipioServiceImpl implements MunicipioService {
 
     @Override
     public Municipio findById(long id) {
-        return municipioRepository.findById(id);
+        Municipio municipio = municipioRepository.findById(id);
+        if (municipio == null)
+            throw new ResourceNotFoundException("Município não encontrado.");
+        return municipio;
     }
 
 }

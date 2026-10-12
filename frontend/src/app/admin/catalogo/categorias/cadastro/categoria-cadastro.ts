@@ -62,11 +62,6 @@ export class CategoriaCadastro implements OnInit {
     this.carregando.set(true);
     this.categoriaService.buscarPorId(id).subscribe({
       next: (categoria) => {
-        if (!categoria) {
-          this.erroGeral.set('Esta categoria não foi encontrada.');
-          this.carregando.set(false);
-          return;
-        }
         this.form.patchValue({
           nome: categoria.nome,
           slug: categoria.slug,
@@ -78,8 +73,8 @@ export class CategoriaCadastro implements OnInit {
         });
         this.carregando.set(false);
       },
-      error: () => {
-        this.erroGeral.set('Não foi possível carregar esta categoria.');
+      error: (err) => {
+        this.erroGeral.set(err.status === 404 ? 'Esta categoria não foi encontrada.' : 'Não foi possível carregar esta categoria.');
         this.carregando.set(false);
       },
     });

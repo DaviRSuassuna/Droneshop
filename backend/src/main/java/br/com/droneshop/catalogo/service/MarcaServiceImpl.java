@@ -9,6 +9,7 @@ import br.com.droneshop.catalogo.model.Marca;
 import br.com.droneshop.catalogo.model.StatusMarca;
 import br.com.droneshop.catalogo.repository.MarcaRepository;
 import br.com.droneshop.exception.Problem;
+import br.com.droneshop.exception.ResourceNotFoundException;
 import br.com.droneshop.exception.ValidationException;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -52,10 +53,10 @@ public class MarcaServiceImpl implements MarcaService {
         StatusMarca status = parseStatus(dto.getStatus());
         validarObrigatoriedade(dto, status);
 
+        Marca edicaoMarca = findById(id);
+
         String slug = resolverSlug(dto.getSlug(), dto.getNome());
         validarSlugUnico(slug, id);
-
-        Marca edicaoMarca = marcaRepository.findById(id);
 
         edicaoMarca.setNome(valorOuVazio(dto.getNome()));
         edicaoMarca.setSlug(slug);
@@ -130,12 +131,18 @@ public class MarcaServiceImpl implements MarcaService {
 
     @Override
     public Marca findById(long id) {
-        return marcaRepository.findById(id);
+        Marca marca = marcaRepository.findById(id);
+        if (marca == null)
+            throw new ResourceNotFoundException("Marca não encontrada.");
+        return marca;
     }
 
     @Override
     public Marca findBySlug(String slug) {
-        return marcaRepository.findBySlug(slug);
+        Marca marca = marcaRepository.findBySlug(slug);
+        if (marca == null)
+            throw new ResourceNotFoundException("Marca não encontrada.");
+        return marca;
     }
 
     @Override

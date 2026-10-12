@@ -4,7 +4,6 @@ import java.util.List;
 
 import br.com.droneshop.catalogo.dto.CategoriaDTO;
 import br.com.droneshop.catalogo.dto.CategoriaResponseDTO;
-import br.com.droneshop.catalogo.model.Categoria;
 import br.com.droneshop.catalogo.service.CategoriaService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -45,15 +44,13 @@ public class CategoriaResource {
     @GET
     @Path("/{id}")
     public CategoriaResponseDTO buscarPorId(@PathParam("id") Long id) {
-        Categoria categoria = service.findById(id);
-        return (categoria == null) ? null : CategoriaResponseDTO.valueOf(categoria);
+        return CategoriaResponseDTO.valueOf(service.findById(id));
     }
 
     @GET
     @Path("/slug/{slug}")
     public CategoriaResponseDTO buscarPorSlug(@PathParam("slug") String slug) {
-        Categoria categoria = service.findBySlug(slug);
-        return (categoria == null) ? null : CategoriaResponseDTO.valueOf(categoria);
+        return CategoriaResponseDTO.valueOf(service.findBySlug(slug));
     }
 
     @POST

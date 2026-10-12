@@ -3,7 +3,6 @@ package br.com.droneshop.endereco.resource;
 import java.util.List;
 
 import br.com.droneshop.endereco.dto.EstadoResponseDTO;
-import br.com.droneshop.endereco.model.Estado;
 import br.com.droneshop.endereco.service.EstadoService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -28,8 +27,7 @@ public class EstadoResource {
     @GET
     @Path("/{id}")
     public EstadoResponseDTO buscarPorId(@PathParam("id") Long id) {
-        Estado estado = service.findById(id);
-        return (estado == null) ? null : EstadoResponseDTO.valueOf(estado);
+        return EstadoResponseDTO.valueOf(service.findById(id));
     }
 
 }

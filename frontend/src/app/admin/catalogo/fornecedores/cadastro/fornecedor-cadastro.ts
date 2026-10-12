@@ -196,11 +196,6 @@ export class FornecedorCadastro implements OnInit {
     this.carregando.set(true);
     this.fornecedorService.buscarPorId(id).subscribe({
       next: (fornecedor) => {
-        if (!fornecedor) {
-          this.erroGeral.set('Este fornecedor não foi encontrado.');
-          this.carregando.set(false);
-          return;
-        }
         const end = fornecedor.endereco;
         // emitEvent: false para não disparar a busca de CEP nem limpar o Município
         this.form.patchValue(
@@ -229,8 +224,8 @@ export class FornecedorCadastro implements OnInit {
         this.form.updateValueAndValidity();
         this.carregando.set(false);
       },
-      error: () => {
-        this.erroGeral.set('Não foi possível carregar este fornecedor.');
+      error: (err) => {
+        this.erroGeral.set(err.status === 404 ? 'Este fornecedor não foi encontrado.' : 'Não foi possível carregar este fornecedor.');
         this.carregando.set(false);
       },
     });

@@ -4,7 +4,6 @@ import java.util.List;
 
 import br.com.droneshop.catalogo.dto.SubcategoriaDTO;
 import br.com.droneshop.catalogo.dto.SubcategoriaResponseDTO;
-import br.com.droneshop.catalogo.model.Subcategoria;
 import br.com.droneshop.catalogo.service.SubcategoriaService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -38,8 +37,7 @@ public class SubcategoriaResource {
     @GET
     @Path("/{id}")
     public SubcategoriaResponseDTO buscarPorId(@PathParam("id") Long id) {
-        Subcategoria subcategoria = service.findById(id);
-        return (subcategoria == null) ? null : SubcategoriaResponseDTO.valueOf(subcategoria);
+        return SubcategoriaResponseDTO.valueOf(service.findById(id));
     }
 
     @POST

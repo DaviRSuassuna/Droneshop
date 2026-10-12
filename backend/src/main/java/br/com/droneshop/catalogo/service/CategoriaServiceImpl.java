@@ -9,6 +9,7 @@ import br.com.droneshop.catalogo.model.Categoria;
 import br.com.droneshop.catalogo.model.StatusCategoria;
 import br.com.droneshop.catalogo.repository.CategoriaRepository;
 import br.com.droneshop.exception.Problem;
+import br.com.droneshop.exception.ResourceNotFoundException;
 import br.com.droneshop.exception.ValidationException;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -51,10 +52,10 @@ public class CategoriaServiceImpl implements CategoriaService {
         StatusCategoria status = parseStatus(dto.getStatus());
         validarObrigatoriedade(dto, status);
 
+        Categoria edicaoCategoria = findById(id);
+
         String slug = resolverSlug(dto.getSlug(), dto.getNome());
         validarSlugUnico(slug, id);
-
-        Categoria edicaoCategoria = categoriaRepository.findById(id);
 
         edicaoCategoria.setNome(valorOuVazio(dto.getNome()));
         edicaoCategoria.setSlug(slug);
@@ -130,12 +131,18 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     @Override
     public Categoria findById(long id) {
-        return categoriaRepository.findById(id);
+        Categoria categoria = categoriaRepository.findById(id);
+        if (categoria == null)
+            throw new ResourceNotFoundException("Categoria não encontrada.");
+        return categoria;
     }
 
     @Override
     public Categoria findBySlug(String slug) {
-        return categoriaRepository.findBySlug(slug);
+        Categoria categoria = categoriaRepository.findBySlug(slug);
+        if (categoria == null)
+            throw new ResourceNotFoundException("Categoria não encontrada.");
+        return categoria;
     }
 
     @Override

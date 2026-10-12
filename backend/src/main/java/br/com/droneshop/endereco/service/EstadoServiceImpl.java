@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.com.droneshop.endereco.model.Estado;
 import br.com.droneshop.endereco.repository.EstadoRepository;
+import br.com.droneshop.exception.ResourceNotFoundException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -20,7 +21,10 @@ public class EstadoServiceImpl implements EstadoService {
 
     @Override
     public Estado findById(long id) {
-        return estadoRepository.findById(id);
+        Estado estado = estadoRepository.findById(id);
+        if (estado == null)
+            throw new ResourceNotFoundException("Estado não encontrado.");
+        return estado;
     }
 
 }
