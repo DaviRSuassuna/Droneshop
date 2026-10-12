@@ -19,7 +19,7 @@ public class MarcaRepository implements PanacheRepository<Marca> {
     }
 
     public PanacheQuery<Marca> findByNome(String nome) {
-        return find("SELECT m FROM Marca m WHERE m.nome LIKE ?1 ", "%" + nome + "%");
+        return find("SELECT m FROM Marca m WHERE LOWER(m.nome) LIKE ?1 ", "%" + nome.toLowerCase() + "%");
     }
 
     @Override
