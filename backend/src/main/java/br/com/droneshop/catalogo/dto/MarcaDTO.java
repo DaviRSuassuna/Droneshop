@@ -2,6 +2,8 @@ package br.com.droneshop.catalogo.dto;
 
 import org.hibernate.validator.constraints.Length;
 
+import br.com.droneshop.util.Textos;
+
 import jakarta.validation.constraints.NotBlank;
 
 public final class MarcaDTO {
@@ -9,6 +11,8 @@ public final class MarcaDTO {
     // nome, paisOrigem e logoUrl NAO tem @NotBlank aqui: obrigatoriedade
     // depende do status (RASCUNHO nao exige, ATIVA/INATIVA exige) e quem
     // valida isso e o MarcaServiceImpl, nao o Bean Validation.
+    // Texto em branco chega aqui como null (Textos.nuloSeVazio), senao o
+    // @Length reprovaria o rascunho vazio que a tela envia.
 
     @Length(min = 2, max = 80, message = "O campo deve conter entre 2 e 80 caracteres (back).")
     private final String nome;
@@ -36,12 +40,12 @@ public final class MarcaDTO {
 
     public MarcaDTO(String nome, String slug, String paisOrigem, String siteOficial,
                      String descricao, String logoUrl, String status, Boolean destacarHome) {
-        this.nome = nome;
-        this.slug = slug;
-        this.paisOrigem = paisOrigem;
-        this.siteOficial = siteOficial;
-        this.descricao = descricao;
-        this.logoUrl = logoUrl;
+        this.nome = Textos.nuloSeVazio(nome);
+        this.slug = Textos.nuloSeVazio(slug);
+        this.paisOrigem = Textos.nuloSeVazio(paisOrigem);
+        this.siteOficial = Textos.nuloSeVazio(siteOficial);
+        this.descricao = Textos.nuloSeVazio(descricao);
+        this.logoUrl = Textos.nuloSeVazio(logoUrl);
         this.status = status;
         this.destacarHome = destacarHome;
     }

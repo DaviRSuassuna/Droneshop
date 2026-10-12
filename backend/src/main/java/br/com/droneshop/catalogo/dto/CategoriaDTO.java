@@ -2,6 +2,8 @@ package br.com.droneshop.catalogo.dto;
 
 import org.hibernate.validator.constraints.Length;
 
+import br.com.droneshop.util.Textos;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
 
@@ -10,6 +12,8 @@ public final class CategoriaDTO {
     // nome e ordemExibicao NAO tem @NotBlank/@NotNull aqui: obrigatoriedade
     // depende do status (RASCUNHO nao exige, ATIVA/INATIVA exige) e quem
     // valida isso e o CategoriaServiceImpl, nao o Bean Validation.
+    // Texto em branco chega aqui como null (Textos.nuloSeVazio), senao o
+    // @Length reprovaria o rascunho vazio que a tela envia.
 
     @Length(min = 2, max = 100, message = "O campo deve conter entre 2 e 100 caracteres (back).")
     private final String nome;
@@ -34,13 +38,13 @@ public final class CategoriaDTO {
 
     public CategoriaDTO(String nome, String slug, Integer ordemExibicao,
                         String descricao, String status, Boolean exibirMenu, String iconeUrl) {
-        this.nome = nome;
-        this.slug = slug;
+        this.nome = Textos.nuloSeVazio(nome);
+        this.slug = Textos.nuloSeVazio(slug);
         this.ordemExibicao = ordemExibicao;
-        this.descricao = descricao;
+        this.descricao = Textos.nuloSeVazio(descricao);
         this.status = status;
         this.exibirMenu = exibirMenu;
-        this.iconeUrl = iconeUrl;
+        this.iconeUrl = Textos.nuloSeVazio(iconeUrl);
     }
 
     public String getNome() {
