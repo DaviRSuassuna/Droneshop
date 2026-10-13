@@ -1,7 +1,7 @@
 # PRD: Aeria Drones
 
 **Produto:** E-commerce de drones e acessórios (storefront + painel administrativo)
-**Versão do documento:** 1.5
+**Versão do documento:** 1.6
 **Status:** rascunho para validação
 **Base:** protótipo de 36 telas + 8 diagramas de classes por contexto delimitado, em `diagramas/`
 
@@ -45,7 +45,7 @@ Um detalhe estrutural: **a conta é única e os perfis são acumuláveis**. `Usu
 
 ### 4.1 Catálogo
 
-Produto se divide em **Drone** e **Acessório**, com atributos próprios de cada tipo. As especificações técnicas são **colunas fixas e tipadas** na entidade, não atributo dinâmico (ver D14): em `Drone` são peso, dimensões dobrado/aberto, autonomia, alcance, velocidade máxima, resolução de foto, sensor, resolução de vídeo, estabilização, tipo e capacidade de bateria, tempo de carregamento, GPS, anticolisão, exigência e classe ANAC, registro SISANT. Spec nova é migration, e o preço disso é assumido conscientemente. Todo produto pertence a uma marca, uma categoria (hierárquica) e um fornecedor. A compatibilidade entre acessório e produto é **relação N:N**, não texto descritivo (ver D17): é ela que alimenta a lista de acessórios compatíveis na página do drone e a sugestão do carrinho.
+Produto se divide em **Drone** e **Acessório**, com atributos próprios de cada tipo. As especificações técnicas são **colunas fixas e tipadas** na entidade, não atributo dinâmico (ver D14): em `Drone` são peso, dimensões dobrado/aberto, autonomia, alcance, velocidade máxima, resolução de foto, sensor, resolução de vídeo, estabilização, tipo e capacidade de bateria, tempo de carregamento, GPS, anticolisão, exigência e classe ANAC, registro SISANT. Spec nova é migration, e o preço disso é assumido conscientemente. Todo produto pertence a uma marca, uma subcategoria (que pertence a uma categoria) e um fornecedor. A compatibilidade entre acessório e produto é **relação N:N**, não texto descritivo (ver D17): é ela que alimenta a lista de acessórios compatíveis na página do drone e a sugestão do carrinho.
 
 A **unidade vendável é a variante**, não o produto: "Padrão", "Fly More", "Enterprise" têm SKU, preço, custo e estoque próprios. Produto sem opções tem uma variante única. Isso existe porque uma configuração pode esgotar enquanto outra continua disponível.
 
@@ -143,7 +143,7 @@ Verificação de e-mail, recuperação de senha por token (só se aplica a quem 
 | # | Área | Requisito |
 |---|---|---|
 | RF01 | Catálogo | Cadastrar produtos do tipo Drone e Acessório, cada um com atributos técnicos próprios. |
-| RF02 | Catálogo | Todo produto pertence a uma marca, uma categoria (hierárquica, com categoria pai opcional) e um fornecedor. |
+| RF02 | Catálogo | Todo produto pertence a uma marca, uma subcategoria e um fornecedor. Categoria e subcategoria são entidades separadas: cada subcategoria pertence a uma categoria, sem categoria pai. |
 | RF03 | Catálogo | Produto tem uma ou mais variantes vendáveis, cada uma com SKU, preço adicional, custo, estoque e dimensões de embalagem próprios. |
 | RF04 | Catálogo | Variante pode ser marcada como kit, composta por outras variantes com quantidade definida, sem estoque próprio. |
 | RF05 | Catálogo | Cadastrar promoções com vigência (início/fim) e escopo de produto, carrinho ou frete. |
@@ -291,6 +291,10 @@ O painel administrativo vem primeiro (D19): a loja só tem o que vender e o que 
 | D18 | **Contato do fornecedor em três colunas**: `Fornecedor.contato` vira `nomeContato`, `emailContato` e `telefoneContato`. Permite busca por e-mail ou telefone e validação de formato, que a string única não permitia. |
 | D19 | **Painel administrativo primeiro.** A fase 1 entrega todas as telas do admin integradas à API antes do storefront. Pedidos entram no admin já na fase 1, alimentados por carga de dados, e passam a ser criados pelo checkout na fase 3. |
 | D20 | **Web responsiva, sem app nativo.** Toda tela é entregue para o navegador do desktop e para o navegador do celular (360 a 480px). O desenho continua desktop-first, mas a tela só é dada como pronta depois de conferida nas duas larguras; não há aplicativo nativo. |
+| D21 | **Rascunho aceita campos vazios.** Marca e categoria em `RASCUNHO` salvam sem nenhum campo preenchido; os obrigatórios só valem para `ATIVA`/`INATIVA`. A API trata texto em branco como não informado. |
+| D22 | **Registro inexistente responde 404** (formato Problem) em consulta e alteração. Excluir um registro que já não existe responde 204: excluir duas vezes não é erro. |
+| D23 | **Busca por nome não diferencia maiúsculas** em marca, categoria e fornecedor. Ignorar acentos fica para a busca do catálogo (#43); o filtro de produto já ignora. |
+| D24 | **O que está em uso não se exclui, se inativa.** Excluir marca, subcategoria ou fornecedor com produtos, ou categoria com subcategorias, responde 409 com a contagem e a orientação de inativar. Não há exclusão em cascata. |
 
 ## 11. Pendências em aberto
 

@@ -14,25 +14,49 @@ note bottom of DefaultEntity
   as marcadas <<Embeddable>>
 end note
 
+enum StatusMarca {
+  RASCUNHO
+  ATIVA
+  INATIVA
+}
+
 class Marca {
+  -status: StatusMarca
   -nome: String
   -slug: String
   -paisOrigem: String
   -siteOficial: String
   -descricao: String
   -logoUrl: String
-  -ativa: boolean
   -destacarHome: boolean
 }
 
+enum StatusCategoria {
+  RASCUNHO
+  ATIVA
+  INATIVA
+}
+note right of StatusCategoria
+  Usado por Categoria e Subcategoria.
+  RASCUNHO aceita campos vazios (D21)
+end note
+
 class Categoria {
+  -status: StatusCategoria
   -nome: String
   -slug: String
+  -ordemExibicao: Integer
+  -descricao: String
+  -exibirMenu: boolean
+  -iconeUrl: String
 }
 
 class Subcategoria {
+  -status: StatusCategoria
   -nome: String
   -slug: String
+  -ordemExibicao: Integer
+  -descricao: String
 }
 
 enum StatusFornecedor {
