@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         Uma issue = uma branch = um PR para a `develop`.
-        Branch: `feat/<numero-da-issue>-<resumo-curto>` (ex.: `feat/12-variante-produto`).
+        Branch: botão "Create a branch" desta issue, com origem na `develop`.
 
   - type: dropdown
     id: modulo
@@ -66,6 +66,31 @@ body:
     validations:
       required: true
 
+  - type: textarea
+    id: contrato
+    attributes:
+      label: Contrato de API
+      description: >-
+        Base dos testes da issue. Para cada rota: método, caminho, corpo de entrada,
+        resposta de sucesso e erros esperados. Erros seguem o formato Problem
+        (400 validação, 404 não encontrado, 409 em uso).
+      value: |
+        ```
+        POST /recurso
+        {
+          "campo": "valor"
+        }
+        -> 200 { "id": 1, "campo": "valor" }
+        -> 400 errors[].field = "campo"
+        ```
+
+  - type: textarea
+    id: prototipo
+    attributes:
+      label: Protótipo
+      description: Tela(s) do protótipo que esta issue implementa (link do `docs/design/README.md`). Deixe em branco se não tiver tela.
+      placeholder: "admin/marcas.html, admin/marca-nova.html"
+
   - type: checkboxes
     id: backend
     attributes:
@@ -78,6 +103,7 @@ body:
         - label: Service com `@Transactional` e validações de negócio
         - label: Resource REST com paginação `page`/`pageSize`
         - label: Carga de dados (`import.sql`) atualizada
+        - label: 'Testes de API com `@Tag("issue-<numero>")` e etiqueta em `backend/src/test/issues-entregues.txt`'
 
   - type: checkboxes
     id: frontend
@@ -86,6 +112,7 @@ body:
       options:
         - label: Tela(s) do admin integradas à API
         - label: Tela(s) do storefront integradas à API
+        - label: Segue o protótipo e o `DESIGN.md`, conferido no desktop e no celular
         - label: Não se aplica
 
   - type: textarea
