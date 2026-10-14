@@ -38,6 +38,8 @@ Cada teste anexa ao relatório as imagens do protótipo e da tela, no desktop e 
 | `conformidade/conformidade.spec.ts` | Os testes |
 | `telas-entregues.txt` | Etiquetas que bloqueiam o merge no CI |
 
+No CI, todo PR roda as telas de `telas-entregues.txt` (bloqueia) e as telas da issue da branch, descoberta pelo número no começo do nome (`feat/10-...` ou `10-...` roda `@issue-10`; informativo até a etiqueta entrar na lista). Todas as telas só rodam quando pedidas à mão (Actions > frontend > Run workflow > "todas").
+
 ## Fluxo para mudar o design
 
 1. PR que altera o protótipo em `docs/design/prototipo` (e o `DESIGN.md`, se mudou token). Se a tela já está em `telas-entregues.txt`, o mesmo PR tira a etiqueta dela de lá; senão o CI bloqueia, porque a tela real deixou de bater.

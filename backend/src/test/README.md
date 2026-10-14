@@ -20,7 +20,7 @@ No CI o banco vem do próprio job (`QUARKUS_DATASOURCE_*`), sem Dev Services.
 ## Fluxo por issue
 
 1. Os testes da issue são escritos a partir do **Contrato de API** e dos **Critérios de aceite** dela, antes ou junto com o código, com `@Tag("issue-<numero>")` na classe ou no método. Issue nova ainda sem número usa o nome do arquivo em `docs/issues/` (ex.: `issue-lote-csv`).
-2. Enquanto a issue não foi entregue, os testes dela rodam no CI só como informação.
+2. Enquanto a issue não foi entregue, os testes dela rodam no CI só como informação, e só no PR da própria issue: o CI descobre a issue pelo número no começo do nome da branch (`feat/10-...` ou `10-...` roda `issue-10`). A suíte inteira só roda quando pedida à mão (Actions > backend > Run workflow > "todas").
 3. No PR que entrega a issue, a etiqueta entra em [`issues-entregues.txt`](issues-entregues.txt). A partir daí, se algum teste dela falhar, o merge fica bloqueado.
 
 Quando a issue se contradiz ou deixa algo em aberto, o teste fica escrito, mas pulado, com o motivo:
