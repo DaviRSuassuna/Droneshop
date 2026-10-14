@@ -19,7 +19,7 @@ No CI o banco vem do próprio job (`QUARKUS_DATASOURCE_*`), sem Dev Services.
 
 ## Fluxo por issue
 
-1. Os testes da issue são escritos a partir do **Contrato de API** e dos **Critérios de aceite** dela, antes ou junto com o código, com `@Tag("issue-<numero>")` na classe ou no método.
+1. Os testes da issue são escritos a partir do **Contrato de API** e dos **Critérios de aceite** dela, antes ou junto com o código, com `@Tag("issue-<numero>")` na classe ou no método. Issue nova ainda sem número usa o nome do arquivo em `docs/issues/` (ex.: `issue-lote-csv`).
 2. Enquanto a issue não foi entregue, os testes dela rodam no CI só como informação.
 3. No PR que entrega a issue, a etiqueta entra em [`issues-entregues.txt`](issues-entregues.txt). A partir daí, se algum teste dela falhar, o merge fica bloqueado.
 
@@ -38,19 +38,82 @@ Quando a decisão sair, basta tirar o `@Disabled` e ajustar o teste, se preciso.
 |---|---|
 | `java/br/com/droneshop/<modulo>/` | Um pacote por módulo, espelhando o `src/main`; um arquivo por recurso da API |
 | `testes/Dados.java` | Sufixo aleatório, CNPJ válido e ids de estado/município. O banco é compartilhado com a carga do `import.sql`, então cada teste cria os próprios registros e nunca depende do total da tabela |
+| `testes/Api.java` | Ponto de partida das requisições: `given()` entra como o admin semente (`admin@aeria.com.br`) e manda o token; antes da #4, manda sem token (D25). Também `anonimo()`, `como(token)` e `carrinho(token)` |
+| `testes/Fixtures.java` | Massa de dados montada só pela API: árvore de catálogo, drone e acessório com variante, cliente logado, carrinho, pedido pendente e pago. Ids dos enums (D31) |
+| `testes/Totp.java` | Código TOTP para os testes de 2FA (#45) |
 | `endereco/ViaCepFalso.java` | ViaCEP falso que só existe nos testes. O `%test` aponta o REST Client para ele, então nenhum teste depende da internet |
+| `pagamento/MercadoPagoFalso.java`, `pedido/FreteFalso.java`, `notificacao/ResendFalso.java`, `identidade/GoogleFalso.java` | Os outros serviços externos, no mesmo esquema do ViaCEP (D34). Cada um documenta como simular recusa ou serviço fora do ar |
 | `issues-entregues.txt` | Etiquetas que bloqueiam o merge no CI |
 
 ## Matriz issue × testes
 
-| Etiqueta | Arquivos | Testes |
-|---|---|---:|
-| `base` (entregas anteriores às issues) | `catalogo/MarcaResourceTest`, `CategoriaResourceTest`, `SubcategoriaResourceTest`, `FornecedorResourceTest`, `ProdutoResourceTest`, `ExclusaoEmUsoTest`, `endereco/CepResourceTest`, `EstadoMunicipioResourceTest`, `exception/RotaInexistenteTest` | 82 |
+Testes escritos a partir do contrato de cada issue (`docs/issues/NNN.md`), antes do código. Enquanto a issue não está em `issues-entregues.txt`, os testes dela falham por não haver código e só informam no CI.
+
+<!-- matriz:inicio -->
+
+| Etiqueta | Situação no CI | Arquivos | Testes |
+|---|---|---|---:|
+| `base` | bloqueia o merge | `catalogo/CategoriaResourceTest`, `catalogo/ExclusaoEmUsoTest`, `catalogo/FornecedorResourceTest`, `catalogo/MarcaResourceTest`, `catalogo/ProdutoResourceTest`, `catalogo/SubcategoriaResourceTest`, `endereco/CepResourceTest`, `endereco/EstadoMunicipioResourceTest`, `exception/RotaInexistenteTest` | 82 |
+| `issue-4` | informativo | `identidade/AutenticacaoResourceTest` | 11 |
+| `issue-5` | informativo | `administracao/UsuarioAdministrativoResourceTest` | 10 |
+| `issue-6` | informativo | `administracao/ConfiguracaoLojaResourceTest` | 5 |
+| `issue-7` | informativo | `catalogo/ProdutoSeoResourceTest` | 7 |
+| `issue-8` | informativo | `catalogo/AcessorioResourceTest`, `catalogo/DroneResourceTest` | 15 |
+| `issue-9` | informativo | `catalogo/VarianteResourceTest` | 9 |
+| `issue-10` | informativo | `catalogo/KitResourceTest` | 7 |
+| `issue-11` | informativo | `catalogo/CompatibilidadeResourceTest` | 5 |
+| `issue-12` | informativo | `catalogo/MidiaProdutoResourceTest` | 8 |
+| `issue-13` | informativo | `estoque/MovimentoEstoqueResourceTest` | 9 |
+| `issue-14` | informativo | `catalogo/PromocaoResourceTest` | 7 |
+| `issue-15` | informativo | `compra/CupomResourceTest` | 5 |
+| `issue-16` | informativo | `pedido/PedidoResourceTest` | 7 |
+| `issue-17` | informativo | `pedido/StatusPedidoResourceTest` | 5 |
+| `issue-18` | informativo | `administracao/DashboardResourceTest` | 4 |
+| `issue-19` | informativo | `identidade/ClienteResourceTest`, `identidade/EnderecoClienteResourceTest` | 17 |
+| `issue-20` | informativo | `identidade/SessaoResourceTest` | 7 |
+| `issue-21` | informativo | `catalogo/LojaProdutoResourceTest` | 7 |
+| `issue-22` | informativo | `compra/ListaDesejosResourceTest` | 3 |
+| `issue-23` | informativo | `estoque/ReservaResourceTest` | 7 |
+| `issue-24` | informativo | `compra/CarrinhoResourceTest` | 9 |
+| `issue-25` | informativo | `compra/CupomCarrinhoResourceTest` | 8 |
+| `issue-26` | informativo | `compra/CheckoutResourceTest` | 6 |
+| `issue-27` | informativo | `pagamento/PagamentoResourceTest` | 8 |
+| `issue-28` | informativo | `pagamento/CartaoSalvoResourceTest` | 6 |
+| `issue-29` | informativo | `pedido/CriacaoPedidoResourceTest` | 5 |
+| `issue-30` | informativo | `pedido/FreteResourceTest` | 8 |
+| `issue-31` | informativo | `pedido/RastreioResourceTest` | 3 |
+| `issue-32` | informativo | `notificacao/NotificacaoResourceTest` | 6 |
+| `issue-33` | informativo | `identidade/TokenEmailResourceTest` | 4 |
+| `issue-34` | informativo | `estoque/UnidadeIndividualResourceTest` | 6 |
+| `issue-35` | informativo | `pedido/NotaFiscalResourceTest` | 4 |
+| `issue-36` | informativo | `pagamento/EstornoResourceTest` | 3 |
+| `issue-37` | informativo | `devolucao/DevolucaoResourceTest` | 5 |
+| `issue-38` | informativo | `atendimento/ChamadoResourceTest` | 5 |
+| `issue-39` | informativo | `atendimento/AvaliacaoResourceTest` | 4 |
+| `issue-40` | informativo | `atendimento/PerguntaResourceTest` | 4 |
+| `issue-41` | informativo | `administracao/AuditoriaResourceTest` | 6 |
+| `issue-42` | informativo | `notificacao/PreferenciaNotificacaoResourceTest` | 6 |
+| `issue-43` | informativo | `catalogo/TermoBuscadoResourceTest` | 4 |
+| `issue-44` | informativo | `catalogo/ComparacaoResourceTest` | 2 |
+| `issue-45` | informativo | `administracao/DoisFatoresResourceTest` | 4 |
+| `issue-46` | informativo | `identidade/LgpdResourceTest` | 5 |
+| `issue-47` | informativo | `identidade/GoogleResourceTest` | 6 |
+| `issue-empresas` | informativo | `atendimento/LeadEmpresaResourceTest` | 2 |
+| `issue-lote-csv` | informativo | `administracao/AcoesAdminResourceTest` | 6 |
+
+Total: 372 testes. Gerado por `scripts/vincular_testes_issues.py --matriz`.
+
+<!-- matriz:fim -->
 
 ## Testes pulados
 
+<!-- pulados:inicio -->
+
 Nenhum no momento.
+
+<!-- pulados:fim -->
 
 ## Frontend
 
-As specs ficam ao lado do código (`*.spec.ts`) e rodam com `npx ng test --watch=false` dentro de `frontend/`. Hoje cobrem os services de `core/services` (método, URL, parâmetros e corpo de cada chamada à API).
+- **Unitários:** as specs ficam ao lado do código (`*.spec.ts`) e rodam com `npx ng test --watch=false` dentro de `frontend/`. Hoje cobrem os services de `core/services` (método, URL, parâmetros e corpo de cada chamada à API).
+- **Conformidade com o protótipo:** `frontend/e2e` (Playwright). Cada tela do protótipo tem uma rota e uma etiqueta de issue (`e2e/conformidade/telas.ts`); as telas em `e2e/telas-entregues.txt` bloqueiam o merge. Detalhes em [`frontend/e2e/README.md`](../../../frontend/e2e/README.md).
