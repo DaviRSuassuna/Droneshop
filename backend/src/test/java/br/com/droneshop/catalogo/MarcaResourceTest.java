@@ -28,19 +28,19 @@ import io.restassured.http.ContentType;
 @Tag("base")
 class MarcaResourceTest {
 
-    private static Map<String, Object> marcaAtiva(String nome) {
+    static Map<String, Object> marcaAtiva(String nome) {
         Map<String, Object> m = new HashMap<>();
         m.put("nome", nome);
         m.put("paisOrigem", "Brasil");
         m.put("siteOficial", "https://exemplo.com.br");
         m.put("descricao", "Marca criada pelo teste.");
         m.put("logoUrl", "https://cdn.exemplo.com.br/logo.png");
-        m.put("status", "ATIVA");
+        m.put("idStatus", Dados.ATIVA);
         m.put("destacarHome", true);
         return m;
     }
 
-    private static long criar(Map<String, Object> dto) {
+    static long criar(Map<String, Object> dto) {
         return given().contentType(ContentType.JSON).body(dto)
                 .when().post("/marcas")
                 .then().statusCode(200)
@@ -55,7 +55,8 @@ class MarcaResourceTest {
                 .then().statusCode(200)
                 .body("id", notNullValue())
                 .body("slug", equalTo("aguia-ceu-" + s))
-                .body("status", equalTo("ATIVA"))
+                .body("status.id", equalTo((int) Dados.ATIVA))
+                .body("status.nome", equalTo("Ativa"))
                 .body("destacarHome", equalTo(true));
     }
 
@@ -72,16 +73,34 @@ class MarcaResourceTest {
 
     @Test
     void rascunhoSemNenhumCampoEAceitoComSlugTemporario() {
-        given().contentType(ContentType.JSON).body(Map.of("status", "RASCUNHO"))
+        given().contentType(ContentType.JSON).body(Map.of("idStatus", Dados.RASCUNHO))
                 .when().post("/marcas")
                 .then().statusCode(200)
-                .body("status", equalTo("RASCUNHO"))
+                .body("status.nome", equalTo("Rascunho"))
                 .body("slug", startsWith("rascunho-"));
     }
 
     @Test
+    void rascunhoComCamposVaziosComoATelaEnviaEAceito() {
+        Map<String, Object> dto = new HashMap<>();
+        dto.put("nome", "");
+        dto.put("slug", "");
+        dto.put("paisOrigem", "");
+        dto.put("siteOficial", "");
+        dto.put("descricao", "");
+        dto.put("logoUrl", "");
+        dto.put("idStatus", Dados.RASCUNHO);
+        dto.put("destacarHome", false);
+        given().contentType(ContentType.JSON).body(dto)
+                .when().post("/marcas")
+                .then().statusCode(200)
+                .body("slug", startsWith("rascunho-"))
+                .body("siteOficial", nullValue());
+    }
+
+    @Test
     void ativaSemCamposObrigatoriosResponde400ComOsCampos() {
-        given().contentType(ContentType.JSON).body(Map.of("status", "ATIVA"))
+        given().contentType(ContentType.JSON).body(Map.of("idStatus", Dados.ATIVA))
                 .when().post("/marcas")
                 .then().statusCode(400)
                 .contentType("application/problem+json")
@@ -90,23 +109,23 @@ class MarcaResourceTest {
     }
 
     @Test
-    void statusDesconhecidoResponde400() {
+    void statusInexistenteResponde400() {
         Map<String, Object> dto = marcaAtiva("Marca " + Dados.sufixo());
-        dto.put("status", "PUBLICADA");
+        dto.put("idStatus", 99);
         given().contentType(ContentType.JSON).body(dto)
                 .when().post("/marcas")
                 .then().statusCode(400)
-                .body("errors.field", hasItem("status"));
+                .body("errors.field", hasItem("idStatus"));
     }
 
     @Test
     void statusAusenteResponde400() {
         Map<String, Object> dto = marcaAtiva("Marca " + Dados.sufixo());
-        dto.remove("status");
+        dto.remove("idStatus");
         given().contentType(ContentType.JSON).body(dto)
                 .when().post("/marcas")
                 .then().statusCode(400)
-                .body("errors.field", hasItem("status"));
+                .body("errors.field", hasItem("idStatus"));
     }
 
     @Test
@@ -142,26 +161,39 @@ class MarcaResourceTest {
     }
 
     @Test
-    void buscaPorNomeEContagem() {
+    void buscaPorNomeDevolvePaginaComTotal() {
         String s = Dados.sufixo();
         criar(marcaAtiva("Contada " + s));
 
         given().when().get("/marcas/nome/{nome}", s)
                 .then().statusCode(200)
-                .body("$", hasSize(1))
-                .body("[0].nome", equalTo("Contada " + s));
-
-        given().when().get("/marcas/nome/{nome}/count", s)
-                .then().statusCode(200)
-                .body(equalTo("1"));
+                .body("items", hasSize(1))
+                .body("items[0].nome", equalTo("Contada " + s))
+                .body("totalItems", equalTo(1))
+                .body("totalPages", equalTo(1));
     }
 
     @Test
-    void listagemRespeitaOTamanhoDaPagina() {
+    void buscaPorNomeIgnoraMaiusculas() {
+        String s = Dados.sufixo();
+        criar(marcaAtiva("Maiuscula " + s));
+        given().when().get("/marcas/nome/{nome}", "MAIUSCULA " + s.toUpperCase())
+                .then().statusCode(200)
+                .body("items", hasSize(1));
+    }
+
+    @Test
+    void listagemPaginaComTamanhoPadrao10() {
+        given().when().get("/marcas")
+                .then().statusCode(200)
+                .body("page", equalTo(0))
+                .body("pageSize", equalTo(10));
+
         given().queryParam("page", 0).queryParam("pageSize", 2)
                 .when().get("/marcas")
                 .then().statusCode(200)
-                .body("$", hasSize(2));
+                .body("items", hasSize(2))
+                .body("pageSize", equalTo(2));
     }
 
     @Test
@@ -170,7 +202,7 @@ class MarcaResourceTest {
         long id = criar(marcaAtiva("Antes " + s));
 
         Map<String, Object> dto = marcaAtiva("Depois " + s);
-        dto.put("status", "INATIVA");
+        dto.put("idStatus", Dados.INATIVA);
         given().contentType(ContentType.JSON).body(dto)
                 .when().put("/marcas/{id}", id)
                 .then().statusCode(204);
@@ -179,7 +211,7 @@ class MarcaResourceTest {
                 .then().statusCode(200)
                 .body("nome", equalTo("Depois " + s))
                 .body("slug", equalTo("depois-" + s))
-                .body("status", equalTo("INATIVA"));
+                .body("status.nome", equalTo("Inativa"));
     }
 
     @Test
@@ -201,9 +233,9 @@ class MarcaResourceTest {
 
         given().when().delete("/marcas/{id}", id).then().statusCode(204);
 
-        given().when().get("/marcas/nome/{nome}/count", s)
+        given().when().get("/marcas/nome/{nome}", s)
                 .then().statusCode(200)
-                .body(equalTo("0"));
+                .body("totalItems", equalTo(0));
     }
 
     @Test
@@ -217,12 +249,6 @@ class MarcaResourceTest {
     }
 
     @Test
-    void apagarInexistenteResponde404() {
-        given().when().delete("/marcas/{id}", Dados.ID_INEXISTENTE)
-                .then().statusCode(404);
-    }
-
-    @Test
     void alterarInexistenteResponde404() {
         given().contentType(ContentType.JSON).body(marcaAtiva("Fantasma " + Dados.sufixo()))
                 .when().put("/marcas/{id}", Dados.ID_INEXISTENTE)
@@ -230,29 +256,23 @@ class MarcaResourceTest {
     }
 
     @Test
-    void buscaPorNomeIgnoraMaiusculas() {
-        String s = Dados.sufixo();
-        criar(marcaAtiva("Maiuscula " + s));
-        given().when().get("/marcas/nome/{nome}", "MAIUSCULA " + s.toUpperCase())
-                .then().statusCode(200)
-                .body("$", hasSize(1));
+    void apagarInexistenteResponde404() {
+        given().when().delete("/marcas/{id}", Dados.ID_INEXISTENTE)
+                .then().statusCode(404);
     }
 
     @Test
-    void rascunhoComCamposVaziosComoATelaEnviaEAceito() {
-        Map<String, Object> dto = new HashMap<>();
-        dto.put("nome", "");
-        dto.put("slug", "");
-        dto.put("paisOrigem", "");
-        dto.put("siteOficial", "");
-        dto.put("descricao", "");
-        dto.put("logoUrl", "");
-        dto.put("status", "RASCUNHO");
-        dto.put("destacarHome", false);
-        given().contentType(ContentType.JSON).body(dto)
-                .when().post("/marcas")
+    void listaOsStatusDeMarca() {
+        given().when().get("/status-marca")
                 .then().statusCode(200)
-                .body("slug", startsWith("rascunho-"))
-                .body("siteOficial", nullValue());
+                .body("id", hasItems(1, 2, 3))
+                .body("nome", hasItems("Rascunho", "Ativa", "Inativa"));
+
+        given().when().get("/status-marca/{id}", 2)
+                .then().statusCode(200)
+                .body("nome", equalTo("Ativa"));
+
+        given().when().get("/status-marca/{id}", 99)
+                .then().statusCode(404);
     }
 }

@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -35,7 +36,7 @@ class CategoriaResourceTest {
         c.put("nome", nome);
         c.put("ordemExibicao", ordem);
         c.put("descricao", "Categoria criada pelo teste.");
-        c.put("status", "ATIVA");
+        c.put("idStatus", Dados.ATIVA);
         c.put("exibirMenu", true);
         c.put("iconeUrl", "https://cdn.exemplo.com.br/icone.svg");
         return c;
@@ -57,15 +58,16 @@ class CategoriaResourceTest {
                 .body("id", notNullValue())
                 .body("slug", equalTo("cameras-" + s))
                 .body("ordemExibicao", equalTo(5))
+                .body("status.nome", equalTo("Ativa"))
                 .body("exibirMenu", equalTo(true));
     }
 
     @Test
     void rascunhoSemCamposRecebeOrdemZero() {
-        given().contentType(ContentType.JSON).body(Map.of("status", "RASCUNHO"))
+        given().contentType(ContentType.JSON).body(Map.of("idStatus", Dados.RASCUNHO))
                 .when().post("/categorias")
                 .then().statusCode(200)
-                .body("status", equalTo("RASCUNHO"))
+                .body("status.nome", equalTo("Rascunho"))
                 .body("ordemExibicao", equalTo(0));
     }
 
@@ -75,7 +77,7 @@ class CategoriaResourceTest {
         dto.put("nome", "");
         dto.put("slug", "");
         dto.put("descricao", "");
-        dto.put("status", "RASCUNHO");
+        dto.put("idStatus", Dados.RASCUNHO);
         dto.put("exibirMenu", false);
         dto.put("iconeUrl", "");
         given().contentType(ContentType.JSON).body(dto)
@@ -87,7 +89,7 @@ class CategoriaResourceTest {
 
     @Test
     void ativaSemObrigatoriosResponde400() {
-        given().contentType(ContentType.JSON).body(Map.of("status", "ATIVA"))
+        given().contentType(ContentType.JSON).body(Map.of("idStatus", Dados.ATIVA))
                 .when().post("/categorias")
                 .then().statusCode(400)
                 .body("errors.field", hasItems("nome", "ordemExibicao"));
@@ -119,13 +121,13 @@ class CategoriaResourceTest {
 
         List<Integer> ordens = given().when().get("/categorias/nome/{nome}", s)
                 .then().statusCode(200)
-                .body("$", hasSize(2))
-                .extract().jsonPath().getList("ordemExibicao", Integer.class);
-        org.hamcrest.MatcherAssert.assertThat(ordens.get(0), lessThan(ordens.get(1)));
+                .body("items", hasSize(2))
+                .extract().jsonPath().getList("items.ordemExibicao", Integer.class);
+        MatcherAssert.assertThat(ordens.get(0), lessThan(ordens.get(1)));
     }
 
     @Test
-    void buscaPorSlugEContagemPorNome() {
+    void buscaPorSlugEPorNome() {
         String s = Dados.sufixo();
         long id = criar(categoriaAtiva("Slug " + s, 1));
 
@@ -133,9 +135,9 @@ class CategoriaResourceTest {
                 .then().statusCode(200)
                 .body("id", equalTo((int) id));
 
-        given().when().get("/categorias/nome/{nome}/count", s)
+        given().when().get("/categorias/nome/{nome}", s)
                 .then().statusCode(200)
-                .body(equalTo("1"));
+                .body("totalItems", equalTo(1));
     }
 
     @Test
@@ -152,21 +154,21 @@ class CategoriaResourceTest {
                 .body("ordemExibicao", equalTo(3));
 
         given().when().delete("/categorias/{id}", id).then().statusCode(204);
-        given().when().get("/categorias/nome/{nome}/count", s)
+        given().when().get("/categorias/nome/{nome}", s)
                 .then().statusCode(200)
-                .body(equalTo("0"));
+                .body("totalItems", equalTo(0));
     }
 
     @Test
     void apagarCategoriaComSubcategoriaResponde409() {
         String s = Dados.sufixo();
-        long categoriaId = criar(categoriaAtiva("Com filha " + s, 1));
+        long idCategoria = criar(categoriaAtiva("Com filha " + s, 1));
         given().contentType(ContentType.JSON)
-                .body(Map.of("nome", "Filha " + s, "categoriaId", categoriaId, "status", "ATIVA"))
+                .body(Map.of("nome", "Filha " + s, "idCategoria", idCategoria, "idStatus", Dados.ATIVA))
                 .when().post("/subcategorias")
                 .then().statusCode(200);
 
-        given().when().delete("/categorias/{id}", categoriaId)
+        given().when().delete("/categorias/{id}", idCategoria)
                 .then().statusCode(409)
                 .contentType("application/problem+json")
                 .body("detail", containsString("1 subcategoria"));
@@ -181,9 +183,18 @@ class CategoriaResourceTest {
     }
 
     @Test
-    void alterarInexistenteResponde404() {
+    void alterarOuApagarInexistenteResponde404() {
         given().contentType(ContentType.JSON).body(categoriaAtiva("Fantasma " + Dados.sufixo(), 1))
                 .when().put("/categorias/{id}", Dados.ID_INEXISTENTE)
                 .then().statusCode(404);
+        given().when().delete("/categorias/{id}", Dados.ID_INEXISTENTE)
+                .then().statusCode(404);
+    }
+
+    @Test
+    void listaOsStatusDeCategoria() {
+        given().when().get("/status-categoria")
+                .then().statusCode(200)
+                .body("nome", hasItems("Rascunho", "Ativa", "Inativa"));
     }
 }

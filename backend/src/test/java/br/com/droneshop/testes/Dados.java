@@ -18,6 +18,14 @@ public final class Dados {
     /** Código IBGE de Palmas/TO, presente no localidades.sql. */
     public static final int IBGE_PALMAS = 1721000;
 
+    // ids dos enums de status (padrão Regiao)
+    public static final long RASCUNHO = 1L;
+    public static final long ATIVA = 2L;
+    public static final long INATIVA = 3L;
+    public static final long FORNECEDOR_ATIVO = 1L;
+    public static final long FORNECEDOR_INATIVO = 2L;
+    public static final long PRODUTO_ATIVO = 2L;
+
     private Dados() {
     }
 
@@ -55,16 +63,16 @@ public final class Dados {
 
     /** Id do estado pela sigla, consultando a própria API. */
     public static long idEstado(String sigla) {
-        return given().when().get("/estados")
+        return given().when().get("/estados/sigla/{sigla}", sigla)
                 .then().statusCode(200)
-                .extract().jsonPath().getLong("find { it.sigla == '" + sigla + "' }.id");
+                .extract().jsonPath().getLong("id");
     }
 
     /** Id do município pelo código IBGE, consultando a própria API. */
     public static long idMunicipio(String siglaEstado, int codigoIbge) {
-        return given().queryParam("idEstado", idEstado(siglaEstado))
+        return given().queryParam("idEstado", idEstado(siglaEstado)).queryParam("pageSize", 1000)
                 .when().get("/municipios")
                 .then().statusCode(200)
-                .extract().jsonPath().getLong("find { it.codigoIbge == " + codigoIbge + " }.id");
+                .extract().jsonPath().getLong("items.find { it.codigoIbge == " + codigoIbge + " }.id");
     }
 }

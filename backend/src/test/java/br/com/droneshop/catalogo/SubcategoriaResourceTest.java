@@ -18,19 +18,19 @@ import io.restassured.http.ContentType;
 
 /**
  * Subcategoria (entrega anterior às issues): CRUD em /subcategorias.
- * Sempre ligada a uma Categoria (tabela separada, subcategoria.categoria_id).
+ * Sempre ligada a uma Categoria (tabela separada, subcategoria.id_categoria).
  */
 @QuarkusTest
 @Tag("base")
 class SubcategoriaResourceTest {
 
-    private static Map<String, Object> subcategoria(String nome, long categoriaId) {
+    static Map<String, Object> subcategoria(String nome, long idCategoria) {
         Map<String, Object> s = new HashMap<>();
         s.put("nome", nome);
-        s.put("categoriaId", categoriaId);
+        s.put("idCategoria", idCategoria);
         s.put("ordemExibicao", 1);
         s.put("descricao", "Subcategoria criada pelo teste.");
-        s.put("status", "ATIVA");
+        s.put("idStatus", Dados.ATIVA);
         return s;
     }
 
@@ -38,7 +38,7 @@ class SubcategoriaResourceTest {
         return CategoriaResourceTest.criar(CategoriaResourceTest.categoriaAtiva("Mãe " + s, 1));
     }
 
-    private static long criar(Map<String, Object> dto) {
+    static long criar(Map<String, Object> dto) {
         return given().contentType(ContentType.JSON).body(dto)
                 .when().post("/subcategorias")
                 .then().statusCode(200)
@@ -46,39 +46,50 @@ class SubcategoriaResourceTest {
     }
 
     @Test
-    void criaSubcategoriaComNomeDaCategoriaNaResposta() {
+    void criaSubcategoriaComACategoriaAninhada() {
         String s = Dados.sufixo();
-        long categoriaId = novaCategoria(s);
-        given().contentType(ContentType.JSON).body(subcategoria("Hélices " + s, categoriaId))
+        long idCategoria = novaCategoria(s);
+        given().contentType(ContentType.JSON).body(subcategoria("Hélices " + s, idCategoria))
                 .when().post("/subcategorias")
                 .then().statusCode(200)
                 .body("slug", equalTo("helices-" + s))
-                .body("categoriaId", equalTo((int) categoriaId))
-                .body("categoriaNome", equalTo("Mãe " + s));
+                .body("categoria.id", equalTo((int) idCategoria))
+                .body("categoria.nome", equalTo("Mãe " + s))
+                .body("status.nome", equalTo("Ativa"));
     }
 
     @Test
     void filtraPelaCategoria() {
         String s = Dados.sufixo();
-        long categoriaId = novaCategoria(s);
-        criar(subcategoria("Um " + s, categoriaId));
-        criar(subcategoria("Dois " + s, categoriaId));
+        long idCategoria = novaCategoria(s);
+        criar(subcategoria("Um " + s, idCategoria));
+        criar(subcategoria("Dois " + s, idCategoria));
 
-        given().queryParam("categoriaId", categoriaId)
+        given().queryParam("idCategoria", idCategoria)
                 .when().get("/subcategorias")
                 .then().statusCode(200)
-                .body("$", hasSize(2))
-                .body("categoriaId", everyItem(equalTo((int) categoriaId)));
+                .body("items", hasSize(2))
+                .body("totalItems", equalTo(2))
+                .body("items.categoria.id", everyItem(equalTo((int) idCategoria)));
+    }
+
+    @Test
+    void buscaPorNome() {
+        String s = Dados.sufixo();
+        criar(subcategoria("Nomeada " + s, novaCategoria(s)));
+        given().when().get("/subcategorias/nome/{nome}", s)
+                .then().statusCode(200)
+                .body("totalItems", equalTo(1));
     }
 
     @Test
     void semCategoriaResponde400() {
         Map<String, Object> dto = subcategoria("Órfã " + Dados.sufixo(), 1);
-        dto.remove("categoriaId");
+        dto.remove("idCategoria");
         given().contentType(ContentType.JSON).body(dto)
                 .when().post("/subcategorias")
                 .then().statusCode(400)
-                .body("errors.field", hasItem("categoriaId"));
+                .body("errors.field", hasItem("idCategoria"));
     }
 
     @Test
@@ -86,7 +97,7 @@ class SubcategoriaResourceTest {
         given().contentType(ContentType.JSON).body(subcategoria("Perdida " + Dados.sufixo(), Dados.ID_INEXISTENTE))
                 .when().post("/subcategorias")
                 .then().statusCode(400)
-                .body("errors.field", hasItem("categoriaId"));
+                .body("errors.field", hasItem("idCategoria"));
     }
 
     @Test
@@ -98,21 +109,21 @@ class SubcategoriaResourceTest {
     }
 
     @Test
-    void statusDesconhecidoResponde400() {
+    void statusInexistenteResponde400() {
         Map<String, Object> dto = subcategoria("Status " + Dados.sufixo(), novaCategoria(Dados.sufixo()));
-        dto.put("status", "PUBLICADA");
+        dto.put("idStatus", 99);
         given().contentType(ContentType.JSON).body(dto)
                 .when().post("/subcategorias")
                 .then().statusCode(400)
-                .body("errors.field", hasItem("status"));
+                .body("errors.field", hasItem("idStatus"));
     }
 
     @Test
     void slugRepetidoResponde400() {
         String s = Dados.sufixo();
-        long categoriaId = novaCategoria(s);
-        criar(subcategoria("Repetida " + s, categoriaId));
-        given().contentType(ContentType.JSON).body(subcategoria("Repetida " + s, categoriaId))
+        long idCategoria = novaCategoria(s);
+        criar(subcategoria("Repetida " + s, idCategoria));
+        given().contentType(ContentType.JSON).body(subcategoria("Repetida " + s, idCategoria))
                 .when().post("/subcategorias")
                 .then().statusCode(400)
                 .body("errors.field", hasItem("slug"));
@@ -130,25 +141,23 @@ class SubcategoriaResourceTest {
                 .then().statusCode(204);
         given().when().get("/subcategorias/{id}", id)
                 .then().statusCode(200)
-                .body("categoriaId", equalTo((int) destino));
+                .body("categoria.id", equalTo((int) destino));
 
         given().when().delete("/subcategorias/{id}", id).then().statusCode(204);
-        given().queryParam("categoriaId", destino)
+        given().queryParam("idCategoria", destino)
                 .when().get("/subcategorias")
                 .then().statusCode(200)
-                .body("$", hasSize(0));
+                .body("totalItems", equalTo(0));
     }
 
     @Test
-    void alterarInexistenteResponde404() {
+    void inexistenteResponde404() {
+        given().when().get("/subcategorias/{id}", Dados.ID_INEXISTENTE)
+                .then().statusCode(404);
         given().contentType(ContentType.JSON).body(subcategoria("Fantasma " + Dados.sufixo(), novaCategoria(Dados.sufixo())))
                 .when().put("/subcategorias/{id}", Dados.ID_INEXISTENTE)
                 .then().statusCode(404);
-    }
-
-    @Test
-    void buscaPorIdInexistenteResponde404() {
-        given().when().get("/subcategorias/{id}", Dados.ID_INEXISTENTE)
+        given().when().delete("/subcategorias/{id}", Dados.ID_INEXISTENTE)
                 .then().statusCode(404);
     }
 }

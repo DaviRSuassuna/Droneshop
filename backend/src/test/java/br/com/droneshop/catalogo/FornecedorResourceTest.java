@@ -3,6 +3,7 @@ package br.com.droneshop.catalogo;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.nullValue;
 
 import java.util.HashMap;
@@ -27,13 +28,13 @@ class FornecedorResourceTest {
     private static Long idPalmas;
 
     // consultado na primeira vez que um teste precisa (a API já está de pé)
-    private static long idPalmas() {
+    static long idPalmas() {
         if (idPalmas == null)
             idPalmas = Dados.idMunicipio("TO", Dados.IBGE_PALMAS);
         return idPalmas;
     }
 
-    private static Map<String, Object> endereco() {
+    static Map<String, Object> endereco() {
         Map<String, Object> e = new HashMap<>();
         e.put("cep", "77001-002");
         e.put("logradouro", "Quadra 104 Norte");
@@ -44,7 +45,7 @@ class FornecedorResourceTest {
         return e;
     }
 
-    private static Map<String, Object> fornecedor(String s, String cnpj) {
+    static Map<String, Object> fornecedor(String s, String cnpj) {
         Map<String, Object> f = new HashMap<>();
         f.put("razaoSocial", "Fornecedor " + s + " Ltda.");
         f.put("cnpj", cnpj);
@@ -52,11 +53,11 @@ class FornecedorResourceTest {
         f.put("emailContato", s + "@exemplo.com.br");
         f.put("telefoneContato", "(63) 99999-0000");
         f.put("endereco", endereco());
-        f.put("status", "ATIVO");
+        f.put("idStatus", Dados.FORNECEDOR_ATIVO);
         return f;
     }
 
-    private static long criar(Map<String, Object> dto) {
+    static long criar(Map<String, Object> dto) {
         return given().contentType(ContentType.JSON).body(dto)
                 .when().post("/fornecedores")
                 .then().statusCode(200)
@@ -82,7 +83,7 @@ class FornecedorResourceTest {
                 .body("endereco.cep", equalTo("77001002"))
                 .body("endereco.municipio.codigoIbge", equalTo(Dados.IBGE_PALMAS))
                 .body("endereco.municipio.estado.sigla", equalTo("TO"))
-                .body("status", equalTo("ATIVO"));
+                .body("status.nome", equalTo("Ativo"));
     }
 
     @Test
@@ -96,7 +97,7 @@ class FornecedorResourceTest {
     }
 
     @Test
-    void buscaPorCnpjSoComDigitos() {
+    void buscaPorCnpjSoComDigitosEPorNome() {
         String s = Dados.sufixo();
         String cnpj = Dados.cnpjValido();
         long id = criar(fornecedor(s, Dados.mascararCnpj(cnpj)));
@@ -104,6 +105,9 @@ class FornecedorResourceTest {
         given().when().get("/fornecedores/cnpj/{cnpj}", cnpj)
                 .then().statusCode(200)
                 .body("id", equalTo((int) id));
+        given().when().get("/fornecedores/nome/{nome}", s)
+                .then().statusCode(200)
+                .body("totalItems", equalTo(1));
     }
 
     @Test
@@ -160,10 +164,10 @@ class FornecedorResourceTest {
     }
 
     @Test
-    void statusDeMarcaNaoServeParaFornecedor() {
+    void statusInexistenteParaFornecedorResponde400() {
         Map<String, Object> dto = fornecedor(Dados.sufixo(), Dados.cnpjValido());
-        dto.put("status", "ATIVA");
-        esperar400(dto, "status");
+        dto.put("idStatus", 3);
+        esperar400(dto, "idStatus");
     }
 
     @Test
@@ -174,33 +178,38 @@ class FornecedorResourceTest {
 
         Map<String, Object> dto = fornecedor(s, cnpj);
         dto.put("razaoSocial", "Renomeado " + s);
-        dto.put("status", "INATIVO");
+        dto.put("idStatus", Dados.FORNECEDOR_INATIVO);
         given().contentType(ContentType.JSON).body(dto)
                 .when().put("/fornecedores/{id}", id)
                 .then().statusCode(204);
         given().when().get("/fornecedores/{id}", id)
                 .then().statusCode(200)
                 .body("razaoSocial", equalTo("Renomeado " + s))
-                .body("status", equalTo("INATIVO"));
+                .body("status.nome", equalTo("Inativo"));
 
         given().when().delete("/fornecedores/{id}", id).then().statusCode(204);
-        given().when().get("/fornecedores/nome/{nome}/count", s)
+        given().when().get("/fornecedores/nome/{nome}", s)
                 .then().statusCode(200)
-                .body(equalTo("0"));
+                .body("totalItems", equalTo(0));
     }
 
     @Test
-    void alterarInexistenteResponde404() {
+    void inexistenteResponde404() {
         given().contentType(ContentType.JSON).body(fornecedor(Dados.sufixo(), Dados.cnpjValido()))
                 .when().put("/fornecedores/{id}", Dados.ID_INEXISTENTE)
                 .then().statusCode(404);
-    }
-
-    @Test
-    void buscaPorIdOuCnpjInexistenteResponde404() {
         given().when().get("/fornecedores/{id}", Dados.ID_INEXISTENTE)
                 .then().statusCode(404);
         given().when().get("/fornecedores/cnpj/{cnpj}", Dados.cnpjValido())
                 .then().statusCode(404);
+        given().when().delete("/fornecedores/{id}", Dados.ID_INEXISTENTE)
+                .then().statusCode(404);
+    }
+
+    @Test
+    void listaOsStatusDeFornecedor() {
+        given().when().get("/status-fornecedor")
+                .then().statusCode(200)
+                .body("nome", hasItems("Ativo", "Inativo"));
     }
 }

@@ -45,7 +45,7 @@ Quando a decisão sair, basta tirar o `@Disabled` e ajustar o teste, se preciso.
 
 | Etiqueta | Arquivos | Testes |
 |---|---|---:|
-| `base` (entregas anteriores às issues) | `catalogo/MarcaResourceTest`, `CategoriaResourceTest`, `SubcategoriaResourceTest`, `FornecedorResourceTest`, `ExclusaoEmUsoTest`, `endereco/CepResourceTest`, `EstadoMunicipioResourceTest` | 70 |
+| `base` (entregas anteriores às issues) | `catalogo/MarcaResourceTest`, `CategoriaResourceTest`, `SubcategoriaResourceTest`, `FornecedorResourceTest`, `ProdutoResourceTest`, `ExclusaoEmUsoTest`, `endereco/CepResourceTest`, `EstadoMunicipioResourceTest`, `exception/RotaInexistenteTest` | 82 |
 
 ## Testes pulados
 
