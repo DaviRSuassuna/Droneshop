@@ -4,8 +4,8 @@ title Aeria Atendimento
 
 abstract class DefaultEntity <<MappedSuperclass>> {
   -id: Long
-  -criadoEm: LocalDateTime
-  -atualizadoEm: LocalDateTime
+  -dataCadastro: LocalDateTime
+  -dataAlteracao: LocalDateTime
 }
 
 note bottom of DefaultEntity
