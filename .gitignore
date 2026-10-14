@@ -1,45 +1,63 @@
-#Maven
+# ------------------------------------------------------------------ segredos
+# Nunca versionar credenciais. O .env.example (sem valores reais) é a exceção.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+.certs/
+
+# ------------------------------------------------------------------ Maven / Quarkus
 target/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
 release.properties
 .flattened-pom.xml
+/.quarkus/cli/plugins/
 
+# ------------------------------------------------------------------ Node / Angular
+node_modules/
+.angular/
+dist/
+coverage/
+npm-debug.log*
+# relatório e resultados dos testes de conformidade (Playwright)
+frontend/e2e/.resultados/
+frontend/e2e/.relatorio/
+playwright-report/
+test-results/
+
+# ------------------------------------------------------------------ editores
 # Eclipse
 .project
 .classpath
 .settings/
 bin/
-
 # IntelliJ
 .idea
 *.ipr
 *.iml
 *.iws
-
 # NetBeans
 nb-configuration.xml
-
-# Visual Studio Code
+# VS Code
 /.vscode
 /.factorypath
-
-# OSX
-.DS_Store
-
 # Vim
 *.swp
 *.swo
 
-# patch
+# ------------------------------------------------------------------ sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ------------------------------------------------------------------ outros
+# sobras de patch
 *.orig
 *.rej
-
-# Local environment
-.env
-
-# Plugin directory
-/.quarkus/cli/plugins/
-# TLS Certificates
-.certs/
+# rascunhos do Python dos scripts
+__pycache__/
