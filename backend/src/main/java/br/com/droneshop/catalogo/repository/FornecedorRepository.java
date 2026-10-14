@@ -20,7 +20,7 @@ public class FornecedorRepository implements PanacheRepository<Fornecedor> {
 
     // "nome" aqui e a razao social, para manter a mesma assinatura de Marca/Categoria
     public PanacheQuery<Fornecedor> findByNome(String nome) {
-        return find("SELECT f FROM Fornecedor f WHERE f.razaoSocial LIKE ?1 ORDER BY f.razaoSocial ", "%" + nome + "%");
+        return find("SELECT f FROM Fornecedor f WHERE LOWER(f.razaoSocial) LIKE ?1 ORDER BY f.razaoSocial ", "%" + nome.toLowerCase() + "%");
     }
 
     @Override

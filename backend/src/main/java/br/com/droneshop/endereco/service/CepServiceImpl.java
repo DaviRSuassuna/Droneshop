@@ -6,7 +6,7 @@ import org.jboss.logging.Logger;
 import br.com.droneshop.endereco.client.ViaCepClient;
 import br.com.droneshop.endereco.client.ViaCepResponse;
 import br.com.droneshop.endereco.dto.CepResponseDTO;
-import br.com.droneshop.endereco.dto.MunicipioResponseDTO;
+import br.com.droneshop.endereco.mapper.MunicipioResponseMapper;
 import br.com.droneshop.endereco.model.Municipio;
 import br.com.droneshop.endereco.repository.MunicipioRepository;
 import br.com.droneshop.exception.ResourceNotFoundException;
@@ -51,7 +51,7 @@ public class CepServiceImpl implements CepService {
             vazioParaNulo(resposta.bairro()),
             resposta.localidade(),
             resposta.uf(),
-            MunicipioResponseDTO.valueOf(municipio));
+            (municipio == null) ? null : MunicipioResponseMapper.toResponse(municipio));
     }
 
     private ViaCepResponse consultarViaCep(String cep) {

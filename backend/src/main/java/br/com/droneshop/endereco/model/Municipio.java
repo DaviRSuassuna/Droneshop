@@ -19,7 +19,7 @@ public class Municipio extends DefaultEntity {
 
     // muitos municipios -> um estado
     @ManyToOne(optional = false)
-    @JoinColumn(name = "estado_id", nullable = false)
+    @JoinColumn(name = "id_estado", nullable = false)
     private Estado estado;
 
     public String getNome() {

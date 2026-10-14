@@ -24,10 +24,13 @@ droneshop/
 ├── frontend/    Aplicação Angular (droneshop-web): painel admin e storefront
 ├── docs/
 │   ├── PRD-Aeria.md      requisitos, regras de negócio, faseamento e decisões
+│   ├── API.md            mapa de endpoints por módulo e issue
 │   ├── diagramas/        8 diagramas de classes por contexto (aeria-*.puml)
-│   └── telas/            wireframes versionados (v2, v3, v4)
-├── .github/     workflows, templates de issue/PR, CODEOWNERS, rulesets
-└── CONTRIBUTING.md
+│   ├── design/           protótipo navegável, DESIGN.md e PRODUCT.md
+│   ├── issues/           corpo de cada issue (contrato de API), sincronizado com o GitHub
+│   └── telas/            wireframes antigos (.zip), só histórico
+├── scripts/     sincronização e vínculo das issues (testes, protótipo)
+└── .github/     workflows, templates de issue/PR, rulesets
 ```
 
 ### Backend
@@ -99,6 +102,9 @@ Em modo dev o schema é recriado a cada subida e carregado com dados de exemplo 
 cd frontend
 npm install
 npm start                       # http://localhost:4200
+npm run prototipo               # protótipo em http://localhost:4300
+npm run prototipo:verificar     # páginas, links, viewport e alt do protótipo
+npm run e2e                     # telas x protótipo (Playwright); npm run e2e:relatorio abre as imagens
 ```
 
 A API libera CORS para `http://localhost:4200`.
@@ -109,8 +115,23 @@ A API libera CORS para `http://localhost:4200`.
 |---|---|
 | [PRD](docs/PRD-Aeria.md) | Escopo, requisitos funcionais e não-funcionais, regras de negócio, faseamento e decisões registradas |
 | [Diagramas](docs/diagramas) | Diagramas de classes por contexto: identidade, catálogo, estoque, compra, pedido, pagamento, atendimento e administrativo |
-| [Telas](docs/telas) | Wireframes do storefront e do painel admin (versão atual: v4) |
+| [Endpoints da API](docs/API.md) | Todas as rotas que o frontend usa, por módulo, com a issue de cada uma e o que já está pronto |
+| [Design e protótipo](docs/design) | Protótipo navegável das 36 telas (publicado no GitHub Pages), design system e resumo de produto |
+| [Issues](docs/issues) | Corpo de cada issue com o contrato de API; o workflow `sincronizar-issues` leva as mudanças para o GitHub |
+| [Testes do backend](backend/src/test/README.md) | Como rodar, matriz issue × testes e o que bloqueia o merge |
+| [Conformidade com o protótipo](frontend/e2e/README.md) | Testes que comparam cada tela com o protótipo e o fluxo para mudar o design |
 
 ## Contribuindo
 
-O fluxo é issue → branch a partir da `develop` → PR para a `develop` → PR `develop` → `main`, com commits em Conventional Commits em português. Detalhes em [CONTRIBUTING.md](CONTRIBUTING.md).
+O fluxo é issue → branch a partir da `develop` → PR para a `develop` → PR `develop` → `main`, com commits em Conventional Commits em português.
+
+1. **Branch:** na issue, "Development → Create a branch" com origem na `develop`. O nome sugerido pelo GitHub (`<numero>-<resumo>`) já serve.
+2. **Commits:** `tipo(escopo): resumo`, ex.: `feat(catalogo): cria VarianteProduto com dados de embalagem`.
+3. **PR para a `develop`** com `Closes #<numero>` na descrição; a issue fecha sozinha no merge.
+4. **Revisão:** 1 aprovação de qualquer colaborador com escrita. O autor não aprova o próprio PR; o admin pode usar o bypass ("Merge without waiting for requirements to be met").
+5. **CI:** os checks `backend` e `frontend` precisam passar. Os testes da issue já existem (etiqueta `issue-<numero>`); no PR que a entrega, acrescente a etiqueta em `backend/src/test/issues-entregues.txt` e, se a issue tem tela, em `frontend/e2e/telas-entregues.txt`.
+6. **Design:** mudança de tela começa no protótipo (`docs/design/README.md`, seção "Mudar o design").
+7. **Issue mudou?** Edite `docs/issues/<numero>.md` no PR; depois do merge, rode o workflow `sincronizar-issues` na `develop`.
+8. **Release:** quando a fase estiver estável, PR de `develop` para `main`.
+
+Push direto, force push e exclusão da `main` e da `develop` são bloqueados pelos rulesets (`.github/rulesets/*.json` guarda a configuração para reimportar).

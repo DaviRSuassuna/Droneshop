@@ -9,7 +9,8 @@ import { MarcaService } from '../../../../core/services/marca.service';
 import { CategoriaService } from '../../../../core/services/categoria.service';
 import { SubcategoriaService } from '../../../../core/services/subcategoria.service';
 import { FornecedorService } from '../../../../core/services/fornecedor.service';
-import { ProdutoDTO, StatusProduto } from '../../../../core/models/produto.model';
+import { ProdutoDTO } from '../../../../core/models/produto.model';
+import { STATUS_FORNECEDOR, STATUS_PRODUTO } from '../../../../core/models/status.model';
 import { Marca } from '../../../../core/models/marca.model';
 import { Categoria } from '../../../../core/models/categoria.model';
 import { Subcategoria } from '../../../../core/models/subcategoria.model';
@@ -32,6 +33,9 @@ export class ProdutoCadastro implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
+  readonly STATUS = STATUS_PRODUTO;
+  readonly FORNECEDOR_INATIVO = STATUS_FORNECEDOR.INATIVO;
+
   readonly produtoId = signal<number | null>(null);
   readonly modoEdicao = computed(() => this.produtoId() !== null);
 
@@ -43,7 +47,7 @@ export class ProdutoCadastro implements OnInit {
 
   /** Subcategorias da categoria escolhida no select de cima. */
   readonly subcategoriasDisponiveis = computed(() =>
-    this.subcategorias().filter((s) => s.categoriaId === this.categoriaSelecionada()),
+    this.subcategorias().filter((s) => s.categoria.id === this.categoriaSelecionada()),
   );
 
   readonly carregando = signal(false);
@@ -57,31 +61,35 @@ export class ProdutoCadastro implements OnInit {
     modelo: this.fb.nonNullable.control(''),
     descricaoCurta: this.fb.nonNullable.control(''),
     preco: this.fb.control<number | null>(null),
-    marcaId: this.fb.control<number | null>(null),
-    // categoriaId só ajuda a escolher; o que vai para a API é subcategoriaId
-    categoriaId: this.fb.control<number | null>(null),
-    subcategoriaId: this.fb.control<number | null>(null),
-    fornecedorId: this.fb.control<number | null>(null),
-    status: this.fb.nonNullable.control<StatusProduto>('RASCUNHO', Validators.required),
+    idMarca: this.fb.control<number | null>(null),
+    // idCategoria só ajuda a escolher; o que vai para a API é idSubcategoria
+    idCategoria: this.fb.control<number | null>(null),
+    idSubcategoria: this.fb.control<number | null>(null),
+    idFornecedor: this.fb.control<number | null>(null),
+    idStatus: this.fb.nonNullable.control<number>(STATUS_PRODUTO.RASCUNHO, Validators.required),
     destaque: this.fb.nonNullable.control(false),
   });
 
   ngOnInit(): void {
-    this.marcaService.listar(0, 500).subscribe((m) => this.marcas.set(m.filter((x) => x.nome)));
+    this.marcaService
+      .listar(0, 1000)
+      .subscribe((p) => this.marcas.set(p.items.filter((x) => x.nome)));
     this.categoriaService
-      .listar(0, 500)
-      .subscribe((c) => this.categorias.set(c.filter((x) => x.nome)));
-    this.subcategoriaService.listar().subscribe((s) => this.subcategorias.set(s));
-    this.fornecedorService.listar(0, 500).subscribe((f) => this.fornecedores.set(f));
+      .listar(0, 1000)
+      .subscribe((p) => this.categorias.set(p.items.filter((x) => x.nome)));
+    this.subcategoriaService
+      .listar(null, 0, 1000)
+      .subscribe((p) => this.subcategorias.set(p.items));
+    this.fornecedorService.listar(0, 1000).subscribe((p) => this.fornecedores.set(p.items));
 
     // ao trocar a categoria, limpa a subcategoria se ela for de outra categoria
-    this.form.controls.categoriaId.valueChanges.subscribe((id) => {
-      const categoriaId = id ? Number(id) : null;
-      this.categoriaSelecionada.set(categoriaId);
+    this.form.controls.idCategoria.valueChanges.subscribe((id) => {
+      const idCategoria = id ? Number(id) : null;
+      this.categoriaSelecionada.set(idCategoria);
       const sub = this.subcategorias().find(
-        (s) => s.id === this.form.controls.subcategoriaId.value,
+        (s) => s.id === this.form.controls.idSubcategoria.value,
       );
-      if (sub && sub.categoriaId !== categoriaId) this.form.controls.subcategoriaId.setValue(null);
+      if (sub && sub.categoria.id !== idCategoria) this.form.controls.idSubcategoria.setValue(null);
     });
 
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -96,27 +104,22 @@ export class ProdutoCadastro implements OnInit {
     this.carregando.set(true);
     this.produtoService.buscarPorId(id).subscribe({
       next: (produto) => {
-        if (!produto) {
-          this.erroGeral.set('Este produto não foi encontrado.');
-          this.carregando.set(false);
-          return;
-        }
         this.form.patchValue({
           nome: produto.nome,
           modelo: produto.modelo,
           descricaoCurta: produto.descricaoCurta ?? '',
           preco: produto.preco,
-          marcaId: produto.marcaId,
-          categoriaId: produto.categoriaId,
-          subcategoriaId: produto.subcategoriaId,
-          fornecedorId: produto.fornecedorId,
-          status: produto.status,
+          idMarca: produto.marca.id,
+          idCategoria: produto.subcategoria.categoria.id,
+          idSubcategoria: produto.subcategoria.id,
+          idFornecedor: produto.fornecedor.id,
+          idStatus: produto.status.id,
           destaque: produto.destaque,
         });
         this.carregando.set(false);
       },
-      error: () => {
-        this.erroGeral.set('Não foi possível carregar este produto.');
+      error: (err) => {
+        this.erroGeral.set(err.status === 404 ? 'Este produto não foi encontrado.' : 'Não foi possível carregar este produto.');
         this.carregando.set(false);
       },
     });
@@ -141,10 +144,10 @@ export class ProdutoCadastro implements OnInit {
       descricaoCurta: v.descricaoCurta.trim(),
       preco: v.preco,
       // o select devolve string; a API espera Long
-      marcaId: v.marcaId ? Number(v.marcaId) : null,
-      subcategoriaId: v.subcategoriaId ? Number(v.subcategoriaId) : null,
-      fornecedorId: v.fornecedorId ? Number(v.fornecedorId) : null,
-      status: v.status,
+      idMarca: v.idMarca ? Number(v.idMarca) : null,
+      idSubcategoria: v.idSubcategoria ? Number(v.idSubcategoria) : null,
+      idFornecedor: v.idFornecedor ? Number(v.idFornecedor) : null,
+      idStatus: Number(v.idStatus),
       destaque: v.destaque,
     };
 

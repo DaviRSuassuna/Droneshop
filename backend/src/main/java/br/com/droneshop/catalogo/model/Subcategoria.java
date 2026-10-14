@@ -3,8 +3,6 @@ package br.com.droneshop.catalogo.model;
 import br.com.droneshop.model.DefaultEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
@@ -19,7 +17,7 @@ public class Subcategoria extends DefaultEntity {
 
     // muitas subcategorias -> uma categoria
     @ManyToOne(optional = false)
-    @JoinColumn(name = "categoria_id", nullable = false)
+    @JoinColumn(name = "id_categoria", nullable = false)
     private Categoria categoria;
 
     @Column(nullable = false, name = "ordem_exibicao")
@@ -29,8 +27,7 @@ public class Subcategoria extends DefaultEntity {
     private String descricao;
 
     // mesmo ciclo de vida da Categoria (RASCUNHO, ATIVA, INATIVA)
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20, nullable = false)
+    @Column(nullable = false)
     private StatusCategoria status;
 
     public String getNome() {

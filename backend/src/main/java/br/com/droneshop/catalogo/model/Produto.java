@@ -5,8 +5,6 @@ import java.math.BigDecimal;
 import br.com.droneshop.model.DefaultEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
@@ -29,21 +27,20 @@ public class Produto extends DefaultEntity {
 
     // muitos produtos -> uma marca
     @ManyToOne(optional = false)
-    @JoinColumn(name = "marca_id", nullable = false)
+    @JoinColumn(name = "id_marca", nullable = false)
     private Marca marca;
 
     // muitos produtos -> uma subcategoria (a categoria vem por ela)
     @ManyToOne(optional = false)
-    @JoinColumn(name = "subcategoria_id", nullable = false)
+    @JoinColumn(name = "id_subcategoria", nullable = false)
     private Subcategoria subcategoria;
 
     // muitos produtos -> um fornecedor (RF02)
     @ManyToOne(optional = false)
-    @JoinColumn(name = "fornecedor_id", nullable = false)
+    @JoinColumn(name = "id_fornecedor", nullable = false)
     private Fornecedor fornecedor;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20, nullable = false)
+    @Column(nullable = false)
     private StatusProduto status;
 
     @Column(nullable = false)

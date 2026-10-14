@@ -1,0 +1,50 @@
+# Sincroniza as issues do GitHub com os arquivos de docs/issues/ (manual).
+#
+# Atualiza título, corpo, labels e milestone das issues existentes e cria as
+# novas (docs/issues/nova-*.md) sem duplicar: a issue nova é achada pelo título.
+# Os blocos escritos por vincular-testes e vincular-prototipo são preservados.
+#
+# Como usar: Actions > sincronizar-issues > Run workflow, na develop.
+#   simular = true  -> só lista o que mudaria (comece por aqui)
+#   simular = false -> aplica
+#   somente         -> números separados por vírgula (vazio = todas)
+# Depois de criar issues novas, rode vincular-testes e vincular-prototipo.
+
+name: sincronizar-issues
+
+on:
+  workflow_dispatch:
+    inputs:
+      simular:
+        description: "Só mostrar o que mudaria (não escreve nas issues)"
+        type: boolean
+        default: true
+      somente:
+        description: "Números das issues, separados por vírgula (vazio = todas)"
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: issues
+  cancel-in-progress: false
+
+jobs:
+  sincronizar:
+    name: sincronizar issues
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sincronizar
+        env:
+          SIMULAR: ${{ inputs.simular }}
+          SOMENTE: ${{ inputs.somente }}
+        run: |
+          ARGS=(--repo "$GITHUB_REPOSITORY" --somente "$SOMENTE")
+          if [ "$SIMULAR" = "true" ]; then ARGS+=(--dry-run); fi
+          python3 scripts/sincronizar_issues.py "${ARGS[@]}"

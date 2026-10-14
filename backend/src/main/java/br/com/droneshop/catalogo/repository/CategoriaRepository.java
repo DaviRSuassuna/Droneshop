@@ -19,7 +19,7 @@ public class CategoriaRepository implements PanacheRepository<Categoria> {
     }
 
     public PanacheQuery<Categoria> findByNome(String nome) {
-        return find("SELECT c FROM Categoria c WHERE c.nome LIKE ?1 ORDER BY c.ordemExibicao, c.nome ", "%" + nome + "%");
+        return find("SELECT c FROM Categoria c WHERE LOWER(c.nome) LIKE ?1 ORDER BY c.ordemExibicao, c.nome ", "%" + nome.toLowerCase() + "%");
     }
 
 

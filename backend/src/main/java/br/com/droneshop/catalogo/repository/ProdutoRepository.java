@@ -1,12 +1,13 @@
 package br.com.droneshop.catalogo.repository;
 
 import java.text.Normalizer;
+import java.util.HashMap;
+import java.util.Map;
 
 import br.com.droneshop.catalogo.model.Produto;
 import br.com.droneshop.catalogo.model.StatusProduto;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
-import io.quarkus.panache.common.Parameters;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -30,31 +31,31 @@ public class ProdutoRepository implements PanacheRepository<Produto> {
     public PanacheQuery<Produto> findComFiltro(String nome, Long marcaId, Long categoriaId, Long subcategoriaId,
                                               StatusProduto status) {
         StringBuilder jpql = new StringBuilder("SELECT p FROM Produto p WHERE 1 = 1 ");
-        Parameters params = new Parameters();
+        Map<String, Object> params = new HashMap<>();
 
         if (nome != null && !nome.isBlank()) {
             // busca sem diferenciar maiusculas nem acentos ("hel" encontra "Hélices")
             jpql.append("AND (CAST(FUNCTION('translate', LOWER(p.nome), :comAcento, :semAcento) AS String) LIKE :nome ")
                 .append("OR LOWER(p.modelo) LIKE :nome) ");
-            params.and("nome", "%" + semAcento(nome.trim().toLowerCase()) + "%")
-                  .and("comAcento", COM_ACENTO)
-                  .and("semAcento", SEM_ACENTO);
+            params.put("nome", "%" + semAcento(nome.trim().toLowerCase()) + "%");
+            params.put("comAcento", COM_ACENTO);
+            params.put("semAcento", SEM_ACENTO);
         }
         if (marcaId != null) {
             jpql.append("AND p.marca.id = :marcaId ");
-            params.and("marcaId", marcaId);
+            params.put("marcaId", marcaId);
         }
         if (categoriaId != null) {
             jpql.append("AND p.subcategoria.categoria.id = :categoriaId ");
-            params.and("categoriaId", categoriaId);
+            params.put("categoriaId", categoriaId);
         }
         if (subcategoriaId != null) {
             jpql.append("AND p.subcategoria.id = :subcategoriaId ");
-            params.and("subcategoriaId", subcategoriaId);
+            params.put("subcategoriaId", subcategoriaId);
         }
         if (status != null) {
             jpql.append("AND p.status = :status ");
-            params.and("status", status);
+            params.put("status", status);
         }
 
         jpql.append("ORDER BY p.nome");

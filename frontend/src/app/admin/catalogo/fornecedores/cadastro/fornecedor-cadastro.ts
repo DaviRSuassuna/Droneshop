@@ -9,7 +9,8 @@ import { FornecedorService } from '../../../../core/services/fornecedor.service'
 import { CepService } from '../../../../core/services/cep.service';
 import { EstadoService } from '../../../../core/services/estado.service';
 import { MunicipioService } from '../../../../core/services/municipio.service';
-import { FornecedorDTO, StatusFornecedor } from '../../../../core/models/fornecedor.model';
+import { FornecedorDTO } from '../../../../core/models/fornecedor.model';
+import { STATUS_FORNECEDOR } from '../../../../core/models/status.model';
 import { CepResultado, Estado, Municipio } from '../../../../core/models/endereco.model';
 import { ProblemDetail } from '../../../../core/models/problem.model';
 import { cnpjValidator, somenteDigitos } from '../../../../core/utils/documentos';
@@ -32,6 +33,7 @@ interface AvisoCep {
   styleUrl: './fornecedor-cadastro.scss',
 })
 export class FornecedorCadastro implements OnInit {
+  readonly STATUS = STATUS_FORNECEDOR;
   private readonly fb = inject(FormBuilder);
   private readonly fornecedorService = inject(FornecedorService);
   private readonly cepService = inject(CepService);
@@ -63,7 +65,7 @@ export class FornecedorCadastro implements OnInit {
     nomeContato: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
     emailContato: ['', [Validators.required, Validators.email, Validators.maxLength(150)]],
     telefoneContato: ['', [Validators.pattern(/^\(\d{2}\) \d{4,5}-\d{4}$/)]],
-    status: ['ATIVO' as StatusFornecedor, Validators.required],
+    idStatus: [STATUS_FORNECEDOR.ATIVO as number, Validators.required],
     endereco: this.fb.nonNullable.group({
       cep: ['', [Validators.required, Validators.pattern(/^\d{5}-\d{3}$/)]],
       logradouro: ['', [Validators.required, Validators.maxLength(150)]],
@@ -100,7 +102,7 @@ export class FornecedorCadastro implements OnInit {
     telefoneContato: {
       pattern: 'Telefone inválido. Use (00) 0000-0000 ou (00) 00000-0000.',
     },
-    status: { required: 'Selecione o status.' },
+    idStatus: { required: 'Selecione o status.' },
     'endereco.cep': {
       required: 'Informe o CEP.',
       pattern: 'CEP inválido. Use o formato 00000-000.',
@@ -159,7 +161,7 @@ export class FornecedorCadastro implements OnInit {
 
   ngOnInit(): void {
     this.estadoService.listar().subscribe({
-      next: (estados) => this.estados.set(estados),
+      next: (pagina) => this.estados.set(pagina.items),
       error: () => this.erroGeral.set('Não foi possível carregar a lista de estados.'),
     });
 
@@ -196,11 +198,6 @@ export class FornecedorCadastro implements OnInit {
     this.carregando.set(true);
     this.fornecedorService.buscarPorId(id).subscribe({
       next: (fornecedor) => {
-        if (!fornecedor) {
-          this.erroGeral.set('Este fornecedor não foi encontrado.');
-          this.carregando.set(false);
-          return;
-        }
         const end = fornecedor.endereco;
         // emitEvent: false para não disparar a busca de CEP nem limpar o Município
         this.form.patchValue(
@@ -210,7 +207,7 @@ export class FornecedorCadastro implements OnInit {
             nomeContato: fornecedor.nomeContato,
             emailContato: fornecedor.emailContato,
             telefoneContato: formatarTelefone(fornecedor.telefoneContato),
-            status: fornecedor.status,
+            idStatus: fornecedor.status.id,
             endereco: end
               ? {
                   cep: formatarCep(end.cep),
@@ -229,8 +226,8 @@ export class FornecedorCadastro implements OnInit {
         this.form.updateValueAndValidity();
         this.carregando.set(false);
       },
-      error: () => {
-        this.erroGeral.set('Não foi possível carregar este fornecedor.');
+      error: (err) => {
+        this.erroGeral.set(err.status === 404 ? 'Este fornecedor não foi encontrado.' : 'Não foi possível carregar este fornecedor.');
         this.carregando.set(false);
       },
     });
@@ -241,8 +238,8 @@ export class FornecedorCadastro implements OnInit {
     if (!idEstado) return;
     this.carregandoMunicipios.set(true);
     this.municipioService.listarPorEstado(idEstado).subscribe({
-      next: (municipios) => {
-        this.municipios.set(municipios);
+      next: (pagina) => {
+        this.municipios.set(pagina.items);
         if (idMunicipioSelecionar) {
           this.form.controls.endereco.controls.idMunicipio.setValue(idMunicipioSelecionar);
         }
@@ -366,7 +363,7 @@ export class FornecedorCadastro implements OnInit {
         bairro: v.endereco.bairro.trim(),
         idMunicipio: v.endereco.idMunicipio ? Number(v.endereco.idMunicipio) : null,
       },
-      status: v.status,
+      idStatus: Number(v.idStatus),
     };
 
     this.salvando.set(true);

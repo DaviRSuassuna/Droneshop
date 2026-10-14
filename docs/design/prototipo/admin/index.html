@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard · Admin Aeria</title>
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<header class="tb">
+  <div class="tb-l">
+    <a class="tb-brand" href="index.html">ADMIN</a>
+    <nav class="tb-nav">
+      <a href="index.html" class="on">Dashboard</a>
+      <a href="produtos.html">Produtos</a>
+      <a href="marcas.html">Marcas</a>
+      <a href="categorias.html">Categorias</a>
+      <a href="fornecedores.html">Fornecedores</a>
+      <a href="promocoes.html">Promoções</a>
+      <a href="cupons.html">Cupons</a>
+      <a href="estoque.html">Estoque</a>
+      <a href="pedidos.html">Pedidos</a>
+      <a href="usuarios.html">Usuários</a>
+    </nav>
+  </div>
+  <div class="tb-r">
+    <span class="tb-search">Buscar no painel</span>
+    <a href="../index.html">Ver loja ↗</a>
+    <span class="avatar">MR</span>
+  </div>
+</header>
+<div class="pad" style="padding-bottom:36px;display:flex;flex-direction:column;gap:20px">
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:20px">
+    <div><h1 class="h1 big">Visão geral</h1><div class="crumb">Últimos 30 dias · comparado ao período anterior</div></div>
+    <div class="actions"><div class="f" style="width:190px"><select><option>Últimos 30 dias</option><option>Últimos 7 dias</option><option>Este ano</option></select></div><button class="btn">Exportar relatório</button></div>
+  </div>
+  <div class="g4"><div class="kpi"><span class="eyebrow" style="margin:0">Vendas no período</span><b>R$ 1,42 M</b><i class="up-good">+12,4% vs. período anterior</i></div><div class="kpi"><span class="eyebrow" style="margin:0">Pedidos</span><b>312</b><i class="up-good">+8,1%</i></div><div class="kpi"><span class="eyebrow" style="margin:0">Ticket médio</span><b>R$ 4.551</b><i class="up-good">+3,9%</i></div><div class="kpi"><span class="eyebrow" style="margin:0">Conversão</span><b>2,7%</b><i class="down">−0,3 p.p.</i></div></div>
+  <div style="display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:20px">
+    <section class="card p"><div class="card-h"><span class="card-t">Vendas no período</span><span class="card-n">Receita diária · R$</span></div><div class="ph" style="height:214px">gráfico de linha · receita por dia</div></section>
+    <section class="card p"><div class="card-h"><span class="card-t">Estoque baixo</span><a class="card-n" href="produtos.html">Ver estoque →</a></div>
+      <div class="list-row"><span class="cell-name"><b>Falcon X2 Standard</b><span class="chip">DRN-FX2S-0041</span></span><span class="warn">4 un</span></div><div class="list-row"><span class="cell-name"><b>Atlas Agro 10L</b><span class="chip">DRN-AT10-0019</span></span><span class="warn">3 un</span></div><div class="list-row"><span class="cell-name"><b>Vortex FPV Racer</b><span class="chip">DRN-VFR-0027</span></span><span class="warn">0 un</span></div><div class="list-row"><span class="cell-name"><b>Bateria extra Falcon X2</b><span class="chip">ACC-BFX2-0111</span></span><span class="warn">6 un</span></div><div class="list-row"><span class="cell-name"><b>Heron Survey Pro</b><span class="chip">DRN-HSP-0015</span></span><span class="warn">9 un</span></div>
+    </section>
+  </div>
+  <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.55fr);gap:20px">
+    <section class="card p"><div class="card-h"><span class="card-t">Pedidos pendentes</span><a class="card-n" href="pedidos.html">Ver todos →</a></div>
+      <a class="list-row" href="pedido.html"><span class="cell-name"><b class="mono" style="font-size:11px;color:var(--ink2)">#PD-2026-00316</b><span style="font-size:11.5px;color:var(--dim2)">AgroSul Ltda. · há 2 dias</span></span><span class="ink">R$ 93.800</span></a><a class="list-row" href="pedido.html"><span class="cell-name"><b class="mono" style="font-size:11px;color:var(--ink2)">#PD-2026-00318</b><span style="font-size:11.5px;color:var(--dim2)">Marina Ribeiro · há 18 h</span></span><span class="ink">R$ 14.870</span></a><a class="list-row" href="pedido.html"><span class="cell-name"><b class="mono" style="font-size:11px;color:var(--ink2)">#PD-2026-00319</b><span style="font-size:11.5px;color:var(--dim2)">Bruno Tavares · há 6 h</span></span><span class="ink">R$ 5.780</span></a><a class="list-row" href="pedido.html"><span class="cell-name"><b class="mono" style="font-size:11px;color:var(--ink2)">#PD-2026-00320</b><span style="font-size:11.5px;color:var(--dim2)">Drone Center RJ · há 3 h</span></span><span class="ink">R$ 46.900</span></a><a class="list-row" href="pedido.html"><span class="cell-name"><b class="mono" style="font-size:11px;color:var(--ink2)">#PD-2026-00321</b><span style="font-size:11.5px;color:var(--dim2)">Ana Beatriz · há 1 h</span></span><span class="ink">R$ 690</span></a>
+    </section>
+    <section class="card p"><div class="card-t" style="margin-bottom:14px">Produtos mais vendidos</div>
+      <div class="trow head" style="grid-template-columns:26px minmax(0,1fr) 90px 110px 120px;padding:0 0 10px"><span></span><span>Produto</span><span>Unidades</span><span>Receita</span><span>Share</span></div>
+      <div class="trow" style="grid-template-columns:26px minmax(0,1fr) 90px 110px 120px;padding:11px 0"><span class="mono" style="font-size:11px;color:var(--mute)">01</span><span class="ink">Nimbus Mini 3</span><span class="dim">184</span><span class="ink">R$ 789 k</span><span class="dim">22%</span></div><div class="trow" style="grid-template-columns:26px minmax(0,1fr) 90px 110px 120px;padding:11px 0"><span class="mono" style="font-size:11px;color:var(--mute)">02</span><span class="ink">Falcon X2 Pro</span><span class="dim">42</span><span class="ink">R$ 524 k</span><span class="dim">15%</span></div><div class="trow" style="grid-template-columns:26px minmax(0,1fr) 90px 110px 120px;padding:11px 0"><span class="mono" style="font-size:11px;color:var(--mute)">03</span><span class="ink">Sparrow Kids Drone</span><span class="dim">271</span><span class="ink">R$ 187 k</span><span class="dim">9%</span></div><div class="trow" style="grid-template-columns:26px minmax(0,1fr) 90px 110px 120px;padding:11px 0"><span class="mono" style="font-size:11px;color:var(--mute)">04</span><span class="ink">Heron Survey Pro</span><span class="dim">11</span><span class="ink">R$ 312 k</span><span class="dim">8%</span></div><div class="trow" style="grid-template-columns:26px minmax(0,1fr) 90px 110px 120px;padding:11px 0"><span class="mono" style="font-size:11px;color:var(--mute)">05</span><span class="ink">Atlas Agro 10L</span><span class="dim">4</span><span class="ink">R$ 187 k</span><span class="dim">6%</span></div>
+    </section>
+  </div>
+</div>
+</body>
+</html>

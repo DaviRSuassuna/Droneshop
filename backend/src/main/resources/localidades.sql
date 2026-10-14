@@ -32,7 +32,7 @@ insert into estado (nome, sigla, codigo_ibge) values ('Goiás', 'GO', 52);
 insert into estado (nome, sigla, codigo_ibge) values ('Distrito Federal', 'DF', 53);
 
 -- RO (52)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 11)
 from (values
     ('Alta Floresta D''Oeste', 1100015),
@@ -89,7 +89,7 @@ from (values
     ('Vilhena', 1100304)
 ) as v(nome, codigo_ibge);
 -- AC (22)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 12)
 from (values
     ('Acrelândia', 1200013),
@@ -116,7 +116,7 @@ from (values
     ('Xapuri', 1200708)
 ) as v(nome, codigo_ibge);
 -- AM (62)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 13)
 from (values
     ('Alvarães', 1300029),
@@ -183,7 +183,7 @@ from (values
     ('Urucurituba', 1304401)
 ) as v(nome, codigo_ibge);
 -- RR (15)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 14)
 from (values
     ('Alto Alegre', 1400050),
@@ -203,7 +203,7 @@ from (values
     ('Uiramutã', 1400704)
 ) as v(nome, codigo_ibge);
 -- PA (144)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 15)
 from (values
     ('Abaetetuba', 1500107),
@@ -352,7 +352,7 @@ from (values
     ('Óbidos', 1505106)
 ) as v(nome, codigo_ibge);
 -- AP (16)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 16)
 from (values
     ('Amapá', 1600105),
@@ -373,7 +373,7 @@ from (values
     ('Vitória do Jari', 1600808)
 ) as v(nome, codigo_ibge);
 -- TO (139)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 17)
 from (values
     ('Abreulândia', 1700251),
@@ -517,7 +517,7 @@ from (values
     ('Xambioá', 1722107)
 ) as v(nome, codigo_ibge);
 -- MA (217)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 21)
 from (values
     ('Afonso Cunha', 2100105),
@@ -739,7 +739,7 @@ from (values
     ('Água Doce do Maranhão', 2100154)
 ) as v(nome, codigo_ibge);
 -- PI (224)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 22)
 from (values
     ('Acauã', 2200053),
@@ -968,7 +968,7 @@ from (values
     ('Água Branca', 2200202)
 ) as v(nome, codigo_ibge);
 -- CE (184)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 23)
 from (values
     ('Abaiara', 2300101),
@@ -1157,7 +1157,7 @@ from (values
     ('Várzea Alegre', 2314003)
 ) as v(nome, codigo_ibge);
 -- RN (167)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 24)
 from (values
     ('Acari', 2400109),
@@ -1329,7 +1329,7 @@ from (values
     ('Água Nova', 2400406)
 ) as v(nome, codigo_ibge);
 -- PB (223)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 25)
 from (values
     ('Aguiar', 2500205),
@@ -1557,7 +1557,7 @@ from (values
     ('Água Branca', 2500106)
 ) as v(nome, codigo_ibge);
 -- PE (185)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 26)
 from (values
     ('Abreu e Lima', 2600054),
@@ -1747,7 +1747,7 @@ from (values
     ('Águas Belas', 2600500)
 ) as v(nome, codigo_ibge);
 -- AL (102)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 27)
 from (values
     ('Anadia', 2700201),
@@ -1854,7 +1854,7 @@ from (values
     ('Água Branca', 2700102)
 ) as v(nome, codigo_ibge);
 -- SE (75)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 28)
 from (values
     ('Amparo de São Francisco', 2800100),
@@ -1934,7 +1934,7 @@ from (values
     ('Umbaúba', 2807600)
 ) as v(nome, codigo_ibge);
 -- BA (417)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 29)
 from (values
     ('Abaré', 2900207),
@@ -2356,7 +2356,7 @@ from (values
     ('Érico Cardoso', 2900504)
 ) as v(nome, codigo_ibge);
 -- MG (853)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 31)
 from (values
     ('Abadia dos Dourados', 3100104),
@@ -3214,7 +3214,7 @@ from (values
     ('Águas Vermelhas', 3101003)
 ) as v(nome, codigo_ibge);
 -- ES (78)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 32)
 from (values
     ('Afonso Cláudio', 3200102),
@@ -3297,7 +3297,7 @@ from (values
     ('Águia Branca', 3200136)
 ) as v(nome, codigo_ibge);
 -- RJ (92)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 33)
 from (values
     ('Angra dos Reis', 3300100),
@@ -3394,7 +3394,7 @@ from (values
     ('Volta Redonda', 3306305)
 ) as v(nome, codigo_ibge);
 -- SP (645)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 35)
 from (values
     ('Adamantina', 3500105),
@@ -4044,7 +4044,7 @@ from (values
     ('Óleo', 3533809)
 ) as v(nome, codigo_ibge);
 -- PR (399)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 41)
 from (values
     ('Abatiá', 4100103),
@@ -4448,7 +4448,7 @@ from (values
     ('Ângulo', 4101150)
 ) as v(nome, codigo_ibge);
 -- SC (295)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 42)
 from (values
     ('Abdon Batista', 4200051),
@@ -4748,7 +4748,7 @@ from (values
     ('Águas de Chapecó', 4200507)
 ) as v(nome, codigo_ibge);
 -- RS (497)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 43)
 from (values
     ('Aceguá', 4300034),
@@ -5250,7 +5250,7 @@ from (values
     ('Áurea', 4301552)
 ) as v(nome, codigo_ibge);
 -- MS (79)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 50)
 from (values
     ('Alcinópolis', 5000252),
@@ -5334,7 +5334,7 @@ from (values
     ('Água Clara', 5000203)
 ) as v(nome, codigo_ibge);
 -- MT (142)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 51)
 from (values
     ('Acorizal', 5100102),
@@ -5481,7 +5481,7 @@ from (values
     ('Água Boa', 5100201)
 ) as v(nome, codigo_ibge);
 -- GO (246)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 52)
 from (values
     ('Abadia de Goiás', 5200050),
@@ -5732,7 +5732,7 @@ from (values
     ('Águas Lindas de Goiás', 5200258)
 ) as v(nome, codigo_ibge);
 -- DF (1)
-insert into municipio (nome, codigo_ibge, estado_id)
+insert into municipio (nome, codigo_ibge, id_estado)
 select v.nome, v.codigo_ibge, (select e.id from estado e where e.codigo_ibge = 53)
 from (values
     ('Brasília', 5300108)

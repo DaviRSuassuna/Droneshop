@@ -1,0 +1,36 @@
+# Escreve em cada issue o link das telas dela no protótipo publicado.
+#
+# Lê a seção "Protótipo" de docs/issues/*.md, confere se cada tela existe em
+# docs/design/prototipo e escreve o link do GitHub Pages entre os marcadores
+# <!-- prototipo:inicio --> e <!-- prototipo:fim -->
+# (scripts/vincular_prototipo_issues.py). Roda a cada push na develop que mexa
+# no protótipo ou nas issues, ou manualmente em Actions.
+
+name: vincular-prototipo
+
+on:
+  push:
+    branches: [develop]
+    paths: ["docs/design/**", "docs/issues/**", "scripts/vincular_prototipo_issues.py"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: issues
+  cancel-in-progress: false
+
+jobs:
+  vincular:
+    name: vincular protótipo às issues
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Conferir as telas citadas
+        run: python3 scripts/vincular_prototipo_issues.py --verificar
+      - name: Escrever nas issues
+        run: python3 scripts/vincular_prototipo_issues.py --repo "$GITHUB_REPOSITORY"

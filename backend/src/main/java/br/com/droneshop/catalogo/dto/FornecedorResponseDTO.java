@@ -1,8 +1,9 @@
 package br.com.droneshop.catalogo.dto;
 
-import br.com.droneshop.catalogo.model.Fornecedor;
+import br.com.droneshop.catalogo.model.StatusFornecedor;
 import br.com.droneshop.endereco.dto.EnderecoResponseDTO;
 
+// cnpj, telefone e cep saem so com digitos; a mascara e do front
 public record FornecedorResponseDTO(
     Long id,
     String razaoSocial,
@@ -11,18 +12,6 @@ public record FornecedorResponseDTO(
     String emailContato,
     String telefoneContato,
     EnderecoResponseDTO endereco,
-    String status
+    StatusFornecedor status
 ) {
-    public static FornecedorResponseDTO valueOf(Fornecedor fornecedor) {
-        return new FornecedorResponseDTO(
-            fornecedor.getId(),
-            fornecedor.getRazaoSocial(),
-            fornecedor.getCnpj(),
-            fornecedor.getNomeContato(),
-            fornecedor.getEmailContato(),
-            fornecedor.getTelefoneContato(),
-            EnderecoResponseDTO.valueOf(fornecedor.getEndereco()),
-            fornecedor.getStatus().name());
-    }
-
 }

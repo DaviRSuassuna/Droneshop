@@ -75,34 +75,34 @@
         <div class="card-t" style="margin-bottom: 20px">Classificação</div>
         <div class="g2">
           <div class="f">
-            <label for="marcaId">Marca <span class="req">*</span></label>
-            <select id="marcaId" formControlName="marcaId">
+            <label for="idMarca">Marca <span class="req">*</span></label>
+            <select id="idMarca" formControlName="idMarca">
               <option [ngValue]="null">Selecione a marca</option>
               @for (marca of marcas(); track marca.id) {
                 <option [ngValue]="marca.id">{{ marca.nome }}</option>
               }
             </select>
-            @if (campoInvalido('marcaId')) {
-              <span class="warn">{{ mensagemErro('marcaId') }}</span>
+            @if (campoInvalido('idMarca')) {
+              <span class="warn">{{ mensagemErro('idMarca') }}</span>
             }
           </div>
           <div class="f">
-            <label for="fornecedorId">Fornecedor <span class="req">*</span></label>
-            <select id="fornecedorId" formControlName="fornecedorId">
+            <label for="idFornecedor">Fornecedor <span class="req">*</span></label>
+            <select id="idFornecedor" formControlName="idFornecedor">
               <option [ngValue]="null">Selecione o fornecedor</option>
               @for (fornecedor of fornecedores(); track fornecedor.id) {
                 <option [ngValue]="fornecedor.id">
-                  {{ fornecedor.razaoSocial }}{{ fornecedor.status === 'INATIVO' ? ' (inativo)' : '' }}
+                  {{ fornecedor.razaoSocial }}{{ fornecedor.status.id === FORNECEDOR_INATIVO ? ' (inativo)' : '' }}
                 </option>
               }
             </select>
-            @if (campoInvalido('fornecedorId')) {
-              <span class="warn">{{ mensagemErro('fornecedorId') }}</span>
+            @if (campoInvalido('idFornecedor')) {
+              <span class="warn">{{ mensagemErro('idFornecedor') }}</span>
             }
           </div>
           <div class="f">
-            <label for="categoriaId">Categoria <span class="req">*</span></label>
-            <select id="categoriaId" formControlName="categoriaId">
+            <label for="idCategoria">Categoria <span class="req">*</span></label>
+            <select id="idCategoria" formControlName="idCategoria">
               <option [ngValue]="null">Selecione a categoria</option>
               @for (categoria of categorias(); track categoria.id) {
                 <option [ngValue]="categoria.id">{{ categoria.nome }}</option>
@@ -110,8 +110,8 @@
             </select>
           </div>
           <div class="f">
-            <label for="subcategoriaId">Subcategoria <span class="req">*</span></label>
-            <select id="subcategoriaId" formControlName="subcategoriaId">
+            <label for="idSubcategoria">Subcategoria <span class="req">*</span></label>
+            <select id="idSubcategoria" formControlName="idSubcategoria">
               <option [ngValue]="null">
                 {{
                   categoriaSelecionada()
@@ -123,8 +123,8 @@
                 <option [ngValue]="sub.id">{{ sub.nome }}</option>
               }
             </select>
-            @if (campoInvalido('subcategoriaId')) {
-              <span class="warn">{{ mensagemErro('subcategoriaId') }}</span>
+            @if (campoInvalido('idSubcategoria')) {
+              <span class="warn">{{ mensagemErro('idSubcategoria') }}</span>
             }
           </div>
         </div>
@@ -137,14 +137,14 @@
         <div class="eyebrow">Publicação</div>
         <div class="stack">
           <div class="f">
-            <label for="status">Status <span class="req">*</span></label>
-            <select id="status" formControlName="status">
-              <option value="RASCUNHO">Rascunho</option>
-              <option value="ATIVO">Ativo</option>
-              <option value="INATIVO">Inativo</option>
+            <label for="idStatus">Status <span class="req">*</span></label>
+            <select id="idStatus" formControlName="idStatus">
+              <option [ngValue]="STATUS.RASCUNHO">Rascunho</option>
+              <option [ngValue]="STATUS.ATIVO">Ativo</option>
+              <option [ngValue]="STATUS.INATIVO">Inativo</option>
             </select>
-            @if (campoInvalido('status')) {
-              <span class="warn">{{ mensagemErro('status') }}</span>
+            @if (campoInvalido('idStatus')) {
+              <span class="warn">{{ mensagemErro('idStatus') }}</span>
             }
           </div>
           <label class="ck full">

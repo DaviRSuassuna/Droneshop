@@ -42,11 +42,11 @@
       </select>
     </div>
     <div class="f">
-      <select [value]="filtroStatus()" (change)="aoMudarStatus($any($event.target).value)">
+      <select [value]="filtroStatus() ?? ''" (change)="aoMudarStatus($any($event.target).value)">
         <option value="">Status</option>
-        <option value="ATIVA">Ativa</option>
-        <option value="INATIVA">Inativa</option>
-        <option value="RASCUNHO">Rascunho</option>
+        <option [value]="STATUS.ATIVA">Ativa</option>
+        <option [value]="STATUS.INATIVA">Inativa</option>
+        <option [value]="STATUS.RASCUNHO">Rascunho</option>
       </select>
     </div>
   </div>
@@ -102,9 +102,9 @@
             <span
               class="dot"
               [style.background]="
-                marca.status === 'ATIVA'
+                marca.status.id === STATUS.ATIVA
                   ? 'var(--ok)'
-                  : marca.status === 'INATIVA'
+                  : marca.status.id === STATUS.INATIVA
                     ? 'var(--dim2)'
                     : 'var(--warn)'
               "

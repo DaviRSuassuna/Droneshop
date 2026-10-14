@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Promoções · Admin Aeria</title>
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<header class="tb">
+  <div class="tb-l">
+    <a class="tb-brand" href="index.html">ADMIN</a>
+    <nav class="tb-nav">
+      <a href="index.html">Dashboard</a>
+      <a href="produtos.html">Produtos</a>
+      <a href="marcas.html">Marcas</a>
+      <a href="categorias.html">Categorias</a>
+      <a href="fornecedores.html">Fornecedores</a>
+      <a href="promocoes.html" class="on">Promoções</a>
+      <a href="cupons.html">Cupons</a>
+      <a href="estoque.html">Estoque</a>
+      <a href="pedidos.html">Pedidos</a>
+      <a href="usuarios.html">Usuários</a>
+    </nav>
+  </div>
+  <div class="tb-r">
+    <span class="tb-search">Buscar no painel</span>
+    <a href="../index.html">Ver loja ↗</a>
+    <span class="avatar">MR</span>
+  </div>
+</header>
+<div class="pagebar">
+  <div style="display:flex;align-items:baseline;gap:12px"><h1 class="h1">Promoções</h1><span class="sub">3 ativas · 1 agendada · 48 produtos em oferta</span></div>
+  <div class="actions"><button class="btn">Ver na loja ↗</button><a class="btn p" href="promocao-nova.html">Nova promoção</a></div>
+</div>
+<div class="pad-t" style="display:flex;flex-direction:column;gap:16px">
+  <nav class="tabs"><a class="on" href="promocoes.html">Todas <em>5</em></a><a href="promocoes.html">Ativas <em>3</em></a><a href="promocoes.html">Agendadas <em>1</em></a><a href="promocoes.html">Encerradas <em>1</em></a></nav>
+  <div class="filters">
+    <div class="f grow"><input type="text" placeholder="Buscar por nome da promoção"></div>
+    <div class="f"><select><option>Escopo</option><option>Produto</option><option>Carrinho</option><option>Frete</option></select></div>
+    <div class="f"><select><option>Vigência</option><option>Vigentes hoje</option><option>Futuras</option></select></div>
+  </div>
+  <p class="legend" style="margin:0">Desconto nunca é campo do produto: quem alimenta o selo <span class="chip">Oferta</span>, o preço riscado da vitrine e a página <a href="../ofertas.html" style="text-decoration:underline">Ofertas</a> é a entidade <span class="chip">Promocao</span>, com vigência e escopo.</p>
+  <div class="tbl">
+    <div class="trow head" style="grid-template-columns:minmax(0,1fr) 220px 200px 128px 44px"><span>Promoção</span><span>Desconto</span><span>Vigência</span><span>Status</span><span></span></div>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 220px 200px 128px 44px" href="promocao-nova.html"><span class="cell-name"><b>Semana do piloto</b><span class="chip">escopo: Produto</span></span><span class="ink">−22% em 48 itens</span><span class="dim">24/08 a 31/08/2026</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativa</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 220px 200px 128px 44px" href="promocao-nova.html"><span class="cell-name"><b>Frete grátis acima de R$ 999</b><span class="chip">escopo: Frete</span></span><span class="ink">Frete zerado</span><span class="dim">01/01 a 31/12/2026</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativa</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 220px 200px 128px 44px" href="promocao-nova.html"><span class="cell-name"><b>Combo bateria extra</b><span class="chip">escopo: Produto</span></span><span class="ink">−10% em 6 kits</span><span class="dim">24/08 a 31/08/2026</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativa</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 220px 200px 128px 44px" href="promocao-nova.html"><span class="cell-name"><b>Black Friday 2026</b><span class="chip">escopo: Carrinho</span></span><span class="ink">−15% acima de R$ 5.000</span><span class="dim">27/11 a 30/11/2026</span><span class="status"><span class="dot" style="background:var(--acc)"></span>Agendada</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 220px 200px 128px 44px" href="promocao-nova.html"><span class="cell-name"><b>Liquida FPV</b><span class="chip">escopo: Produto</span></span><span class="ink">−5% em 11 itens</span><span class="dim">10/06 a 20/06/2026</span><span class="status"><span class="dot" style="background:var(--dim2)"></span>Encerrada</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <div class="pager"><span>Exibindo 1–5 de 5</span><span>Página 1 de 1</span></div>
+  </div>
+</div>
+</body>
+</html>

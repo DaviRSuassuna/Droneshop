@@ -39,15 +39,15 @@
             }
           </div>
           <div class="f">
-            <label for="categoriaId">Categoria <span class="req">*</span></label>
-            <select id="categoriaId" formControlName="categoriaId">
+            <label for="idCategoria">Categoria <span class="req">*</span></label>
+            <select id="idCategoria" formControlName="idCategoria">
               <option [ngValue]="null">Selecione a categoria</option>
               @for (categoria of categorias(); track categoria.id) {
                 <option [ngValue]="categoria.id">{{ categoria.nome }}</option>
               }
             </select>
-            @if (campoInvalido('categoriaId')) {
-              <span class="warn">{{ mensagemErro('categoriaId') }}</span>
+            @if (campoInvalido('idCategoria')) {
+              <span class="warn">{{ mensagemErro('idCategoria') }}</span>
             }
           </div>
           <div class="f">
@@ -79,10 +79,10 @@
         <div class="stack">
           <div class="f">
             <label for="status">Status <span class="req">*</span></label>
-            <select id="status" formControlName="status">
-              <option value="RASCUNHO">Rascunho</option>
-              <option value="ATIVA">Ativa</option>
-              <option value="INATIVA">Inativa</option>
+            <select id="status" formControlName="idStatus">
+              <option [ngValue]="STATUS.RASCUNHO">Rascunho</option>
+              <option [ngValue]="STATUS.ATIVA">Ativa</option>
+              <option [ngValue]="STATUS.INATIVA">Inativa</option>
             </select>
           </div>
           <div class="f">

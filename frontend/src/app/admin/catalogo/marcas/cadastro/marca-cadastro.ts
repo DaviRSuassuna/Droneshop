@@ -5,7 +5,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AdminNav } from '../../../../layout/admin/admin-nav/admin-nav';
 import { MarcaService } from '../../../../core/services/marca.service';
-import { MarcaDTO, StatusMarca } from '../../../../core/models/marca.model';
+import { MarcaDTO } from '../../../../core/models/marca.model';
+import { STATUS_PUBLICACAO } from '../../../../core/models/status.model';
 import { ProblemDetail } from '../../../../core/models/problem.model';
 
 @Component({
@@ -16,6 +17,7 @@ import { ProblemDetail } from '../../../../core/models/problem.model';
   styleUrl: './marca-cadastro.scss',
 })
 export class MarcaCadastro implements OnInit {
+  readonly STATUS = STATUS_PUBLICACAO;
   private readonly fb = inject(FormBuilder);
   private readonly marcaService = inject(MarcaService);
   private readonly route = inject(ActivatedRoute);
@@ -37,13 +39,13 @@ export class MarcaCadastro implements OnInit {
     siteOficial: [''],
     descricao: [''],
     logoUrl: [''],
-    status: ['RASCUNHO' as StatusMarca, Validators.required],
+    idStatus: [STATUS_PUBLICACAO.RASCUNHO as number, Validators.required],
     destacarHome: [false],
   });
 
   readonly pendencias = computed(() => {
     const v = this.form.getRawValue();
-    if (v.status === 'RASCUNHO') return [];
+    if (v.idStatus === STATUS_PUBLICACAO.RASCUNHO) return [];
     const faltando: string[] = [];
     if (!v.nome.trim()) faltando.push('Nome da marca');
     if (!v.paisOrigem.trim()) faltando.push('País de origem');
@@ -64,11 +66,6 @@ export class MarcaCadastro implements OnInit {
     this.carregando.set(true);
     this.marcaService.buscarPorId(id).subscribe({
       next: (marca) => {
-        if (!marca) {
-          this.erroGeral.set('Esta marca não foi encontrada.');
-          this.carregando.set(false);
-          return;
-        }
         this.form.patchValue({
           nome: marca.nome,
           slug: marca.slug,
@@ -76,13 +73,13 @@ export class MarcaCadastro implements OnInit {
           siteOficial: marca.siteOficial ?? '',
           descricao: marca.descricao ?? '',
           logoUrl: marca.logoUrl,
-          status: marca.status,
+          idStatus: marca.status.id,
           destacarHome: marca.destacarHome,
         });
         this.carregando.set(false);
       },
-      error: () => {
-        this.erroGeral.set('Não foi possível carregar esta marca.');
+      error: (err) => {
+        this.erroGeral.set(err.status === 404 ? 'Esta marca não foi encontrada.' : 'Não foi possível carregar esta marca.');
         this.carregando.set(false);
       },
     });
@@ -108,7 +105,7 @@ export class MarcaCadastro implements OnInit {
       siteOficial: v.siteOficial.trim(),
       descricao: v.descricao.trim(),
       logoUrl: v.logoUrl.trim(),
-      status: v.status,
+      idStatus: Number(v.idStatus),
       destacarHome: v.destacarHome,
     };
 

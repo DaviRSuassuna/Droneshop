@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Usuários · Admin Aeria</title>
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<header class="tb">
+  <div class="tb-l">
+    <a class="tb-brand" href="index.html">ADMIN</a>
+    <nav class="tb-nav">
+      <a href="index.html">Dashboard</a>
+      <a href="produtos.html">Produtos</a>
+      <a href="marcas.html">Marcas</a>
+      <a href="categorias.html">Categorias</a>
+      <a href="fornecedores.html">Fornecedores</a>
+      <a href="promocoes.html">Promoções</a>
+      <a href="cupons.html">Cupons</a>
+      <a href="estoque.html">Estoque</a>
+      <a href="pedidos.html">Pedidos</a>
+      <a href="usuarios.html" class="on">Usuários</a>
+    </nav>
+  </div>
+  <div class="tb-r">
+    <span class="tb-search">Buscar no painel</span>
+    <a href="../index.html">Ver loja ↗</a>
+    <span class="avatar">MR</span>
+  </div>
+</header>
+<div class="pagebar">
+  <div style="display:flex;align-items:baseline;gap:12px"><h1 class="h1">Usuários</h1><span class="sub">6 usuários administrativos · 4 ativos</span></div>
+  <div class="actions"><button class="btn">Ver log de auditoria</button><a class="btn p" href="usuario-novo.html">Novo usuário</a></div>
+</div>
+<div class="pad-t" style="display:flex;flex-direction:column;gap:16px">
+  <div class="filters">
+    <div class="f grow"><input type="text" placeholder="Buscar por nome ou e-mail"></div>
+    <div class="f"><select><option>Papel</option><option>Administrador</option><option>Catálogo</option><option>Operador</option><option>Atendimento</option><option>Somente leitura</option></select></div>
+    <div class="f"><select><option>Status</option><option>Ativo</option><option>Inativo</option><option>Suspenso</option></select></div>
+  </div>
+  <p class="legend" style="margin:0">Um <span class="chip">Usuario</span> pode ter perfil de cliente e perfil administrativo ao mesmo tempo. Esta lista mostra apenas quem tem <span class="chip">PerfilAdministrativo</span>.</p>
+  <div class="tbl">
+    <div class="trow head" style="grid-template-columns:minmax(0,1fr) 170px 90px 150px 118px 44px"><span>Usuário</span><span>Papel</span><span>2FA</span><span>Último acesso</span><span>Status</span><span></span></div>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 170px 90px 150px 118px 44px" href="usuario-novo.html"><span class="cell-name"><b>Marina Rocha</b><span class="chip">marina.rocha@aeria.com.br</span></span><span class="dim" style="color:var(--ink2)">Administrador</span><span class="dim">Ativo</span><span class="dim">hoje · 09:41</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativo</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 170px 90px 150px 118px 44px" href="usuario-novo.html"><span class="cell-name"><b>Diego Salgado</b><span class="chip">diego.salgado@aeria.com.br</span></span><span class="dim" style="color:var(--ink2)">Catálogo</span><span class="dim">Ativo</span><span class="dim">hoje · 08:12</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativo</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 170px 90px 150px 118px 44px" href="usuario-novo.html"><span class="cell-name"><b>Priscila Nunes</b><span class="chip">priscila.nunes@aeria.com.br</span></span><span class="dim" style="color:var(--ink2)">Operador</span><span class="dim">Inativo</span><span class="dim">ontem · 17:55</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativo</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 170px 90px 150px 118px 44px" href="usuario-novo.html"><span class="cell-name"><b>Caio Ferraz</b><span class="chip">caio.ferraz@aeria.com.br</span></span><span class="dim" style="color:var(--ink2)">Atendimento</span><span class="dim">Ativo</span><span class="dim">ontem · 14:03</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativo</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 170px 90px 150px 118px 44px" href="usuario-novo.html"><span class="cell-name"><b>Renata Lopes</b><span class="chip">renata.lopes@aeria.com.br</span></span><span class="dim" style="color:var(--ink2)">Somente leitura</span><span class="dim">Inativo</span><span class="dim">há 12 dias</span><span class="status"><span class="dot" style="background:var(--dim2)"></span>Inativo</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 170px 90px 150px 118px 44px" href="usuario-novo.html"><span class="cell-name"><b>Auditoria externa</b><span class="chip">auditoria@contabil.com.br</span></span><span class="dim" style="color:var(--ink2)">Somente leitura</span><span class="dim">Ativo</span><span class="dim">há 2 meses</span><span class="status"><span class="dot" style="background:var(--warn)"></span>Suspenso</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <div class="pager"><span>Exibindo 1–6 de 6</span><span>Página 1 de 1</span></div>
+  </div>
+</div>
+</body>
+</html>

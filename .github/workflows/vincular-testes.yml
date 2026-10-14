@@ -1,0 +1,37 @@
+# Escreve em cada issue a lista dos testes dela (bloco "Testes automatizados").
+#
+# Lê os @Tag("issue-N") dos testes Java e o backend/src/test/issues-entregues.txt
+# (scripts/vincular_testes_issues.py). Roda a cada push na develop que mexa nos
+# testes, ou manualmente em Actions. Só escreve entre os marcadores
+# <!-- testes:inicio --> e <!-- testes:fim -->; o resto da issue fica intacto.
+
+name: vincular-testes
+
+on:
+  push:
+    branches: [develop]
+    paths: ["backend/src/test/**", "scripts/vincular_testes_issues.py"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: issues
+  cancel-in-progress: false
+
+jobs:
+  vincular:
+    name: vincular testes às issues
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Conferir a matriz do README dos testes
+        run: |
+          python3 scripts/vincular_testes_issues.py --matriz
+          git diff --exit-code backend/src/test/README.md || echo "::warning::A matriz do backend/src/test/README.md está desatualizada: rode python scripts/vincular_testes_issues.py --matriz e faça commit."
+      - name: Escrever nas issues
+        run: python3 scripts/vincular_testes_issues.py --repo "$GITHUB_REPOSITORY"

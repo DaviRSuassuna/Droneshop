@@ -1,0 +1,58 @@
+# Publica o protótipo navegável (docs/design/prototipo) no GitHub Pages.
+#
+# Roda a cada push na develop que altere docs/design, ou manualmente em Actions.
+# Não é check obrigatório de PR, então aqui o filtro `paths` no gatilho não atrapalha.
+# Endereço: https://<dono>.github.io/<repo>/prototipo/
+# Configuração inicial: ver docs/design/README.md (seção GitHub Pages).
+
+name: prototipo
+
+on:
+  push:
+    branches: [develop]
+    paths: ["docs/design/**", ".github/workflows/prototipo-pages.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    name: publicar protótipo
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}prototipo/
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Conferir o protótipo antes de publicar
+        run: node frontend/scripts/verificar-prototipo.mjs
+
+      - name: Montar o site
+        run: |
+          mkdir -p _site
+          cp -r docs/design/prototipo _site/prototipo
+          # a raiz do site redireciona para o protótipo
+          cat > _site/index.html <<'HTML'
+          <!doctype html>
+          <meta charset="utf-8">
+          <meta http-equiv="refresh" content="0; url=prototipo/">
+          <title>Aeria Drones</title>
+          <a href="prototipo/">Abrir o protótipo</a>
+          HTML
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deploy
+        uses: actions/deploy-pages@v4

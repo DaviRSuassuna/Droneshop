@@ -1,0 +1,9 @@
+# Telas que já seguem o protótipo: o CI roda a conformidade delas e BLOQUEIA o merge se divergirem.
+# Uma etiqueta por linha, igual à de e2e/conformidade/telas.ts ("base", "issue-21"...).
+#
+# - No PR que entrega a tela de uma issue, acrescente a etiqueta dela aqui.
+# - Para mudar o design de uma tela entregue: primeiro um PR que altera o protótipo
+#   (docs/design/prototipo) e TIRA a etiqueta daqui; depois o PR que muda a tela real
+#   e devolve a etiqueta.
+#
+# Vazio por enquanto: nenhuma tela passa inteira (ver e2e/README.md, seção "Situação atual").

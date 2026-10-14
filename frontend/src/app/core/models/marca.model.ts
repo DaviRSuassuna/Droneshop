@@ -1,4 +1,4 @@
-export type StatusMarca = 'RASCUNHO' | 'ATIVA' | 'INATIVA';
+import { StatusRef } from './status.model';
 
 /** Espelha o MarcaResponseDTO devolvido pela API. */
 export interface Marca {
@@ -9,11 +9,11 @@ export interface Marca {
   siteOficial: string | null;
   descricao: string | null;
   logoUrl: string;
-  status: StatusMarca;
+  status: StatusRef;
   destacarHome: boolean;
 }
 
-/** Espelha o MarcaDTO aceito pelo POST /marcas e PUT /marcas/{id}. */
+/** Espelha o MarcaRequestDTO aceito pelo POST /marcas e PUT /marcas/{id}. */
 export interface MarcaDTO {
   nome: string;
   slug: string;
@@ -21,6 +21,6 @@ export interface MarcaDTO {
   siteOficial: string;
   descricao: string;
   logoUrl: string;
-  status: StatusMarca;
+  idStatus: number;
   destacarHome: boolean;
 }

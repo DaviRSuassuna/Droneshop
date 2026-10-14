@@ -1,7 +1,7 @@
 # PRD: Aeria Drones
 
 **Produto:** E-commerce de drones e acessórios (storefront + painel administrativo)
-**Versão do documento:** 1.4
+**Versão do documento:** 1.6
 **Status:** rascunho para validação
 **Base:** protótipo de 36 telas + 8 diagramas de classes por contexto delimitado, em `diagramas/`
 
@@ -45,7 +45,7 @@ Um detalhe estrutural: **a conta é única e os perfis são acumuláveis**. `Usu
 
 ### 4.1 Catálogo
 
-Produto se divide em **Drone** e **Acessório**, com atributos próprios de cada tipo. As especificações técnicas são **colunas fixas e tipadas** na entidade, não atributo dinâmico (ver D14): em `Drone` são peso, dimensões dobrado/aberto, autonomia, alcance, velocidade máxima, resolução de foto, sensor, resolução de vídeo, estabilização, tipo e capacidade de bateria, tempo de carregamento, GPS, anticolisão, exigência e classe ANAC, registro SISANT. Spec nova é migration, e o preço disso é assumido conscientemente. Todo produto pertence a uma marca, uma categoria (hierárquica) e um fornecedor. A compatibilidade entre acessório e produto é **relação N:N**, não texto descritivo (ver D17): é ela que alimenta a lista de acessórios compatíveis na página do drone e a sugestão do carrinho.
+Produto se divide em **Drone** e **Acessório**, com atributos próprios de cada tipo. As especificações técnicas são **colunas fixas e tipadas** na entidade, não atributo dinâmico (ver D14): em `Drone` são peso, dimensões dobrado/aberto, autonomia, alcance, velocidade máxima, resolução de foto, sensor, resolução de vídeo, estabilização, tipo e capacidade de bateria, tempo de carregamento, GPS, anticolisão, exigência e classe ANAC, registro SISANT. Spec nova é migration, e o preço disso é assumido conscientemente. Todo produto pertence a uma marca, uma subcategoria (que pertence a uma categoria) e um fornecedor. A compatibilidade entre acessório e produto é **relação N:N**, não texto descritivo (ver D17): é ela que alimenta a lista de acessórios compatíveis na página do drone e a sugestão do carrinho.
 
 A **unidade vendável é a variante**, não o produto: "Padrão", "Fly More", "Enterprise" têm SKU, preço, custo e estoque próprios. Produto sem opções tem uma variante única. Isso existe porque uma configuração pode esgotar enquanto outra continua disponível.
 
@@ -143,8 +143,8 @@ Verificação de e-mail, recuperação de senha por token (só se aplica a quem 
 | # | Área | Requisito |
 |---|---|---|
 | RF01 | Catálogo | Cadastrar produtos do tipo Drone e Acessório, cada um com atributos técnicos próprios. |
-| RF02 | Catálogo | Todo produto pertence a uma marca, uma categoria (hierárquica, com categoria pai opcional) e um fornecedor. |
-| RF03 | Catálogo | Produto tem uma ou mais variantes vendáveis, cada uma com SKU, preço adicional, custo, estoque e dimensões de embalagem próprios. |
+| RF02 | Catálogo | Todo produto pertence a uma marca, uma subcategoria e um fornecedor. Categoria e subcategoria são entidades separadas: cada subcategoria pertence a uma categoria, sem categoria pai. |
+| RF03 | Catálogo | Produto tem uma ou mais variantes vendáveis, cada uma com SKU, preço de venda, custo, estoque e dimensões de embalagem próprios (D26). |
 | RF04 | Catálogo | Variante pode ser marcada como kit, composta por outras variantes com quantidade definida, sem estoque próprio. |
 | RF05 | Catálogo | Cadastrar promoções com vigência (início/fim) e escopo de produto, carrinho ou frete. |
 | RF06 | Catálogo | Buscar e filtrar produtos por marca, categoria, faixa de preço e atributos técnicos. |
@@ -227,13 +227,13 @@ Verificação de e-mail, recuperação de senha por token (só se aplica a quem 
 
 | # | Categoria | Requisito |
 |---|---|---|
-| RNF01 | Arquitetura | API Quarkus/Java seguindo o padrão do projeto de referência: `DefaultEntity` como `@MappedSuperclass` com id `Long` e auditoria automática; enums de domínio com id e nome, conversor JPA e endpoint de leitura para popular selects; DTO de entrada com Bean Validation e DTO de saída como `record`; `PanacheRepository`; service com transação e validação própria; paginação por `page`/`pageSize`. |
+| RNF01 | Arquitetura | API Quarkus/Java seguindo o padrão do projeto de referência: `DefaultEntity` como `@MappedSuperclass` com id `Long` e auditoria automática; enums de domínio com id e nome, conversor JPA e endpoint de leitura para popular selects; DTO de entrada `XxxRequestDTO` e de saída `XxxResponseDTO`, ambos `record`, com Bean Validation na entrada e mapper entre entidade e DTO; referência a outra entidade no corpo como `idXxx` e na resposta aninhada; `PanacheRepository`; service com transação e validação própria; paginação por `page`/`pageSize` com resposta `PageResponse`; erros no formato Problem (400, 404, 409, 503). Ver D31. |
 | RNF02 | Segurança | Senha com hash forte quando existir (contas só-Google não têm); OAuth 2.0/OIDC para login com Google; tokens de sessão e de recuperação expiráveis; 2FA opcional no admin; dado de cartão nunca armazenado, só token do gateway e dígitos mascarados. |
 | RNF03 | Privacidade (LGPD) | Consentimento registrado e versionado por tipo; dados pessoais fora de log; exclusão/anonimização de conta sob solicitação. |
 | RNF04 | Desempenho | Listagem de catálogo paginada; busca com índice; sem meta numérica de latência definida neste estágio (projeto de testes, sem carga real a validar). |
 | RNF05 | Disponibilidade | Sem SLA formal (projeto de testes, não operação real); indisponibilidade de uma integração externa (frete, e-mail) não deve travar o restante do fluxo de compra. |
 | RNF06 | Escalabilidade | Fora de escopo deste projeto (ver Não-objetivos); o modelo (estoque por variante, DTO/Repository isolados por módulo) não impede evolução futura, mas não há meta de volume a suportar. |
-| RNF07 | Usabilidade | Interface responsiva (desktop e mobile, desktop-first no processo de design, ver `ways-of-working`); navegação e rótulos em português. |
+| RNF07 | Usabilidade | Interface responsiva: toda tela (storefront e admin) funciona no navegador do desktop e no navegador de celular (largura de 360 a 480px), ver D20. Navegação e rótulos em português. |
 | RNF08 | Acessibilidade | Boas práticas básicas (contraste, navegação por teclado, texto alternativo em imagem); sem certificação formal WCAG neste projeto. |
 | RNF09 | Compatibilidade | Navegadores modernos (Chrome, Firefox, Edge, Safari) nas duas últimas versões; sem suporte a navegadores legados. |
 | RNF10 | Observabilidade | Log estruturado de erros e das chamadas a integrações externas (gateway de pagamento, agregador de frete, provedor de e-mail); falha de integração externa é distinguível de erro interno no log. |
@@ -290,10 +290,28 @@ O painel administrativo vem primeiro (D19): a loja só tem o que vender e o que 
 | D17 | **Compatibilidade como relação N:N** entre `Acessorio` e `Produto`, substituindo o campo texto `Acessorio.compatibilidade`. Como `Acessorio` herda de `Produto`, o mesmo vínculo cobre acessório-drone (bateria e modelo) e acessório-acessório (carregador e bateria). O vínculo é recíproco: aparece nos dois cadastros e habilita filtro real, em vez de depender de nome digitado sem erro. Fecha a pendência P1. |
 | D18 | **Contato do fornecedor em três colunas**: `Fornecedor.contato` vira `nomeContato`, `emailContato` e `telefoneContato`. Permite busca por e-mail ou telefone e validação de formato, que a string única não permitia. |
 | D19 | **Painel administrativo primeiro.** A fase 1 entrega todas as telas do admin integradas à API antes do storefront. Pedidos entram no admin já na fase 1, alimentados por carga de dados, e passam a ser criados pelo checkout na fase 3. |
+| D20 | **Web responsiva, sem app nativo.** Toda tela é entregue para o navegador do desktop e para o navegador do celular (360 a 480px). O desenho continua desktop-first, mas a tela só é dada como pronta depois de conferida nas duas larguras; não há aplicativo nativo. |
+| D21 | **Rascunho aceita campos vazios.** Marca e categoria em `RASCUNHO` salvam sem nenhum campo preenchido; os obrigatórios só valem para `ATIVA`/`INATIVA`. A API trata texto em branco como não informado. |
+| D22 | **Registro inexistente responde 404** (formato Problem) em consulta, alteração e exclusão, como no projeto de referência SGA. |
+| D23 | **Busca por nome não diferencia maiúsculas** em marca, categoria e fornecedor. Ignorar acentos fica para a busca do catálogo (#43); o filtro de produto já ignora. |
+| D24 | **O que está em uso não se exclui, se inativa.** Excluir marca, subcategoria ou fornecedor com produtos, ou categoria com subcategorias, responde 409 com a contagem e a orientação de inativar. Não há exclusão em cascata. |
+| D25 | **Autenticação nos testes.** A carga de dados (`import.sql`) da #4 cria o administrador `admin@aeria.com.br` (senha `aeria123`, papel `ADMIN`). Os testes chamam a API pelo apoio `testes/Api.java`, que entra com esse usuário e manda o token em toda requisição; enquanto `/auth/login` não existir, manda sem token. Assim a #4 protege as rotas sem quebrar os testes já entregues. |
+| D26 | **Preço de venda na variante.** `VarianteProduto.preco` é o preço cheio de venda (substitui `precoAdicional`). `Produto.preco` continua existindo até a #9, que o remove junto com a criação das variantes; a #7 não mexe no preço. Fecha a pendência P2: margem exibida = (preço - custo) / preço, em %, calculada no backend e devolvida na variante como `margemPercentual`. |
+| D27 | **Drone e acessório em rotas próprias.** Herança JPA `JOINED`. Cadastro e alteração em `/drones` e `/acessorios`; `/produtos` fica só para listar, consultar, excluir e filtrar todos os tipos, com `tipo: {id, nome}` (`DRONE`, `ACESSORIO`) na resposta. Os testes `base` de produto passam para a etiqueta `issue-8` no PR da #8. |
+| D28 | **Rascunho e exclusão valem para todo cadastro do admin.** D21 (rascunho aceita campos vazios) vale também para produto, drone e acessório: só o tipo é obrigatório. D24 (em uso não se exclui) vale para todo cadastro: produto com pedido, variante com pedido ou reserva, cupom já usado e promoção já aplicada em pedido respondem 409 e devem ser inativados. |
+| D29 | **Mídia por arquivo, vídeo por link.** Imagem e manual PDF sobem por upload (`multipart/form-data`, até 20 MB), guardados em disco no diretório `aeria.midias.diretorio` e servidos em `/midias/arquivos/{nome}`; vídeo é só a URL. `MidiaProduto.url` guarda o endereço público nos três casos. |
+| D30 | **Conflito de estado responde 409.** Transição de status inválida (pedido, devolução, chamado, moderação) responde 409 no formato Problem (`/errors/conflict`), não 422. A API não usa 422. |
+| D31 | **Todo enum de domínio segue o padrão de status.** Banco guarda o id; a API recebe `idXxx` e devolve `{id, nome}`; os valores ficam numa rota de leitura `/<enum-em-kebab-case>` (ex.: `/tipos-movimento`, `/papeis-administrativos`). Ids começam em 1, na ordem do diagrama. |
+| D32 | **Endereço do cliente reaproveita o módulo `endereco`.** `Endereco` do cliente tem `apelido`, `cep`, `logradouro`, `numero`, `complemento`, `bairro`, `municipio` (via `idMunicipio`, como o fornecedor) e `principal`. `EnderecoPedido` congela cidade e UF como texto, porque é fotografia. |
+| D33 | **Rotinas agendadas também rodam sob demanda.** Expirar reservas e marcar carrinho abandonado rodam com `@Scheduled` e também por `POST /admin/rotinas/{nome}` (só `ADMIN`), o que serve à operação e aos testes. Prazos em `aeria.reserva.minutos` e `aeria.carrinho.abandono-horas`. |
+| D34 | **Integrações externas falsas nos testes.** Como o ViaCEP, Mercado Pago, agregador de frete e Resend têm um REST Client com URL configurável; no `%test` a URL aponta para um falso em `src/test` (`MercadoPagoFalso`, `FreteFalso`, `ResendFalso`). Nenhum teste depende da internet. |
+| D35 | **Usuário administrativo.** `Usuario` ganha `nome`. O admin cria o usuário com nome, e-mail, papel, senha provisória e permissões; o convite por e-mail entra com a #33. Telefone, equipe, observações, foto, o status "Suspenso" e a caixa "Exigir 2FA" saem do protótipo: o 2FA é ligado pelo próprio usuário (RF44, #45). |
+| D36 | **O modelo vence o protótipo.** "Categoria pai" sai das telas de categoria (RF02); "Inscrição estadual", "Observações internas" e "Disponível para vincular" saem do cadastro de fornecedor. As rotas que as telas pedem e não tinham issue viram duas issues novas: "Ações em lote, reordenação de categorias, exportação CSV e etiqueta de pedido" e "Proposta comercial para empresas" (`docs/issues/`). |
+| D37 | **Login com Google por ID token.** O front usa o botão do Google Identity Services e manda o ID token para `POST /auth/google`; o backend valida no endpoint `tokeninfo` do Google e usa o `sub` como identificador (D6). Não há redirecionamento OAuth pelo backend. |
+| D38 | **O protótipo é a referência das telas.** Cada tela do Angular é testada contra a tela correspondente do protótipo publicado (`frontend/e2e`, Playwright): estrutura, tokens e estilo, e ausência de rolagem horizontal no celular. Mudança de design começa por um PR no protótipo; só depois a tela real muda. As telas que já seguem o protótipo ficam em `frontend/e2e/telas-entregues.txt` e bloqueiam o merge. |
 
 ## 11. Pendências em aberto
 
 | # | Pendência |
 |---|---|
-| P2 | Margem (%) aparece na tela como campo calculado a partir de custo e preço. Não é coluna, é derivação, mas ainda não está especificado se é margem bruta sobre custo ou sobre preço. |
-| P3 | O painel administrativo foi revisado e completado (20 telas, todo CRUD com listagem e formulário). As 16 telas do storefront ainda não foram revisadas contra o modelo v1.3. |
+| P3 | O painel administrativo foi revisado e completado (20 telas, todo CRUD com listagem e formulário). As 16 telas do storefront ainda não foram revisadas contra o modelo v1.3; o contrato de API de cada issue da fase 2 em diante fecha os campos de cada tela. |

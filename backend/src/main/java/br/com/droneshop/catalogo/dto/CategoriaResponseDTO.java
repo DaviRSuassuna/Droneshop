@@ -1,6 +1,6 @@
 package br.com.droneshop.catalogo.dto;
 
-import br.com.droneshop.catalogo.model.Categoria;
+import br.com.droneshop.catalogo.model.StatusCategoria;
 
 public record CategoriaResponseDTO(
     Long id,
@@ -8,20 +8,8 @@ public record CategoriaResponseDTO(
     String slug,
     Integer ordemExibicao,
     String descricao,
-    String status,
+    StatusCategoria status,
     boolean exibirMenu,
     String iconeUrl
 ) {
-    public static CategoriaResponseDTO valueOf(Categoria categoria) {
-        return new CategoriaResponseDTO(
-            categoria.getId(),
-            categoria.getNome(),
-            categoria.getSlug(),
-            categoria.getOrdemExibicao(),
-            categoria.getDescricao(),
-            categoria.getStatus().name(),
-            categoria.isExibirMenu(),
-            categoria.getIconeUrl());
-    }
-
 }

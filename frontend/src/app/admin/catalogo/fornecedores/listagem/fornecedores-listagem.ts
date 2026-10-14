@@ -2,7 +2,8 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AdminNav } from '../../../../layout/admin/admin-nav/admin-nav';
 import { FornecedorService } from '../../../../core/services/fornecedor.service';
-import { Fornecedor, StatusFornecedor } from '../../../../core/models/fornecedor.model';
+import { Fornecedor } from '../../../../core/models/fornecedor.model';
+import { STATUS_FORNECEDOR, StatusRef } from '../../../../core/models/status.model';
 import { CnpjPipe, formatarCnpj } from '../../../../shared/pipes/cnpj.pipe';
 import { CepPipe } from '../../../../shared/pipes/cep.pipe';
 import { TelefonePipe, formatarTelefone } from '../../../../shared/pipes/telefone.pipe';
@@ -24,7 +25,8 @@ export class FornecedoresListagem implements OnInit {
   readonly fornecedores = signal<Fornecedor[]>([]);
 
   readonly termoBusca = signal('');
-  readonly filtroStatus = signal<StatusFornecedor | ''>('');
+  readonly STATUS = STATUS_FORNECEDOR;
+  readonly filtroStatus = signal<number | null>(null);
   readonly pagina = signal(0);
 
   readonly fornecedoresFiltrados = computed(() => {
@@ -38,7 +40,7 @@ export class FornecedoresListagem implements OnInit {
         !termo ||
         f.razaoSocial.toLowerCase().includes(termo) ||
         (termoDigitos.length > 0 && f.cnpj.replace(/\D/g, '').includes(termoDigitos));
-      const combinaStatus = !status || f.status === status;
+      const combinaStatus = !status || f.status.id === status;
       return combinaTermo && combinaStatus;
     });
   });
@@ -67,9 +69,9 @@ export class FornecedoresListagem implements OnInit {
   carregarFornecedores(): void {
     this.carregando.set(true);
     this.erro.set(null);
-    this.fornecedorService.listar(0, 500).subscribe({
-      next: (fornecedores) => {
-        this.fornecedores.set(fornecedores);
+    this.fornecedorService.listar(0, 1000).subscribe({
+      next: (pagina) => {
+        this.fornecedores.set(pagina.items);
         this.carregando.set(false);
       },
       error: () => {
@@ -85,7 +87,7 @@ export class FornecedoresListagem implements OnInit {
   }
 
   aoMudarStatus(valor: string): void {
-    this.filtroStatus.set(valor as StatusFornecedor | '');
+    this.filtroStatus.set(valor ? Number(valor) : null);
     this.pagina.set(0);
   }
 
@@ -110,13 +112,12 @@ export class FornecedoresListagem implements OnInit {
     this.fornecedorService.excluir(fornecedor.id).subscribe({
       next: () =>
         this.fornecedores.update((lista) => lista.filter((f) => f.id !== fornecedor.id)),
-      error: () =>
-        alert('Não foi possível excluir este fornecedor. Ele pode estar vinculado a produtos.'),
+      error: (err) => alert(err.error?.detail ?? 'Não foi possível excluir este fornecedor.'),
     });
   }
 
-  statusLabel(status: StatusFornecedor): string {
-    return { ATIVO: 'Ativo', INATIVO: 'Inativo' }[status];
+  statusLabel(status: StatusRef): string {
+    return status.nome;
   }
 
   exportarCsv(): void {

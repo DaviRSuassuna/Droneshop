@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Endereços · Aeria</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<script src="assets/theme.js"></script>
+</head>
+<body class="sf">
+<header class="snav">
+  <div class="snav-l">
+    <a class="brand" href="index.html">AERIA</a>
+    <nav class="snav-nav"><a href="drones.html">Drones</a><a href="acessorios.html">Acessórios</a><a href="empresas.html">Empresas</a><a href="suporte.html">Suporte</a><a href="ofertas.html">Ofertas</a></nav>
+  </div>
+  <div class="snav-r">
+    <span class="snav-search">Buscar drones e acessórios</span>
+    <a href="conta-perfil.html">Conta</a>
+    <a class="cart" href="carrinho.html">Carrinho <em>2</em></a>
+  </div>
+</header>
+<div class="swrap two-a">
+  <aside class="srail"><div class="acct">
+  <div class="acct-u"><span class="avatar">MR</span><span class="acct-n" style="gap:4px"><span style="font-size:13px;color:var(--ink)">Marina Ribeiro</span><span style="font-size:11px;color:var(--mute2)">Cliente desde 2024</span></span></div>
+  <nav class="acct-n"><a href="conta-pedidos.html">Meus pedidos<em>12</em></a><a href="conta-perfil.html">Perfil e dados<em></em></a><a href="conta-favoritos.html">Lista de desejos<em>6</em></a><a href="conta-enderecos.html" class="on">Endereços<em>2</em></a><a href="conta-pagamentos.html">Meios de pagamento<em>2</em></a></nav>
+  <a href="login.html" style="padding:10px 12px;font-size:12px;color:var(--mute2);border-top:1px solid var(--line)">Sair da conta</a>
+</div></aside>
+  <div style="display:flex;flex-direction:column;gap:24px">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:20px">
+      <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:11.5px;color:var(--mute2)"><a href="index.html" style="color:var(--mute2)">Home</a> · Minha conta · Endereços</span><h1 class="disp" style="font-size:32px;color:var(--pure)">Endereços</h1><span style="font-size:12px;color:var(--dim2)">2 endereços salvos · 1 definido como padrão</span></div>
+      <a class="btn p" href="#novo" style="height:38px">+ Novo endereço</a>
+    </div>
+    <div class="g2" style="gap:16px"><div class="scard p" style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:9px"><span style="font:300 15px/1.2 'Sora',sans-serif;color:var(--ink)">Casa</span><span style="padding:3px 8px;border-radius:20px;background:var(--acc-t);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--acc)">Padrão</span></div>
+      <span style="font-size:12px;line-height:1.7;color:var(--ink2)">Marina Ribeiro<br>Rua das Acácias, 412 — apto 71<br>Pinheiros · São Paulo / SP · 05422-030<br>(11) 98812-4477</span>
+      <div class="actions" style="margin-top:6px"><button class="btn sm">Editar</button><button class="btn sm d">Remover</button></div>
+    </div><div class="scard p" style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:9px"><span style="font:300 15px/1.2 'Sora',sans-serif;color:var(--ink)">Estúdio</span></div>
+      <span style="font-size:12px;line-height:1.7;color:var(--ink2)">Aeria Studio Ltda.<br>Av. Paulista, 1.578 — conj. 902<br>Bela Vista · São Paulo / SP · 01310-200<br>(11) 4000-2200</span>
+      <div class="actions" style="margin-top:6px"><button class="btn sm">Editar</button><button class="btn sm">Definir como padrão</button><button class="btn sm d">Remover</button></div>
+    </div></div>
+    <section class="scard p" id="novo">
+      <span class="scard-t">Novo endereço</span>
+      <div class="g2" style="gap:14px 18px"><div class="f"><label>Apelido do endereço <span class="req">*</span></label><input type="text" placeholder="Casa, Escritório, Obra…"></div><div class="f"><label>Quem recebe <span class="req">*</span></label><input type="text" placeholder="Nome completo"></div><div class="f"><label>CEP <span class="req">*</span></label><input type="text" placeholder="00000-000"></div><div class="f"><label>Rua / logradouro <span class="req">*</span></label><input type="text" placeholder="Preenchido pelo CEP"></div><div class="f"><label>Número <span class="req">*</span></label><input type="text" placeholder="412"></div><div class="f"><label>Complemento</label><input type="text" placeholder="Apto, bloco, referência"></div><div class="f"><label>Bairro <span class="req">*</span></label><input type="text" placeholder="Pinheiros"></div><div class="f"><label>Cidade <span class="req">*</span></label><input type="text" placeholder="São Paulo"></div><div class="f"><label>Estado <span class="req">*</span></label><select><option>SP</option><option>RJ</option><option>MG</option><option>PR</option><option>RS</option><option>BA</option><option>Outro</option></select></div><div class="f"><label>Telefone para entrega <span class="req">*</span></label><input type="text" placeholder="(11) 90000-0000"></div><label class="ck full"><input type="checkbox"> Definir como endereço padrão de entrega</label><label class="ck full"><input type="checkbox" checked> Usar também como endereço de cobrança</label></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:20px"><span class="legend" style="margin:0">Campos com <span class="req">*</span> são obrigatórios</span><div class="actions"><a class="btn" href="conta-enderecos.html">Cancelar</a><button class="btn p" style="height:40px">Salvar endereço</button></div></div>
+    </section>
+  </div>
+</div><footer class="sfoot">
+  <div class="sfoot-g">
+    <div class="sfoot-c"><span class="brand" style="font-size:16px">AERIA</span><span style="font-size:12px;line-height:1.6;color:var(--mute2);max-width:230px">Drones profissionais, compactos e agrícolas. Envio para todo o Brasil.</span></div>
+    <div class="sfoot-c"><b>Loja</b><a href="drones.html">Drones</a><a href="acessorios.html">Acessórios</a><a href="ofertas.html">Ofertas</a><a href="index.html">Lançamentos</a></div><div class="sfoot-c"><b>Conta</b><a href="login.html">Entrar</a><a href="login.html">Criar conta</a><a href="conta-pedidos.html">Meus pedidos</a><a href="conta-favoritos.html">Lista de desejos</a></div><div class="sfoot-c"><b>Suporte</b><a href="suporte.html">Central de ajuda</a><a href="suporte.html">Trocas e devoluções</a><a href="suporte.html">Garantia</a><a href="suporte.html">Regras ANAC</a></div><div class="sfoot-c"><b>Empresa</b><a href="empresas.html">Sobre a Aeria</a><a href="empresas.html">Vendas corporativas</a><a href="empresas.html">Seja revendedor</a><a href="admin/index.html">Painel admin</a></div>
+  </div>
+  <div class="sfoot-b"><span>© 2026 Aeria Drones · CNPJ 00.000.000/0001-00</span><span>Pix · Boleto · Cartão em até 12×</span></div>
+</footer>
+</body>
+</html>

@@ -7,7 +7,8 @@ import { AdminNav } from '../../../../layout/admin/admin-nav/admin-nav';
 import { SubcategoriaService } from '../../../../core/services/subcategoria.service';
 import { CategoriaService } from '../../../../core/services/categoria.service';
 import { SubcategoriaDTO } from '../../../../core/models/subcategoria.model';
-import { Categoria, StatusCategoria } from '../../../../core/models/categoria.model';
+import { Categoria } from '../../../../core/models/categoria.model';
+import { STATUS_PUBLICACAO } from '../../../../core/models/status.model';
 import { ProblemDetail } from '../../../../core/models/problem.model';
 
 @Component({
@@ -17,6 +18,7 @@ import { ProblemDetail } from '../../../../core/models/problem.model';
   templateUrl: './subcategoria-cadastro.html',
 })
 export class SubcategoriaCadastro implements OnInit {
+  readonly STATUS = STATUS_PUBLICACAO;
   private readonly fb = inject(FormBuilder);
   private readonly subcategoriaService = inject(SubcategoriaService);
   private readonly categoriaService = inject(CategoriaService);
@@ -37,16 +39,16 @@ export class SubcategoriaCadastro implements OnInit {
   readonly form = this.fb.group({
     nome: this.fb.nonNullable.control(''),
     slug: this.fb.nonNullable.control(''),
-    categoriaId: this.fb.control<number | null>(null),
+    idCategoria: this.fb.control<number | null>(null),
     ordemExibicao: this.fb.nonNullable.control(0),
     descricao: this.fb.nonNullable.control(''),
-    status: this.fb.nonNullable.control<StatusCategoria>('ATIVA', Validators.required),
+    idStatus: this.fb.nonNullable.control<number>(STATUS_PUBLICACAO.ATIVA, Validators.required),
   });
 
   ngOnInit(): void {
     this.categoriaService
-      .listar(0, 500)
-      .subscribe((c) => this.categorias.set(c.filter((x) => x.nome)));
+      .listar(0, 1000)
+      .subscribe((p) => this.categorias.set(p.items.filter((x) => x.nome)));
 
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
@@ -60,23 +62,18 @@ export class SubcategoriaCadastro implements OnInit {
     this.carregando.set(true);
     this.subcategoriaService.buscarPorId(id).subscribe({
       next: (sub) => {
-        if (!sub) {
-          this.erroGeral.set('Esta subcategoria não foi encontrada.');
-          this.carregando.set(false);
-          return;
-        }
         this.form.patchValue({
           nome: sub.nome,
           slug: sub.slug,
-          categoriaId: sub.categoriaId,
+          idCategoria: sub.categoria.id,
           ordemExibicao: sub.ordemExibicao,
           descricao: sub.descricao ?? '',
-          status: sub.status,
+          idStatus: sub.status.id,
         });
         this.carregando.set(false);
       },
-      error: () => {
-        this.erroGeral.set('Não foi possível carregar esta subcategoria.');
+      error: (err) => {
+        this.erroGeral.set(err.status === 404 ? 'Esta subcategoria não foi encontrada.' : 'Não foi possível carregar esta subcategoria.');
         this.carregando.set(false);
       },
     });
@@ -98,10 +95,10 @@ export class SubcategoriaCadastro implements OnInit {
     const dto: SubcategoriaDTO = {
       nome: v.nome.trim(),
       slug: v.slug.trim(),
-      categoriaId: v.categoriaId ? Number(v.categoriaId) : null,
+      idCategoria: v.idCategoria ? Number(v.idCategoria) : null,
       ordemExibicao: Number(v.ordemExibicao),
       descricao: v.descricao.trim(),
-      status: v.status,
+      idStatus: Number(v.idStatus),
     };
 
     this.salvando.set(true);

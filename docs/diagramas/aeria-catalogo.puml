@@ -4,8 +4,8 @@ title Aeria Catálogo
 
 abstract class DefaultEntity <<MappedSuperclass>> {
   -id: Long
-  -criadoEm: LocalDateTime
-  -atualizadoEm: LocalDateTime
+  -dataCadastro: LocalDateTime
+  -dataAlteracao: LocalDateTime
 }
 
 note bottom of DefaultEntity
@@ -14,30 +14,59 @@ note bottom of DefaultEntity
   as marcadas <<Embeddable>>
 end note
 
+enum StatusMarca {
+  RASCUNHO = 1
+  ATIVA = 2
+  INATIVA = 3
+}
+note left of StatusMarca
+  Enums de status com id e nome:
+  o banco guarda o id e a API devolve
+  {id, nome} (rotas /status-*)
+end note
+
 class Marca {
+  -status: StatusMarca
   -nome: String
   -slug: String
   -paisOrigem: String
   -siteOficial: String
   -descricao: String
   -logoUrl: String
-  -ativa: boolean
   -destacarHome: boolean
 }
 
+enum StatusCategoria {
+  RASCUNHO = 1
+  ATIVA = 2
+  INATIVA = 3
+}
+note right of StatusCategoria
+  Usado por Categoria e Subcategoria.
+  RASCUNHO aceita campos vazios (D21)
+end note
+
 class Categoria {
+  -status: StatusCategoria
   -nome: String
   -slug: String
+  -ordemExibicao: Integer
+  -descricao: String
+  -exibirMenu: boolean
+  -iconeUrl: String
 }
 
 class Subcategoria {
+  -status: StatusCategoria
   -nome: String
   -slug: String
+  -ordemExibicao: Integer
+  -descricao: String
 }
 
 enum StatusFornecedor {
-  ATIVO
-  INATIVO
+  ATIVO = 1
+  INATIVO = 2
 }
 
 class Fornecedor {
@@ -86,9 +115,9 @@ note bottom of Estado
 end note
 
 enum StatusProduto {
-  RASCUNHO
-  ATIVO
-  INATIVO
+  RASCUNHO = 1
+  ATIVO = 2
+  INATIVO = 3
 }
 
 abstract class Produto {

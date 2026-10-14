@@ -1,27 +1,14 @@
 package br.com.droneshop.catalogo.dto;
 
-import br.com.droneshop.catalogo.model.Subcategoria;
+import br.com.droneshop.catalogo.model.StatusCategoria;
 
 public record SubcategoriaResponseDTO(
     Long id,
     String nome,
     String slug,
-    Long categoriaId,
-    String categoriaNome,
+    CategoriaResponseDTO categoria,
     Integer ordemExibicao,
     String descricao,
-    String status
+    StatusCategoria status
 ) {
-    public static SubcategoriaResponseDTO valueOf(Subcategoria subcategoria) {
-        return new SubcategoriaResponseDTO(
-            subcategoria.getId(),
-            subcategoria.getNome(),
-            subcategoria.getSlug(),
-            subcategoria.getCategoria().getId(),
-            subcategoria.getCategoria().getNome(),
-            subcategoria.getOrdemExibicao(),
-            subcategoria.getDescricao(),
-            subcategoria.getStatus().name());
-    }
-
 }

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Novo usuário · Admin Aeria</title>
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<header class="tb">
+  <div class="tb-l">
+    <a class="tb-brand" href="index.html">ADMIN</a>
+    <nav class="tb-nav">
+      <a href="index.html">Dashboard</a>
+      <a href="produtos.html">Produtos</a>
+      <a href="marcas.html">Marcas</a>
+      <a href="categorias.html">Categorias</a>
+      <a href="fornecedores.html">Fornecedores</a>
+      <a href="promocoes.html">Promoções</a>
+      <a href="cupons.html">Cupons</a>
+      <a href="estoque.html">Estoque</a>
+      <a href="pedidos.html">Pedidos</a>
+      <a href="usuarios.html" class="on">Usuários</a>
+    </nav>
+  </div>
+  <div class="tb-r">
+    <span class="tb-search">Buscar no painel</span>
+    <a href="../index.html">Ver loja ↗</a>
+    <span class="avatar">MR</span>
+  </div>
+</header>
+<div class="pad cols">
+  <div class="main">
+    <div><h1 class="h1 big">Novo usuário administrativo</h1><div class="crumb"><a href="usuarios.html">Usuários</a> · Novo usuário</div></div>
+    <section class="card p"><div class="card-t" style="margin-bottom:20px">Dados do usuário</div><div class="g2"><div class="f full"><label>Nome completo <span class="req">*</span></label><input type="text" placeholder="Ex: Marcos Rocha"></div><div class="f"><label>E-mail corporativo <span class="req">*</span></label><input type="text" placeholder="nome@empresa.com.br"></div><div class="f"><label>Papel / permissão <span class="req">*</span></label><select><option>Selecione o papel</option><option>Administrador</option><option>Catálogo</option><option>Operações</option><option>Atendimento</option><option>Somente leitura</option></select></div><div class="f"><label>Senha provisória <span class="req">*</span></label><input type="password" placeholder="Mínimo 8 caracteres"></div></div><p class="legend">Campos com <span class="req">*</span> são obrigatórios</p></section>
+    <section class="card p">
+      <div class="card-h"><span class="card-t">Permissões por módulo</span><span class="card-n">Herdadas do papel · editáveis</span></div>
+      <div class="perm"><span></span><span class="hd">Ver</span><span class="hd">Editar</span><span class="hd">Excluir</span>
+      <label>Produtos</label><input type="checkbox" checked><input type="checkbox" checked><input type="checkbox">
+      <label>Marcas</label><input type="checkbox" checked><input type="checkbox" checked><input type="checkbox">
+      <label>Categorias</label><input type="checkbox" checked><input type="checkbox" checked><input type="checkbox">
+      <label>Pedidos</label><input type="checkbox" checked><input type="checkbox" checked><input type="checkbox">
+      <label>Usuários</label><input type="checkbox" checked><input type="checkbox"><input type="checkbox">
+      <label>Relatórios</label><input type="checkbox" checked><input type="checkbox"><input type="checkbox">
+      </div>
+    </section>
+  </div>
+  <aside class="rail">
+    <section class="card p2"><div class="eyebrow">Acesso</div><div class="stack"><div class="f"><label>Status <span class="req">*</span></label><select><option>Ativo</option><option>Inativo</option></select></div><label class="ck full"><input type="checkbox" checked> Enviar convite ao criar</label></div></section>
+    <section class="card p2"><div class="eyebrow">Pendências</div><div style="display:flex;flex-direction:column;gap:9px"><span class="warn">1 campo obrigatório vazio</span><span style="font-size:12px;color:var(--mute)">Papel / permissão</span></div></section>
+  </aside>
+</div>
+<div class="actionbar"><span class="sub">O convite de acesso é enviado por e-mail após criar</span><div class="actions"><button class="btn">Salvar rascunho</button><button class="btn p">Criar usuário</button></div></div>
+</body>
+</html>

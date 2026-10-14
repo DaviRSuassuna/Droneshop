@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         Uma issue = uma branch = um PR para a `develop`.
-        Branch: `feat/<numero-da-issue>-<resumo-curto>` (ex.: `feat/12-variante-produto`).
+        Branch: botão "Create a branch" desta issue, com origem na `develop`.
 
   - type: dropdown
     id: modulo
@@ -66,18 +66,46 @@ body:
     validations:
       required: true
 
+  - type: textarea
+    id: contrato
+    attributes:
+      label: Contrato de API
+      description: >-
+        Base dos testes da issue. Para cada rota: método, caminho, corpo de entrada,
+        resposta de sucesso e erros esperados. Erros seguem o formato Problem
+        (400 validação, 404 não encontrado, 409 em uso).
+      value: |
+        ```
+        POST /recurso
+        {
+          "campo": "valor"
+        }
+        -> 200 { "id": 1, "campo": "valor" }
+        -> 400 errors[].field = "campo"
+        ```
+
+  - type: textarea
+    id: prototipo
+    attributes:
+      label: Protótipo
+      description: Tela(s) do protótipo que esta issue implementa (link do `docs/design/README.md`). Deixe em branco se não tiver tela.
+      placeholder: "admin/marcas.html, admin/marca-nova.html"
+
   - type: checkboxes
     id: backend
     attributes:
       label: Backend (padrão SGA)
       options:
-        - label: Entidade JPA herdando `DefaultEntity`
-        - label: Enums no padrão `Regiao`/`RegiaoConverter`, com endpoint de leitura
+        - label: Entidade herdando `DefaultEntity` (`id`, `dataCadastro`, `dataAlteracao`)
+        - label: Enums com id e nome, conversor JPA e rota de leitura (D31)
         - label: Repository (`PanacheRepository`)
-        - label: DTO de entrada com Bean Validation e DTO de saída como `record`
+        - label: '`XxxRequestDTO` e `XxxResponseDTO` como `record`, Bean Validation na entrada e mapper'
         - label: Service com `@Transactional` e validações de negócio
-        - label: Resource REST com paginação `page`/`pageSize`
+        - label: Resource REST com `page`/`pageSize` e resposta `PageResponse`
+        - label: Erros no formato Problem (400, 404, 409, 503)
         - label: Carga de dados (`import.sql`) atualizada
+        - label: Diagrama `.puml` atualizado, se o modelo mudou
+        - label: 'Testes de API com `@Tag("issue-<numero>")` e etiqueta em `backend/src/test/issues-entregues.txt`'
 
   - type: checkboxes
     id: frontend
@@ -86,6 +114,9 @@ body:
       options:
         - label: Tela(s) do admin integradas à API
         - label: Tela(s) do storefront integradas à API
+        - label: 'Conformidade com o protótipo passando (`npm run e2e -- --grep @issue-<numero>`) e etiqueta em `frontend/e2e/telas-entregues.txt`'
+        - label: Rota da tela igual à de `frontend/e2e/conformidade/telas.ts`
+        - label: Specs (`*.spec.ts`) dos services novos
         - label: Não se aplica
 
   - type: textarea

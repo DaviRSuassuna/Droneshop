@@ -1,0 +1,133 @@
+# CI do frontend (Angular) — roda a cada Pull Request e a cada push na develop/main.
+#
+# Etapas:
+#   0. changes  : detecta se o PR/push mexeu no frontend.
+#   1. frontend : `npm ci`, testes unitários (Vitest via `ng test`, sem watch),
+#                 build de produção (`ng build`, confere tipos e orçamentos),
+#                 checagem básica do protótipo (`npm run prototipo:verificar`) e
+#                 conformidade das telas com o protótipo (Playwright, e2e/):
+#                 - telas de e2e/telas-entregues.txt: BLOQUEIAM o merge;
+#                 - telas da issue da branch (`feat/10-...` ou `10-...` -> @issue-10):
+#                   informativas até a etiqueta entrar em telas-entregues.txt;
+#                 - todas as telas: só quando pedido à mão (Actions > frontend >
+#                   Run workflow > "todas"), informativo.
+#                 O relatório com as imagens fica nos artefatos do run.
+#
+# O workflow dispara SEMPRE (sem `paths` no gatilho). Quando nada do frontend
+# mudou, o job `frontend` é PULADO pelo `if:`, e job pulado conta como sucesso
+# para os status checks obrigatórios. Com `paths` no `on:`, o check "frontend"
+# ficaria pendente para sempre em PRs só de backend ou de docs.
+#
+# Check obrigatório nos rulesets (.github/rulesets/*.json): "frontend".
+
+name: frontend
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop, main]
+  workflow_dispatch:
+    inputs:
+      todas:
+        description: "Rodar a conformidade de todas as telas (informativo)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: frontend-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: frontend
+
+jobs:
+  changes:
+    name: detectar mudanças no frontend
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'frontend/**'
+              - 'docs/design/**'
+              - '.github/workflows/frontend-ci.yml'
+
+  testes-e-build:
+    name: frontend
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: frontend/.nvmrc
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Testes unitários
+        run: npx ng test --watch=false
+
+      - name: Build de produção
+        run: npm run build
+
+      - name: Checagem do protótipo (páginas, links, viewport, alt)
+        run: npm run prototipo:verificar
+
+      - name: Navegador dos testes de conformidade
+        run: npx playwright install --with-deps chromium
+
+      - name: Conformidade com o protótipo, telas entregues (bloqueia o merge)
+        run: |
+          ETIQUETAS=$(grep -vE '^\s*(#|$)' e2e/telas-entregues.txt | tr -d ' \r' | sed 's/^/@/' | paste -sd'|' -)
+          if [ -z "$ETIQUETAS" ]; then
+            echo "::notice::Nenhuma tela em e2e/telas-entregues.txt: nada bloqueia ainda."
+          else
+            echo "Telas entregues: $ETIQUETAS"
+            npx playwright test --grep "$ETIQUETAS"
+          fi
+
+      - name: Conformidade das telas da issue da branch (informativo até ser entregue)
+        if: always()
+        continue-on-error: true
+        env:
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+        run: |
+          NUMERO=$(echo "$BRANCH" | sed -nE 's#^([a-z]+/)?([0-9]+)-.*#\2#p')
+          if [ -z "$NUMERO" ]; then
+            echo "::notice::Branch sem número de issue ($BRANCH): só as telas entregues rodaram."
+            exit 0
+          fi
+          if grep -qxE "\s*issue-$NUMERO\s*" e2e/telas-entregues.txt; then
+            echo "::notice::issue-$NUMERO já está em telas-entregues.txt: as telas dela rodaram no passo anterior."
+            exit 0
+          fi
+          npx playwright test --grep "@issue-$NUMERO" --pass-with-no-tests
+
+      - name: Conformidade de todas as telas (só quando pedida à mão, informativo)
+        if: always() && github.event_name == 'workflow_dispatch' && inputs.todas
+        continue-on-error: true
+        run: npx playwright test
+
+      - name: Relatório da conformidade (imagens do protótipo e da tela)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: conformidade-prototipo
+          path: frontend/e2e/.relatorio
+          retention-days: 14

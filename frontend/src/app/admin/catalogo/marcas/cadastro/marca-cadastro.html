@@ -69,13 +69,13 @@
         <div class="stack">
           <div class="f">
             <label>Status <span class="req">*</span></label>
-            <select formControlName="status">
-              <option value="RASCUNHO">Rascunho</option>
-              <option value="ATIVA">Ativa</option>
-              <option value="INATIVA">Inativa</option>
+            <select formControlName="idStatus">
+              <option [ngValue]="STATUS.RASCUNHO">Rascunho</option>
+              <option [ngValue]="STATUS.ATIVA">Ativa</option>
+              <option [ngValue]="STATUS.INATIVA">Inativa</option>
             </select>
-            @if (campoInvalido('status')) {
-              <span class="warn">{{ mensagemErro('status') }}</span>
+            @if (campoInvalido('idStatus')) {
+              <span class="warn">{{ mensagemErro('idStatus') }}</span>
             }
           </div>
           <div class="f">

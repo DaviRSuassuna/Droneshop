@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fornecedores · Admin Aeria</title>
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<header class="tb">
+  <div class="tb-l">
+    <a class="tb-brand" href="index.html">ADMIN</a>
+    <nav class="tb-nav">
+      <a href="index.html">Dashboard</a>
+      <a href="produtos.html">Produtos</a>
+      <a href="marcas.html">Marcas</a>
+      <a href="categorias.html">Categorias</a>
+      <a href="fornecedores.html" class="on">Fornecedores</a>
+      <a href="promocoes.html">Promoções</a>
+      <a href="cupons.html">Cupons</a>
+      <a href="estoque.html">Estoque</a>
+      <a href="pedidos.html">Pedidos</a>
+      <a href="usuarios.html">Usuários</a>
+    </nav>
+  </div>
+  <div class="tb-r">
+    <span class="tb-search">Buscar no painel</span>
+    <a href="../index.html">Ver loja ↗</a>
+    <span class="avatar">MR</span>
+  </div>
+</header>
+<div class="pagebar">
+  <div style="display:flex;align-items:baseline;gap:12px"><h1 class="h1">Fornecedores</h1><span class="sub">5 fornecedores · 94 produtos vinculados</span></div>
+  <div class="actions"><button class="btn">Exportar CSV</button><a class="btn p" href="fornecedor-novo.html">Novo fornecedor</a></div>
+</div>
+<div class="pad-t" style="display:flex;flex-direction:column;gap:16px">
+  <div class="filters">
+    <div class="f grow"><input type="text" placeholder="Buscar por razão social ou CNPJ"></div>
+    <div class="f"><select><option>Status</option><option>Ativo</option><option>Inativo</option></select></div>
+  </div>
+  <p class="legend" style="margin:0">Fornecedor é campo obrigatório em <a href="produto-novo.html" style="text-decoration:underline">Cadastrar produto</a>. Sem pelo menos um registro ativo, nenhum produto pode ser publicado.</p>
+  <div class="tbl">
+    <div class="trow head" style="grid-template-columns:minmax(0,1fr) 260px 120px 118px 44px"><span>Fornecedor</span><span>Contato comercial</span><span>Produtos</span><span>Status</span><span></span></div>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 260px 120px 118px 44px" href="fornecedor-novo.html"><span class="cell-name"><b>Aerion Brasil Importação Ltda.</b><span class="chip">12.345.678/0001-90</span></span><span class="cell-name"><b style="font-size:12.5px">Paulo Serra</b><span class="chip">comercial@aerion.com.br</span></span><span class="ink">24</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativo</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 260px 120px 118px 44px" href="fornecedor-novo.html"><span class="cell-name"><b>Skyline Trading Co.</b><span class="chip">98.765.432/0001-11</span></span><span class="cell-name"><b style="font-size:12.5px">Ana Yamada</b><span class="chip">ana.yamada@skyline.co</span></span><span class="ink">31</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativo</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 260px 120px 118px 44px" href="fornecedor-novo.html"><span class="cell-name"><b>Vortex Indústria de Drones S.A.</b><span class="chip">45.902.113/0001-27</span></span><span class="cell-name"><b style="font-size:12.5px">Rodrigo Lemos</b><span class="chip">rodrigo@vortexdrones.com.br</span></span><span class="ink">18</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativo</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 260px 120px 118px 44px" href="fornecedor-novo.html"><span class="cell-name"><b>Atlas Agro Equipamentos</b><span class="chip">31.556.804/0001-63</span></span><span class="cell-name"><b style="font-size:12.5px">Carla Nunes</b><span class="chip">carla@atlasagro.com.br</span></span><span class="ink">9</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativo</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 260px 120px 118px 44px" href="fornecedor-novo.html"><span class="cell-name"><b>Heron Aeronáutica Europa</b><span class="chip">07.118.290/0001-05</span></span><span class="cell-name"><b style="font-size:12.5px">Marc Girard</b><span class="chip">m.girard@heron.eu</span></span><span class="ink">12</span><span class="status"><span class="dot" style="background:var(--dim2)"></span>Inativo</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <div class="pager"><span>Exibindo 1–5 de 5</span><span>Página 1 de 1</span></div>
+  </div>
+</div>
+</body>
+</html>

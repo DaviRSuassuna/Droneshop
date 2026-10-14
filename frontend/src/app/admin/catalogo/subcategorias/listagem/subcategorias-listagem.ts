@@ -4,7 +4,8 @@ import { AdminNav } from '../../../../layout/admin/admin-nav/admin-nav';
 import { SubcategoriaService } from '../../../../core/services/subcategoria.service';
 import { CategoriaService } from '../../../../core/services/categoria.service';
 import { Subcategoria } from '../../../../core/models/subcategoria.model';
-import { Categoria, StatusCategoria } from '../../../../core/models/categoria.model';
+import { Categoria } from '../../../../core/models/categoria.model';
+import { STATUS_PUBLICACAO, StatusRef } from '../../../../core/models/status.model';
 
 const TAMANHO_PAGINA = 10;
 
@@ -27,7 +28,8 @@ export class SubcategoriasListagem implements OnInit {
 
   readonly termoBusca = signal('');
   readonly filtroCategoria = signal<number | null>(null);
-  readonly filtroStatus = signal<StatusCategoria | ''>('');
+  readonly STATUS = STATUS_PUBLICACAO;
+  readonly filtroStatus = signal<number | null>(null);
   readonly pagina = signal(0);
 
   readonly subcategoriasFiltradas = computed(() => {
@@ -37,8 +39,8 @@ export class SubcategoriasListagem implements OnInit {
     return this.subcategorias().filter(
       (s) =>
         (!termo || s.nome.toLowerCase().includes(termo) || s.slug.includes(termo)) &&
-        (!categoria || s.categoriaId === categoria) &&
-        (!status || s.status === status),
+        (!categoria || s.categoria.id === categoria) &&
+        (!status || s.status.id === status),
     );
   });
 
@@ -60,17 +62,17 @@ export class SubcategoriasListagem implements OnInit {
 
   ngOnInit(): void {
     this.categoriaService
-      .listar(0, 500)
-      .subscribe((c) => this.categorias.set(c.filter((x) => x.nome)));
+      .listar(0, 1000)
+      .subscribe((p) => this.categorias.set(p.items.filter((x) => x.nome)));
     this.carregar();
   }
 
   carregar(): void {
     this.carregando.set(true);
     this.erro.set(null);
-    this.subcategoriaService.listar().subscribe({
-      next: (lista) => {
-        this.subcategorias.set(lista);
+    this.subcategoriaService.listar(null, 0, 1000).subscribe({
+      next: (pagina) => {
+        this.subcategorias.set(pagina.items);
         this.carregando.set(false);
       },
       error: () => {
@@ -91,7 +93,7 @@ export class SubcategoriasListagem implements OnInit {
   }
 
   aoMudarStatus(valor: string): void {
-    this.filtroStatus.set(valor as StatusCategoria | '');
+    this.filtroStatus.set(valor ? Number(valor) : null);
     this.pagina.set(0);
   }
 
@@ -107,16 +109,16 @@ export class SubcategoriasListagem implements OnInit {
 
     this.subcategoriaService.excluir(subcategoria.id).subscribe({
       next: () => this.subcategorias.update((l) => l.filter((s) => s.id !== subcategoria.id)),
-      error: () =>
-        alert('Não foi possível excluir esta subcategoria. Ela pode ter produtos vinculados.'),
+      error: (err) => alert(err.error?.detail ?? 'Não foi possível excluir esta subcategoria.'),
     });
   }
 
-  statusLabel(status: StatusCategoria): string {
-    return { RASCUNHO: 'Rascunho', ATIVA: 'Ativa', INATIVA: 'Inativa' }[status];
+  statusLabel(status: StatusRef): string {
+    return status.nome;
   }
 
-  corStatus(status: StatusCategoria): string {
-    return { ATIVA: 'var(--ok)', INATIVA: 'var(--dim2)', RASCUNHO: 'var(--warn)' }[status];
+  corStatus(status: StatusRef): string {
+    if (status.id === STATUS_PUBLICACAO.ATIVA) return 'var(--ok)';
+    return status.id === STATUS_PUBLICACAO.INATIVA ? 'var(--dim2)' : 'var(--warn)';
   }
 }
