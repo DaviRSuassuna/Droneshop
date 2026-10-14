@@ -3,8 +3,6 @@ package br.com.droneshop.catalogo.model;
 import br.com.droneshop.model.DefaultEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 
 @Entity
 public class Marca extends DefaultEntity {
@@ -27,8 +25,7 @@ public class Marca extends DefaultEntity {
     @Column(length = 255, nullable = false, name = "logo_url")
     private String logoUrl;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20, nullable = false)
+    @Column(nullable = false)
     private StatusMarca status;
 
     @Column(nullable = false, name = "destacar_home")

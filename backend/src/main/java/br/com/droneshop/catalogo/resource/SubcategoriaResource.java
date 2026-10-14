@@ -2,9 +2,7 @@ package br.com.droneshop.catalogo.resource;
 
 import java.util.List;
 
-import br.com.droneshop.catalogo.dto.SubcategoriaDTO;
-import br.com.droneshop.catalogo.dto.SubcategoriaResponseDTO;
-import br.com.droneshop.catalogo.service.SubcategoriaService;
+import br.com.droneshop.dto.PageResponse;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -18,6 +16,12 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
+import br.com.droneshop.catalogo.dto.SubcategoriaRequestDTO;
+import br.com.droneshop.catalogo.dto.SubcategoriaResponseDTO;
+import br.com.droneshop.catalogo.mapper.SubcategoriaResponseMapper;
+import br.com.droneshop.catalogo.model.Subcategoria;
+import br.com.droneshop.catalogo.service.SubcategoriaService;
+
 @Path("subcategorias")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -26,28 +30,42 @@ public class SubcategoriaResource {
     @Inject
     SubcategoriaService service;
 
-    // GET /subcategorias?categoriaId=2 lista so as subcategorias daquela categoria
+    // ?idCategoria=2 lista so as subcategorias daquela categoria
     @GET
-    public List<SubcategoriaResponseDTO> buscarTodos(@QueryParam("categoriaId") Long categoriaId,
-                                                     @QueryParam("page") @DefaultValue("0") int page,
-                                                     @QueryParam("pageSize") @DefaultValue("100") int pageSize) {
-        return service.findAll(categoriaId, page, pageSize).stream().map(SubcategoriaResponseDTO::valueOf).toList();
+    public PageResponse<SubcategoriaResponseDTO> buscarTodos(@QueryParam("idCategoria") Long idCategoria,
+            @QueryParam("page") @DefaultValue("0") int page,
+            @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
+        List<Subcategoria> subcategorias = service.findAll(idCategoria, page, pageSize);
+        long totalItems = service.count(idCategoria);
+
+        return PageResponse.of(subcategorias, page, pageSize, totalItems, SubcategoriaResponseMapper::toResponse);
+    }
+
+    @GET
+    @Path("/nome/{nome}")
+    public PageResponse<SubcategoriaResponseDTO> buscarPorNome(@PathParam("nome") String nome,
+            @QueryParam("page") @DefaultValue("0") int page,
+            @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
+        List<Subcategoria> subcategorias = service.findByNome(nome, page, pageSize);
+        long totalItems = service.count(nome);
+
+        return PageResponse.of(subcategorias, page, pageSize, totalItems, SubcategoriaResponseMapper::toResponse);
     }
 
     @GET
     @Path("/{id}")
     public SubcategoriaResponseDTO buscarPorId(@PathParam("id") Long id) {
-        return SubcategoriaResponseDTO.valueOf(service.findById(id));
+        return SubcategoriaResponseMapper.toResponse(service.findById(id));
     }
 
     @POST
-    public SubcategoriaResponseDTO incluir(SubcategoriaDTO dto) {
-        return SubcategoriaResponseDTO.valueOf(service.create(dto));
+    public SubcategoriaResponseDTO incluir(SubcategoriaRequestDTO dto) {
+        return SubcategoriaResponseMapper.toResponse(service.create(dto));
     }
 
     @PUT
     @Path("/{id}")
-    public void alterar(@PathParam("id") Long id, SubcategoriaDTO dto) {
+    public void alterar(@PathParam("id") Long id, SubcategoriaRequestDTO dto) {
         service.update(id, dto);
     }
 

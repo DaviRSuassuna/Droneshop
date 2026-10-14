@@ -5,8 +5,6 @@ import br.com.droneshop.model.DefaultEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 
 @Entity
 public class Fornecedor extends DefaultEntity {
@@ -34,8 +32,7 @@ public class Fornecedor extends DefaultEntity {
     @Embedded
     private Endereco endereco;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20, nullable = false)
+    @Column(nullable = false)
     private StatusFornecedor status;
 
     public String getRazaoSocial() {

@@ -2,9 +2,7 @@ package br.com.droneshop.catalogo.resource;
 
 import java.util.List;
 
-import br.com.droneshop.catalogo.dto.CategoriaDTO;
-import br.com.droneshop.catalogo.dto.CategoriaResponseDTO;
-import br.com.droneshop.catalogo.service.CategoriaService;
+import br.com.droneshop.dto.PageResponse;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -18,6 +16,12 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
+import br.com.droneshop.catalogo.dto.CategoriaRequestDTO;
+import br.com.droneshop.catalogo.dto.CategoriaResponseDTO;
+import br.com.droneshop.catalogo.mapper.CategoriaResponseMapper;
+import br.com.droneshop.catalogo.model.Categoria;
+import br.com.droneshop.catalogo.service.CategoriaService;
+
 @Path("categorias")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -26,41 +30,46 @@ public class CategoriaResource {
     @Inject
     CategoriaService service;
 
-    // Categoria e serializada via CategoriaResponseDTO, no mesmo padrao de MarcaResource.
-
     @GET
-    public List<CategoriaResponseDTO> buscarTodos(@QueryParam("page") @DefaultValue("0") int page,
-                                    @QueryParam("pageSize") @DefaultValue("100") int pageSize) {
-        return service.findAll(page, pageSize).stream().map(CategoriaResponseDTO::valueOf).toList();
+    public PageResponse<CategoriaResponseDTO> buscarTodos(@QueryParam("page") @DefaultValue("0") int page,
+            @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
+        List<Categoria> categorias = service.findAll(page, pageSize);
+        long totalItems = service.count();
+
+        return PageResponse.of(categorias, page, pageSize, totalItems, CategoriaResponseMapper::toResponse);
     }
 
     @GET
     @Path("/nome/{nome}")
-    public List<CategoriaResponseDTO> buscarPorNome(@PathParam("nome") String nome, @QueryParam("page") @DefaultValue("0") int page,
-                                    @QueryParam("pageSize") @DefaultValue("100") int pageSize) {
-        return service.findByNome(nome, page, pageSize).stream().map(CategoriaResponseDTO::valueOf).toList();
+    public PageResponse<CategoriaResponseDTO> buscarPorNome(@PathParam("nome") String nome,
+            @QueryParam("page") @DefaultValue("0") int page,
+            @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
+        List<Categoria> categorias = service.findByNome(nome, page, pageSize);
+        long totalItems = service.count(nome);
+
+        return PageResponse.of(categorias, page, pageSize, totalItems, CategoriaResponseMapper::toResponse);
     }
 
     @GET
     @Path("/{id}")
     public CategoriaResponseDTO buscarPorId(@PathParam("id") Long id) {
-        return CategoriaResponseDTO.valueOf(service.findById(id));
+        return CategoriaResponseMapper.toResponse(service.findById(id));
     }
 
     @GET
     @Path("/slug/{slug}")
     public CategoriaResponseDTO buscarPorSlug(@PathParam("slug") String slug) {
-        return CategoriaResponseDTO.valueOf(service.findBySlug(slug));
+        return CategoriaResponseMapper.toResponse(service.findBySlug(slug));
     }
 
     @POST
-    public CategoriaResponseDTO incluir(CategoriaDTO dto) {
-        return CategoriaResponseDTO.valueOf(service.create(dto));
+    public CategoriaResponseDTO incluir(CategoriaRequestDTO dto) {
+        return CategoriaResponseMapper.toResponse(service.create(dto));
     }
 
     @PUT
     @Path("/{id}")
-    public void alterar(@PathParam("id") Long id, CategoriaDTO dto) {
+    public void alterar(@PathParam("id") Long id, CategoriaRequestDTO dto) {
         service.update(id, dto);
     }
 
@@ -68,18 +77,6 @@ public class CategoriaResource {
     @Path("/{id}")
     public void apagar(@PathParam("id") Long id) {
         service.delete(id);
-    }
-
-    @GET
-    @Path("/count")
-    public Long total() {
-        return service.count();
-    }
-
-    @GET
-    @Path("/nome/{nome}/count")
-    public Long totalPorNome(@PathParam("nome") String nome) {
-        return service.count(nome);
     }
 
 }

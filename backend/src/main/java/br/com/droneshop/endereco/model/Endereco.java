@@ -27,7 +27,7 @@ public class Endereco {
     private String bairro;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "municipio_id", nullable = false)
+    @JoinColumn(name = "id_municipio", nullable = false)
     private Municipio municipio;
 
     public String getCep() {

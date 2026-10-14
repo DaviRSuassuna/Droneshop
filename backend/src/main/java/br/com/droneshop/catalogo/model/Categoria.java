@@ -3,8 +3,6 @@ package br.com.droneshop.catalogo.model;
 import br.com.droneshop.model.DefaultEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 
 @Entity
 public class Categoria extends DefaultEntity {
@@ -21,8 +19,7 @@ public class Categoria extends DefaultEntity {
     @Column(length = 2000)
     private String descricao;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20, nullable = false)
+    @Column(nullable = false)
     private StatusCategoria status;
 
     @Column(nullable = false, name = "exibir_menu")

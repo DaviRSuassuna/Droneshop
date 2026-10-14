@@ -2,7 +2,7 @@ package br.com.droneshop.catalogo.service;
 
 import java.util.List;
 
-import br.com.droneshop.catalogo.dto.ProdutoDTO;
+import br.com.droneshop.catalogo.dto.ProdutoRequestDTO;
 import br.com.droneshop.catalogo.model.Fornecedor;
 import br.com.droneshop.catalogo.model.Marca;
 import br.com.droneshop.catalogo.model.Produto;
@@ -35,73 +35,17 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     @Override
     @Transactional
-    public Produto create(ProdutoDTO dto) {
+    public Produto create(ProdutoRequestDTO dto) {
         Produto produto = new Produto();
-        preencher(produto, dto, null);
+        aplicarDados(produto, dto, null);
         produtoRepository.persist(produto);
         return produto;
     }
 
     @Override
     @Transactional
-    public void update(long id, ProdutoDTO dto) {
-        preencher(findById(id), dto, id);
-    }
-
-    private void preencher(Produto produto, ProdutoDTO dto, Long idAtual) {
-        String modelo = dto.getModelo().trim().toUpperCase();
-        if (produtoRepository.findByModeloExceptId(modelo, idAtual) != null)
-            throw ValidationException.of("modelo", "Já existe um produto com esse modelo/SKU.");
-
-        produto.setNome(dto.getNome().trim());
-        produto.setModelo(modelo);
-        produto.setDescricaoCurta(dto.getDescricaoCurta());
-        produto.setPreco(dto.getPreco());
-        produto.setMarca(resolverMarca(dto.getMarcaId()));
-        produto.setSubcategoria(resolverSubcategoria(dto.getSubcategoriaId()));
-        produto.setFornecedor(resolverFornecedor(dto.getFornecedorId()));
-        produto.setStatus(parseStatus(dto.getStatus()));
-        produto.setDestaque(Boolean.TRUE.equals(dto.getDestaque()));
-    }
-
-    private Marca resolverMarca(Long marcaId) {
-        Marca marca = marcaRepository.findById(marcaId);
-        if (marca == null)
-            throw ValidationException.of("marcaId", "Marca não encontrada.");
-        return marca;
-    }
-
-    private Subcategoria resolverSubcategoria(Long subcategoriaId) {
-        Subcategoria subcategoria = subcategoriaRepository.findById(subcategoriaId);
-        if (subcategoria == null)
-            throw ValidationException.of("subcategoriaId", "Subcategoria não encontrada.");
-        return subcategoria;
-    }
-
-    private Fornecedor resolverFornecedor(Long fornecedorId) {
-        Fornecedor fornecedor = fornecedorRepository.findById(fornecedorId);
-        if (fornecedor == null)
-            throw ValidationException.of("fornecedorId", "Fornecedor não encontrado.");
-        return fornecedor;
-    }
-
-    private StatusProduto parseStatus(String status) {
-        try {
-            return StatusProduto.valueOf(status.trim().toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw ValidationException.of("status", "Status inválido. Use RASCUNHO, ATIVO ou INATIVO.");
-        }
-    }
-
-    // no filtro, status vazio/invalido significa "todos"
-    private StatusProduto parseStatusFiltro(String status) {
-        if (status == null || status.isBlank())
-            return null;
-        try {
-            return StatusProduto.valueOf(status.trim().toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+    public void update(long id, ProdutoRequestDTO dto) {
+        aplicarDados(buscarProdutoOuFalhar(id), dto, id);
     }
 
     @Override
@@ -113,23 +57,69 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     @Override
     public Produto findById(long id) {
+        return buscarProdutoOuFalhar(id);
+    }
+
+    @Override
+    public List<Produto> findComFiltro(String nome, Long idMarca, Long idCategoria, Long idSubcategoria, Long idStatus,
+                                      int page, int pageSize) {
+        return produtoRepository.findComFiltro(nome, idMarca, idCategoria, idSubcategoria, StatusProduto.valueOf(idStatus))
+                .page(page, pageSize)
+                .list();
+    }
+
+    @Override
+    public long countComFiltro(String nome, Long idMarca, Long idCategoria, Long idSubcategoria, Long idStatus) {
+        return produtoRepository.findComFiltro(nome, idMarca, idCategoria, idSubcategoria, StatusProduto.valueOf(idStatus))
+                .count();
+    }
+
+    private void aplicarDados(Produto destino, ProdutoRequestDTO dto, Long idAtual) {
+        StatusProduto status = StatusProduto.valueOf(dto.idStatus());
+        if (status == null)
+            throw ValidationException.of("idStatus", "Status não encontrado.");
+
+        String modelo = dto.modelo().trim().toUpperCase();
+        if (produtoRepository.findByModeloExceptId(modelo, idAtual) != null)
+            throw ValidationException.of("modelo", "Já existe um produto com esse modelo/SKU.");
+
+        destino.setNome(dto.nome().trim());
+        destino.setModelo(modelo);
+        destino.setDescricaoCurta(dto.descricaoCurta());
+        destino.setPreco(dto.preco());
+        destino.setMarca(buscarMarcaOuFalhar(dto.idMarca()));
+        destino.setSubcategoria(buscarSubcategoriaOuFalhar(dto.idSubcategoria()));
+        destino.setFornecedor(buscarFornecedorOuFalhar(dto.idFornecedor()));
+        destino.setStatus(status);
+        destino.setDestaque(Boolean.TRUE.equals(dto.destaque()));
+    }
+
+    private Produto buscarProdutoOuFalhar(long id) {
         Produto produto = produtoRepository.findById(id);
         if (produto == null)
             throw new ResourceNotFoundException("Produto não encontrado.");
         return produto;
     }
 
-    @Override
-    public List<Produto> findComFiltro(String nome, Long marcaId, Long categoriaId, Long subcategoriaId, String status,
-                                      int page, int pageSize) {
-        return produtoRepository.findComFiltro(nome, marcaId, categoriaId, subcategoriaId, parseStatusFiltro(status))
-                .page(page, pageSize)
-                .list();
+    private Marca buscarMarcaOuFalhar(Long idMarca) {
+        Marca marca = marcaRepository.findById(idMarca);
+        if (marca == null)
+            throw ValidationException.of("idMarca", "Marca não encontrada.");
+        return marca;
     }
 
-    @Override
-    public long countComFiltro(String nome, Long marcaId, Long categoriaId, Long subcategoriaId, String status) {
-        return produtoRepository.findComFiltro(nome, marcaId, categoriaId, subcategoriaId, parseStatusFiltro(status)).count();
+    private Subcategoria buscarSubcategoriaOuFalhar(Long idSubcategoria) {
+        Subcategoria subcategoria = subcategoriaRepository.findById(idSubcategoria);
+        if (subcategoria == null)
+            throw ValidationException.of("idSubcategoria", "Subcategoria não encontrada.");
+        return subcategoria;
+    }
+
+    private Fornecedor buscarFornecedorOuFalhar(Long idFornecedor) {
+        Fornecedor fornecedor = fornecedorRepository.findById(idFornecedor);
+        if (fornecedor == null)
+            throw ValidationException.of("idFornecedor", "Fornecedor não encontrado.");
+        return fornecedor;
     }
 
 }

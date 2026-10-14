@@ -1,10 +1,9 @@
 package br.com.droneshop.catalogo.service;
 
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.droneshop.catalogo.dto.CategoriaDTO;
+import br.com.droneshop.catalogo.dto.CategoriaRequestDTO;
 import br.com.droneshop.catalogo.model.Categoria;
 import br.com.droneshop.catalogo.model.StatusCategoria;
 import br.com.droneshop.catalogo.repository.CategoriaRepository;
@@ -13,7 +12,7 @@ import br.com.droneshop.exception.ConflitoException;
 import br.com.droneshop.exception.Problem;
 import br.com.droneshop.exception.ResourceNotFoundException;
 import br.com.droneshop.exception.ValidationException;
-import io.quarkus.hibernate.orm.panache.PanacheQuery;
+import br.com.droneshop.util.Textos;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -29,103 +28,28 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     @Override
     @Transactional
-    public Categoria create(CategoriaDTO dto) {
-        StatusCategoria status = parseStatus(dto.getStatus());
+    public Categoria create(CategoriaRequestDTO dto) {
+        StatusCategoria status = buscarStatusOuFalhar(dto.idStatus());
         validarObrigatoriedade(dto, status);
-
-        String slug = resolverSlug(dto.getSlug(), dto.getNome());
+        String slug = resolverSlug(dto.slug(), dto.nome());
         validarSlugUnico(slug, null);
 
         Categoria novaCategoria = new Categoria();
-        novaCategoria.setNome(valorOuVazio(dto.getNome()));
-        novaCategoria.setSlug(slug);
-        novaCategoria.setOrdemExibicao(valorOuZero(dto.getOrdemExibicao()));
-        novaCategoria.setDescricao(dto.getDescricao());
-        novaCategoria.setStatus(status);
-        novaCategoria.setExibirMenu(Boolean.TRUE.equals(dto.getExibirMenu()));
-        novaCategoria.setIconeUrl(dto.getIconeUrl());
-
-        // realizando inclusao
+        aplicarDados(novaCategoria, dto, status, slug);
         categoriaRepository.persist(novaCategoria);
-
         return novaCategoria;
     }
 
     @Override
     @Transactional
-    public void update(long id, CategoriaDTO dto) {
-        StatusCategoria status = parseStatus(dto.getStatus());
+    public void update(long id, CategoriaRequestDTO dto) {
+        Categoria edicaoCategoria = buscarCategoriaOuFalhar(id);
+        StatusCategoria status = buscarStatusOuFalhar(dto.idStatus());
         validarObrigatoriedade(dto, status);
-
-        Categoria edicaoCategoria = findById(id);
-
-        String slug = resolverSlug(dto.getSlug(), dto.getNome());
+        String slug = resolverSlug(dto.slug(), dto.nome());
         validarSlugUnico(slug, id);
 
-        edicaoCategoria.setNome(valorOuVazio(dto.getNome()));
-        edicaoCategoria.setSlug(slug);
-        edicaoCategoria.setOrdemExibicao(valorOuZero(dto.getOrdemExibicao()));
-        edicaoCategoria.setDescricao(dto.getDescricao());
-        edicaoCategoria.setStatus(status);
-        edicaoCategoria.setExibirMenu(Boolean.TRUE.equals(dto.getExibirMenu()));
-        edicaoCategoria.setIconeUrl(dto.getIconeUrl());
-    }
-
-    private StatusCategoria parseStatus(String status) {
-        try {
-            return StatusCategoria.valueOf(status.trim().toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw ValidationException.of("status", "Status inválido. Use RASCUNHO, ATIVA ou INATIVA.");
-        }
-    }
-
-    // RASCUNHO nao exige nada preenchido; ATIVA/INATIVA exige nome e ordem de exibicao
-    private void validarObrigatoriedade(CategoriaDTO dto, StatusCategoria status) {
-        if (status == StatusCategoria.RASCUNHO)
-            return;
-
-        List<Problem.FieldError> erros = new ArrayList<>();
-        if (dto.getNome() == null || dto.getNome().isBlank())
-            erros.add(new Problem.FieldError("nome", "O campo deve ser informado (back)."));
-        if (dto.getOrdemExibicao() == null || dto.getOrdemExibicao() < 0)
-            erros.add(new Problem.FieldError("ordemExibicao", "O campo deve ser informado (back)."));
-
-        if (!erros.isEmpty())
-            throw new ValidationException("Preencha os campos obrigatórios para publicar a categoria.", erros);
-    }
-
-    private String valorOuVazio(String valor) {
-        return (valor == null) ? "" : valor;
-    }
-
-    private Integer valorOuZero(Integer valor) {
-        return (valor == null) ? 0 : valor;
-    }
-
-    private void validarSlugUnico(String slug, Long id) {
-        Categoria categoria = categoriaRepository.findBySlugExceptId(slug, id);
-        if (categoria != null)
-            throw ValidationException.of("slug", "Já existe uma categoria cadastrada com esse slug.");
-    }
-
-    // se o slug nao vier preenchido no DTO, gera a partir do nome;
-    // se nome tambem estiver vazio (rascunho totalmente em branco), gera um slug temporario
-    private String resolverSlug(String slugInformado, String nome) {
-        if (slugInformado != null && !slugInformado.isBlank())
-            return slugify(slugInformado);
-        if (nome != null && !nome.isBlank())
-            return slugify(nome);
-        return "rascunho-" + System.currentTimeMillis();
-    }
-
-    private String slugify(String texto) {
-        String semAcentos = Normalizer.normalize(texto, Normalizer.Form.NFD)
-                .replaceAll("\\p{M}", "");
-        return semAcentos.toLowerCase()
-                .trim()
-                .replaceAll("[^a-z0-9\\s-]", "")
-                .replaceAll("[\\s-]+", "-")
-                .replaceAll("^-|-$", "");
+        aplicarDados(edicaoCategoria, dto, status, slug);
     }
 
     @Override
@@ -141,10 +65,7 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     @Override
     public Categoria findById(long id) {
-        Categoria categoria = categoriaRepository.findById(id);
-        if (categoria == null)
-            throw new ResourceNotFoundException("Categoria não encontrada.");
-        return categoria;
+        return buscarCategoriaOuFalhar(id);
     }
 
     @Override
@@ -156,13 +77,12 @@ public class CategoriaServiceImpl implements CategoriaService {
     }
 
     @Override
-    public List<Categoria> findAll(Integer page, Integer pageSize) {
-        PanacheQuery<Categoria> query = categoriaRepository.findAll().page(page, pageSize);
-        return query.list();
+    public List<Categoria> findAll(int page, int pageSize) {
+        return categoriaRepository.findAll().page(page, pageSize).list();
     }
 
     @Override
-    public List<Categoria> findByNome(String nome, Integer page, Integer pageSize) {
+    public List<Categoria> findByNome(String nome, int page, int pageSize) {
         return categoriaRepository.findByNome(nome).page(page, pageSize).list();
     }
 
@@ -174,6 +94,58 @@ public class CategoriaServiceImpl implements CategoriaService {
     @Override
     public long count(String nome) {
         return categoriaRepository.findByNome(nome).count();
+    }
+
+    // RASCUNHO nao exige nada preenchido; ATIVA/INATIVA exige nome e ordem de exibicao
+    private void validarObrigatoriedade(CategoriaRequestDTO dto, StatusCategoria status) {
+        if (status == StatusCategoria.RASCUNHO)
+            return;
+
+        List<Problem.FieldError> erros = new ArrayList<>();
+        if (dto.nome() == null)
+            erros.add(new Problem.FieldError("nome", "O campo deve ser informado (back)."));
+        if (dto.ordemExibicao() == null)
+            erros.add(new Problem.FieldError("ordemExibicao", "O campo deve ser informado (back)."));
+
+        if (!erros.isEmpty())
+            throw new ValidationException("Preencha os campos obrigatórios para publicar a categoria.", erros);
+    }
+
+    private void validarSlugUnico(String slug, Long id) {
+        if (categoriaRepository.findBySlugExceptId(slug, id) != null)
+            throw ValidationException.of("slug", "Já existe uma categoria cadastrada com esse slug.");
+    }
+
+    private String resolverSlug(String slug, String nome) {
+        if (slug != null)
+            return Textos.slug(slug);
+        if (nome != null)
+            return Textos.slug(nome);
+        return "rascunho-" + System.currentTimeMillis();
+    }
+
+    private void aplicarDados(Categoria destino, CategoriaRequestDTO origem, StatusCategoria status, String slug) {
+        destino.setNome(origem.nome() == null ? "" : origem.nome());
+        destino.setSlug(slug);
+        destino.setOrdemExibicao(origem.ordemExibicao() == null ? 0 : origem.ordemExibicao());
+        destino.setDescricao(origem.descricao());
+        destino.setStatus(status);
+        destino.setExibirMenu(Boolean.TRUE.equals(origem.exibirMenu()));
+        destino.setIconeUrl(origem.iconeUrl());
+    }
+
+    private Categoria buscarCategoriaOuFalhar(long id) {
+        Categoria categoria = categoriaRepository.findById(id);
+        if (categoria == null)
+            throw new ResourceNotFoundException("Categoria não encontrada.");
+        return categoria;
+    }
+
+    private StatusCategoria buscarStatusOuFalhar(Long idStatus) {
+        StatusCategoria status = StatusCategoria.valueOf(idStatus);
+        if (status == null)
+            throw ValidationException.of("idStatus", "Status não encontrado.");
+        return status;
     }
 
 }
