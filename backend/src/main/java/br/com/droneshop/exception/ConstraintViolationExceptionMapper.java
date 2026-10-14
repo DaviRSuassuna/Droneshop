@@ -28,6 +28,7 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
     String baseUrl;
 
     @Override
+    @SuppressWarnings("null") // conversão List<@NonNull> para List: aviso só da análise de nulos do Eclipse
     public Response toResponse(ConstraintViolationException e) {
         List<Problem.@NonNull FieldError> fieldErrors = e.getConstraintViolations()
                 .stream()

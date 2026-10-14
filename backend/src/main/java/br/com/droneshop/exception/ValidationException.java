@@ -11,6 +11,7 @@ public class ValidationException extends RuntimeException {
         this.fieldErrors = (errors == null) ? List.of() : List.copyOf(errors);
     }
 
+    @SuppressWarnings("null") // List.of: aviso só da análise de nulos do Eclipse
     public static ValidationException of(String field, String msg) {
         return new ValidationException("Dados inválidos", List.of(new Problem.FieldError(field, msg)));
     }
