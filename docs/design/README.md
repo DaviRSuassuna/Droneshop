@@ -8,6 +8,24 @@ Referência visual da Aeria. O protótipo é a fonte da verdade das telas: quem 
 | [`DESIGN.md`](DESIGN.md) | Tokens, tipografia, layout e componentes. Os tokens são os mesmos do `frontend/src/styles.scss` |
 | [`PRODUCT.md`](PRODUCT.md) | Usuários, propósito, contexto e princípios do produto |
 
+## Mudar o design
+
+O protótipo é a referência das telas (D38) e os testes de `frontend/e2e` comparam cada tela real com ele. Para mudar o design:
+
+1. PR que altera o protótipo (e o `DESIGN.md`, se mudou token). Se a tela já está em `frontend/e2e/telas-entregues.txt`, tire a etiqueta dela no mesmo PR.
+2. Depois do merge, o Pages publica a versão nova.
+3. PR que muda a tela real até a conformidade passar, devolvendo a etiqueta.
+
+## Ver localmente
+
+```bash
+cd frontend
+npm run prototipo              # http://localhost:4300 (admin em /admin/)
+npm run prototipo:verificar    # confere páginas, links, viewport e alt (também roda no CI)
+```
+
+Para conferir no celular (D20), use o modo responsivo do navegador entre 360 e 480px. Hoje o `site.css` só tem regras até 1100px: a checagem avisa que falta o layout das telas estreitas.
+
 ## Versão publicada
 
 **https://davirsuassuna.github.io/droneshop/prototipo/**

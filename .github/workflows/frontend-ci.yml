@@ -2,8 +2,12 @@
 #
 # Etapas:
 #   0. changes  : detecta se o PR/push mexeu no frontend.
-#   1. frontend : `npm ci`, testes unitários (Vitest via `ng test`, sem watch)
-#                 e build de produção (`ng build`, confere tipos e orçamentos).
+#   1. frontend : `npm ci`, testes unitários (Vitest via `ng test`, sem watch),
+#                 build de produção (`ng build`, confere tipos e orçamentos),
+#                 checagem básica do protótipo (`npm run prototipo:verificar`) e
+#                 conformidade das telas com o protótipo (Playwright, e2e/):
+#                 as telas de e2e/telas-entregues.txt BLOQUEIAM o merge; as demais
+#                 só informam. O relatório com as imagens fica nos artefatos do run.
 #
 # O workflow dispara SEMPRE (sem `paths` no gatilho). Quando nada do frontend
 # mudou, o job `frontend` é PULADO pelo `if:`, e job pulado conta como sucesso
@@ -46,6 +50,7 @@ jobs:
           filters: |
             frontend:
               - 'frontend/**'
+              - 'docs/design/**'
               - '.github/workflows/frontend-ci.yml'
 
   testes-e-build:
@@ -70,3 +75,32 @@ jobs:
 
       - name: Build de produção
         run: npm run build
+
+      - name: Checagem do protótipo (páginas, links, viewport, alt)
+        run: npm run prototipo:verificar
+
+      - name: Navegador dos testes de conformidade
+        run: npx playwright install --with-deps chromium
+
+      - name: Conformidade com o protótipo, telas entregues (bloqueia o merge)
+        run: |
+          ETIQUETAS=$(grep -vE '^\s*(#|$)' e2e/telas-entregues.txt | tr -d ' \r' | sed 's/^/@/' | paste -sd'|' -)
+          if [ -z "$ETIQUETAS" ]; then
+            echo "::notice::Nenhuma tela em e2e/telas-entregues.txt: nada bloqueia ainda."
+          else
+            echo "Telas entregues: $ETIQUETAS"
+            npx playwright test --grep "$ETIQUETAS"
+          fi
+
+      - name: Conformidade com o protótipo, todas as telas (informativo, não bloqueia)
+        if: always()
+        continue-on-error: true
+        run: npx playwright test
+
+      - name: Relatório da conformidade (imagens do protótipo e da tela)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: conformidade-prototipo
+          path: frontend/e2e/.relatorio
+          retention-days: 14

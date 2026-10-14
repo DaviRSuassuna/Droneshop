@@ -32,6 +32,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Conferir o protótipo antes de publicar
+        run: node frontend/scripts/verificar-prototipo.mjs
+
       - name: Montar o site
         run: |
           mkdir -p _site

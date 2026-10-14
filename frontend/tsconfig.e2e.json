@@ -1,0 +1,9 @@
+/* Testes de conformidade com o protótipo (Playwright, e2e/). Separado do app porque roda no Node. */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "noEmit": true
+  },
+  "include": ["e2e/**/*.ts", "playwright.config.ts"]
+}

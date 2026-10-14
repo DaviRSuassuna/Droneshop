@@ -1,0 +1,56 @@
+import { defineConfig, devices } from '@playwright/test';
+
+/**
+ * Testes de conformidade das telas com o protótipo (e2e/conformidade).
+ *
+ * Sobe o Angular (porta 4200) e o protótipo (porta 4300, a mesma pasta
+ * docs/design/prototipo que o GitHub Pages publica). Para comparar com a versão
+ * já publicada no Pages: PROTOTIPO_URL=https://davirsuassuna.github.io/droneshop/prototipo/
+ * A API não precisa estar de pé: as respostas são simuladas (e2e/conformidade/api-falsa.ts).
+ */
+const prototipoUrl = process.env['PROTOTIPO_URL'] ?? 'http://localhost:4300/';
+
+export default defineConfig({
+  testDir: './e2e',
+  outputDir: './e2e/.resultados',
+  timeout: 60_000,
+  fullyParallel: true,
+  forbidOnly: !!process.env['CI'],
+  retries: 0,
+  reporter: [['list'], ['html', { outputFolder: 'e2e/.relatorio', open: 'never' }]],
+  use: {
+    baseURL: 'http://localhost:4200',
+    viewport: { width: 1280, height: 800 },
+    locale: 'pt-BR',
+    trace: 'retain-on-failure',
+  },
+  projects: [
+    {
+      name: 'chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1280, height: 800 },
+        launchOptions: process.env['CHROMIUM_PATH'] ? { executablePath: process.env['CHROMIUM_PATH'] } : {},
+      },
+    },
+  ],
+  metadata: { prototipoUrl },
+  webServer: [
+    {
+      command: 'npx ng serve --port 4200',
+      url: 'http://localhost:4200',
+      reuseExistingServer: !process.env['CI'],
+      timeout: 180_000,
+    },
+    ...(process.env['PROTOTIPO_URL']
+      ? []
+      : [
+          {
+            command: 'node scripts/servir-prototipo.mjs',
+            url: 'http://localhost:4300/',
+            reuseExistingServer: !process.env['CI'],
+            env: { PORTA: '4300' },
+          },
+        ]),
+  ],
+});
