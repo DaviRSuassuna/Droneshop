@@ -2,7 +2,8 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AdminNav } from '../../../../layout/admin/admin-nav/admin-nav';
 import { MarcaService } from '../../../../core/services/marca.service';
-import { Marca, StatusMarca } from '../../../../core/models/marca.model';
+import { Marca } from '../../../../core/models/marca.model';
+import { STATUS_PUBLICACAO, StatusRef } from '../../../../core/models/status.model';
 
 const TAMANHO_PAGINA = 10;
 
@@ -15,6 +16,7 @@ const TAMANHO_PAGINA = 10;
 })
 export class MarcasListagem implements OnInit {
   private readonly marcaService = inject(MarcaService);
+  readonly STATUS = STATUS_PUBLICACAO;
 
   readonly carregando = signal(true);
   readonly erro = signal<string | null>(null);
@@ -22,7 +24,7 @@ export class MarcasListagem implements OnInit {
 
   readonly termoBusca = signal('');
   readonly filtroPais = signal('');
-  readonly filtroStatus = signal<StatusMarca | ''>('');
+  readonly filtroStatus = signal<number | null>(null);
   readonly pagina = signal(0);
 
   readonly paisesDisponiveis = computed(() => {
@@ -43,7 +45,7 @@ export class MarcasListagem implements OnInit {
       const combinaTermo =
         !termo || m.nome.toLowerCase().includes(termo) || m.slug.toLowerCase().includes(termo);
       const combinaPais = !pais || m.paisOrigem === pais;
-      const combinaStatus = !status || m.status === status;
+      const combinaStatus = !status || m.status.id === status;
       return combinaTermo && combinaPais && combinaStatus;
     });
   });
@@ -72,9 +74,9 @@ export class MarcasListagem implements OnInit {
   carregarMarcas(): void {
     this.carregando.set(true);
     this.erro.set(null);
-    this.marcaService.listar(0, 500).subscribe({
-      next: (marcas) => {
-        this.marcas.set(marcas);
+    this.marcaService.listar(0, 1000).subscribe({
+      next: (pagina) => {
+        this.marcas.set(pagina.items);
         this.carregando.set(false);
       },
       error: () => {
@@ -95,7 +97,7 @@ export class MarcasListagem implements OnInit {
   }
 
   aoMudarStatus(valor: string): void {
-    this.filtroStatus.set(valor as StatusMarca | '');
+    this.filtroStatus.set(valor ? Number(valor) : null);
     this.pagina.set(0);
   }
 
@@ -118,8 +120,8 @@ export class MarcasListagem implements OnInit {
     });
   }
 
-  statusLabel(status: StatusMarca): string {
-    return { RASCUNHO: 'Rascunho', ATIVA: 'Ativa', INATIVA: 'Inativa' }[status];
+  statusLabel(status: StatusRef): string {
+    return status.nome;
   }
 
   exportarCsv(): void {

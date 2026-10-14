@@ -7,7 +7,7 @@ import { MarcaService } from './marca.service';
 
 describe('MarcaService', () => {
   const url = `${environment.apiUrl}/marcas`;
-  const dto = { nome: 'Aerion', status: 'ATIVA' } as MarcaDTO;
+  const dto = { nome: 'Aerion', idStatus: 2 } as MarcaDTO;
   let service: MarcaService;
   let http: HttpTestingController;
 
@@ -21,13 +21,21 @@ describe('MarcaService', () => {
 
   afterEach(() => http.verify());
 
-  it('lista com page e pageSize (padrão 0 e 500)', () => {
-    service.listar().subscribe((itens) => expect(itens).toEqual([]));
+  it('lista uma página (padrão 0 e 10)', () => {
+    service.listar().subscribe((p) => expect(p.items).toEqual([]));
     const req = http.expectOne((r) => r.url === url);
     expect(req.request.method).toBe('GET');
     expect(req.request.params.get('page')).toBe('0');
-    expect(req.request.params.get('pageSize')).toBe('500');
-    req.flush([]);
+    expect(req.request.params.get('pageSize')).toBe('10');
+    req.flush({ items: [], page: 0, pageSize: 10, totalItems: 0, totalPages: 0 });
+  });
+
+  it('busca por nome com o termo codificado na rota', () => {
+    service.buscarPorNome('Aerion X').subscribe();
+    const req = http.expectOne((r) => r.url === `${url}/nome/Aerion%20X`);
+    expect(req.request.method).toBe('GET');
+    expect(req.request.params.get('pageSize')).toBe('10');
+    req.flush({ items: [], page: 0, pageSize: 10, totalItems: 0, totalPages: 0 });
   });
 
   it('busca por id', () => {
@@ -35,13 +43,6 @@ describe('MarcaService', () => {
     const req = http.expectOne(`${url}/7`);
     expect(req.request.method).toBe('GET');
     req.flush({ id: 7 });
-  });
-
-  it('conta os registros', () => {
-    service.contar().subscribe((total) => expect(total).toBe(3));
-    const req = http.expectOne(`${url}/count`);
-    expect(req.request.method).toBe('GET');
-    req.flush(3);
   });
 
   it('cria com POST e o DTO no corpo', () => {

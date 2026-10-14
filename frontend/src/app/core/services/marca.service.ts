@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { PageResponse } from '../models/page.model';
 import { Marca, MarcaDTO } from '../models/marca.model';
 
 @Injectable({ providedIn: 'root' })
@@ -9,17 +10,18 @@ export class MarcaService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/marcas`;
 
-  listar(page = 0, pageSize = 500): Observable<Marca[]> {
+  listar(page = 0, pageSize = 10): Observable<PageResponse<Marca>> {
     const params = new HttpParams().set('page', page).set('pageSize', pageSize);
-    return this.http.get<Marca[]>(this.baseUrl, { params });
+    return this.http.get<PageResponse<Marca>>(this.baseUrl, { params });
+  }
+
+  buscarPorNome(nome: string, page = 0, pageSize = 10): Observable<PageResponse<Marca>> {
+    const params = new HttpParams().set('page', page).set('pageSize', pageSize);
+    return this.http.get<PageResponse<Marca>>(`${this.baseUrl}/nome/${encodeURIComponent(nome)}`, { params });
   }
 
   buscarPorId(id: number): Observable<Marca> {
     return this.http.get<Marca>(`${this.baseUrl}/${id}`);
-  }
-
-  contar(): Observable<number> {
-    return this.http.get<number>(`${this.baseUrl}/count`);
   }
 
   criar(dto: MarcaDTO): Observable<Marca> {

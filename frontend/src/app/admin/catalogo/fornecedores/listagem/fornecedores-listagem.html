@@ -34,10 +34,10 @@
       />
     </div>
     <div class="f">
-      <select [value]="filtroStatus()" (change)="aoMudarStatus($any($event.target).value)">
+      <select [value]="filtroStatus() ?? ''" (change)="aoMudarStatus($any($event.target).value)">
         <option value="">Status</option>
-        <option value="ATIVO">Ativo</option>
-        <option value="INATIVO">Inativo</option>
+        <option [value]="STATUS.ATIVO">Ativo</option>
+        <option [value]="STATUS.INATIVO">Inativo</option>
       </select>
     </div>
   </div>
@@ -100,7 +100,7 @@
           <span class="status">
             <span
               class="dot"
-              [style.background]="fornecedor.status === 'ATIVO' ? 'var(--ok)' : 'var(--dim2)'"
+              [style.background]="fornecedor.status.id === STATUS.ATIVO ? 'var(--ok)' : 'var(--dim2)'"
             ></span>
             {{ statusLabel(fornecedor.status) }}
           </span>

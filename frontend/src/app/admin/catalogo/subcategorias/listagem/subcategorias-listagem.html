@@ -41,9 +41,9 @@
     <div class="f">
       <select aria-label="Filtrar por status" (change)="aoMudarStatus($any($event.target).value)">
         <option value="">Todos os status</option>
-        <option value="ATIVA">Ativa</option>
-        <option value="INATIVA">Inativa</option>
-        <option value="RASCUNHO">Rascunho</option>
+        <option [value]="STATUS.ATIVA">Ativa</option>
+        <option [value]="STATUS.INATIVA">Inativa</option>
+        <option [value]="STATUS.RASCUNHO">Rascunho</option>
       </select>
     </div>
   </div>
@@ -75,7 +75,7 @@
             <b>{{ sub.nome }}</b>
             <span class="chip">{{ sub.slug }}</span>
           </span>
-          <span class="ink">{{ sub.categoriaNome }}</span>
+          <span class="ink">{{ sub.categoria.nome }}</span>
           <span class="ink">{{ sub.ordemExibicao }}</span>
           <span class="status">
             <span class="dot" [style.background]="corStatus(sub.status)"></span>

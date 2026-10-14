@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { PageResponse } from '../models/page.model';
 import { FiltroProduto, Produto, ProdutoDTO } from '../models/produto.model';
 
 @Injectable({ providedIn: 'root' })
@@ -9,15 +10,10 @@ export class ProdutoService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/produtos`;
 
-  /** Uma página já filtrada no servidor. */
-  listar(filtro: FiltroProduto, page = 0, pageSize = 10): Observable<Produto[]> {
+  /** Uma página já filtrada no servidor, com o total em totalItems. */
+  listar(filtro: FiltroProduto, page = 0, pageSize = 10): Observable<PageResponse<Produto>> {
     const params = this.paramsDoFiltro(filtro).set('page', page).set('pageSize', pageSize);
-    return this.http.get<Produto[]>(this.baseUrl, { params });
-  }
-
-  /** Total de registros para o mesmo filtro (usado na paginação). */
-  contar(filtro: FiltroProduto): Observable<number> {
-    return this.http.get<number>(`${this.baseUrl}/count`, { params: this.paramsDoFiltro(filtro) });
+    return this.http.get<PageResponse<Produto>>(this.baseUrl, { params });
   }
 
   buscarPorId(id: number): Observable<Produto> {
@@ -39,10 +35,10 @@ export class ProdutoService {
   private paramsDoFiltro(filtro: FiltroProduto): HttpParams {
     let params = new HttpParams();
     if (filtro.nome?.trim()) params = params.set('nome', filtro.nome.trim());
-    if (filtro.marcaId) params = params.set('marcaId', filtro.marcaId);
-    if (filtro.categoriaId) params = params.set('categoriaId', filtro.categoriaId);
-    if (filtro.subcategoriaId) params = params.set('subcategoriaId', filtro.subcategoriaId);
-    if (filtro.status) params = params.set('status', filtro.status);
+    if (filtro.idMarca) params = params.set('idMarca', filtro.idMarca);
+    if (filtro.idCategoria) params = params.set('idCategoria', filtro.idCategoria);
+    if (filtro.idSubcategoria) params = params.set('idSubcategoria', filtro.idSubcategoria);
+    if (filtro.idStatus) params = params.set('idStatus', filtro.idStatus);
     return params;
   }
 }

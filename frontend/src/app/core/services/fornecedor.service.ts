@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { PageResponse } from '../models/page.model';
 import { Fornecedor, FornecedorDTO } from '../models/fornecedor.model';
 
 @Injectable({ providedIn: 'root' })
@@ -9,17 +10,18 @@ export class FornecedorService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/fornecedores`;
 
-  listar(page = 0, pageSize = 500): Observable<Fornecedor[]> {
+  listar(page = 0, pageSize = 10): Observable<PageResponse<Fornecedor>> {
     const params = new HttpParams().set('page', page).set('pageSize', pageSize);
-    return this.http.get<Fornecedor[]>(this.baseUrl, { params });
+    return this.http.get<PageResponse<Fornecedor>>(this.baseUrl, { params });
+  }
+
+  buscarPorNome(nome: string, page = 0, pageSize = 10): Observable<PageResponse<Fornecedor>> {
+    const params = new HttpParams().set('page', page).set('pageSize', pageSize);
+    return this.http.get<PageResponse<Fornecedor>>(`${this.baseUrl}/nome/${encodeURIComponent(nome)}`, { params });
   }
 
   buscarPorId(id: number): Observable<Fornecedor> {
     return this.http.get<Fornecedor>(`${this.baseUrl}/${id}`);
-  }
-
-  contar(): Observable<number> {
-    return this.http.get<number>(`${this.baseUrl}/count`);
   }
 
   criar(dto: FornecedorDTO): Observable<Fornecedor> {

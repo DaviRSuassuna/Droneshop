@@ -23,6 +23,7 @@ describe('MunicipioService', () => {
     const req = http.expectOne((r) => r.url === `${environment.apiUrl}/municipios`);
     expect(req.request.method).toBe('GET');
     expect(req.request.params.get('idEstado')).toBe('17');
-    req.flush([]);
+    expect(req.request.params.get('pageSize')).toBe('1000');
+    req.flush({ items: [], page: 0, pageSize: 10, totalItems: 0, totalPages: 0 });
   });
 });

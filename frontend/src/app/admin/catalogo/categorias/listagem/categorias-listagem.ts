@@ -2,7 +2,8 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AdminNav } from '../../../../layout/admin/admin-nav/admin-nav';
 import { CategoriaService } from '../../../../core/services/categoria.service';
-import { Categoria, StatusCategoria } from '../../../../core/models/categoria.model';
+import { Categoria } from '../../../../core/models/categoria.model';
+import { STATUS_PUBLICACAO, StatusRef } from '../../../../core/models/status.model';
 
 const TAMANHO_PAGINA = 10;
 
@@ -21,7 +22,8 @@ export class CategoriasListagem implements OnInit {
   readonly categorias = signal<Categoria[]>([]);
 
   readonly termoBusca = signal('');
-  readonly filtroStatus = signal<StatusCategoria | ''>('');
+  readonly STATUS = STATUS_PUBLICACAO;
+  readonly filtroStatus = signal<number | null>(null);
   readonly pagina = signal(0);
 
   readonly categoriasFiltradas = computed(() => {
@@ -31,7 +33,7 @@ export class CategoriasListagem implements OnInit {
     return this.categorias().filter((c) => {
       const combinaTermo =
         !termo || c.nome.toLowerCase().includes(termo) || c.slug.toLowerCase().includes(termo);
-      const combinaStatus = !status || c.status === status;
+      const combinaStatus = !status || c.status.id === status;
       return combinaTermo && combinaStatus;
     });
   });
@@ -60,9 +62,9 @@ export class CategoriasListagem implements OnInit {
   carregarCategorias(): void {
     this.carregando.set(true);
     this.erro.set(null);
-    this.categoriaService.listar(0, 500).subscribe({
-      next: (categorias) => {
-        this.categorias.set(categorias);
+    this.categoriaService.listar(0, 1000).subscribe({
+      next: (pagina) => {
+        this.categorias.set(pagina.items);
         this.carregando.set(false);
       },
       error: () => {
@@ -78,7 +80,7 @@ export class CategoriasListagem implements OnInit {
   }
 
   aoMudarStatus(valor: string): void {
-    this.filtroStatus.set(valor as StatusCategoria | '');
+    this.filtroStatus.set(valor ? Number(valor) : null);
     this.pagina.set(0);
   }
 
@@ -102,8 +104,8 @@ export class CategoriasListagem implements OnInit {
     });
   }
 
-  statusLabel(status: StatusCategoria): string {
-    return { RASCUNHO: 'Rascunho', ATIVA: 'Ativa', INATIVA: 'Inativa' }[status];
+  statusLabel(status: StatusRef): string {
+    return status.nome;
   }
 
   exportarCsv(): void {

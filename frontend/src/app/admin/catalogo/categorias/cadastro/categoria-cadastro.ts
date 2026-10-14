@@ -5,7 +5,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AdminNav } from '../../../../layout/admin/admin-nav/admin-nav';
 import { CategoriaService } from '../../../../core/services/categoria.service';
-import { CategoriaDTO, StatusCategoria } from '../../../../core/models/categoria.model';
+import { CategoriaDTO } from '../../../../core/models/categoria.model';
+import { STATUS_PUBLICACAO } from '../../../../core/models/status.model';
 import { ProblemDetail } from '../../../../core/models/problem.model';
 
 @Component({
@@ -16,6 +17,7 @@ import { ProblemDetail } from '../../../../core/models/problem.model';
   styleUrl: './categoria-cadastro.scss',
 })
 export class CategoriaCadastro implements OnInit {
+  readonly STATUS = STATUS_PUBLICACAO;
   private readonly fb = inject(FormBuilder);
   private readonly categoriaService = inject(CategoriaService);
   private readonly route = inject(ActivatedRoute);
@@ -36,13 +38,13 @@ export class CategoriaCadastro implements OnInit {
     ordemExibicao: [0],
     descricao: [''],
     iconeUrl: [''],
-    status: ['RASCUNHO' as StatusCategoria, Validators.required],
+    idStatus: [STATUS_PUBLICACAO.RASCUNHO as number, Validators.required],
     exibirMenu: [false],
   });
 
   readonly pendencias = computed(() => {
     const v = this.form.getRawValue();
-    if (v.status === 'RASCUNHO') return [];
+    if (v.idStatus === STATUS_PUBLICACAO.RASCUNHO) return [];
     const faltando: string[] = [];
     if (!v.nome.trim()) faltando.push('Nome da categoria');
     if (v.ordemExibicao === null || Number(v.ordemExibicao) < 0) faltando.push('Ordem de exibição');
@@ -68,7 +70,7 @@ export class CategoriaCadastro implements OnInit {
           ordemExibicao: categoria.ordemExibicao,
           descricao: categoria.descricao ?? '',
           iconeUrl: categoria.iconeUrl ?? '',
-          status: categoria.status,
+          idStatus: categoria.status.id,
           exibirMenu: categoria.exibirMenu,
         });
         this.carregando.set(false);
@@ -99,7 +101,7 @@ export class CategoriaCadastro implements OnInit {
       ordemExibicao: Number(v.ordemExibicao),
       descricao: v.descricao.trim(),
       iconeUrl: v.iconeUrl.trim(),
-      status: v.status,
+      idStatus: Number(v.idStatus),
       exibirMenu: v.exibirMenu,
     };
 

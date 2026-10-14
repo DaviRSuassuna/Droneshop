@@ -1,23 +1,23 @@
-import { StatusCategoria } from './categoria.model';
+import { Categoria } from './categoria.model';
+import { StatusRef } from './status.model';
 
-/** Espelha o SubcategoriaResponseDTO devolvido pela API. */
+/** Espelha o SubcategoriaResponseDTO devolvido pela API (categoria aninhada). */
 export interface Subcategoria {
   id: number;
   nome: string;
   slug: string;
-  categoriaId: number;
-  categoriaNome: string;
+  categoria: Categoria;
   ordemExibicao: number;
   descricao: string | null;
-  status: StatusCategoria;
+  status: StatusRef;
 }
 
-/** Espelha o SubcategoriaDTO aceito pelo POST /subcategorias e PUT /subcategorias/{id}. */
+/** Espelha o SubcategoriaRequestDTO aceito pelo POST /subcategorias e PUT /subcategorias/{id}. */
 export interface SubcategoriaDTO {
   nome: string;
   slug: string;
-  categoriaId: number | null;
+  idCategoria: number | null;
   ordemExibicao: number;
   descricao: string;
-  status: StatusCategoria;
+  idStatus: number;
 }

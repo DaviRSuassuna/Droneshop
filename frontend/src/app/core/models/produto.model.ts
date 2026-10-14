@@ -1,42 +1,40 @@
-export type StatusProduto = 'RASCUNHO' | 'ATIVO' | 'INATIVO';
+import { Fornecedor } from './fornecedor.model';
+import { Marca } from './marca.model';
+import { StatusRef } from './status.model';
+import { Subcategoria } from './subcategoria.model';
 
-/** Espelha o ProdutoResponseDTO devolvido pela API (marca, subcategoria e categoria achatadas). */
+/** Espelha o ProdutoResponseDTO devolvido pela API (relacionamentos aninhados). */
 export interface Produto {
   id: number;
   nome: string;
   modelo: string;
   descricaoCurta: string | null;
   preco: number;
-  marcaId: number;
-  marcaNome: string;
-  subcategoriaId: number;
-  subcategoriaNome: string;
-  categoriaId: number;
-  categoriaNome: string;
-  fornecedorId: number;
-  fornecedorRazaoSocial: string;
-  status: StatusProduto;
+  marca: Marca;
+  subcategoria: Subcategoria;
+  fornecedor: Fornecedor;
+  status: StatusRef;
   destaque: boolean;
 }
 
-/** Espelha o ProdutoDTO aceito pelo POST /produtos e PUT /produtos/{id}. */
+/** Espelha o ProdutoRequestDTO aceito pelo POST /produtos e PUT /produtos/{id}. */
 export interface ProdutoDTO {
   nome: string;
   modelo: string;
   descricaoCurta: string;
   preco: number | null;
-  marcaId: number | null;
-  subcategoriaId: number | null;
-  fornecedorId: number | null;
-  status: StatusProduto;
+  idMarca: number | null;
+  idSubcategoria: number | null;
+  idFornecedor: number | null;
+  idStatus: number;
   destaque: boolean;
 }
 
-/** Filtros aceitos por GET /produtos e GET /produtos/count. Campos vazios são ignorados. */
+/** Filtros aceitos por GET /produtos. Campos vazios são ignorados. */
 export interface FiltroProduto {
   nome?: string;
-  marcaId?: number | null;
-  categoriaId?: number | null;
-  subcategoriaId?: number | null;
-  status?: StatusProduto | '';
+  idMarca?: number | null;
+  idCategoria?: number | null;
+  idSubcategoria?: number | null;
+  idStatus?: number | null;
 }

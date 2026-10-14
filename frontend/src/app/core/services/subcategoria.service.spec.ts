@@ -7,7 +7,7 @@ import { SubcategoriaService } from './subcategoria.service';
 
 describe('SubcategoriaService', () => {
   const url = `${environment.apiUrl}/subcategorias`;
-  const dto = { nome: 'Baterias', categoriaId: 2, status: 'ATIVA' } as SubcategoriaDTO;
+  const dto = { nome: 'Baterias', idCategoria: 2, idStatus: 2 } as SubcategoriaDTO;
   let service: SubcategoriaService;
   let http: HttpTestingController;
 
@@ -24,24 +24,24 @@ describe('SubcategoriaService', () => {
   it('lista todas quando não recebe a categoria', () => {
     service.listar().subscribe();
     const req = http.expectOne((r) => r.url === url);
-    expect(req.request.params.has('categoriaId')).toBe(false);
+    expect(req.request.params.has('idCategoria')).toBe(false);
     expect(req.request.params.get('page')).toBe('0');
-    expect(req.request.params.get('pageSize')).toBe('500');
-    req.flush([]);
+    expect(req.request.params.get('pageSize')).toBe('10');
+    req.flush({ items: [], page: 0, pageSize: 10, totalItems: 0, totalPages: 0 });
   });
 
   it('filtra pela categoria quando recebe o id', () => {
     service.listar(2).subscribe();
     const req = http.expectOne((r) => r.url === url);
-    expect(req.request.params.get('categoriaId')).toBe('2');
-    req.flush([]);
+    expect(req.request.params.get('idCategoria')).toBe('2');
+    req.flush({ items: [], page: 0, pageSize: 10, totalItems: 0, totalPages: 0 });
   });
 
   it('ignora categoria null', () => {
     service.listar(null).subscribe();
     const req = http.expectOne((r) => r.url === url);
-    expect(req.request.params.has('categoriaId')).toBe(false);
-    req.flush([]);
+    expect(req.request.params.has('idCategoria')).toBe(false);
+    req.flush({ items: [], page: 0, pageSize: 10, totalItems: 0, totalPages: 0 });
   });
 
   it('busca por id', () => {

@@ -18,10 +18,17 @@ describe('EstadoService', () => {
 
   afterEach(() => http.verify());
 
-  it('lista os estados', () => {
-    service.listar().subscribe((estados) => expect(estados.length).toBe(1));
-    const req = http.expectOne(`${environment.apiUrl}/estados`);
+  it('lista os 27 estados numa página só', () => {
+    service.listar().subscribe((p) => expect(p.items.length).toBe(1));
+    const req = http.expectOne((r) => r.url === `${environment.apiUrl}/estados`);
     expect(req.request.method).toBe('GET');
-    req.flush([{ id: 1, nome: 'Tocantins', sigla: 'TO', codigoIbge: 17 }]);
+    expect(req.request.params.get('pageSize')).toBe('27');
+    req.flush({
+      items: [{ id: 1, nome: 'Tocantins', sigla: 'TO', codigoIbge: 17 }],
+      page: 0,
+      pageSize: 27,
+      totalItems: 1,
+      totalPages: 1,
+    });
   });
 });

@@ -21,40 +21,32 @@ describe('ProdutoService', () => {
   afterEach(() => http.verify());
 
   it('lista com paginação padrão de 10 e sem filtros vazios', () => {
-    service.listar({ nome: '   ', marcaId: null, status: '' }).subscribe();
+    service.listar({ nome: '   ', idMarca: null, idStatus: null }).subscribe();
     const req = http.expectOne((r) => r.url === url);
     const params = req.request.params;
     expect(params.keys().sort()).toEqual(['page', 'pageSize']);
     expect(params.get('pageSize')).toBe('10');
-    req.flush([]);
+    req.flush({ items: [], page: 0, pageSize: 10, totalItems: 0, totalPages: 0 });
   });
 
   it('envia só os filtros preenchidos, com o nome sem espaços nas pontas', () => {
     service
-      .listar({ nome: '  Mavic ', marcaId: 1, categoriaId: 2, subcategoriaId: 3, status: 'ATIVO' }, 2, 20)
+      .listar({ nome: '  Mavic ', idMarca: 1, idCategoria: 2, idSubcategoria: 3, idStatus: 2 }, 2, 20)
       .subscribe();
     const req = http.expectOne((r) => r.url === url);
     const params = req.request.params;
     expect(params.get('nome')).toBe('Mavic');
-    expect(params.get('marcaId')).toBe('1');
-    expect(params.get('categoriaId')).toBe('2');
-    expect(params.get('subcategoriaId')).toBe('3');
-    expect(params.get('status')).toBe('ATIVO');
+    expect(params.get('idMarca')).toBe('1');
+    expect(params.get('idCategoria')).toBe('2');
+    expect(params.get('idSubcategoria')).toBe('3');
+    expect(params.get('idStatus')).toBe('2');
     expect(params.get('page')).toBe('2');
     expect(params.get('pageSize')).toBe('20');
-    req.flush([]);
-  });
-
-  it('conta com os mesmos filtros e sem paginação', () => {
-    service.contar({ marcaId: 1 }).subscribe((total) => expect(total).toBe(4));
-    const req = http.expectOne((r) => r.url === `${url}/count`);
-    expect(req.request.params.get('marcaId')).toBe('1');
-    expect(req.request.params.has('page')).toBe(false);
-    req.flush(4);
+    req.flush({ items: [], page: 0, pageSize: 10, totalItems: 0, totalPages: 0 });
   });
 
   it('cria, atualiza e exclui', () => {
-    const dto = { nome: 'Mavic', status: 'ATIVO' } as ProdutoDTO;
+    const dto = { nome: 'Mavic', idStatus: 2 } as ProdutoDTO;
     service.criar(dto).subscribe();
     const post = http.expectOne(url);
     expect(post.request.method).toBe('POST');

@@ -1,4 +1,4 @@
-export type StatusCategoria = 'RASCUNHO' | 'ATIVA' | 'INATIVA';
+import { StatusRef } from './status.model';
 
 /** Espelha o CategoriaResponseDTO devolvido pela API. */
 export interface Categoria {
@@ -7,18 +7,18 @@ export interface Categoria {
   slug: string;
   ordemExibicao: number;
   descricao: string | null;
-  status: StatusCategoria;
+  status: StatusRef;
   exibirMenu: boolean;
   iconeUrl: string | null;
 }
 
-/** Espelha o CategoriaDTO aceito pelo POST /categorias e PUT /categorias/{id}. */
+/** Espelha o CategoriaRequestDTO aceito pelo POST /categorias e PUT /categorias/{id}. */
 export interface CategoriaDTO {
   nome: string;
   slug: string;
   ordemExibicao: number;
   descricao: string;
-  status: StatusCategoria;
+  idStatus: number;
   exibirMenu: boolean;
   iconeUrl: string;
 }

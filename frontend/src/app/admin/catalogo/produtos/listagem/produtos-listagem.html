@@ -67,13 +67,13 @@
     <div class="f">
       <select
         aria-label="Filtrar por status"
-        [value]="filtroStatus()"
+        [value]="filtroStatus() ?? ''"
         (change)="aoMudarStatus($any($event.target).value)"
       >
         <option value="">Todos os status</option>
-        <option value="ATIVO">Ativo</option>
-        <option value="INATIVO">Inativo</option>
-        <option value="RASCUNHO">Rascunho</option>
+        <option [value]="STATUS.ATIVO">Ativo</option>
+        <option [value]="STATUS.INATIVO">Inativo</option>
+        <option [value]="STATUS.RASCUNHO">Rascunho</option>
       </select>
     </div>
   </div>
@@ -126,10 +126,10 @@
             </b>
             <span class="chip">{{ produto.modelo }}</span>
           </span>
-          <span class="ink">{{ produto.marcaNome }}</span>
+          <span class="ink">{{ produto.marca.nome }}</span>
           <span class="cell-name">
-            <span class="ink">{{ produto.subcategoriaNome }}</span>
-            <span class="dim sm">{{ produto.categoriaNome }}</span>
+            <span class="ink">{{ produto.subcategoria.nome }}</span>
+            <span class="dim sm">{{ produto.subcategoria.categoria.nome }}</span>
           </span>
           <span class="ink num">{{ formatarPreco(produto.preco) }}</span>
           <span class="status">

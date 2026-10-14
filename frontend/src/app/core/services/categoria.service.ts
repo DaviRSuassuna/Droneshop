@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { PageResponse } from '../models/page.model';
 import { Categoria, CategoriaDTO } from '../models/categoria.model';
 
 @Injectable({ providedIn: 'root' })
@@ -9,17 +10,18 @@ export class CategoriaService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/categorias`;
 
-  listar(page = 0, pageSize = 500): Observable<Categoria[]> {
+  listar(page = 0, pageSize = 10): Observable<PageResponse<Categoria>> {
     const params = new HttpParams().set('page', page).set('pageSize', pageSize);
-    return this.http.get<Categoria[]>(this.baseUrl, { params });
+    return this.http.get<PageResponse<Categoria>>(this.baseUrl, { params });
+  }
+
+  buscarPorNome(nome: string, page = 0, pageSize = 10): Observable<PageResponse<Categoria>> {
+    const params = new HttpParams().set('page', page).set('pageSize', pageSize);
+    return this.http.get<PageResponse<Categoria>>(`${this.baseUrl}/nome/${encodeURIComponent(nome)}`, { params });
   }
 
   buscarPorId(id: number): Observable<Categoria> {
     return this.http.get<Categoria>(`${this.baseUrl}/${id}`);
-  }
-
-  contar(): Observable<number> {
-    return this.http.get<number>(`${this.baseUrl}/count`);
   }
 
   criar(dto: CategoriaDTO): Observable<Categoria> {

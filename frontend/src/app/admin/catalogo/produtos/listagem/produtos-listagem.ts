@@ -1,12 +1,12 @@
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { forkJoin } from 'rxjs';
 import { AdminNav } from '../../../../layout/admin/admin-nav/admin-nav';
 import { ProdutoService } from '../../../../core/services/produto.service';
 import { MarcaService } from '../../../../core/services/marca.service';
 import { CategoriaService } from '../../../../core/services/categoria.service';
 import { SubcategoriaService } from '../../../../core/services/subcategoria.service';
-import { FiltroProduto, Produto, StatusProduto } from '../../../../core/models/produto.model';
+import { FiltroProduto, Produto } from '../../../../core/models/produto.model';
+import { STATUS_PRODUTO, StatusRef } from '../../../../core/models/status.model';
 import { Marca } from '../../../../core/models/marca.model';
 import { Categoria } from '../../../../core/models/categoria.model';
 import { Subcategoria } from '../../../../core/models/subcategoria.model';
@@ -14,7 +14,7 @@ import { Subcategoria } from '../../../../core/models/subcategoria.model';
 /**
  * Listagem administrativa de Produto (Produto N:1 Marca e Produto N:1 Subcategoria N:1 Categoria).
  * Diferente das outras listagens, aqui filtro e paginação rodam no servidor:
- * cada mudança dispara GET /produtos (página) + GET /produtos/count (total).
+ * cada mudança dispara GET /produtos, que devolve a página e o total (PageResponse).
  */
 @Component({
   selector: 'app-produtos-listagem',
@@ -28,6 +28,7 @@ export class ProdutosListagem implements OnInit, OnDestroy {
   private readonly categoriaService = inject(CategoriaService);
   private readonly subcategoriaService = inject(SubcategoriaService);
 
+  readonly STATUS = STATUS_PRODUTO;
   readonly tamanhosPagina = [5, 10, 20];
   readonly grid = 'minmax(0, 1fr) 130px 200px 120px 100px 64px';
 
@@ -46,7 +47,7 @@ export class ProdutosListagem implements OnInit, OnDestroy {
   readonly filtroMarca = signal<number | null>(null);
   readonly filtroCategoria = signal<number | null>(null);
   readonly filtroSubcategoria = signal<number | null>(null);
-  readonly filtroStatus = signal<StatusProduto | ''>('');
+  readonly filtroStatus = signal<number | null>(null);
 
   // paginação
   readonly pagina = signal(0);
@@ -61,7 +62,7 @@ export class ProdutosListagem implements OnInit, OnDestroy {
   readonly subcategoriasDoFiltro = computed(() => {
     const categoria = this.filtroCategoria();
     return categoria
-      ? this.subcategorias().filter((s) => s.categoriaId === categoria)
+      ? this.subcategorias().filter((s) => s.categoria.id === categoria)
       : this.subcategorias();
   });
 
@@ -114,9 +115,10 @@ export class ProdutosListagem implements OnInit, OnDestroy {
         rotulo: `Subcategoria: ${subcategoria.nome}`,
         limpar: () => this.aoMudarSubcategoria(''),
       });
-    if (this.filtroStatus())
+    const status = this.filtroStatus();
+    if (status)
       chips.push({
-        rotulo: `Status: ${this.statusLabel(this.filtroStatus() as StatusProduto)}`,
+        rotulo: `Status: ${this.nomeStatus(status)}`,
         limpar: () => this.aoMudarStatus(''),
       });
     return chips;
@@ -124,11 +126,15 @@ export class ProdutosListagem implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // pageSize alto porque são listas de apoio para os selects de filtro
-    this.marcaService.listar(0, 500).subscribe((m) => this.marcas.set(m.filter((x) => x.nome)));
+    this.marcaService
+      .listar(0, 1000)
+      .subscribe((p) => this.marcas.set(p.items.filter((x) => x.nome)));
     this.categoriaService
-      .listar(0, 500)
-      .subscribe((c) => this.categorias.set(c.filter((x) => x.nome)));
-    this.subcategoriaService.listar().subscribe((s) => this.subcategorias.set(s));
+      .listar(0, 1000)
+      .subscribe((p) => this.categorias.set(p.items.filter((x) => x.nome)));
+    this.subcategoriaService
+      .listar(null, 0, 1000)
+      .subscribe((p) => this.subcategorias.set(p.items));
     this.carregar();
   }
 
@@ -139,24 +145,20 @@ export class ProdutosListagem implements OnInit, OnDestroy {
   private filtroAtual(): FiltroProduto {
     return {
       nome: this.termoBusca(),
-      marcaId: this.filtroMarca(),
-      categoriaId: this.filtroCategoria(),
-      subcategoriaId: this.filtroSubcategoria(),
-      status: this.filtroStatus(),
+      idMarca: this.filtroMarca(),
+      idCategoria: this.filtroCategoria(),
+      idSubcategoria: this.filtroSubcategoria(),
+      idStatus: this.filtroStatus(),
     };
   }
 
   carregar(): void {
     this.carregando.set(true);
     this.erro.set(null);
-    const filtro = this.filtroAtual();
-    forkJoin({
-      lista: this.produtoService.listar(filtro, this.pagina(), this.tamanhoPagina()),
-      total: this.produtoService.contar(filtro),
-    }).subscribe({
-      next: ({ lista, total }) => {
-        this.produtos.set(lista);
-        this.total.set(total);
+    this.produtoService.listar(this.filtroAtual(), this.pagina(), this.tamanhoPagina()).subscribe({
+      next: (p) => {
+        this.produtos.set(p.items);
+        this.total.set(p.totalItems);
         this.carregando.set(false);
       },
       error: () => {
@@ -188,7 +190,7 @@ export class ProdutosListagem implements OnInit, OnDestroy {
     this.filtroCategoria.set(valor ? Number(valor) : null);
     // a subcategoria escolhida pode não pertencer à nova categoria
     const sub = this.subcategorias().find((s) => s.id === this.filtroSubcategoria());
-    if (sub && sub.categoriaId !== this.filtroCategoria()) this.filtroSubcategoria.set(null);
+    if (sub && sub.categoria.id !== this.filtroCategoria()) this.filtroSubcategoria.set(null);
     this.aplicarFiltro();
   }
 
@@ -198,7 +200,7 @@ export class ProdutosListagem implements OnInit, OnDestroy {
   }
 
   aoMudarStatus(valor: string): void {
-    this.filtroStatus.set(valor as StatusProduto | '');
+    this.filtroStatus.set(valor ? Number(valor) : null);
     this.aplicarFiltro();
   }
 
@@ -208,7 +210,7 @@ export class ProdutosListagem implements OnInit, OnDestroy {
     this.filtroMarca.set(null);
     this.filtroCategoria.set(null);
     this.filtroSubcategoria.set(null);
-    this.filtroStatus.set('');
+    this.filtroStatus.set(null);
     this.aplicarFiltro();
   }
 
@@ -242,11 +244,15 @@ export class ProdutosListagem implements OnInit, OnDestroy {
     return this.formatoMoeda.format(valor);
   }
 
-  statusLabel(status: StatusProduto): string {
-    return { RASCUNHO: 'Rascunho', ATIVO: 'Ativo', INATIVO: 'Inativo' }[status];
+  statusLabel(status: StatusRef): string {
+    return status.nome;
   }
 
-  corStatus(status: StatusProduto): string {
-    return { ATIVO: 'var(--ok)', INATIVO: 'var(--dim2)', RASCUNHO: 'var(--warn)' }[status];
+  private nomeStatus(id: number): string {
+    return { 1: 'Rascunho', 2: 'Ativo', 3: 'Inativo' }[id] ?? '';
+  }
+
+  corStatus(status: StatusRef): string {
+    return { 1: 'var(--warn)', 2: 'var(--ok)', 3: 'var(--dim2)' }[status.id] ?? 'var(--dim2)';
   }
 }
