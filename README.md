@@ -24,6 +24,7 @@ droneshop/
 ├── frontend/    Aplicação Angular (droneshop-web): painel admin e storefront
 ├── docs/
 │   ├── PRD-Aeria.md      requisitos, regras de negócio, faseamento e decisões
+│   ├── API.md            mapa de endpoints por módulo e issue
 │   ├── diagramas/        8 diagramas de classes por contexto (aeria-*.puml)
 │   ├── design/           protótipo navegável, DESIGN.md e PRODUCT.md
 │   └── telas/            wireframes antigos (.zip), só histórico
@@ -109,6 +110,7 @@ A API libera CORS para `http://localhost:4200`.
 |---|---|
 | [PRD](docs/PRD-Aeria.md) | Escopo, requisitos funcionais e não-funcionais, regras de negócio, faseamento e decisões registradas |
 | [Diagramas](docs/diagramas) | Diagramas de classes por contexto: identidade, catálogo, estoque, compra, pedido, pagamento, atendimento e administrativo |
+| [Endpoints da API](docs/API.md) | Todas as rotas que o frontend usa, por módulo, com a issue de cada uma e o que já está pronto |
 | [Design e protótipo](docs/design) | Protótipo navegável das 36 telas (publicado no GitHub Pages), design system e resumo de produto |
 
 ## Contribuindo
