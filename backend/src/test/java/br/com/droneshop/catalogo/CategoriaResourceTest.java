@@ -1,6 +1,6 @@
 package br.com.droneshop.catalogo;
 
-import static io.restassured.RestAssured.given;
+import static br.com.droneshop.testes.Api.given;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
@@ -12,7 +12,6 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.hamcrest.MatcherAssert;
@@ -114,12 +113,13 @@ class CategoriaResourceTest {
     }
 
     @Test
+    @SuppressWarnings("null") // getList: aviso só da análise de nulos do Eclipse
     void buscaPorNomeVemOrdenadaPelaOrdemDeExibicao() {
         String s = Dados.sufixo();
         criar(categoriaAtiva("Ordem B " + s, 20));
         criar(categoriaAtiva("Ordem A " + s, 10));
 
-        List<Integer> ordens = given().when().get("/categorias/nome/{nome}", s)
+        var ordens = given().when().get("/categorias/nome/{nome}", s)
                 .then().statusCode(200)
                 .body("items", hasSize(2))
                 .extract().jsonPath().getList("items.ordemExibicao", Integer.class);

@@ -1,6 +1,6 @@
 package br.com.droneshop.catalogo;
 
-import static io.restassured.RestAssured.given;
+import static br.com.droneshop.testes.Api.given;
 import static org.hamcrest.Matchers.containsString;
 
 import java.util.HashMap;

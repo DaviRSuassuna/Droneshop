@@ -1,6 +1,6 @@
 package br.com.droneshop.endereco;
 
-import static io.restassured.RestAssured.given;
+import static br.com.droneshop.testes.Api.given;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;

@@ -1,6 +1,6 @@
 package br.com.droneshop.testes;
 
-import static io.restassured.RestAssured.given;
+import static br.com.droneshop.testes.Api.given;
 
 import java.util.concurrent.ThreadLocalRandom;
 
