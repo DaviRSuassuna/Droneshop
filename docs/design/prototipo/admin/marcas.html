@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Marcas · Admin Aeria</title>
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<header class="tb">
+  <div class="tb-l">
+    <a class="tb-brand" href="index.html">ADMIN</a>
+    <nav class="tb-nav">
+      <a href="index.html">Dashboard</a>
+      <a href="produtos.html">Produtos</a>
+      <a href="marcas.html" class="on">Marcas</a>
+      <a href="categorias.html">Categorias</a>
+      <a href="fornecedores.html">Fornecedores</a>
+      <a href="promocoes.html">Promoções</a>
+      <a href="cupons.html">Cupons</a>
+      <a href="estoque.html">Estoque</a>
+      <a href="pedidos.html">Pedidos</a>
+      <a href="usuarios.html">Usuários</a>
+    </nav>
+  </div>
+  <div class="tb-r">
+    <span class="tb-search">Buscar no painel</span>
+    <a href="../index.html">Ver loja ↗</a>
+    <span class="avatar">MR</span>
+  </div>
+</header>
+<div class="pagebar">
+  <div style="display:flex;align-items:baseline;gap:12px"><h1 class="h1">Marcas</h1><span class="sub">6 marcas · 108 produtos vinculados</span></div>
+  <div class="actions"><button class="btn">Exportar CSV</button><a class="btn p" href="marca-nova.html">Nova marca</a></div>
+</div>
+<div class="pad-t" style="display:flex;flex-direction:column;gap:16px">
+  <div class="filters">
+    <div class="f grow"><input type="text" placeholder="Buscar por nome ou slug"></div>
+    <div class="f"><select><option>País de origem</option><option>Brasil</option><option>China</option><option>Estados Unidos</option><option>França</option></select></div>
+    <div class="f"><select><option>Status</option><option>Ativa</option><option>Inativa</option></select></div>
+  </div>
+  <div class="tbl">
+    <div class="trow head" style="grid-template-columns:54px minmax(0,1fr) 180px 120px 118px 44px"><span></span><span>Marca</span><span>País de origem</span><span>Produtos</span><span>Status</span><span></span></div>
+    <a class="trow" style="grid-template-columns:54px minmax(0,1fr) 180px 120px 118px 44px" href="marca-nova.html"><span class="ph thumb"></span><span class="cell-name"><b>Aerion</b><span class="chip">aerion</span></span><span class="dim">Estados Unidos</span><span class="ink">24</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativa</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:54px minmax(0,1fr) 180px 120px 118px 44px" href="marca-nova.html"><span class="ph thumb"></span><span class="cell-name"><b>Skyline</b><span class="chip">skyline</span></span><span class="dim">China</span><span class="ink">31</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativa</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:54px minmax(0,1fr) 180px 120px 118px 44px" href="marca-nova.html"><span class="ph thumb"></span><span class="cell-name"><b>Vortex</b><span class="chip">vortex</span></span><span class="dim">Brasil</span><span class="ink">18</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativa</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:54px minmax(0,1fr) 180px 120px 118px 44px" href="marca-nova.html"><span class="ph thumb"></span><span class="cell-name"><b>Atlas</b><span class="chip">atlas</span></span><span class="dim">Brasil</span><span class="ink">9</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativa</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:54px minmax(0,1fr) 180px 120px 118px 44px" href="marca-nova.html"><span class="ph thumb"></span><span class="cell-name"><b>Heron</b><span class="chip">heron</span></span><span class="dim">França</span><span class="ink">12</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativa</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:54px minmax(0,1fr) 180px 120px 118px 44px" href="marca-nova.html"><span class="ph thumb"></span><span class="cell-name"><b>Sparrow</b><span class="chip">sparrow</span></span><span class="dim">China</span><span class="ink">14</span><span class="status"><span class="dot" style="background:var(--dim2)"></span>Inativa</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <div class="pager"><span>Exibindo 1–6 de 6</span><span>Página 1 de 1</span></div>
+  </div>
+</div>
+</body>
+</html>

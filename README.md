@@ -25,7 +25,8 @@ droneshop/
 ├── docs/
 │   ├── PRD-Aeria.md      requisitos, regras de negócio, faseamento e decisões
 │   ├── diagramas/        8 diagramas de classes por contexto (aeria-*.puml)
-│   └── telas/            wireframes versionados (v2, v3, v4)
+│   ├── design/           protótipo navegável, DESIGN.md e PRODUCT.md
+│   └── telas/            wireframes antigos (.zip), só histórico
 └── .github/     workflows, templates de issue/PR, rulesets
 ```
 
@@ -108,7 +109,7 @@ A API libera CORS para `http://localhost:4200`.
 |---|---|
 | [PRD](docs/PRD-Aeria.md) | Escopo, requisitos funcionais e não-funcionais, regras de negócio, faseamento e decisões registradas |
 | [Diagramas](docs/diagramas) | Diagramas de classes por contexto: identidade, catálogo, estoque, compra, pedido, pagamento, atendimento e administrativo |
-| [Telas](docs/telas) | Wireframes do storefront e do painel admin (versão atual: v4) |
+| [Design e protótipo](docs/design) | Protótipo navegável das 36 telas (publicado no GitHub Pages), design system e resumo de produto |
 
 ## Contribuindo
 

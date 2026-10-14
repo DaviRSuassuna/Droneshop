@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Criar promoção · Admin Aeria</title>
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<header class="tb">
+  <div class="tb-l">
+    <a class="tb-brand" href="index.html">ADMIN</a>
+    <nav class="tb-nav">
+      <a href="index.html">Dashboard</a>
+      <a href="produtos.html">Produtos</a>
+      <a href="marcas.html">Marcas</a>
+      <a href="categorias.html">Categorias</a>
+      <a href="fornecedores.html">Fornecedores</a>
+      <a href="promocoes.html" class="on">Promoções</a>
+      <a href="cupons.html">Cupons</a>
+      <a href="estoque.html">Estoque</a>
+      <a href="pedidos.html">Pedidos</a>
+      <a href="usuarios.html">Usuários</a>
+    </nav>
+  </div>
+  <div class="tb-r">
+    <span class="tb-search">Buscar no painel</span>
+    <a href="../index.html">Ver loja ↗</a>
+    <span class="avatar">MR</span>
+  </div>
+</header>
+<div class="pad cols">
+  <div class="main">
+    <div><h1 class="h1 big">Criar promoção</h1><div class="crumb">Catálogo · <a href="promocoes.html">Promoções</a> · Nova promoção</div></div>
+    <section class="card p"><div class="card-h"><span class="card-t">Identificação</span><span class="card-n">O escopo define onde o desconto incide</span></div><div class="g2"><div class="f full"><label>Nome da promoção <span class="req">*</span></label><input type="text" placeholder="Ex: Semana do piloto"></div><div class="f"><label>Escopo <span class="req">*</span></label><select><option>Produto · desconta itens selecionados</option><option>Carrinho · desconta o total</option><option>Frete · zera ou reduz o frete</option></select></div><div class="f"><label>Prioridade</label><input type="text" placeholder="Ex: 1 · maior vence em caso de empate"></div><div class="f full"><label>Chamada exibida na vitrine</label><input type="text" placeholder="Até 20% em kits com bateria extra"></div></div></section>
+    <section class="card p"><div class="card-h"><span class="card-t">Desconto</span><span class="card-n">Preencha percentual OU valor, nunca os dois</span></div><div class="g2"><div class="f"><label>Percentual (%)</label><input type="text" placeholder="Ex: 22"></div><div class="f"><label>Valor fixo (R$)</label><input type="text" placeholder="Ex: 500,00"></div><div class="f"><label>Valor mínimo do carrinho (R$)</label><input type="text" placeholder="Só para escopo carrinho ou frete"></div><div class="f"><label>Teto de desconto (R$)</label><input type="text" placeholder="Opcional"></div></div><p class="legend">A promoção nunca grava preço no produto. O preço cheio continua na variante, e o valor aplicado é registrado em <span class="chip">DescontoPedido</span> quando a venda fecha.</p></section>
+    <section class="card p"><div class="card-h"><span class="card-t">Vigência</span><span class="card-n">Fora da janela a promoção some da vitrine sozinha</span></div><div class="g2"><div class="f"><label>Início <span class="req">*</span></label><input type="text" placeholder="dd/mm/aaaa hh:mm"></div><div class="f"><label>Fim <span class="req">*</span></label><input type="text" placeholder="dd/mm/aaaa hh:mm"></div><label class="ck full"><input type="checkbox"> Encerrar automaticamente quando o estoque das variantes acabar</label></div></section>
+    <section class="card p"><div class="card-h"><span class="card-t">Variantes em promoção</span><span class="card-n">Obrigatório quando o escopo é Produto</span></div><div class="tbl"><div class="trow head" style="grid-template-columns:2.2fr 1.2fr 1fr 1fr .5fr"><span>Variante</span><span>SKU</span><span>Preço cheio</span><span>Preço com desconto</span><span></span></div><div class="trow" style="grid-template-columns:2.2fr 1.2fr 1fr 1fr .5fr"><span class="ink">Nimbus Mini 3 · Padrão</span><span class="chip">DRN-NM3-0038</span><span class="dim">R$ 4.790</span><span class="ink">R$ 4.290</span><span class="dim">✕</span></div><div class="trow" style="grid-template-columns:2.2fr 1.2fr 1fr 1fr .5fr"><span class="ink">Sparrow Kids · Padrão</span><span class="chip">DRN-SKD-0009</span><span class="dim">R$ 890</span><span class="ink">R$ 690</span><span class="dim">✕</span></div><div class="trow" style="grid-template-columns:2.2fr 1.2fr 1fr 1fr .5fr"><span class="ink">Filtros ND (kit 4) · Única</span><span class="chip">ACC-NDK-0077</span><span class="dim">R$ 349</span><span class="ink">R$ 279</span><span class="dim">✕</span></div></div><div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:14px"><span class="dim">3 variantes selecionadas · também é possível selecionar por marca ou categoria inteira</span><span class="sbtn sm">+ Adicionar variante</span></div></section>
+  </div>
+  <aside class="rail">
+    <section class="card p2"><div class="eyebrow">Publicação</div><div class="stack"><div class="f"><label>Status <span class="req">*</span></label><select><option>Rascunho</option><option>Agendada</option><option>Ativa</option><option>Encerrada</option></select></div><label class="ck full"><input type="checkbox" checked> Exibir na página Ofertas</label><label class="ck full"><input type="checkbox" checked> Exibir selo Oferta nos cards</label><label class="ck full"><input type="checkbox"> Destacar no banner da home</label></div></section>
+    <section class="card p2"><div class="eyebrow">Prévia do card</div><div class="pcard" style="border-radius:8px"><div class="ph media" style="height:120px;position:relative"><span class="badge">Oferta</span></div><div class="body" style="padding:14px"><span class="nm" style="font-size:14px">Nimbus Mini 3</span><span class="tg">34 min · 10 km · 4K 30fps</span><span class="pr"><b style="font-size:15px">R$ 4.290</b><s>R$ 4.790</s></span></div></div></section>
+    <section class="card p2"><div class="eyebrow">Onde isso aparece</div><div style="display:flex;flex-direction:column;gap:9px;font-size:12px;color:var(--dim)"><a href="../ofertas.html">Ofertas · página inteira ↗</a><a href="../index.html">Home · selo e preço riscado ↗</a><a href="../drones.html">Listagem de drones ↗</a><a href="../produto.html">Página do produto ↗</a></div></section>
+    <section class="card p2"><div class="eyebrow">Pendências</div><div style="display:flex;flex-direction:column;gap:9px"><span class="warn">2 campos obrigatórios vazios</span><span style="font-size:12px;color:var(--mute)">Nome da promoção · Data de início</span></div></section>
+  </aside>
+</div>
+<div class="actionbar"><span class="sub">Promoção não altera o preço cadastrado da variante</span><div class="actions"><a class="btn" href="promocoes.html">Cancelar</a><button class="btn">Salvar rascunho</button><button class="btn p">Publicar promoção</button></div></div>
+</body>
+</html>

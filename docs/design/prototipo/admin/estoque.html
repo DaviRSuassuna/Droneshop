@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Estoque · Admin Aeria</title>
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<header class="tb">
+  <div class="tb-l">
+    <a class="tb-brand" href="index.html">ADMIN</a>
+    <nav class="tb-nav">
+      <a href="index.html">Dashboard</a>
+      <a href="produtos.html">Produtos</a>
+      <a href="marcas.html">Marcas</a>
+      <a href="categorias.html">Categorias</a>
+      <a href="fornecedores.html">Fornecedores</a>
+      <a href="promocoes.html">Promoções</a>
+      <a href="cupons.html">Cupons</a>
+      <a href="estoque.html" class="on">Estoque</a>
+      <a href="pedidos.html">Pedidos</a>
+      <a href="usuarios.html">Usuários</a>
+    </nav>
+  </div>
+  <div class="tb-r">
+    <span class="tb-search">Buscar no painel</span>
+    <a href="../index.html">Ver loja ↗</a>
+    <span class="avatar">MR</span>
+  </div>
+</header>
+<div class="pagebar">
+  <div style="display:flex;align-items:baseline;gap:12px"><h1 class="h1">Estoque</h1><span class="sub">148 variantes · 4 abaixo do mínimo · 1 sem estoque</span></div>
+  <div class="actions"><button class="btn">Exportar CSV</button><a class="btn p" href="estoque-movimento.html">Novo movimento</a></div>
+</div>
+<div class="pad-t" style="display:flex;flex-direction:column;gap:16px">
+  <nav class="tabs"><a class="on" href="estoque.html">Saldo por variante <em>148</em></a><a href="estoque.html">Movimentos <em>1.284</em></a><a href="estoque.html">Reservas ativas <em>14</em></a><a href="estoque.html">Números de série <em>312</em></a></nav>
+  <div class="filters">
+    <div class="f grow"><input type="text" placeholder="Buscar por SKU, variante ou produto"></div>
+    <div class="f"><select><option>Marca</option></select></div>
+    <div class="f"><select><option>Situação</option><option>Abaixo do mínimo</option><option>Sem estoque</option><option>Saudável</option></select></div>
+  </div>
+  <p class="legend" style="margin:0">O saldo pertence à <span class="chip">VarianteProduto</span>, nunca ao produto. Disponível = físico − reservado. Kit não tem estoque próprio: a disponibilidade vem do mínimo entre os componentes.</p>
+  <div class="tbl">
+    <div class="trow head" style="grid-template-columns:minmax(0,1fr) 100px 110px 110px 100px 150px 44px"><span>Variante</span><span>Físico</span><span>Reservado</span><span>Disponível</span><span>Mínimo</span><span>Situação</span><span></span></div>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 100px 110px 110px 100px 150px 44px" href="estoque-movimento.html"><span class="cell-name"><b>Falcon X2 Pro · Padrão</b><span class="chip">DRN-FX2P-STD</span></span><span class="dim">23</span><span class="dim">4</span><span class="ink">19</span><span class="dim">5</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Saudável</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 100px 110px 110px 100px 150px 44px" href="estoque-movimento.html"><span class="cell-name"><b>Falcon X2 Pro · Fly More</b><span class="chip">DRN-FX2P-FLY</span></span><span class="dim">3</span><span class="dim">1</span><span class="ink">2</span><span class="dim">3</span><span class="status"><span class="dot" style="background:var(--warn)"></span>Abaixo do mínimo</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 100px 110px 110px 100px 150px 44px" href="estoque-movimento.html"><span class="cell-name"><b>Falcon X2 Standard · Padrão</b><span class="chip">DRN-FX2S-0041</span></span><span class="dim">4</span><span class="dim">0</span><span class="ink">4</span><span class="dim">6</span><span class="status"><span class="dot" style="background:var(--warn)"></span>Abaixo do mínimo</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 100px 110px 110px 100px 150px 44px" href="estoque-movimento.html"><span class="cell-name"><b>Nimbus Mini 3 · Padrão</b><span class="chip">DRN-NM3-0038</span></span><span class="dim">61</span><span class="dim">7</span><span class="ink">54</span><span class="dim">10</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Saudável</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 100px 110px 110px 100px 150px 44px" href="estoque-movimento.html"><span class="cell-name"><b>Nimbus Mini 3 Combo · Kit</b><span class="chip">DRN-NM3C-KIT</span></span><span class="dim">derivado</span><span class="dim">—</span><span class="ink">12</span><span class="dim">—</span><span class="status"><span class="dot" style="background:var(--acc)"></span>Kit</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 100px 110px 110px 100px 150px 44px" href="estoque-movimento.html"><span class="cell-name"><b>Vortex FPV Racer · Padrão</b><span class="chip">DRN-VFR-0027</span></span><span class="dim">0</span><span class="dim">0</span><span class="ink">0</span><span class="dim">4</span><span class="status"><span class="dot" style="background:var(--warn)"></span>Sem estoque</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 100px 110px 110px 100px 150px 44px" href="estoque-movimento.html"><span class="cell-name"><b>Bateria extra Falcon X2 · Única</b><span class="chip">ACC-BFX2-0111</span></span><span class="dim">6</span><span class="dim">2</span><span class="ink">4</span><span class="dim">8</span><span class="status"><span class="dot" style="background:var(--warn)"></span>Abaixo do mínimo</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 100px 110px 110px 100px 150px 44px" href="estoque-movimento.html"><span class="cell-name"><b>Atlas Agro 10L · Padrão</b><span class="chip">DRN-AT10-0019</span></span><span class="dim">3</span><span class="dim">0</span><span class="ink">3</span><span class="dim">2</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Saudável</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <div class="pager"><span>Exibindo 1–8 de 148</span><div class="pages"><a href="#">‹</a><a class="on" href="#">1</a><a href="#">2</a><a href="#">19</a><a href="#">›</a></div></div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Entrar ou criar conta · Aeria</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<script src="assets/theme.js"></script>
+</head>
+<body class="sf">
+<header class="snav">
+  <div class="snav-l">
+    <a class="brand" href="index.html">AERIA</a>
+    <nav class="snav-nav"><a href="drones.html">Drones</a><a href="acessorios.html">Acessórios</a><a href="empresas.html">Empresas</a><a href="suporte.html">Suporte</a><a href="ofertas.html">Ofertas</a></nav>
+  </div>
+  <div class="snav-r">
+    <span class="snav-search">Buscar drones e acessórios</span>
+    <a href="conta-perfil.html">Conta</a>
+    <a class="cart" href="carrinho.html">Carrinho <em>2</em></a>
+  </div>
+</header>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 470px;min-height:660px">
+  <div class="ph" style="border-radius:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;gap:14px;padding:44px;color:inherit">
+    <span class="chip">imagem editorial · drone em campo aberto</span>
+    <h1 class="disp" style="font-size:34px;line-height:1.15;color:var(--pure);max-width:420px;font-family:'Sora','Helvetica Neue',sans-serif">Sua conta Aeria acompanha cada voo.</h1>
+    <p style="margin:0;font-size:13px;line-height:1.6;color:var(--dim2);max-width:420px">Pedidos, garantia estendida, registro ANAC e histórico de manutenção em um só lugar.</p>
+  </div>
+  <div style="padding:44px 40px;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:26px">
+    <nav class="tabs"><a class="on" href="login.html">Entrar</a><a href="login.html#criar">Criar conta</a></nav>
+    <form style="display:flex;flex-direction:column;gap:16px" onsubmit="location.href='index.html';return false">
+      <div class="f full"><label>E-mail <span class="req">*</span></label><input type="text" placeholder="voce@email.com"></div><div class="f full"><label>Senha <span class="req">*</span></label><input type="password" placeholder="••••••••"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between"><label class="ck"><input type="checkbox"> Manter conectado</label><a href="login.html" style="font-size:12px;color:var(--acc)">Esqueci minha senha</a></div>
+      <button class="sbtn p" type="submit">Entrar</button>
+      <span style="font-size:11px;color:var(--mute2);text-align:center">Campos com <span class="req">*</span> são obrigatórios</span>
+    </form>
+    <form id="criar" style="border-top:1px solid var(--line);padding-top:24px;display:flex;flex-direction:column;gap:16px" onsubmit="location.href='index.html';return false">
+      <span class="scard-t" style="margin:0">Criar conta</span>
+      <div class="g2" style="gap:14px 16px"><div class="f full"><label>Nome completo <span class="req">*</span></label><input type="text" placeholder="Como no documento"></div><div class="f"><label>E-mail <span class="req">*</span></label><input type="text" placeholder="voce@email.com"></div><div class="f"><label>CPF / CNPJ <span class="req">*</span></label><input type="text" placeholder="000.000.000-00"></div><div class="f"><label>Senha <span class="req">*</span></label><input type="password" placeholder="Mínimo 8 caracteres"></div><div class="f"><label>Confirmar senha <span class="req">*</span></label><input type="password" placeholder="Repita a senha"></div><label class="ck full"><input type="checkbox"> Quero receber novidades e ofertas por e-mail</label></div>
+      <button class="sbtn" type="submit">Criar conta</button>
+    </form>
+  </div>
+</div><footer class="sfoot">
+  <div class="sfoot-g">
+    <div class="sfoot-c"><span class="brand" style="font-size:16px">AERIA</span><span style="font-size:12px;line-height:1.6;color:var(--mute2);max-width:230px">Drones profissionais, compactos e agrícolas. Envio para todo o Brasil.</span></div>
+    <div class="sfoot-c"><b>Loja</b><a href="drones.html">Drones</a><a href="acessorios.html">Acessórios</a><a href="ofertas.html">Ofertas</a><a href="index.html">Lançamentos</a></div><div class="sfoot-c"><b>Conta</b><a href="login.html">Entrar</a><a href="login.html">Criar conta</a><a href="conta-pedidos.html">Meus pedidos</a><a href="conta-favoritos.html">Lista de desejos</a></div><div class="sfoot-c"><b>Suporte</b><a href="suporte.html">Central de ajuda</a><a href="suporte.html">Trocas e devoluções</a><a href="suporte.html">Garantia</a><a href="suporte.html">Regras ANAC</a></div><div class="sfoot-c"><b>Empresa</b><a href="empresas.html">Sobre a Aeria</a><a href="empresas.html">Vendas corporativas</a><a href="empresas.html">Seja revendedor</a><a href="admin/index.html">Painel admin</a></div>
+  </div>
+  <div class="sfoot-b"><span>© 2026 Aeria Drones · CNPJ 00.000.000/0001-00</span><span>Pix · Boleto · Cartão em até 12×</span></div>
+</footer>
+</body>
+</html>

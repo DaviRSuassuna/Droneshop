@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cupons · Admin Aeria</title>
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<header class="tb">
+  <div class="tb-l">
+    <a class="tb-brand" href="index.html">ADMIN</a>
+    <nav class="tb-nav">
+      <a href="index.html">Dashboard</a>
+      <a href="produtos.html">Produtos</a>
+      <a href="marcas.html">Marcas</a>
+      <a href="categorias.html">Categorias</a>
+      <a href="fornecedores.html">Fornecedores</a>
+      <a href="promocoes.html">Promoções</a>
+      <a href="cupons.html" class="on">Cupons</a>
+      <a href="estoque.html">Estoque</a>
+      <a href="pedidos.html">Pedidos</a>
+      <a href="usuarios.html">Usuários</a>
+    </nav>
+  </div>
+  <div class="tb-r">
+    <span class="tb-search">Buscar no painel</span>
+    <a href="../index.html">Ver loja ↗</a>
+    <span class="avatar">MR</span>
+  </div>
+</header>
+<div class="pagebar">
+  <div style="display:flex;align-items:baseline;gap:12px"><h1 class="h1">Cupons</h1><span class="sub">3 ativos · 1 agendado · 1.670 usos no ano</span></div>
+  <div class="actions"><button class="btn">Exportar usos</button><a class="btn p" href="cupom-novo.html">Novo cupom</a></div>
+</div>
+<div class="pad-t" style="display:flex;flex-direction:column;gap:16px">
+  <div class="filters">
+    <div class="f grow"><input type="text" placeholder="Buscar por código"></div>
+    <div class="f"><select><option>Tipo de desconto</option><option>Percentual</option><option>Valor fixo</option></select></div>
+    <div class="f"><select><option>Status</option><option>Ativo</option><option>Agendado</option><option>Esgotado</option></select></div>
+  </div>
+  <p class="legend" style="margin:0">Cada resgate grava um <span class="chip">UsoCupom</span> (cliente + pedido), que é o que sustenta o limite por cliente e o campo de desconto do <a href="pedido.html" style="text-decoration:underline">pedido</a>.</p>
+  <div class="tbl">
+    <div class="trow head" style="grid-template-columns:minmax(0,1fr) 130px 200px 170px 118px 44px"><span>Cupom</span><span>Valor</span><span>Vigência</span><span>Usos</span><span>Status</span><span></span></div>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 130px 200px 170px 118px 44px" href="cupom-novo.html"><span class="cell-name"><b>PILOTO10</b><span class="chip">Percentual</span></span><span class="ink">10%</span><span class="dim">01/08 a 30/09/2026</span><span class="dim">184 / 500</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativo</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 130px 200px 170px 118px 44px" href="cupom-novo.html"><span class="cell-name"><b>PIX10</b><span class="chip">Percentual</span></span><span class="ink">10%</span><span class="dim">sem data final</span><span class="dim">1.209 / ilimitado</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativo</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 130px 200px 170px 118px 44px" href="cupom-novo.html"><span class="cell-name"><b>BEMVINDO50</b><span class="chip">Valor fixo</span></span><span class="ink">R$ 50</span><span class="dim">01/01 a 31/12/2026</span><span class="dim">77 / 1.000</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativo</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 130px 200px 170px 118px 44px" href="cupom-novo.html"><span class="cell-name"><b>AGRO2026</b><span class="chip">Percentual</span></span><span class="ink">8%</span><span class="dim">01/09 a 31/10/2026</span><span class="dim">0 / 200</span><span class="status"><span class="dot" style="background:var(--acc)"></span>Agendado</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <a class="trow" style="grid-template-columns:minmax(0,1fr) 130px 200px 170px 118px 44px" href="cupom-novo.html"><span class="cell-name"><b>VOLTA200</b><span class="chip">Valor fixo</span></span><span class="ink">R$ 200</span><span class="dim">01/05 a 31/05/2026</span><span class="dim">200 / 200</span><span class="status"><span class="dot" style="background:var(--dim2)"></span>Esgotado</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
+    <div class="pager"><span>Exibindo 1–5 de 5</span><span>Página 1 de 1</span></div>
+  </div>
+</div>
+</body>
+</html>
