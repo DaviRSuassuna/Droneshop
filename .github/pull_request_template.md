@@ -14,7 +14,7 @@ Closes #
 
 - [ ] Commits em Conventional Commits, em português, com escopo (ex.: `feat(catalogo): ...`)
 - [ ] Testes passando localmente (`./mvnw verify` no backend / `ng test` e `ng build` no frontend)
-- [ ] Segue o diagrama de classes e o padrão SGA (`DefaultEntity`, DTO record, Panache)
+- [ ] Segue o diagrama de classes e o padrão SGA (`DefaultEntity`, `XxxRequestDTO` record, mapper, `PageResponse`, Panache)
 - [ ] Diagrama `.puml` atualizado, se o modelo mudou
 
 **Se mexe em tela do frontend**

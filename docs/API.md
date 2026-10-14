@@ -12,12 +12,14 @@ As telas citadas são as do [protótipo](design/README.md).
 | Tema | Regra |
 |---|---|
 | Formato | JSON. CPF, CNPJ, CEP e telefone trafegam só com dígitos; a máscara é do front |
-| Listagem | `?page=0&pageSize=N`. Padrão SGA: resposta `PageResponse` (`items`, `page`, `pageSize`, `totalItems`, `totalPages`). Os módulos prontos ainda devolvem lista + `GET .../count` até a refatoração para o padrão SGA |
+| Listagem | `?page=0&pageSize=10` (padrão 10). Resposta `PageResponse`: `items`, `page`, `pageSize`, `totalItems`, `totalPages`. Não há rota `/count` |
+| Referências | No corpo, chave estrangeira é `idXxx` (`idStatus`, `idCategoria`, `idMarca`...); na resposta, o relacionamento vem aninhado (`produto.marca.nome`). Filtros por relacionamento usam o mesmo nome (`?idCategoria=`) |
+| Status | Enum com id e nome. O corpo envia `idStatus`; a resposta traz `status: {id, nome}`. Os valores ficam em `GET /status-marca`, `/status-categoria`, `/status-fornecedor` e `/status-produto` |
 | Sucesso | `GET` e `POST` 200 com o registro; `PUT` e `DELETE` 204 |
-| Erros (formato Problem) | 400 validação (`errors[].field`), 404 não existe (D22), 409 em uso (D24), 503 integração externa fora |
+| Erros (formato Problem) | 400 validação (`errors[].field`), 404 não existe ou rota desconhecida (D22), 409 em uso (D24), 503 integração externa fora |
 | Referência | O projeto SGA do professor é a fonte da verdade para o formato das rotas, paginação, DTOs, mappers e enums |
 | Exclusão | excluir o que não existe responde 404 (D22) |
-| Rascunho | `RASCUNHO` aceita campos vazios; obrigatórios só ao publicar (D21) |
+| Rascunho | `RASCUNHO` (id 1) aceita campos vazios; obrigatórios só ao publicar (D21) |
 | Autenticação | JWT (#4). Rotas do admin exigem perfil administrativo e a permissão do módulo (#5); rotas de `/conta` exigem perfil de cliente. Até a #4, nada é protegido |
 | Prefixos | cadastro do admin na raiz (`/marcas`); leitura pública da loja em `/loja`; dados do cliente logado em `/conta` |
 
@@ -25,8 +27,8 @@ As telas citadas são as do [protótipo](design/README.md).
 
 | Método | Rota | Uso | Issue | Situação |
 |---|---|---|---|---|
-| GET | `/estados` · `/estados/{id}` | select de Estado | base | pronto |
-| GET | `/municipios?idEstado=` · `/municipios/{id}` | select de Município | base | pronto |
+| GET | `/estados` · `/estados/{id}` · `/estados/sigla/{sigla}` · `/estados/nome/{nome}` | select de Estado | base | pronto |
+| GET | `/municipios?idEstado=` · `/municipios/{id}` · `/municipios/nome/{nome}` | select de Município | base | pronto |
 | GET | `/ceps/{cep}` | preencher endereço pelo CEP (ViaCEP no backend) | base | pronto |
 
 ## Catálogo (admin)
@@ -35,12 +37,13 @@ As telas citadas são as do [protótipo](design/README.md).
 |---|---|---|---|---|
 | GET POST | `/marcas` | Marcas, Cadastrar marca | base | pronto |
 | GET PUT DELETE | `/marcas/{id}` | editar / excluir marca | base | pronto |
-| GET | `/marcas/count` · `/marcas/nome/{nome}` · `/marcas/nome/{nome}/count` · `/marcas/slug/{slug}` | busca e paginação | base | pronto |
-| GET POST · GET PUT DELETE | `/categorias` · `/categorias/{id}` (+ `count`, `nome`, `slug`) | Categorias, Cadastrar categoria | base | pronto |
-| GET POST · GET PUT DELETE | `/subcategorias?categoriaId=` · `/subcategorias/{id}` | subcategorias | base | pronto |
-| GET POST · GET PUT DELETE | `/fornecedores` · `/fornecedores/{id}` (+ `count`, `nome`, `cnpj/{cnpj}`) | Fornecedores, Cadastrar fornecedor | base | pronto |
-| GET | `/produtos?nome=&marcaId=&categoriaId=&subcategoriaId=&status=` · `/produtos/count` | Produtos (filtros) | base | pronto, **sem teste** |
-| GET POST · GET PUT DELETE | `/produtos` · `/produtos/{id}` | Produtos | base / #7 | pronto, **sem teste**; #7 acrescenta SEO, garantia e lançamento |
+| GET | `/marcas/nome/{nome}` · `/marcas/slug/{slug}` | busca | base | pronto |
+| GET | `/status-marca` · `/status-categoria` · `/status-fornecedor` · `/status-produto` (+ `/{id}`) | selects de status | base | pronto |
+| GET POST · GET PUT DELETE | `/categorias` · `/categorias/{id}` (+ `nome`, `slug`) | Categorias, Cadastrar categoria | base | pronto |
+| GET POST · GET PUT DELETE | `/subcategorias?idCategoria=` · `/subcategorias/{id}` | subcategorias | base | pronto |
+| GET POST · GET PUT DELETE | `/fornecedores` · `/fornecedores/{id}` (+ `nome`, `cnpj/{cnpj}`) | Fornecedores, Cadastrar fornecedor | base | pronto |
+| GET | `/produtos?nome=&idMarca=&idCategoria=&idSubcategoria=&idStatus=` | Produtos (filtros) | base | pronto |
+| GET POST · GET PUT DELETE | `/produtos` · `/produtos/{id}` | Produtos | base / #7 | pronto; #7 acrescenta SEO, garantia e lançamento |
 | POST · PUT | `/drones` · `/drones/{id}` | Cadastrar drone (specs fixas, D14) | #8 | a fazer |
 | POST · PUT | `/acessorios` · `/acessorios/{id}` | Cadastrar acessório | #8 | a fazer |
 | (corpo) | `variantes[]` dentro do drone/acessório | tabela de variantes na própria tela (D13) | #9 | a fazer |
@@ -57,15 +60,15 @@ As telas citadas são as do [protótipo](design/README.md).
 | Método | Rota | Uso | Issue | Situação |
 |---|---|---|---|---|
 | GET | `/estoque?situacao=&busca=` | Estoque: saldo por variante (físico, reservado, disponível, mínimo) | #13 | a fazer |
-| GET POST | `/estoque/movimentos?varianteId=` | aba Movimentos; Novo movimento (origem e autor, D11) | #13 | a fazer |
+| GET POST | `/estoque/movimentos?idVariante=` | aba Movimentos; Novo movimento (origem e autor, D11) | #13 | a fazer |
 | GET | `/estoque/reservas` | aba Reservas ativas | #23 | a fazer |
-| GET POST | `/unidades?serie=` · `/pedidos/{id}/itens/{itemId}/unidades` | aba Números de série; vincular série na expedição (D10) | #34 | a fazer |
+| GET POST | `/unidades?serie=` · `/pedidos/{id}/itens/{idItem}/unidades` | aba Números de série; vincular série na expedição (D10) | #34 | a fazer |
 
 ## Pedidos (admin)
 
 | Método | Rota | Uso | Issue | Situação |
 |---|---|---|---|---|
-| GET | `/pedidos?status=&busca=` · `/pedidos/count?status=` | Pedidos (abas com contagem) | #16 | a fazer |
+| GET | `/pedidos?idStatus=&busca=` · `/pedidos/resumo-status` | Pedidos (abas com contagem por status) | #16 | a fazer |
 | GET | `/pedidos/{id}` | Detalhe do pedido (itens, endereço congelado D12, pagamento) | #16 | a fazer |
 | PATCH | `/pedidos/{id}/status` | Marcar como enviado, Cancelar pedido | #17 | a fazer |
 | GET | `/pedidos/{id}/historico` | linha do tempo do pedido | #17 | a fazer |
@@ -80,7 +83,7 @@ As telas citadas são as do [protótipo](design/README.md).
 | GET POST · GET PUT | `/admin/usuarios` · `/admin/usuarios/{id}` | Usuários, Novo usuário | #5 | a fazer |
 | GET | `/admin/papeis` | select de papel e permissões padrão por módulo | #5 | a fazer |
 | GET PUT | `/admin/configuracao` | parâmetros da loja (registro único) | #6 | a fazer |
-| GET | `/admin/auditoria?usuarioId=&entidade=` | Ver log de auditoria | #41 | a fazer |
+| GET | `/admin/auditoria?idUsuario=&entidade=` | Ver log de auditoria | #41 | a fazer |
 | POST | `/conta/2fa` · `/conta/2fa/confirmar` · DELETE `/conta/2fa` | 2FA opcional do admin | #45 | a fazer |
 | GET PUT | `/admin/templates-email` · `/admin/templates-email/{id}` | templates editáveis | #32 | a fazer |
 
@@ -120,7 +123,7 @@ As telas citadas são as do [protótipo](design/README.md).
 
 | Método | Rota | Uso | Issue | Situação |
 |---|---|---|---|---|
-| GET POST DELETE | `/conta/desejos` · `/conta/desejos/{varianteId}` | Lista de desejos | #22 | a fazer |
+| GET POST DELETE | `/conta/desejos` · `/conta/desejos/{idVariante}` | Lista de desejos | #22 | a fazer |
 | GET · POST · PATCH DELETE | `/carrinho` · `/carrinho/itens` · `/carrinho/itens/{id}` | Carrinho anônimo por token | #24 | a fazer |
 | POST | `/carrinho/vincular` | junta o carrinho anônimo ao do cliente no login | #24 | a fazer |
 | POST DELETE | `/carrinho/cupom` | Aplicar cupom | #25 | a fazer |

@@ -15,10 +15,15 @@ note bottom of DefaultEntity
 end note
 
 enum StatusMarca {
-  RASCUNHO
-  ATIVA
-  INATIVA
+  RASCUNHO = 1
+  ATIVA = 2
+  INATIVA = 3
 }
+note left of StatusMarca
+  Enums de status com id e nome:
+  o banco guarda o id e a API devolve
+  {id, nome} (rotas /status-*)
+end note
 
 class Marca {
   -status: StatusMarca
@@ -32,9 +37,9 @@ class Marca {
 }
 
 enum StatusCategoria {
-  RASCUNHO
-  ATIVA
-  INATIVA
+  RASCUNHO = 1
+  ATIVA = 2
+  INATIVA = 3
 }
 note right of StatusCategoria
   Usado por Categoria e Subcategoria.
@@ -60,8 +65,8 @@ class Subcategoria {
 }
 
 enum StatusFornecedor {
-  ATIVO
-  INATIVO
+  ATIVO = 1
+  INATIVO = 2
 }
 
 class Fornecedor {
@@ -110,9 +115,9 @@ note bottom of Estado
 end note
 
 enum StatusProduto {
-  RASCUNHO
-  ATIVO
-  INATIVO
+  RASCUNHO = 1
+  ATIVO = 2
+  INATIVO = 3
 }
 
 abstract class Produto {
