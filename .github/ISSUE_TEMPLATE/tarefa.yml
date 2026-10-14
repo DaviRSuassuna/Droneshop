@@ -96,13 +96,15 @@ body:
     attributes:
       label: Backend (padrão SGA)
       options:
-        - label: Entidade JPA herdando `DefaultEntity`
-        - label: Enums no padrão `Regiao`/`RegiaoConverter`, com endpoint de leitura
+        - label: Entidade herdando `DefaultEntity` (`id`, `dataCadastro`, `dataAlteracao`)
+        - label: Enums com id e nome, conversor JPA e rota de leitura (D31)
         - label: Repository (`PanacheRepository`)
-        - label: DTO de entrada com Bean Validation e DTO de saída como `record`
+        - label: '`XxxRequestDTO` e `XxxResponseDTO` como `record`, Bean Validation na entrada e mapper'
         - label: Service com `@Transactional` e validações de negócio
-        - label: Resource REST com paginação `page`/`pageSize`
+        - label: Resource REST com `page`/`pageSize` e resposta `PageResponse`
+        - label: Erros no formato Problem (400, 404, 409, 503)
         - label: Carga de dados (`import.sql`) atualizada
+        - label: Diagrama `.puml` atualizado, se o modelo mudou
         - label: 'Testes de API com `@Tag("issue-<numero>")` e etiqueta em `backend/src/test/issues-entregues.txt`'
 
   - type: checkboxes
@@ -112,7 +114,9 @@ body:
       options:
         - label: Tela(s) do admin integradas à API
         - label: Tela(s) do storefront integradas à API
-        - label: Segue o protótipo e o `DESIGN.md`, conferido no desktop e no celular
+        - label: 'Conformidade com o protótipo passando (`npm run e2e -- --grep @issue-<numero>`) e etiqueta em `frontend/e2e/telas-entregues.txt`'
+        - label: Rota da tela igual à de `frontend/e2e/conformidade/telas.ts`
+        - label: Specs (`*.spec.ts`) dos services novos
         - label: Não se aplica
 
   - type: textarea
