@@ -124,7 +124,8 @@ public class FornecedorServiceImpl implements FornecedorService {
         if (emUso > 0)
             throw new ConflitoException("Este fornecedor tem " + emUso + (emUso == 1 ? " produto" : " produtos")
                     + ". Inative o fornecedor em vez de excluir.");
-        fornecedorRepository.deleteById(id);
+        if (!fornecedorRepository.deleteById(id))
+            throw new ResourceNotFoundException("Fornecedor não encontrado.");
     }
 
     @Override

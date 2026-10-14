@@ -292,7 +292,7 @@ O painel administrativo vem primeiro (D19): a loja só tem o que vender e o que 
 | D19 | **Painel administrativo primeiro.** A fase 1 entrega todas as telas do admin integradas à API antes do storefront. Pedidos entram no admin já na fase 1, alimentados por carga de dados, e passam a ser criados pelo checkout na fase 3. |
 | D20 | **Web responsiva, sem app nativo.** Toda tela é entregue para o navegador do desktop e para o navegador do celular (360 a 480px). O desenho continua desktop-first, mas a tela só é dada como pronta depois de conferida nas duas larguras; não há aplicativo nativo. |
 | D21 | **Rascunho aceita campos vazios.** Marca e categoria em `RASCUNHO` salvam sem nenhum campo preenchido; os obrigatórios só valem para `ATIVA`/`INATIVA`. A API trata texto em branco como não informado. |
-| D22 | **Registro inexistente responde 404** (formato Problem) em consulta e alteração. Excluir um registro que já não existe responde 204: excluir duas vezes não é erro. |
+| D22 | **Registro inexistente responde 404** (formato Problem) em consulta, alteração e exclusão, como no projeto de referência SGA. |
 | D23 | **Busca por nome não diferencia maiúsculas** em marca, categoria e fornecedor. Ignorar acentos fica para a busca do catálogo (#43); o filtro de produto já ignora. |
 | D24 | **O que está em uso não se exclui, se inativa.** Excluir marca, subcategoria ou fornecedor com produtos, ou categoria com subcategorias, responde 409 com a contagem e a orientação de inativar. Não há exclusão em cascata. |
 

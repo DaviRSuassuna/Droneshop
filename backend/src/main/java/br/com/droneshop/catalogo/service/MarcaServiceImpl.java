@@ -135,7 +135,8 @@ public class MarcaServiceImpl implements MarcaService {
         if (emUso > 0)
             throw new ConflitoException("Esta marca tem " + emUso + (emUso == 1 ? " produto" : " produtos")
                     + ". Inative a marca em vez de excluir.");
-        marcaRepository.deleteById(id);
+        if (!marcaRepository.deleteById(id))
+            throw new ResourceNotFoundException("Marca não encontrada.");
     }
 
     @Override

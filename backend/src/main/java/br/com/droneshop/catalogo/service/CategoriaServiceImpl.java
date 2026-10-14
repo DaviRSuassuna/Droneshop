@@ -135,7 +135,8 @@ public class CategoriaServiceImpl implements CategoriaService {
         if (emUso > 0)
             throw new ConflitoException("Esta categoria tem " + emUso + (emUso == 1 ? " subcategoria" : " subcategorias")
                     + ". Inative a categoria em vez de excluir.");
-        categoriaRepository.deleteById(id);
+        if (!categoriaRepository.deleteById(id))
+            throw new ResourceNotFoundException("Categoria não encontrada.");
     }
 
     @Override

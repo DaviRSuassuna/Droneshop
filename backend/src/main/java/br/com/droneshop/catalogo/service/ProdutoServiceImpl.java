@@ -107,7 +107,8 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Override
     @Transactional
     public void delete(long id) {
-        produtoRepository.deleteById(id);
+        if (!produtoRepository.deleteById(id))
+            throw new ResourceNotFoundException("Produto não encontrado.");
     }
 
     @Override

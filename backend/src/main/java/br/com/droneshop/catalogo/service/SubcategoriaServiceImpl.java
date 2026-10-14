@@ -86,7 +86,8 @@ public class SubcategoriaServiceImpl implements SubcategoriaService {
         if (emUso > 0)
             throw new ConflitoException("Esta subcategoria tem " + emUso + (emUso == 1 ? " produto" : " produtos")
                     + ". Inative a subcategoria em vez de excluir.");
-        subcategoriaRepository.deleteById(id);
+        if (!subcategoriaRepository.deleteById(id))
+            throw new ResourceNotFoundException("Subcategoria não encontrada.");
     }
 
     @Override

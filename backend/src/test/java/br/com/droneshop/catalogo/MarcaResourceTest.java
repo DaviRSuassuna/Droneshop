@@ -217,9 +217,9 @@ class MarcaResourceTest {
     }
 
     @Test
-    void apagarInexistenteResponde204() {
+    void apagarInexistenteResponde404() {
         given().when().delete("/marcas/{id}", Dados.ID_INEXISTENTE)
-                .then().statusCode(204);
+                .then().statusCode(404);
     }
 
     @Test
