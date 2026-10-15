@@ -20,8 +20,8 @@ public class SecurityProblemFilter implements ContainerResponseFilter {
     @Override
     public void filter(ContainerRequestContext request, ContainerResponseContext response) {
         int status = response.getStatus();
-        if ((status != 401 && status != 403)
-                || "application/problem+json".equals(response.getHeaderString("Content-Type"))) {
+        String tipo = response.getHeaderString("Content-Type");
+        if ((status != 401 && status != 403) || (tipo != null && tipo.startsWith("application/problem+json"))) {
             return;
         }
 
