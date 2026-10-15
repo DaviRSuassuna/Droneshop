@@ -50,31 +50,32 @@ insert into fornecedor (razao_social, cnpj, nome_contato, email_contato, telefon
 
 -- produtos (id_marca / id_subcategoria / id_fornecedor seguem a ordem dos inserts acima;
 -- fornecedor = mesma posicao da marca, exceto Sparrow, que usa a Skyline Trading)
-insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque) values
-    ('Falcon X2 Pro', 'DRN-FX2P-0042', 'Drone profissional com câmera 1" e 45 min de voo.', 12499.00, 1, 1, 1, 2, true);
-insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque) values
-    ('Falcon X2 Standard', 'DRN-FX2S-0041', 'Versão de entrada da linha Falcon.', 8990.00, 1, 1, 1, 2, false);
-insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque) values
-    ('Nimbus Mini 3', 'DRN-NM3-0038', 'Compacto abaixo de 250 g, dispensa registro na ANAC.', 4290.00, 2, 2, 2, 2, true);
-insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque) values
-    ('Nimbus Mini 3 Combo', 'DRN-NM3C-0039', 'Mini 3 com 3 baterias e case.', 5780.00, 2, 2, 2, 1, false);
-insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque) values
-    ('Vortex FPV Racer', 'DRN-VFR-0027', 'Drone FPV para corrida.', 3150.00, 3, 2, 3, 3, false);
-insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque) values
-    ('Atlas Agro 10L', 'DRN-AT10-0019', 'Pulverizador agrícola com tanque de 10 L.', 46900.00, 4, 1, 4, 2, false);
-insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque) values
-    ('Heron Survey Pro', 'DRN-HSP-0015', 'Mapeamento com RTK integrado.', 28400.00, 5, 1, 5, 2, true);
-insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque) values
-    ('Sparrow Kids Drone', 'DRN-SKD-0009', 'Drone de brinquedo para iniciantes.', 690.00, 6, 2, 2, 1, false);
-insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque) values
-    ('Bateria Inteligente Falcon X2', 'ACC-BFX2-0101', '5000 mAh, compatível com a linha Falcon X2.', 899.00, 1, 3, 1, 2, false);
-insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque) values
-    ('Bateria Nimbus Mini Plus', 'ACC-BNMP-0102', 'Bateria estendida para a linha Mini.', 549.00, 2, 3, 2, 2, false);
-insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque) values
-    ('Bateria Atlas Agro 20000', 'ACC-BAA-0103', 'Bateria de alta capacidade para pulverizadores.', 3890.00, 4, 3, 4, 2, false);
-insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque) values
-    ('Hélices Falcon X2 (par)', 'ACC-HFX2-0201', 'Par de hélices de baixo ruído.', 129.00, 1, 4, 1, 2, false);
-insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque) values
-    ('Hélices Nimbus Mini (4 un.)', 'ACC-HNM-0202', 'Jogo com 4 hélices de reposição.', 79.00, 2, 4, 2, 2, false);
-insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque) values
-    ('Hélices FPV Tri-blade', 'ACC-HFPV-0203', 'Hélices tripá para drones de corrida.', 59.00, 3, 4, 3, 3, false);
+insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    ('Falcon X2 Pro', 'DRN-FX2P-0042', 'Drone profissional com câmera 1" e 45 min de voo.', 12499.00, 1, 1, 1, 2, true, 'falcon-x2-pro', 13);
+insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    ('Falcon X2 Standard', 'DRN-FX2S-0041', 'Versão de entrada da linha Falcon.', 8990.00, 1, 1, 1, 2, false, 'falcon-x2-standard', 13);
+insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    ('Nimbus Mini 3', 'DRN-NM3-0038', 'Compacto abaixo de 250 g, dispensa registro na ANAC.', 4290.00, 2, 2, 2, 2, true, 'nimbus-mini-3', 13);
+insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    ('Nimbus Mini 3 Combo', 'DRN-NM3C-0039', 'Mini 3 com 3 baterias e case.', 5780.00, 2, 2, 2, 1, false, 'nimbus-mini-3-combo', 13);
+insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    ('Vortex FPV Racer', 'DRN-VFR-0027', 'Drone FPV para corrida.', 3150.00, 3, 2, 3, 3, false, 'vortex-fpv-racer', 13);
+insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    ('Atlas Agro 10L', 'DRN-AT10-0019', 'Pulverizador agrícola com tanque de 10 L.', 46900.00, 4, 1, 4, 2, false, 'atlas-agro-10l', 13);
+insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    ('Heron Survey Pro', 'DRN-HSP-0015', 'Mapeamento com RTK integrado.', 28400.00, 5, 1, 5, 2, true, 'heron-survey-pro', 13);
+insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    ('Sparrow Kids Drone', 'DRN-SKD-0009', 'Drone de brinquedo para iniciantes.', 690.00, 6, 2, 2, 1, false, 'sparrow-kids-drone', 13);
+insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    ('Bateria Inteligente Falcon X2', 'ACC-BFX2-0101', '5000 mAh, compatível com a linha Falcon X2.', 899.00, 1, 3, 1, 2, false, 'bateria-inteligente-falcon-x2', 13);
+insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    ('Bateria Nimbus Mini Plus', 'ACC-BNMP-0102', 'Bateria estendida para a linha Mini.', 549.00, 2, 3, 2, 2, false, 'bateria-nimbus-mini-plus', 13);
+insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    ('Bateria Atlas Agro 20000', 'ACC-BAA-0103', 'Bateria de alta capacidade para pulverizadores.', 3890.00, 4, 3, 4, 2, false, 'bateria-atlas-agro-20000', 13);
+insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    ('Hélices Falcon X2 (par)', 'ACC-HFX2-0201', 'Par de hélices de baixo ruído.', 129.00, 1, 4, 1, 2, false, 'helices-falcon-x2-par', 13);
+insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    ('Hélices Nimbus Mini (4 un.)', 'ACC-HNM-0202', 'Jogo com 4 hélices de reposição.', 79.00, 2, 4, 2, 2, false, 'helices-nimbus-mini-4-un', 13);
+insert into produto (nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    ('Hélices FPV Tri-blade', 'ACC-HFPV-0203', 'Hélices tripá para drones de corrida.', 59.00, 3, 4, 3, 3, false, 'helices-fpv-tri-blade', 13);
+update produto set descricao = 'Drone profissional com sensor de 1 polegada, 45 minutos de voo e transmissão de vídeo em até 15 km.', meta_title = 'Falcon X2 Pro | Aeria Drones', meta_description = 'Drone profissional Falcon X2 Pro com câmera de 1 polegada e 45 min de autonomia.', tags = 'profissional,4k,mapeamento', garantia_meses = 12, data_lancamento = '2026-03-01' where modelo = 'DRN-FX2P-0042';

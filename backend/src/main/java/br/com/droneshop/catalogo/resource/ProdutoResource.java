@@ -51,6 +51,12 @@ public class ProdutoResource {
         return ProdutoResponseMapper.toResponse(service.findById(id));
     }
 
+    @GET
+    @Path("/slug/{slug}")
+    public ProdutoResponseDTO buscarPorSlug(@PathParam("slug") String slug) {
+        return ProdutoResponseMapper.toResponse(service.findBySlug(slug));
+    }
+
     @POST
     public ProdutoResponseDTO incluir(ProdutoRequestDTO dto) {
         return ProdutoResponseMapper.toResponse(service.create(dto));

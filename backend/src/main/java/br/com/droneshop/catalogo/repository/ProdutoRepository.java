@@ -20,6 +20,16 @@ public class ProdutoRepository implements PanacheRepository<Produto> {
         return Normalizer.normalize(texto, Normalizer.Form.NFD).replaceAll("\\p{M}", "");
     }
 
+    public Produto findBySlug(String slug) {
+        return find("SELECT p FROM Produto p WHERE p.slug = ?1 ", slug).firstResult();
+    }
+
+    public Produto findBySlugExceptId(String slug, Long id) {
+        if (id == null)
+            return findBySlug(slug);
+        return find("SELECT p FROM Produto p WHERE p.slug = ?1 AND p.id <> ?2 ", slug, id).firstResult();
+    }
+
     public Produto findByModeloExceptId(String modelo, Long id) {
         if (id == null)
             return find("SELECT p FROM Produto p WHERE p.modelo = ?1 ", modelo).firstResult();
