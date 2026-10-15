@@ -1,0 +1,7 @@
+# Issues de backend já entregues: o CI roda os testes destas etiquetas e BLOQUEIA o merge se falharem.
+# Ao abrir o PR de uma issue, acrescente a etiqueta dela aqui (uma por linha, igual ao @Tag do teste).
+# As que ainda não estão aqui também rodam no CI, mas só como informação (não bloqueiam).
+#
+# "base" = entregas anteriores às issues (marca, categoria, subcategoria, fornecedor, estados/municípios e CEP).
+base
+issue-4

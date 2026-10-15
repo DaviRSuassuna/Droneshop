@@ -1,0 +1,123 @@
+package br.com.droneshop.catalogo;
+
+import static br.com.droneshop.testes.Api.given;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
+import br.com.droneshop.testes.Dados;
+import br.com.droneshop.testes.Fixtures;
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
+import io.restassured.response.ValidatableResponse;
+
+/**
+ * #14 Promoções com vigência e escopo (RF05).
+ * Contrato: docs/issues/014.md
+ */
+@QuarkusTest
+@Tag("issue-14")
+class PromocaoResourceTest {
+
+    static final long PRODUTO = 1, CARRINHO = 2, FRETE = 3;
+
+    static String dias(int d) {
+        return LocalDateTime.now().plusDays(d).truncatedTo(ChronoUnit.SECONDS).toString();
+    }
+
+    static Map<String, Object> promocao(long idVariante, int inicio, int fim) {
+        Map<String, Object> p = new HashMap<>();
+        p.put("nome", "Promo " + Dados.sufixo());
+        p.put("idEscopo", PRODUTO);
+        p.put("dataInicio", dias(inicio));
+        p.put("dataFim", dias(fim));
+        p.put("percentualDesconto", 10);
+        p.put("valorDesconto", null);
+        p.put("valorMinimoCarrinho", null);
+        p.put("ativa", true);
+        p.put("idsVariantes", List.of(idVariante));
+        return p;
+    }
+
+    static ValidatableResponse post(Map<String, Object> p) {
+        return given().contentType(ContentType.JSON).body(p).when().post("/promocoes").then();
+    }
+
+    @Test
+    void listaOsEscopos() {
+        given().when().get("/escopos-promocao").then().statusCode(200)
+                .body("nome", contains("PRODUTO", "CARRINHO", "FRETE"));
+    }
+
+    @Test
+    void situacaoDerivadaDasDatas() {
+        long v = Fixtures.criarDrone(1000.0, 5).idVariante();
+        post(promocao(v, 5, 10)).statusCode(200).body("situacao", equalTo("AGENDADA"))
+                .body("variantes[0].id", equalTo((int) v));
+        post(promocao(v, -1, 5)).statusCode(200).body("situacao", equalTo("VIGENTE"));
+        post(promocao(v, -10, -5)).statusCode(200).body("situacao", equalTo("ENCERRADA"));
+    }
+
+    @Test
+    void percentualEValorSaoExclusivos() {
+        long v = Fixtures.criarDrone(1000.0, 5).idVariante();
+        Map<String, Object> dois = promocao(v, -1, 5);
+        dois.put("valorDesconto", 50);
+        post(dois).statusCode(400).body("errors.field", hasItem("percentualDesconto"));
+
+        Map<String, Object> nenhum = promocao(v, -1, 5);
+        nenhum.put("percentualDesconto", null);
+        post(nenhum).statusCode(400).body("errors.field", hasItem("percentualDesconto"));
+
+        Map<String, Object> fora = promocao(v, -1, 5);
+        fora.put("percentualDesconto", 120);
+        post(fora).statusCode(400).body("errors.field", hasItem("percentualDesconto"));
+    }
+
+    @Test
+    void validacoesDeDataEscopo() {
+        long v = Fixtures.criarDrone(1000.0, 5).idVariante();
+        post(promocao(v, 5, 1)).statusCode(400).body("errors.field", hasItem("dataFim"));
+
+        Map<String, Object> semVariantes = promocao(v, -1, 5);
+        semVariantes.put("idsVariantes", List.of());
+        post(semVariantes).statusCode(400).body("errors.field", hasItem("idsVariantes"));
+
+        Map<String, Object> carrinho = promocao(v, -1, 5);
+        carrinho.put("idEscopo", CARRINHO);
+        carrinho.put("idsVariantes", List.of());
+        post(carrinho).statusCode(400).body("errors.field", hasItem("valorMinimoCarrinho"));
+    }
+
+    @Test
+    void filtraPorSituacao() {
+        long v = Fixtures.criarDrone(1000.0, 5).idVariante();
+        long id = post(promocao(v, 5, 10)).statusCode(200).extract().jsonPath().getLong("id");
+        given().queryParam("situacao", "AGENDADA").queryParam("pageSize", 1000).when().get("/promocoes")
+                .then().statusCode(200).body("items.id", hasItem((int) id));
+        given().queryParam("situacao", "VIGENTE").queryParam("pageSize", 1000).when().get("/promocoes")
+                .then().statusCode(200).body("items.id", not(hasItem((int) id)));
+    }
+
+    @Test
+    void crudCompleto() {
+        long v = Fixtures.criarDrone(1000.0, 5).idVariante();
+        Map<String, Object> p = promocao(v, 1, 5);
+        long id = post(p).statusCode(200).extract().jsonPath().getLong("id");
+        p.put("nome", "Alterada");
+        given().contentType(ContentType.JSON).body(p).when().put("/promocoes/{id}", id).then().statusCode(204);
+        given().when().get("/promocoes/{id}", id).then().statusCode(200).body("nome", equalTo("Alterada"));
+        given().when().delete("/promocoes/{id}", id).then().statusCode(204);
+        given().when().get("/promocoes/{id}", id).then().statusCode(404);
+    }
+}
