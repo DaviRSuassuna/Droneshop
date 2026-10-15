@@ -50,8 +50,8 @@ As telas citadas são as do [protótipo](design/README.md).
 | GET | `/produtos/slug/{slug}` · `/tipos-produto` (+ `/{id}`) | busca por slug, select de tipo | #7, #8 | pronto |
 | POST · PUT | `/drones` · `/drones/{id}` | Cadastrar drone (specs fixas, D14) | #8 | pronto |
 | POST · PUT | `/acessorios` · `/acessorios/{id}` | Cadastrar acessório | #8 | pronto |
-| (corpo) | `variantes[]` dentro do drone/acessório | tabela de variantes na própria tela (D13) | #9 | a fazer |
-| GET · GET PUT | `/variantes?busca=` · `/variantes/{id}` | select de variante (estoque, promoção, kit); preço e margem (D26) | #9 | a fazer |
+| (corpo) | `variantes[]` dentro do drone/acessório | tabela de variantes na própria tela (D13) | #9 | pronto |
+| GET · GET PUT | `/variantes?busca=` · `/variantes/{id}` | select de variante (estoque, promoção, kit); preço e margem (D26) | #9 | pronto |
 | (corpo) | `componentes[]` na variante kit | Kit ou combo (D7) | #10 | a fazer |
 | (corpo) | `compativeis[]` no acessório | Compatível com (D17) | #11 | a fazer |
 | GET POST · PATCH · DELETE | `/produtos/{id}/midias` (multipart) · `/midias/{id}` · `/produtos/{id}/midias/ordem` · `/midias/arquivos/{nome}` | imagem e manual por upload, vídeo por URL (D29) | #12 | a fazer |
