@@ -367,6 +367,199 @@
         </section>
       }
 
+      <section class="card p">
+        <div class="card-h">
+          <span class="card-t">Variantes</span>
+          <span class="card-n">A unidade vendável é a variante, não o produto</span>
+        </div>
+        <label class="ck full" style="margin-bottom: 16px">
+          <input type="checkbox" [formControl]="semOpcoes" /> Este produto não tem opções (cria uma
+          variante única "Padrão")
+        </label>
+        @if (campoInvalido('variantes')) {
+          <span class="warn" style="display: block; margin-bottom: 12px">
+            {{ mensagemErro('variantes') }}
+          </span>
+        }
+        <div class="tbl" style="overflow-x: auto">
+          <div
+            class="trow head"
+            [style.grid-template-columns]="gridVariantes"
+            style="min-width: 820px; gap: 8px"
+          >
+            <span>Nome</span>
+            <span>SKU</span>
+            <span>Preço (R$)</span>
+            <span>Custo (R$)</span>
+            <span>Margem</span>
+            <span>Estoque</span>
+            <span>Estoque mín.</span>
+            <span>Peso cx (kg)</span>
+            <span>Dimensões cx (cm)</span>
+            <span>Ativa</span>
+            <span></span>
+          </div>
+          @for (linha of variantes.controls; track linha; let i = $index) {
+            <div
+              class="trow"
+              [formGroup]="linha"
+              [style.grid-template-columns]="gridVariantes"
+              style="min-width: 820px; gap: 8px; align-items: start"
+            >
+              <div class="f">
+                <input
+                  type="text"
+                  formControlName="nome"
+                  maxlength="60"
+                  [readonly]="semOpcoes.value"
+                  [attr.aria-label]="'Nome da variante ' + (i + 1)"
+                />
+                @if (erroVariante(i, 'nome'); as erro) {
+                  <span class="warn">{{ erro }}</span>
+                }
+              </div>
+              <div class="f">
+                <input
+                  type="text"
+                  formControlName="sku"
+                  maxlength="40"
+                  placeholder="DRN-FX2P-STD"
+                  [attr.aria-label]="'SKU da variante ' + (i + 1)"
+                />
+                @if (erroVariante(i, 'sku'); as erro) {
+                  <span class="warn">{{ erro }}</span>
+                }
+              </div>
+              <div class="f">
+                <input
+                  type="number"
+                  style="padding: 0 6px"
+                  min="0"
+                  step="0.01"
+                  formControlName="preco"
+                  [attr.aria-label]="'Preço da variante ' + (i + 1)"
+                />
+                @if (erroVariante(i, 'preco'); as erro) {
+                  <span class="warn">{{ erro }}</span>
+                }
+              </div>
+              <div class="f">
+                <input
+                  type="number"
+                  style="padding: 0 6px"
+                  min="0"
+                  step="0.01"
+                  formControlName="custoAquisicao"
+                  [attr.aria-label]="'Custo da variante ' + (i + 1)"
+                />
+                @if (erroVariante(i, 'custoAquisicao'); as erro) {
+                  <span class="warn">{{ erro }}</span>
+                }
+              </div>
+              <span
+                class="dim num"
+                style="line-height: 38px"
+                title="Calculada pelo sistema ao salvar"
+              >
+                {{ formatarMargem(linha.controls.margemPercentual.value) }}
+              </span>
+              <div class="f">
+                <input
+                  type="number"
+                  style="padding: 0 6px"
+                  min="0"
+                  step="1"
+                  formControlName="estoqueFisico"
+                  [readonly]="varianteSalva(i)"
+                  [title]="
+                    varianteSalva(i) ? 'Depois de criada, o estoque muda só por movimento' : ''
+                  "
+                  [attr.aria-label]="'Estoque da variante ' + (i + 1)"
+                />
+                @if (erroVariante(i, 'estoqueFisico'); as erro) {
+                  <span class="warn">{{ erro }}</span>
+                }
+              </div>
+              <div class="f">
+                <input
+                  type="number"
+                  style="padding: 0 6px"
+                  min="0"
+                  step="1"
+                  formControlName="estoqueMinimo"
+                  [attr.aria-label]="'Estoque mínimo da variante ' + (i + 1)"
+                />
+                @if (erroVariante(i, 'estoqueMinimo'); as erro) {
+                  <span class="warn">{{ erro }}</span>
+                }
+              </div>
+              <div class="f">
+                <input
+                  type="number"
+                  style="padding: 0 6px"
+                  min="0"
+                  step="0.001"
+                  formControlName="pesoEmbalagemKg"
+                  [attr.aria-label]="'Peso da embalagem da variante ' + (i + 1)"
+                />
+                @if (erroVariante(i, 'pesoEmbalagemKg'); as erro) {
+                  <span class="warn">{{ erro }}</span>
+                }
+              </div>
+              <div class="f">
+                <input
+                  type="text"
+                  formControlName="dimensoes"
+                  placeholder="15×28×38"
+                  [attr.aria-label]="
+                    'Altura × largura × comprimento da embalagem da variante ' + (i + 1)
+                  "
+                />
+                @if (erroDimensoes(i); as erro) {
+                  <span class="warn">{{ erro }}</span>
+                }
+              </div>
+              <label class="ck" style="height: 38px">
+                <input
+                  type="checkbox"
+                  formControlName="ativa"
+                  [attr.aria-label]="'Variante ' + (i + 1) + ' ativa'"
+                />
+              </label>
+              <button
+                class="btn sm d ghost"
+                type="button"
+                (click)="removerVariante(i)"
+                [disabled]="semOpcoes.value"
+                [attr.aria-label]="'Remover variante ' + (i + 1)"
+              >
+                ✕
+              </button>
+            </div>
+          }
+        </div>
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+          "
+        >
+          <span class="dim"
+            >Peso e dimensões são os da <strong>embalagem</strong>: é o que a transportadora
+            cota</span
+          >
+          @if (!semOpcoes.value) {
+            <button class="sbtn sm" type="button" (click)="adicionarVariante()">
+              + Adicionar variante
+            </button>
+          }
+        </div>
+      </section>
+
       <section class="card p" [formGroup]="form">
         <div class="card-h">
           <span class="card-t">Comercial</span>

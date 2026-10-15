@@ -53,34 +53,34 @@ insert into fornecedor (razao_social, cnpj, nome_contato, email_contato, telefon
 
 -- produtos (tipo: 1 = Drone, 2 = Acessorio; id_marca / id_subcategoria / id_fornecedor seguem a ordem dos inserts acima;
 -- fornecedor = mesma posicao da marca, exceto Sparrow, que usa a Skyline Trading)
-insert into produto (tipo, nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (1, 'Falcon X2 Pro', 'DRN-FX2P-0042', 'Drone profissional com câmera 1" e 45 min de voo.', 12499.00, 1, 1, 1, 2, true, 'falcon-x2-pro', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (1, 'Falcon X2 Standard', 'DRN-FX2S-0041', 'Versão de entrada da linha Falcon.', 8990.00, 1, 1, 1, 2, false, 'falcon-x2-standard', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (1, 'Nimbus Mini 3', 'DRN-NM3-0038', 'Compacto abaixo de 250 g, dispensa registro na ANAC.', 4290.00, 2, 2, 2, 2, true, 'nimbus-mini-3', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (1, 'Nimbus Mini 3 Combo', 'DRN-NM3C-0039', 'Mini 3 com 3 baterias e case.', 5780.00, 2, 2, 2, 1, false, 'nimbus-mini-3-combo', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (1, 'Vortex FPV Racer', 'DRN-VFR-0027', 'Drone FPV para corrida.', 3150.00, 3, 2, 3, 3, false, 'vortex-fpv-racer', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (1, 'Atlas Agro 10L', 'DRN-AT10-0019', 'Pulverizador agrícola com tanque de 10 L.', 46900.00, 4, 1, 4, 2, false, 'atlas-agro-10l', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (1, 'Heron Survey Pro', 'DRN-HSP-0015', 'Mapeamento com RTK integrado.', 28400.00, 5, 1, 5, 2, true, 'heron-survey-pro', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (1, 'Sparrow Kids Drone', 'DRN-SKD-0009', 'Drone de brinquedo para iniciantes.', 690.00, 6, 2, 2, 1, false, 'sparrow-kids-drone', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (2, 'Bateria Inteligente Falcon X2', 'ACC-BFX2-0101', '5000 mAh, compatível com a linha Falcon X2.', 899.00, 1, 3, 1, 2, false, 'bateria-inteligente-falcon-x2', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (2, 'Bateria Nimbus Mini Plus', 'ACC-BNMP-0102', 'Bateria estendida para a linha Mini.', 549.00, 2, 3, 2, 2, false, 'bateria-nimbus-mini-plus', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (2, 'Bateria Atlas Agro 20000', 'ACC-BAA-0103', 'Bateria de alta capacidade para pulverizadores.', 3890.00, 4, 3, 4, 2, false, 'bateria-atlas-agro-20000', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (2, 'Hélices Falcon X2 (par)', 'ACC-HFX2-0201', 'Par de hélices de baixo ruído.', 129.00, 1, 4, 1, 2, false, 'helices-falcon-x2-par', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (2, 'Hélices Nimbus Mini (4 un.)', 'ACC-HNM-0202', 'Jogo com 4 hélices de reposição.', 79.00, 2, 4, 2, 2, false, 'helices-nimbus-mini-4-un', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, preco, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (2, 'Hélices FPV Tri-blade', 'ACC-HFPV-0203', 'Hélices tripá para drones de corrida.', 59.00, 3, 4, 3, 3, false, 'helices-fpv-tri-blade', 13);
+insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    (1, 'Falcon X2 Pro', 'DRN-FX2P-0042', 'Drone profissional com câmera 1" e 45 min de voo.', 1, 1, 1, 2, true, 'falcon-x2-pro', 13);
+insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    (1, 'Falcon X2 Standard', 'DRN-FX2S-0041', 'Versão de entrada da linha Falcon.', 1, 1, 1, 2, false, 'falcon-x2-standard', 13);
+insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    (1, 'Nimbus Mini 3', 'DRN-NM3-0038', 'Compacto abaixo de 250 g, dispensa registro na ANAC.', 2, 2, 2, 2, true, 'nimbus-mini-3', 13);
+insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    (1, 'Nimbus Mini 3 Combo', 'DRN-NM3C-0039', 'Mini 3 com 3 baterias e case.', 2, 2, 2, 1, false, 'nimbus-mini-3-combo', 13);
+insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    (1, 'Vortex FPV Racer', 'DRN-VFR-0027', 'Drone FPV para corrida.', 3, 2, 3, 3, false, 'vortex-fpv-racer', 13);
+insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    (1, 'Atlas Agro 10L', 'DRN-AT10-0019', 'Pulverizador agrícola com tanque de 10 L.', 4, 1, 4, 2, false, 'atlas-agro-10l', 13);
+insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    (1, 'Heron Survey Pro', 'DRN-HSP-0015', 'Mapeamento com RTK integrado.', 5, 1, 5, 2, true, 'heron-survey-pro', 13);
+insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    (1, 'Sparrow Kids Drone', 'DRN-SKD-0009', 'Drone de brinquedo para iniciantes.', 6, 2, 2, 1, false, 'sparrow-kids-drone', 13);
+insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    (2, 'Bateria Inteligente Falcon X2', 'ACC-BFX2-0101', '5000 mAh, compatível com a linha Falcon X2.', 1, 3, 1, 2, false, 'bateria-inteligente-falcon-x2', 13);
+insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    (2, 'Bateria Nimbus Mini Plus', 'ACC-BNMP-0102', 'Bateria estendida para a linha Mini.', 2, 3, 2, 2, false, 'bateria-nimbus-mini-plus', 13);
+insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    (2, 'Bateria Atlas Agro 20000', 'ACC-BAA-0103', 'Bateria de alta capacidade para pulverizadores.', 4, 3, 4, 2, false, 'bateria-atlas-agro-20000', 13);
+insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    (2, 'Hélices Falcon X2', 'ACC-HFX2-0201', 'Par de hélices de baixo ruído.', 1, 4, 1, 2, false, 'helices-falcon-x2', 13);
+insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    (2, 'Hélices Nimbus Mini', 'ACC-HNM-0202', 'Jogo com 4 hélices de reposição.', 2, 4, 2, 2, false, 'helices-nimbus-mini', 13);
+insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
+    (2, 'Hélices FPV Tri-blade', 'ACC-HFPV-0203', 'Hélices tripá para drones de corrida.', 3, 4, 3, 3, false, 'helices-fpv-tri-blade', 13);
 update produto set descricao = 'Drone profissional com sensor de 1 polegada, 45 minutos de voo e transmissão de vídeo em até 15 km.', meta_title = 'Falcon X2 Pro | Aeria Drones', meta_description = 'Drone profissional Falcon X2 Pro com câmera de 1 polegada e 45 min de autonomia.', tags = 'profissional,4k,mapeamento', garantia_meses = 12, data_lancamento = '2026-03-01' where modelo = 'DRN-FX2P-0042';
 
 -- drones e acessorios (heranca JOINED, D27): a linha do subtipo reaproveita o id do produto
@@ -98,3 +98,24 @@ from produto p join (values
 ) as v(modelo, peso, dobrado, aberto, autonomia, alcance, velocidade, foto, sensor, video, estabilizacao, bateria, mah, carga, gps, anticolisao, anac, classe) on v.modelo = p.modelo;
 insert into acessorio (id, tipo_acessorio)
 select p.id, case when p.modelo like 'ACC-B%' then 'Bateria' else 'Hélice' end from produto p where p.tipo = 2;
+
+-- variantes (D26): uma "Padrão" por produto, com o preço que antes ficava no produto;
+-- custo de exemplo em 65% do preço; peso (kg) e altura x largura x comprimento (cm) da embalagem
+insert into variante_produto (id_produto, nome, sku, preco, custo_aquisicao, estoque_fisico, estoque_minimo, peso_embalagem_kg, altura_embalagem_cm, largura_embalagem_cm, comprimento_embalagem_cm, eh_kit, ativa)
+select p.id, 'Padrão', p.modelo || '-STD', v.preco, round(v.preco * 0.65, 2), v.estoque, v.minimo, v.peso, v.altura, v.largura, v.comprimento, false, true
+from produto p join (values
+    ('DRN-FX2P-0042', 12499.00, 12, 2, 2.100, 15, 28, 38),
+    ('DRN-FX2S-0041', 8990.00, 8, 2, 2.000, 15, 28, 38),
+    ('DRN-NM3-0038', 4290.00, 25, 5, 0.900, 10, 20, 26),
+    ('DRN-NM3C-0039', 5780.00, 0, 2, 1.800, 14, 25, 32),
+    ('DRN-VFR-0027', 3150.00, 5, 1, 1.200, 12, 25, 25),
+    ('DRN-AT10-0019', 46900.00, 3, 1, 32.000, 70, 65, 105),
+    ('DRN-HSP-0015', 28400.00, 4, 1, 3.200, 20, 35, 45),
+    ('DRN-SKD-0009', 690.00, 30, 5, 0.400, 8, 20, 20),
+    ('ACC-BFX2-0101', 899.00, 40, 10, 0.600, 6, 10, 18),
+    ('ACC-BNMP-0102', 549.00, 35, 10, 0.200, 4, 8, 12),
+    ('ACC-BAA-0103', 3890.00, 10, 3, 9.500, 20, 25, 35),
+    ('ACC-HFX2-0201', 129.00, 60, 15, 0.100, 3, 12, 25),
+    ('ACC-HNM-0202', 79.00, 80, 20, 0.080, 3, 10, 15),
+    ('ACC-HFPV-0203', 59.00, 50, 10, 0.050, 2, 8, 12)
+) as v(modelo, preco, estoque, minimo, peso, altura, largura, comprimento) on v.modelo = p.modelo;

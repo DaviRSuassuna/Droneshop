@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import br.com.droneshop.testes.Dados;
+import br.com.droneshop.testes.Fixtures;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 
@@ -32,12 +33,12 @@ class ExclusaoEmUsoTest {
         Map<String, Object> produto = new HashMap<>();
         produto.put("nome", "Drone " + s);
         produto.put("modelo", "EMUSO-" + s);
-        produto.put("preco", 1999.90);
         produto.put("idMarca", idMarca);
         produto.put("idSubcategoria", idSubcategoria);
         produto.put("idFornecedor", idFornecedor);
         produto.put("idStatus", Dados.PRODUTO_ATIVO);
         produto.put("pesoGramas", 895);
+        produto.put("variantes", Fixtures.lista(Fixtures.variante("EMUSO-" + s.toUpperCase(), 1999.90, 1)));
         long idProduto = given().contentType(ContentType.JSON).body(produto)
                 .when().post("/drones")
                 .then().statusCode(200)

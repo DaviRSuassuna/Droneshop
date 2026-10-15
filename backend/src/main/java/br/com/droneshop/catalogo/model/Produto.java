@@ -1,9 +1,11 @@
 package br.com.droneshop.catalogo.model;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import br.com.droneshop.model.DefaultEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorType;
@@ -12,10 +14,12 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 
 // Heranca JOINED (D27): produto guarda o comum, drone e acessorio guardam o proprio
-// e compartilham o id. A coluna tipo guarda o id de TipoProduto. O preco fica aqui
-// ate VarianteProduto existir (#9).
+// e compartilham o id. A coluna tipo guarda o id de TipoProduto. O preco fica na
+// variante (D26).
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "tipo", discriminatorType = DiscriminatorType.INTEGER)
@@ -51,9 +55,6 @@ public abstract class Produto extends DefaultEntity {
     @Column(name = "data_lancamento")
     private LocalDate dataLancamento;
 
-    @Column(precision = 12, scale = 2)
-    private BigDecimal preco;
-
     // muitos produtos -> uma marca
     @ManyToOne
     @JoinColumn(name = "id_marca")
@@ -74,6 +75,11 @@ public abstract class Produto extends DefaultEntity {
 
     @Column(nullable = false)
     private boolean destaque;
+
+    // composicao (1..* no ATIVO): a variante nao existe sem o produto
+    @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id")
+    private List<VarianteProduto> variantes = new ArrayList<>();
 
     public abstract TipoProduto getTipo();
 
@@ -157,14 +163,6 @@ public abstract class Produto extends DefaultEntity {
         this.dataLancamento = dataLancamento;
     }
 
-    public BigDecimal getPreco() {
-        return preco;
-    }
-
-    public void setPreco(BigDecimal preco) {
-        this.preco = preco;
-    }
-
     public Marca getMarca() {
         return marca;
     }
@@ -203,6 +201,14 @@ public abstract class Produto extends DefaultEntity {
 
     public void setDestaque(boolean destaque) {
         this.destaque = destaque;
+    }
+
+    public List<VarianteProduto> getVariantes() {
+        return variantes;
+    }
+
+    public void setVariantes(List<VarianteProduto> variantes) {
+        this.variantes = variantes;
     }
 
 }
