@@ -4,6 +4,7 @@ import { AdminNav } from '../../../../layout/admin/admin-nav/admin-nav';
 import { CategoriaService } from '../../../../core/services/categoria.service';
 import { Categoria } from '../../../../core/models/categoria.model';
 import { STATUS_PUBLICACAO, StatusRef } from '../../../../core/models/status.model';
+import { TIPO_PRODUTO } from '../../../../core/models/produto.model';
 
 const TAMANHO_PAGINA = 10;
 
@@ -23,6 +24,7 @@ export class CategoriasListagem implements OnInit {
 
   readonly termoBusca = signal('');
   readonly STATUS = STATUS_PUBLICACAO;
+  readonly TIPO = TIPO_PRODUTO;
   readonly filtroStatus = signal<number | null>(null);
   readonly pagina = signal(0);
 

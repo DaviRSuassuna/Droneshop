@@ -75,6 +75,11 @@
           <span class="cell-name">
             <b>{{ categoria.nome || '(sem nome)' }}</b>
             <span class="chip">{{ categoria.slug }}</span>
+            @if (categoria.tipo) {
+              <span class="dim sm">{{
+                categoria.tipo.id === TIPO.DRONE ? 'Drones' : 'Acessórios'
+              }}</span>
+            }
           </span>
           <span class="ink">{{ categoria.ordemExibicao }}</span>
           <span class="ink">{{ categoria.exibirMenu ? 'Sim' : 'Não' }}</span>

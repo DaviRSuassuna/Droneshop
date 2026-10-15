@@ -8,7 +8,8 @@
     </span>
   </div>
   <div class="actions">
-    <a class="btn p" routerLink="/admin/produtos/novo">Novo produto</a>
+    <a class="btn" routerLink="/admin/acessorios/novo">Novo acessório</a>
+    <a class="btn p" routerLink="/admin/drones/novo">Novo drone</a>
   </div>
 </div>
 
@@ -22,6 +23,17 @@
         [value]="termoBusca()"
         (input)="aoDigitarBusca($any($event.target).value)"
       />
+    </div>
+    <div class="f">
+      <select
+        aria-label="Filtrar por tipo"
+        [value]="filtroTipo() ?? ''"
+        (change)="aoMudarTipo($any($event.target).value)"
+      >
+        <option value="">Todos os tipos</option>
+        <option [value]="TIPO.DRONE">Drone</option>
+        <option [value]="TIPO.ACESSORIO">Acessório</option>
+      </select>
     </div>
     <div class="f">
       <select
@@ -44,7 +56,7 @@
         (change)="aoMudarCategoria($any($event.target).value)"
       >
         <option value="">Todas as categorias</option>
-        @for (categoria of categorias(); track categoria.id) {
+        @for (categoria of categoriasDoFiltro(); track categoria.id) {
           <option [value]="categoria.id" [selected]="categoria.id === filtroCategoria()">
             {{ categoria.nome }}
           </option>
@@ -112,11 +124,7 @@
       </div>
     } @else {
       @for (produto of produtos(); track produto.id) {
-        <a
-          class="trow"
-          [style.grid-template-columns]="grid"
-          [routerLink]="['/admin/produtos', produto.id, 'editar']"
-        >
+        <a class="trow" [style.grid-template-columns]="grid" [routerLink]="rotaEdicao(produto)">
           <span class="cell-name">
             <b>
               {{ produto.nome ?? 'Rascunho sem nome' }}

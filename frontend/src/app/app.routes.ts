@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { TIPO_PRODUTO } from './core/models/produto.model';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'admin/marcas', pathMatch: 'full' },
@@ -87,13 +88,28 @@ export const routes: Routes = [
         (m) => m.ProdutosListagem,
       ),
   },
+  // drone e acessório usam a mesma tela de cadastro; o tipo vem do data da rota (D27)
   {
-    path: 'admin/produtos/novo',
+    path: 'admin/drones/novo',
+    data: { tipo: TIPO_PRODUTO.DRONE },
     loadComponent: () =>
       import('./admin/catalogo/produtos/cadastro/produto-cadastro').then((m) => m.ProdutoCadastro),
   },
   {
-    path: 'admin/produtos/:id/editar',
+    path: 'admin/drones/:id/editar',
+    data: { tipo: TIPO_PRODUTO.DRONE },
+    loadComponent: () =>
+      import('./admin/catalogo/produtos/cadastro/produto-cadastro').then((m) => m.ProdutoCadastro),
+  },
+  {
+    path: 'admin/acessorios/novo',
+    data: { tipo: TIPO_PRODUTO.ACESSORIO },
+    loadComponent: () =>
+      import('./admin/catalogo/produtos/cadastro/produto-cadastro').then((m) => m.ProdutoCadastro),
+  },
+  {
+    path: 'admin/acessorios/:id/editar',
+    data: { tipo: TIPO_PRODUTO.ACESSORIO },
     loadComponent: () =>
       import('./admin/catalogo/produtos/cadastro/produto-cadastro').then((m) => m.ProdutoCadastro),
   },

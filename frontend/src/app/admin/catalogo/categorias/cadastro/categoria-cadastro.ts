@@ -7,6 +7,7 @@ import { AdminNav } from '../../../../layout/admin/admin-nav/admin-nav';
 import { CategoriaService } from '../../../../core/services/categoria.service';
 import { CategoriaDTO } from '../../../../core/models/categoria.model';
 import { STATUS_PUBLICACAO } from '../../../../core/models/status.model';
+import { TIPO_PRODUTO } from '../../../../core/models/produto.model';
 import { ProblemDetail } from '../../../../core/models/problem.model';
 
 @Component({
@@ -18,6 +19,7 @@ import { ProblemDetail } from '../../../../core/models/problem.model';
 })
 export class CategoriaCadastro implements OnInit {
   readonly STATUS = STATUS_PUBLICACAO;
+  readonly TIPO = TIPO_PRODUTO;
   private readonly fb = inject(FormBuilder);
   private readonly categoriaService = inject(CategoriaService);
   private readonly route = inject(ActivatedRoute);
@@ -39,6 +41,7 @@ export class CategoriaCadastro implements OnInit {
     descricao: [''],
     iconeUrl: [''],
     idStatus: [STATUS_PUBLICACAO.RASCUNHO as number, Validators.required],
+    idTipo: this.fb.control<number | null>(null),
     exibirMenu: [false],
   });
 
@@ -48,6 +51,7 @@ export class CategoriaCadastro implements OnInit {
     const faltando: string[] = [];
     if (!v.nome.trim()) faltando.push('Nome da categoria');
     if (v.ordemExibicao === null || Number(v.ordemExibicao) < 0) faltando.push('Ordem de exibição');
+    if (!v.idTipo) faltando.push('Tipo de produto');
     return faltando;
   });
 
@@ -71,6 +75,7 @@ export class CategoriaCadastro implements OnInit {
           descricao: categoria.descricao ?? '',
           iconeUrl: categoria.iconeUrl ?? '',
           idStatus: categoria.status.id,
+          idTipo: categoria.tipo?.id ?? null,
           exibirMenu: categoria.exibirMenu,
         });
         this.carregando.set(false);
@@ -102,6 +107,7 @@ export class CategoriaCadastro implements OnInit {
       descricao: v.descricao.trim(),
       iconeUrl: v.iconeUrl.trim(),
       idStatus: Number(v.idStatus),
+      idTipo: v.idTipo ? Number(v.idTipo) : null,
       exibirMenu: v.exibirMenu,
     };
 
