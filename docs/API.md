@@ -42,14 +42,14 @@ As telas citadas são as do [protótipo](design/README.md).
 | GET PUT DELETE | `/marcas/{id}` | editar / excluir marca | base | pronto |
 | GET | `/marcas/nome/{nome}` · `/marcas/slug/{slug}` | busca | base | pronto |
 | GET | `/status-marca` · `/status-categoria` · `/status-fornecedor` · `/status-produto` (+ `/{id}`) | selects de status | base | pronto |
-| GET POST · GET PUT DELETE | `/categorias` · `/categorias/{id}` (+ `nome`, `slug`) | Categorias, Cadastrar categoria | base | pronto |
+| GET POST · GET PUT DELETE | `/categorias` · `/categorias/{id}` (+ `nome`, `slug`) | Categorias, Cadastrar categoria (com `idTipo` desde a #8, D39) | base / #8 | pronto |
 | GET POST · GET PUT DELETE | `/subcategorias?idCategoria=` · `/subcategorias/{id}` | subcategorias | base | pronto |
 | GET POST · GET PUT DELETE | `/fornecedores` · `/fornecedores/{id}` (+ `nome`, `cnpj/{cnpj}`) | Fornecedores, Cadastrar fornecedor | base | pronto |
-| GET | `/produtos?nome=&idMarca=&idCategoria=&idSubcategoria=&idStatus=` | Produtos (filtros) | base | pronto |
-| GET POST · GET PUT DELETE | `/produtos` · `/produtos/{id}` | Produtos | base / #7 | pronto; #7 acrescenta SEO, garantia e lançamento; na #8 POST e PUT saem daqui (D27) |
-| GET | `/produtos/slug/{slug}` · `/tipos-produto` | busca por slug, select de tipo | #7, #8 | a fazer |
-| POST · PUT | `/drones` · `/drones/{id}` | Cadastrar drone (specs fixas, D14) | #8 | a fazer |
-| POST · PUT | `/acessorios` · `/acessorios/{id}` | Cadastrar acessório | #8 | a fazer |
+| GET | `/produtos?idTipo=&nome=&idMarca=&idCategoria=&idSubcategoria=&idStatus=` | Produtos (filtros; cada item com `tipo`) | base / #8 | pronto |
+| GET · GET DELETE | `/produtos` · `/produtos/{id}` | Produtos (consulta traz os campos do tipo) | base / #7 / #8 | pronto; POST e PUT respondem 405 desde a #8 (D27) |
+| GET | `/produtos/slug/{slug}` · `/tipos-produto` (+ `/{id}`) | busca por slug, select de tipo | #7, #8 | pronto |
+| POST · PUT | `/drones` · `/drones/{id}` | Cadastrar drone (specs fixas, D14) | #8 | pronto |
+| POST · PUT | `/acessorios` · `/acessorios/{id}` | Cadastrar acessório | #8 | pronto |
 | (corpo) | `variantes[]` dentro do drone/acessório | tabela de variantes na própria tela (D13) | #9 | a fazer |
 | GET · GET PUT | `/variantes?busca=` · `/variantes/{id}` | select de variante (estoque, promoção, kit); preço e margem (D26) | #9 | a fazer |
 | (corpo) | `componentes[]` na variante kit | Kit ou combo (D7) | #10 | a fazer |
@@ -116,7 +116,7 @@ As telas citadas são as do [protótipo](design/README.md).
 
 | Método | Rota | Uso | Issue | Situação |
 |---|---|---|---|---|
-| GET | `/loja/categorias` · `/loja/marcas?destaque=` | menu, home (marcas em destaque) | #21 | a fazer |
+| GET | `/loja/categorias?tipo=` · `/loja/marcas?destaque=` | menu, home (marcas em destaque) | #21 | a fazer |
 | GET | `/loja/produtos?categoria=&subcategoria=&marca=&precoMin=&precoMax=&alcance=&autonomia=&ordem=&page=` | Drones, Acessórios (só ATIVO, RN17) | #21 | a fazer |
 | GET | `/loja/filtros?categoria=` | contagens de cada filtro (facetas) | #21 | a fazer |
 | GET | `/loja/produtos/{slug}` | Produto (variantes, specs, mídias) | #21 | a fazer |
