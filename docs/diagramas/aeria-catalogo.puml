@@ -192,7 +192,7 @@ end note
 class VarianteProduto {
   -sku: String
   -nome: String
-  -precoAdicional: BigDecimal
+  -preco: BigDecimal
   -custoAquisicao: BigDecimal
   -estoqueFisico: Integer
   -estoqueMinimo: Integer

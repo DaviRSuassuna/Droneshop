@@ -59,7 +59,7 @@ Testes escritos a partir do contrato de cada issue (`docs/issues/NNN.md`), antes
 | `issue-6` | informativo | `administracao/ConfiguracaoLojaResourceTest` | 4 |
 | `issue-7` | bloqueia o merge | `catalogo/ProdutoSeoResourceTest` | 7 |
 | `issue-8` | bloqueia o merge | `catalogo/AcessorioResourceTest`, `catalogo/CategoriaResourceTest`, `catalogo/DroneResourceTest`, `catalogo/ExclusaoEmUsoTest`, `catalogo/ProdutoResourceTest`, `catalogo/SubcategoriaResourceTest` | 29 |
-| `issue-9` | informativo | `catalogo/VarianteResourceTest` | 9 |
+| `issue-9` | bloqueia o merge | `catalogo/VarianteResourceTest` | 9 |
 | `issue-10` | informativo | `catalogo/KitResourceTest` | 7 |
 | `issue-11` | bloqueia o merge | `catalogo/CompatibilidadeResourceTest` | 6 |
 | `issue-12` | informativo | `catalogo/MidiaProdutoResourceTest` | 8 |

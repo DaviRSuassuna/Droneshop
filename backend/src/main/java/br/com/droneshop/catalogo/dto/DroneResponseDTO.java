@@ -1,6 +1,5 @@
 package br.com.droneshop.catalogo.dto;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -20,7 +19,6 @@ public record DroneResponseDTO(
     String tags,
     int garantiaMeses,
     LocalDate dataLancamento,
-    BigDecimal preco,
     MarcaResponseDTO marca,
     SubcategoriaResponseDTO subcategoria,
     FornecedorResponseDTO fornecedor,
@@ -44,6 +42,7 @@ public record DroneResponseDTO(
     boolean exigeRegistroAnac,
     String classeAnac,
     String registroSisant,
+    List<VarianteResponseDTO> variantes,
     List<ProdutoResumoDTO> acessoriosCompativeis
 ) implements ProdutoResponseDTO {
 }

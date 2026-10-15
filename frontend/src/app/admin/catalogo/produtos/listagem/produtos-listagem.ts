@@ -287,6 +287,14 @@ export class ProdutosListagem implements OnInit, OnDestroy {
     return id === TIPO_PRODUTO.DRONE ? 'Drone' : 'Acessório';
   }
 
+  /** O preço é da variante (D26): a listagem mostra o da ativa mais barata. */
+  menorPreco(produto: Produto): number | null {
+    const precos = (produto.variantes ?? [])
+      .filter((v) => v.ativa && v.preco !== null)
+      .map((v) => v.preco as number);
+    return precos.length ? Math.min(...precos) : null;
+  }
+
   formatarPreco(valor: number | null): string {
     return valor === null ? '' : this.formatoMoeda.format(valor);
   }

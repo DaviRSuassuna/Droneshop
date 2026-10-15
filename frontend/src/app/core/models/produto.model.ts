@@ -6,6 +6,43 @@ import { Subcategoria } from './subcategoria.model';
 /** Ids de TipoProduto (GET /tipos-produto). */
 export const TIPO_PRODUTO = { DRONE: 1, ACESSORIO: 2 } as const;
 
+/** Variante da resposta (D26): o preço é dela; a margem vem calculada do backend. */
+export interface Variante {
+  id: number;
+  nome: string | null;
+  sku: string | null;
+  preco: number | null;
+  custoAquisicao: number | null;
+  margemPercentual: number | null;
+  estoqueFisico: number | null;
+  estoqueMinimo: number;
+  pesoEmbalagemKg: number | null;
+  alturaEmbalagemCm: number | null;
+  larguraEmbalagemCm: number | null;
+  comprimentoEmbalagemCm: number | null;
+  ehKit: boolean;
+  ativa: boolean;
+}
+
+/**
+ * Linha da tabela de variantes no corpo do drone/acessório (D13). Com id altera,
+ * sem id cria; a que sai da lista é excluída. estoqueFisico só vale na criação.
+ */
+export interface VarianteDTO {
+  id: number | null;
+  nome: string;
+  sku: string;
+  preco: number | null;
+  custoAquisicao: number | null;
+  estoqueFisico: number | null;
+  estoqueMinimo: number | null;
+  pesoEmbalagemKg: number | null;
+  alturaEmbalagemCm: number | null;
+  larguraEmbalagemCm: number | null;
+  comprimentoEmbalagemCm: number | null;
+  ativa: boolean;
+}
+
 /** Campos comuns da resposta de /produtos (relacionamentos aninhados). */
 interface ProdutoBase {
   id: number;
@@ -19,12 +56,12 @@ interface ProdutoBase {
   tags: string | null;
   garantiaMeses: number;
   dataLancamento: string | null;
-  preco: number | null;
   marca: Marca | null;
   subcategoria: Subcategoria | null;
   fornecedor: Fornecedor | null;
   status: StatusRef;
   destaque: boolean;
+  variantes: Variante[];
 }
 
 /** Specs do drone, colunas fixas (D14). */
@@ -86,6 +123,7 @@ export interface ProdutoDTO {
   idFornecedor: number | null;
   idStatus: number;
   destaque: boolean;
+  variantes: VarianteDTO[];
 }
 
 /** Corpo de POST /drones e PUT /drones/{id}. */

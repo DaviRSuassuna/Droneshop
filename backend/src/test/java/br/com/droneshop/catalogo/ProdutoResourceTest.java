@@ -13,12 +13,13 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import br.com.droneshop.testes.Dados;
+import br.com.droneshop.testes.Fixtures;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 
 /**
  * Produto: cadastro pelo /drones (D27) e listagem, consulta e exclusão em /produtos
- * com filtros combináveis. Era "base"; a #8 migrou para /drones. A #9 tira o preço.
+ * com filtros combináveis. Era "base"; a #8 migrou para /drones. Desde a #9 o preço fica na variante.
  */
 @QuarkusTest
 @Tag("issue-8")
@@ -41,13 +42,13 @@ class ProdutoResourceTest {
         p.put("nome", nome);
         p.put("modelo", modelo);
         p.put("descricaoCurta", "Produto criado pelo teste.");
-        p.put("preco", 4999.90);
         p.put("idMarca", a.idMarca());
         p.put("idSubcategoria", a.idSubcategoria());
         p.put("idFornecedor", a.idFornecedor());
         p.put("idStatus", Dados.PRODUTO_ATIVO);
         p.put("destaque", false);
         p.put("pesoGramas", 895);
+        p.put("variantes", Fixtures.lista(Fixtures.variante("PR-" + Dados.sufixo().toUpperCase(), 4999.90, 5)));
         return p;
     }
 
@@ -137,11 +138,11 @@ class ProdutoResourceTest {
     void precoNegativoResponde400() {
         String s = Dados.sufixo();
         Map<String, Object> dto = produto("Negativo " + s, "NEG-" + s, arvore(s));
-        dto.put("preco", -1);
+        dto.put("variantes", Fixtures.lista(Fixtures.variante("NEG-" + s.toUpperCase(), -1, 1)));
         given().contentType(ContentType.JSON).body(dto)
                 .when().post("/drones")
                 .then().statusCode(400)
-                .body("errors.field", hasItem("preco"));
+                .body("errors.field", hasItem("variantes[0].preco"));
     }
 
     @Test
@@ -151,14 +152,14 @@ class ProdutoResourceTest {
         long id = criar(produto("Antes " + s, "ALT-" + s, a));
 
         Map<String, Object> dto = produto("Depois " + s, "ALT-" + s, a);
-        dto.put("preco", 100);
+        dto.put("variantes", Fixtures.lista(Fixtures.variante("ALT-" + s.toUpperCase(), 100, 5)));
         given().contentType(ContentType.JSON).body(dto)
                 .when().put("/drones/{id}", id)
                 .then().statusCode(204);
         given().when().get("/produtos/{id}", id)
                 .then().statusCode(200)
                 .body("nome", equalTo("Depois " + s))
-                .body("preco", equalTo(100.0f));
+                .body("variantes[0].preco", equalTo(100.0f));
 
         given().when().delete("/produtos/{id}", id).then().statusCode(204);
         given().when().get("/produtos/{id}", id).then().statusCode(404);
