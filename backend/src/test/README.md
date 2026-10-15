@@ -53,25 +53,25 @@ Testes escritos a partir do contrato de cada issue (`docs/issues/NNN.md`), antes
 
 | Etiqueta | Situação no CI | Arquivos | Testes |
 |---|---|---|---:|
-| `base` | bloqueia o merge | `catalogo/CategoriaResourceTest`, `catalogo/ExclusaoEmUsoTest`, `catalogo/FornecedorResourceTest`, `catalogo/MarcaResourceTest`, `catalogo/ProdutoResourceTest`, `catalogo/SubcategoriaResourceTest`, `endereco/CepResourceTest`, `endereco/EstadoMunicipioResourceTest`, `exception/RotaInexistenteTest` | 82 |
+| `base` | bloqueia o merge | `catalogo/CategoriaResourceTest`, `catalogo/ExclusaoEmUsoTest`, `catalogo/FornecedorResourceTest`, `catalogo/MarcaResourceTest`, `catalogo/ProdutoResourceTest`, `catalogo/SubcategoriaResourceTest`, `endereco/CepResourceTest`, `endereco/EstadoMunicipioResourceTest`, `exception/RotaInexistenteTest` | 81 |
 | `issue-4` | informativo | `identidade/AutenticacaoResourceTest` | 11 |
 | `issue-5` | informativo | `administracao/UsuarioAdministrativoResourceTest` | 10 |
-| `issue-6` | informativo | `administracao/ConfiguracaoLojaResourceTest` | 5 |
+| `issue-6` | informativo | `administracao/ConfiguracaoLojaResourceTest` | 4 |
 | `issue-7` | informativo | `catalogo/ProdutoSeoResourceTest` | 7 |
 | `issue-8` | informativo | `catalogo/AcessorioResourceTest`, `catalogo/DroneResourceTest` | 15 |
 | `issue-9` | informativo | `catalogo/VarianteResourceTest` | 9 |
 | `issue-10` | informativo | `catalogo/KitResourceTest` | 7 |
-| `issue-11` | informativo | `catalogo/CompatibilidadeResourceTest` | 5 |
+| `issue-11` | informativo | `catalogo/CompatibilidadeResourceTest` | 3 |
 | `issue-12` | informativo | `catalogo/MidiaProdutoResourceTest` | 8 |
 | `issue-13` | informativo | `estoque/MovimentoEstoqueResourceTest` | 9 |
-| `issue-14` | informativo | `catalogo/PromocaoResourceTest` | 7 |
+| `issue-14` | informativo | `catalogo/PromocaoResourceTest` | 6 |
 | `issue-15` | informativo | `compra/CupomResourceTest` | 5 |
 | `issue-16` | informativo | `pedido/PedidoResourceTest` | 7 |
 | `issue-17` | informativo | `pedido/StatusPedidoResourceTest` | 5 |
 | `issue-18` | informativo | `administracao/DashboardResourceTest` | 4 |
 | `issue-19` | informativo | `identidade/ClienteResourceTest`, `identidade/EnderecoClienteResourceTest` | 17 |
 | `issue-20` | informativo | `identidade/SessaoResourceTest` | 7 |
-| `issue-21` | informativo | `catalogo/LojaProdutoResourceTest` | 7 |
+| `issue-21` | informativo | `catalogo/LojaProdutoResourceTest`, `catalogo/LojaVitrineResourceTest` | 11 |
 | `issue-22` | informativo | `compra/ListaDesejosResourceTest` | 3 |
 | `issue-23` | informativo | `estoque/ReservaResourceTest` | 7 |
 | `issue-24` | informativo | `compra/CarrinhoResourceTest` | 9 |
@@ -101,7 +101,7 @@ Testes escritos a partir do contrato de cada issue (`docs/issues/NNN.md`), antes
 | `issue-empresas` | informativo | `atendimento/LeadEmpresaResourceTest` | 2 |
 | `issue-lote-csv` | informativo | `administracao/AcoesAdminResourceTest` | 6 |
 
-Total: 372 testes. Gerado por `scripts/vincular_testes_issues.py --matriz`.
+Total: 371 testes. Gerado por `scripts/vincular_testes_issues.py --matriz`.
 
 <!-- matriz:fim -->
 

@@ -1,6 +1,5 @@
 package br.com.droneshop.catalogo;
 
-import static br.com.droneshop.testes.Api.anonimo;
 import static br.com.droneshop.testes.Api.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
@@ -48,25 +47,6 @@ class CompatibilidadeResourceTest {
         given().when().get("/produtos/{id}", drone.id())
                 .then().statusCode(200)
                 .body("acessoriosCompativeis.id", hasItem((int) idAcessorio));
-    }
-
-    @Test
-    void lojaListaSoAcessoriosAtivos() {
-        Fixtures.Arvore a = Fixtures.arvore();
-        Fixtures.ProdutoCriado drone = Fixtures.criarDrone(a, 7999.0, 2);
-        long ativo = Fixtures.criar("/acessorios", acessorioCompativel(a, List.of(drone.id()), Fixtures.PRODUTO_ATIVO));
-        Fixtures.criar("/acessorios", acessorioCompativel(a, List.of(drone.id()), Fixtures.PRODUTO_INATIVO));
-
-        anonimo().when().get("/loja/produtos/{slug}/compativeis", drone.slug())
-                .then().statusCode(200)
-                .body("$", hasSize(1))
-                .body("[0].id", equalTo((int) ativo));
-    }
-
-    @Test
-    void slugInexistenteResponde404() {
-        anonimo().when().get("/loja/produtos/{slug}/compativeis", "nao-existe-" + Dados.sufixo())
-                .then().statusCode(404);
     }
 
     @Test

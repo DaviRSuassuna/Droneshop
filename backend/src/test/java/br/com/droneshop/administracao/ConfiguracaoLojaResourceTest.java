@@ -1,6 +1,5 @@
 package br.com.droneshop.administracao;
 
-import static br.com.droneshop.testes.Api.anonimo;
 import static br.com.droneshop.testes.Api.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
@@ -81,13 +80,5 @@ class ConfiguracaoLojaResourceTest {
         given().contentType(ContentType.JSON).body(atual())
                 .when().post("/admin/configuracao").then().statusCode(405);
         given().when().delete("/admin/configuracao").then().statusCode(405);
-    }
-
-    @Test
-    void lojaVeSoOQueMostra() {
-        anonimo().when().get("/loja/configuracao")
-                .then().statusCode(200)
-                .body("prazoArrependimentoDias", equalTo(7))
-                .body("dadosFiscais", org.hamcrest.Matchers.nullValue());
     }
 }
