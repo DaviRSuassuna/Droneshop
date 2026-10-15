@@ -26,7 +26,7 @@ Os dois temas trocam só valores de token (`:root` e `[data-theme="light"]`). Co
 | `--ink` / `--ink2` | `#F5F5F7` / `#C9C9CE` | `#15171C` / `#31353E` | texto principal / secundário |
 | `--dim`, `--mute`, `--faint` | cinzas | cinzas | texto de apoio, em ordem decrescente de contraste |
 | `--pure` | `#FFFFFF` | `#15171C` | botão primário, preço, item ativo |
-| `--acc` | `#3B7AF0` | `#0B69D4` | acento: badge, contador do carrinho, link de destaque |
+| `--acc` | `#3B7AF0` | `#0B69D4` | acento: badge, contador do carrinho, link de destaque, checkbox marcado |
 | `--warn` | `#FF6B4A` | `#B23310` | erro, obrigatório, ação destrutiva |
 | `--ok` | `#5FA97F` | `#1C6844` | sucesso, status ativo |
 | `--line`, `--b1`…`--b6` | branco com alfa | azul-escuro com alfa | divisórias e bordas, da mais leve à mais forte |
@@ -64,7 +64,7 @@ Peso nunca passa de 500. Hierarquia vem de tamanho e cor, não de negrito.
 | Input, botão, paginação | 5 a 6px |
 | Card, tabela, KPI, banner | 10px |
 | Pílula, busca, carrinho, tag | 18 a 20px |
-| Checkbox | 3px |
+| Checkbox | 4px |
 
 Sombra só no tema claro, bem suave, em card, tabela e KPI. No escuro a separação é pela borda.
 
@@ -76,7 +76,7 @@ Sombra só no tema claro, bem suave, em card, tabela e KPI. No escuro a separaç
 | Botão do storefront | `.sbtn`, `.sbtn.p` | 46px de altura |
 | Campo | `.f` > `label` + `input`/`select`/`textarea` | 38px; obrigatório marcado com `.req` (`*` em `--warn`) |
 | Grupo de campos | `.fhead` | rótulo em caixa alta + linha |
-| Checkbox | `.ck` | marcado = `--pure` |
+| Checkbox | `.ck`, `.perm` | 16px; marcado = fundo `--acc` com ✓ branco, nos dois temas |
 | Upload | `.up` | borda tracejada, 104px |
 | Tabela | `.tbl` > `.trow.head` + `.trow` | linhas em CSS grid; a linha inteira é link quando abre o registro |
 | Status | `.status` + `.dot` | ponto colorido + texto (nunca só cor) |
