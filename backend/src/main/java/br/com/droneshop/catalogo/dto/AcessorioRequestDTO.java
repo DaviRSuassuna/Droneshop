@@ -2,6 +2,7 @@ package br.com.droneshop.catalogo.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import org.hibernate.validator.constraints.Length;
 
@@ -53,7 +54,10 @@ public record AcessorioRequestDTO(
     Boolean destaque,
 
     @Length(max = 60, message = "O campo deve ter no máximo 60 caracteres (back).")
-    String tipoAcessorio
+    String tipoAcessorio,
+
+    // produtos (drone ou acessorio) com que este acessorio e compativel (D17)
+    List<Long> idsCompativeis
 ) implements ProdutoRequestDTO {
     public AcessorioRequestDTO {
         nome = Textos.nuloSeVazio(nome);

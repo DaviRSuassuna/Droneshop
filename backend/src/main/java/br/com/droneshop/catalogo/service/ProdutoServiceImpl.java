@@ -2,6 +2,7 @@ package br.com.droneshop.catalogo.service;
 
 import java.util.List;
 
+import br.com.droneshop.catalogo.model.Acessorio;
 import br.com.droneshop.catalogo.model.Produto;
 import br.com.droneshop.catalogo.model.StatusProduto;
 import br.com.droneshop.catalogo.model.TipoProduto;
@@ -17,11 +18,15 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Inject
     ProdutoRepository produtoRepository;
 
-    // remove pela entidade (e nao por deleteById) para apagar as linhas de produto e do subtipo
+    // remove pela entidade (e nao por deleteById) para apagar as linhas de produto e do subtipo.
+    // Compatibilidade nao e "uso" (D17): os vinculos que apontam para ele saem junto.
     @Override
     @Transactional
     public void delete(long id) {
-        produtoRepository.delete(buscarProdutoOuFalhar(id));
+        Produto produto = buscarProdutoOuFalhar(id);
+        for (Acessorio acessorio : produto.getAcessoriosCompativeis())
+            acessorio.getCompativeis().remove(produto);
+        produtoRepository.delete(produto);
     }
 
     @Override

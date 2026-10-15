@@ -2,6 +2,8 @@ package br.com.droneshop.catalogo.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 import br.com.droneshop.model.DefaultEntity;
 import jakarta.persistence.Column;
@@ -11,6 +13,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 
 // Heranca JOINED (D27): produto guarda o comum, drone e acessorio guardam o proprio
@@ -74,6 +77,10 @@ public abstract class Produto extends DefaultEntity {
 
     @Column(nullable = false)
     private boolean destaque;
+
+    // lado reciproco da compatibilidade (D17): so leitura, quem grava e o acessorio
+    @ManyToMany(mappedBy = "compativeis")
+    private Set<Acessorio> acessoriosCompativeis = new HashSet<>();
 
     public abstract TipoProduto getTipo();
 
@@ -203,6 +210,10 @@ public abstract class Produto extends DefaultEntity {
 
     public void setDestaque(boolean destaque) {
         this.destaque = destaque;
+    }
+
+    public Set<Acessorio> getAcessoriosCompativeis() {
+        return acessoriosCompativeis;
     }
 
 }
