@@ -228,7 +228,7 @@ export class ProdutosListagem implements OnInit, OnDestroy {
   excluir(evento: Event, produto: Produto): void {
     evento.preventDefault();
     evento.stopPropagation();
-    if (!confirm(`Excluir o produto "${produto.nome}"? Essa ação não pode ser desfeita.`)) return;
+    if (!confirm(`Excluir o produto "${produto.nome ?? 'sem nome'}"? Essa ação não pode ser desfeita.`)) return;
 
     this.produtoService.excluir(produto.id).subscribe({
       next: () => {
@@ -240,8 +240,8 @@ export class ProdutosListagem implements OnInit, OnDestroy {
     });
   }
 
-  formatarPreco(valor: number): string {
-    return this.formatoMoeda.format(valor);
+  formatarPreco(valor: number | null): string {
+    return valor === null ? '' : this.formatoMoeda.format(valor);
   }
 
   statusLabel(status: StatusRef): string {

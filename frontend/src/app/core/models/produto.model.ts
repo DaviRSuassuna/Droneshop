@@ -6,13 +6,20 @@ import { Subcategoria } from './subcategoria.model';
 /** Espelha o ProdutoResponseDTO devolvido pela API (relacionamentos aninhados). */
 export interface Produto {
   id: number;
-  nome: string;
-  modelo: string;
+  nome: string | null;
+  modelo: string | null;
   descricaoCurta: string | null;
-  preco: number;
-  marca: Marca;
-  subcategoria: Subcategoria;
-  fornecedor: Fornecedor;
+  descricao: string | null;
+  slug: string;
+  metaTitle: string | null;
+  metaDescription: string | null;
+  tags: string | null;
+  garantiaMeses: number;
+  dataLancamento: string | null;
+  preco: number | null;
+  marca: Marca | null;
+  subcategoria: Subcategoria | null;
+  fornecedor: Fornecedor | null;
   status: StatusRef;
   destaque: boolean;
 }
@@ -22,6 +29,13 @@ export interface ProdutoDTO {
   nome: string;
   modelo: string;
   descricaoCurta: string;
+  descricao: string;
+  slug: string;
+  metaTitle: string;
+  metaDescription: string;
+  tags: string;
+  garantiaMeses: number | null;
+  dataLancamento: string | null;
   preco: number | null;
   idMarca: number | null;
   idSubcategoria: number | null;

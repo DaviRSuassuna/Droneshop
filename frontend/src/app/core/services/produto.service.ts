@@ -20,6 +20,10 @@ export class ProdutoService {
     return this.http.get<Produto>(`${this.baseUrl}/${id}`);
   }
 
+  buscarPorSlug(slug: string): Observable<Produto> {
+    return this.http.get<Produto>(`${this.baseUrl}/slug/${encodeURIComponent(slug)}`);
+  }
+
   criar(dto: ProdutoDTO): Observable<Produto> {
     return this.http.post<Produto>(this.baseUrl, dto);
   }

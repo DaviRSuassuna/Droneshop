@@ -56,10 +56,21 @@ export class ProdutoCadastro implements OnInit {
   readonly erroGeral = signal<string | null>(null);
   readonly errosCampo = signal<Record<string, string>>({});
 
+  readonly erroNoSeo = computed(() =>
+    ['slug', 'metaTitle', 'metaDescription', 'tags'].some((c) => c in this.errosCampo()),
+  );
+
   readonly form = this.fb.group({
     nome: this.fb.nonNullable.control(''),
     modelo: this.fb.nonNullable.control(''),
     descricaoCurta: this.fb.nonNullable.control(''),
+    descricao: this.fb.nonNullable.control(''),
+    slug: this.fb.nonNullable.control(''),
+    metaTitle: this.fb.nonNullable.control(''),
+    metaDescription: this.fb.nonNullable.control(''),
+    tags: this.fb.nonNullable.control(''),
+    garantiaMeses: this.fb.control<number | null>(null),
+    dataLancamento: this.fb.nonNullable.control(''),
     preco: this.fb.control<number | null>(null),
     idMarca: this.fb.control<number | null>(null),
     // idCategoria só ajuda a escolher; o que vai para a API é idSubcategoria
@@ -105,14 +116,21 @@ export class ProdutoCadastro implements OnInit {
     this.produtoService.buscarPorId(id).subscribe({
       next: (produto) => {
         this.form.patchValue({
-          nome: produto.nome,
-          modelo: produto.modelo,
+          nome: produto.nome ?? '',
+          modelo: produto.modelo ?? '',
           descricaoCurta: produto.descricaoCurta ?? '',
+          descricao: produto.descricao ?? '',
+          slug: produto.slug,
+          metaTitle: produto.metaTitle ?? '',
+          metaDescription: produto.metaDescription ?? '',
+          tags: produto.tags ?? '',
+          garantiaMeses: produto.garantiaMeses,
+          dataLancamento: produto.dataLancamento ?? '',
           preco: produto.preco,
-          idMarca: produto.marca.id,
-          idCategoria: produto.subcategoria.categoria.id,
-          idSubcategoria: produto.subcategoria.id,
-          idFornecedor: produto.fornecedor.id,
+          idMarca: produto.marca?.id ?? null,
+          idCategoria: produto.subcategoria?.categoria.id ?? null,
+          idSubcategoria: produto.subcategoria?.id ?? null,
+          idFornecedor: produto.fornecedor?.id ?? null,
           idStatus: produto.status.id,
           destaque: produto.destaque,
         });
@@ -142,6 +160,13 @@ export class ProdutoCadastro implements OnInit {
       nome: v.nome.trim(),
       modelo: v.modelo.trim(),
       descricaoCurta: v.descricaoCurta.trim(),
+      descricao: v.descricao.trim(),
+      slug: v.slug.trim(),
+      metaTitle: v.metaTitle.trim(),
+      metaDescription: v.metaDescription.trim(),
+      tags: v.tags.trim(),
+      garantiaMeses: v.garantiaMeses === null || `${v.garantiaMeses}` === '' ? null : Number(v.garantiaMeses),
+      dataLancamento: v.dataLancamento || null,
       preco: v.preco,
       // o select devolve string; a API espera Long
       idMarca: v.idMarca ? Number(v.idMarca) : null,

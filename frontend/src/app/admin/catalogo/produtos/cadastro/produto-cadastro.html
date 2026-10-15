@@ -68,6 +68,17 @@
               <span class="warn">{{ mensagemErro('descricaoCurta') }}</span>
             }
           </div>
+          <div class="f full">
+            <label for="descricao">Descrição completa</label>
+            <textarea
+              id="descricao"
+              placeholder="Texto completo exibido na página do produto"
+              formControlName="descricao"
+            ></textarea>
+            @if (campoInvalido('descricao')) {
+              <span class="warn">{{ mensagemErro('descricao') }}</span>
+            }
+          </div>
         </div>
       </section>
 
@@ -128,8 +139,105 @@
             }
           </div>
         </div>
-        <p class="legend">Campos com <span class="req">*</span> são obrigatórios</p>
+        <p class="legend">
+          Campos com <span class="req">*</span> são obrigatórios para publicar; o rascunho salva sem eles
+        </p>
       </section>
+
+      <section class="card p" [formGroup]="form">
+        <div class="card-h">
+          <span class="card-t">Comercial</span>
+          <span class="card-n">Desconto é Promoção com vigência, não campo do produto</span>
+        </div>
+        <div class="g2">
+          <div class="f">
+            <label for="garantiaMeses">Garantia (meses)</label>
+            <input
+              id="garantiaMeses"
+              type="number"
+              min="0"
+              step="1"
+              placeholder="Vazio usa o padrão da loja"
+              formControlName="garantiaMeses"
+            />
+            @if (campoInvalido('garantiaMeses')) {
+              <span class="warn">{{ mensagemErro('garantiaMeses') }}</span>
+            }
+          </div>
+          <div class="f">
+            <label for="dataLancamento">Data de lançamento</label>
+            <input id="dataLancamento" type="date" formControlName="dataLancamento" />
+            @if (campoInvalido('dataLancamento')) {
+              <span class="warn">{{ mensagemErro('dataLancamento') }}</span>
+            }
+          </div>
+        </div>
+        <p class="legend" style="margin-top: 14px">
+          Preço promocional se cadastra em Promoções, com início,
+          fim e escopo.
+        </p>
+      </section>
+
+      <details class="card p" [formGroup]="form" [open]="erroNoSeo()">
+        <summary
+          style="cursor: pointer; display: flex; align-items: center; justify-content: space-between; list-style: none"
+        >
+          <span class="card-t">SEO</span>
+          <span class="dim">Expandir ▾</span>
+        </summary>
+        <div class="g2" style="margin-top: 20px">
+          <div class="f full">
+            <label for="slug">Slug (URL amigável)</label>
+            <input
+              id="slug"
+              type="text"
+              placeholder="falcon-x2-pro · gerado a partir do nome, se vazio"
+              formControlName="slug"
+            />
+            @if (campoInvalido('slug')) {
+              <span class="warn">{{ mensagemErro('slug') }}</span>
+            }
+          </div>
+          <div class="f full">
+            <label for="metaTitle">Meta title</label>
+            <input
+              id="metaTitle"
+              type="text"
+              maxlength="70"
+              placeholder="Até 70 caracteres"
+              formControlName="metaTitle"
+            />
+            @if (campoInvalido('metaTitle')) {
+              <span class="warn">{{ mensagemErro('metaTitle') }}</span>
+            }
+          </div>
+          <div class="f full">
+            <label for="metaDescription">Meta description</label>
+            <input
+              id="metaDescription"
+              type="text"
+              maxlength="160"
+              placeholder="Até 160 caracteres"
+              formControlName="metaDescription"
+            />
+            @if (campoInvalido('metaDescription')) {
+              <span class="warn">{{ mensagemErro('metaDescription') }}</span>
+            }
+          </div>
+          <div class="f full">
+            <label for="tags">Tags</label>
+            <input
+              id="tags"
+              type="text"
+              placeholder="drone, 4k, profissional"
+              formControlName="tags"
+            />
+            @if (campoInvalido('tags')) {
+              <span class="warn">{{ mensagemErro('tags') }}</span>
+            }
+          </div>
+        </div>
+      </details>
     </div>
 
     <aside class="rail" [formGroup]="form">
