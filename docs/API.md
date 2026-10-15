@@ -53,7 +53,7 @@ As telas citadas são as do [protótipo](design/README.md).
 | (corpo) | `variantes[]` dentro do drone/acessório | tabela de variantes na própria tela (D13) | #9 | a fazer |
 | GET · GET PUT | `/variantes?busca=` · `/variantes/{id}` | select de variante (estoque, promoção, kit); preço e margem (D26) | #9 | a fazer |
 | (corpo) | `componentes[]` na variante kit | Kit ou combo (D7) | #10 | a fazer |
-| (corpo) | `compativeis[]` no acessório | Compatível com (D17) | #11 | a fazer |
+| (corpo) | `idsCompativeis[]` no acessório; resposta com `compativeis[]` e, em todo produto, `acessoriosCompativeis[]` (lado recíproco) | Compatível com (D17) | #11 | pronto |
 | GET POST · PATCH · DELETE | `/produtos/{id}/midias` (multipart) · `/midias/{id}` · `/produtos/{id}/midias/ordem` · `/midias/arquivos/{nome}` | imagem e manual por upload, vídeo por URL (D29) | #12 | a fazer |
 | GET POST · GET PUT DELETE | `/promocoes?situacao=` · `/promocoes/{id}` | Promoções (abas Vigentes/Agendadas/Encerradas), Criar promoção | #14 | a fazer |
 | GET POST · GET PUT DELETE | `/cupons?situacao=&codigo=` · `/cupons/{id}` | Cupons, Criar cupom | #15 | a fazer |
