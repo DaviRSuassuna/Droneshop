@@ -1,27 +1,10 @@
 package br.com.droneshop.catalogo.dto;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import br.com.droneshop.catalogo.model.TipoProduto;
 
-import br.com.droneshop.catalogo.model.StatusProduto;
-
-public record ProdutoResponseDTO(
-    Long id,
-    String nome,
-    String modelo,
-    String descricaoCurta,
-    String descricao,
-    String slug,
-    String metaTitle,
-    String metaDescription,
-    String tags,
-    int garantiaMeses,
-    LocalDate dataLancamento,
-    BigDecimal preco,
-    MarcaResponseDTO marca,
-    SubcategoriaResponseDTO subcategoria,
-    FornecedorResponseDTO fornecedor,
-    StatusProduto status,
-    boolean destaque
-) {
+// Resposta de /produtos: cada item sai com os campos do proprio tipo (drone traz
+// as specs, acessorio traz tipoAcessorio).
+public sealed interface ProdutoResponseDTO permits DroneResponseDTO, AcessorioResponseDTO {
+    Long id();
+    TipoProduto tipo();
 }

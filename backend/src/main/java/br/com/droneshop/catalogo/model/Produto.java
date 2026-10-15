@@ -5,14 +5,21 @@ import java.time.LocalDate;
 
 import br.com.droneshop.model.DefaultEntity;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
-// Versao inicial de Produto: ainda sem a heranca Drone/Acessorio e sem VarianteProduto
-// do diagrama. O preco fica aqui ate VarianteProduto existir.
+// Heranca JOINED (D27): produto guarda o comum, drone e acessorio guardam o proprio
+// e compartilham o id. A coluna tipo guarda o id de TipoProduto. O preco fica aqui
+// ate VarianteProduto existir (#9).
 @Entity
-public class Produto extends DefaultEntity {
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "tipo", discriminatorType = DiscriminatorType.INTEGER)
+public abstract class Produto extends DefaultEntity {
 
     @Column(length = 120)
     private String nome;
@@ -67,6 +74,8 @@ public class Produto extends DefaultEntity {
 
     @Column(nullable = false)
     private boolean destaque;
+
+    public abstract TipoProduto getTipo();
 
     public String getNome() {
         return nome;

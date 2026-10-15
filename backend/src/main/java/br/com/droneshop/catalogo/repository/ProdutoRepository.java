@@ -6,6 +6,7 @@ import java.util.Map;
 
 import br.com.droneshop.catalogo.model.Produto;
 import br.com.droneshop.catalogo.model.StatusProduto;
+import br.com.droneshop.catalogo.model.TipoProduto;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -38,10 +39,13 @@ public class ProdutoRepository implements PanacheRepository<Produto> {
 
     // Filtro combinavel: cada parametro nulo/vazio e simplesmente ignorado.
     // Usado tanto para a listagem paginada (.page) quanto para o total (.count).
-    public PanacheQuery<Produto> findComFiltro(String nome, Long marcaId, Long categoriaId, Long subcategoriaId,
-                                              StatusProduto status) {
+    public PanacheQuery<Produto> findComFiltro(TipoProduto tipo, String nome, Long marcaId, Long categoriaId,
+                                              Long subcategoriaId, StatusProduto status) {
         StringBuilder jpql = new StringBuilder("SELECT p FROM Produto p WHERE 1 = 1 ");
         Map<String, Object> params = new HashMap<>();
+
+        if (tipo != null)
+            jpql.append(tipo == TipoProduto.DRONE ? "AND TYPE(p) = Drone " : "AND TYPE(p) = Acessorio ");
 
         if (nome != null && !nome.isBlank()) {
             // busca sem diferenciar maiusculas nem acentos ("hel" encontra "Hélices")
