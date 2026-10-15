@@ -21,7 +21,7 @@ describe('AcessorioService', () => {
   afterEach(() => http.verify());
 
   it('cria com POST em /acessorios', () => {
-    const dto = { nome: 'Exemplo', idStatus: 2 } as AcessorioDTO;
+    const dto = { nome: 'Exemplo', idStatus: 2, idsCompativeis: [10, 12] } as AcessorioDTO;
     service.criar(dto).subscribe();
     const req = http.expectOne(url);
     expect(req.request.method).toBe('POST');
@@ -30,7 +30,7 @@ describe('AcessorioService', () => {
   });
 
   it('altera com PUT em /acessorios/{id}', () => {
-    const dto = { nome: 'Exemplo', idStatus: 2 } as AcessorioDTO;
+    const dto = { nome: 'Exemplo', idStatus: 2, idsCompativeis: [10, 12] } as AcessorioDTO;
     service.atualizar(7, dto).subscribe();
     const req = http.expectOne(`${url}/7`);
     expect(req.request.method).toBe('PUT');
