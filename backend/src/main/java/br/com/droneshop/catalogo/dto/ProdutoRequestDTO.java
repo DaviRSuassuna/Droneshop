@@ -1,65 +1,41 @@
 package br.com.droneshop.catalogo.dto;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 import org.hibernate.validator.constraints.Length;
 
-import br.com.droneshop.util.Textos;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record ProdutoRequestDTO(
+    @NotBlank(message = "O campo deve ser informado (back).")
     @Length(min = 2, max = 120, message = "O campo deve conter entre 2 e 120 caracteres (back).")
     String nome,
 
+    @NotBlank(message = "O campo deve ser informado (back).")
     @Length(max = 40, message = "O campo deve ter no máximo 40 caracteres (back).")
     String modelo,
 
     @Length(max = 300, message = "O campo deve ter no máximo 300 caracteres (back).")
     String descricaoCurta,
 
-    @Length(max = 5000, message = "O campo deve ter no máximo 5000 caracteres (back).")
-    String descricao,
-
-    @Length(max = 140, message = "O campo deve ter no máximo 140 caracteres (back).")
-    String slug,
-
-    @Length(max = 70, message = "O campo deve ter no máximo 70 caracteres (back).")
-    String metaTitle,
-
-    @Length(max = 160, message = "O campo deve ter no máximo 160 caracteres (back).")
-    String metaDescription,
-
-    @Length(max = 255, message = "O campo deve ter no máximo 255 caracteres (back).")
-    String tags,
-
-    @Min(value = 0, message = "A garantia não pode ser negativa (back).")
-    Integer garantiaMeses,
-
-    LocalDate dataLancamento,
-
+    @NotNull(message = "O campo deve ser informado (back).")
     @DecimalMin(value = "0.0", message = "O preço não pode ser negativo (back).")
     BigDecimal preco,
 
+    @NotNull(message = "Selecione a marca (back).")
     Long idMarca,
 
+    @NotNull(message = "Selecione a subcategoria (back).")
     Long idSubcategoria,
 
+    @NotNull(message = "Selecione o fornecedor (back).")
     Long idFornecedor,
 
+    @NotNull(message = "O status deve ser informado (back).")
     Long idStatus,
 
     Boolean destaque
 ) {
-    public ProdutoRequestDTO {
-        nome = Textos.nuloSeVazio(nome);
-        modelo = Textos.nuloSeVazio(modelo);
-        descricaoCurta = Textos.nuloSeVazio(descricaoCurta);
-        descricao = Textos.nuloSeVazio(descricao);
-        slug = Textos.nuloSeVazio(slug);
-        metaTitle = Textos.nuloSeVazio(metaTitle);
-        metaDescription = Textos.nuloSeVazio(metaDescription);
-        tags = Textos.nuloSeVazio(tags);
-    }
 }

@@ -15,6 +15,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.annotation.security.RolesAllowed;
 
 import br.com.droneshop.catalogo.dto.ProdutoRequestDTO;
 import br.com.droneshop.catalogo.dto.ProdutoResponseDTO;
@@ -25,6 +26,7 @@ import br.com.droneshop.catalogo.service.ProdutoService;
 @Path("produtos")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@RolesAllowed("ADMINISTRATIVO")
 public class ProdutoResource {
 
     @Inject
@@ -49,12 +51,6 @@ public class ProdutoResource {
     @Path("/{id}")
     public ProdutoResponseDTO buscarPorId(@PathParam("id") Long id) {
         return ProdutoResponseMapper.toResponse(service.findById(id));
-    }
-
-    @GET
-    @Path("/slug/{slug}")
-    public ProdutoResponseDTO buscarPorSlug(@PathParam("slug") String slug) {
-        return ProdutoResponseMapper.toResponse(service.findBySlug(slug));
     }
 
     @POST

@@ -9,8 +9,11 @@ If you want to learn more about Quarkus, please visit its website: <https://quar
 You can run your application in dev mode that enables live coding using:
 
 ```shell script
+./scripts/gerar-chaves-jwt-dev.sh
 ./mvnw quarkus:dev
 ```
+
+The script creates development-only signing keys under `target/jwt-dev/`. They are ignored by Git; production keys must be supplied through `JWT_PRIVATE_KEY` and `JWT_PUBLIC_KEY`.
 
 > **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
 

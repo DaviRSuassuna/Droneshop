@@ -12,7 +12,6 @@ public interface ProdutoService {
     void update(long id, @Valid ProdutoRequestDTO produto);
     void delete(long id);
     Produto findById(long id);
-    Produto findBySlug(String slug);
     // filtros opcionais: cada um nulo/vazio e ignorado
     List<Produto> findComFiltro(String nome, Long idMarca, Long idCategoria, Long idSubcategoria, Long idStatus,
                                int page, int pageSize);
