@@ -1,6 +1,5 @@
 package br.com.droneshop.catalogo;
 
-import static br.com.droneshop.testes.Api.anonimo;
 import static br.com.droneshop.testes.Api.given;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
@@ -108,19 +107,6 @@ class PromocaoResourceTest {
                 .then().statusCode(200).body("items.id", hasItem((int) id));
         given().queryParam("situacao", "VIGENTE").queryParam("pageSize", 1000).when().get("/promocoes")
                 .then().statusCode(200).body("items.id", not(hasItem((int) id)));
-    }
-
-    @Test
-    void ofertasMostramSoAsVigentes() {
-        Fixtures.ProdutoCriado vigente = Fixtures.criarDrone(1000.0, 5);
-        Fixtures.ProdutoCriado agendada = Fixtures.criarDrone(1000.0, 5);
-        post(promocao(vigente.idVariante(), -1, 5)).statusCode(200);
-        post(promocao(agendada.idVariante(), 5, 10)).statusCode(200);
-        anonimo().when().get("/loja/ofertas")
-                .then().statusCode(200)
-                .body("variante.id", hasItem((int) vigente.idVariante()))
-                .body("variante.id", not(hasItem((int) agendada.idVariante())))
-                .body("find { it.variante.id == " + vigente.idVariante() + " }.precoPor", equalTo(900.0f));
     }
 
     @Test

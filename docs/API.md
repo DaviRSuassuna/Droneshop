@@ -88,7 +88,8 @@ As telas citadas são as do [protótipo](design/README.md).
 | GET | `/admin/dashboard?periodo=` | Visão geral: KPIs, vendas por produto, estoque baixo, pedidos pendentes | #18 | a fazer |
 | GET POST · GET PUT | `/admin/usuarios` · `/admin/usuarios/{id}` | Usuários, Novo usuário | #5 | a fazer |
 | GET | `/papeis-administrativos` · `/modulos-sistema` · `/admin/papeis/{id}/permissoes-padrao` | select de papel e permissões padrão por módulo | #5 | a fazer |
-| GET PUT · GET | `/admin/configuracao` · `/loja/configuracao` | parâmetros da loja (registro único) | #6 | a fazer |
+| GET PUT | `/admin/configuracao` | parâmetros da loja (registro único) | #6 | a fazer |
+| GET | `/loja/configuracao` | o que a loja mostra da configuração | #21 | a fazer |
 | GET | `/admin/auditoria?idUsuario=&entidade=` | Ver log de auditoria | #41 | a fazer |
 | POST · DELETE · POST | `/conta/2fa` · `/conta/2fa/confirmar` · `/auth/login/2fa` | 2FA opcional do admin | #45 | a fazer |
 | GET PUT · GET | `/admin/templates-email` · `/admin/templates-email/{codigo}` · `/admin/notificacoes` | templates editáveis e histórico de envio | #32 | a fazer |
@@ -119,8 +120,8 @@ As telas citadas são as do [protótipo](design/README.md).
 | GET | `/loja/produtos?categoria=&subcategoria=&marca=&precoMin=&precoMax=&alcance=&autonomia=&ordem=&page=` | Drones, Acessórios (só ATIVO, RN17) | #21 | a fazer |
 | GET | `/loja/filtros?categoria=` | contagens de cada filtro (facetas) | #21 | a fazer |
 | GET | `/loja/produtos/{slug}` | Produto (variantes, specs, mídias) | #21 | a fazer |
-| GET | `/loja/produtos/{slug}/compativeis` | Acessórios compatíveis | #11 | a fazer |
-| GET | `/loja/ofertas` | Ofertas e Kits com desconto | #14 | a fazer |
+| GET | `/loja/produtos/{slug}/compativeis` | Acessórios compatíveis | #21 | a fazer |
+| GET | `/loja/ofertas` | Ofertas e Kits com desconto | #21 | a fazer |
 | GET | `/loja/busca?q=` | busca (registra o termo) | #43 | a fazer |
 | GET | `/loja/comparar?ids=` | comparação de especificações | #44 | a fazer |
 | GET POST | `/loja/produtos/{slug}/avaliacoes` | Avaliações (compra verificada) | #39 | a fazer |

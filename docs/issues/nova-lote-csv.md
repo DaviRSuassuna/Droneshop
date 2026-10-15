@@ -2,7 +2,7 @@
 numero: null
 titulo: "[administracao] Ações em lote, reordenação de categorias, exportação CSV e etiqueta de pedido"
 labels: ["tipo:feature", "camada:backend", "camada:frontend", "modulo:administracao"]
-fase: 1
+fase: 5
 ---
 
 ### Módulo
