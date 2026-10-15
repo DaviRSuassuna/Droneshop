@@ -37,7 +37,6 @@ public final class ProdutoResponseMapper {
                 d.getTags(),
                 d.getGarantiaMeses(),
                 d.getDataLancamento(),
-                d.getPreco(),
                 marca(d),
                 subcategoria(d),
                 fornecedor(d),
@@ -60,7 +59,8 @@ public final class ProdutoResponseMapper {
                 d.isSensoresAnticolisao(),
                 d.isExigeRegistroAnac(),
                 d.getClasseAnac(),
-                d.getRegistroSisant());
+                d.getRegistroSisant(),
+                VarianteResponseMapper.toResponse(d.getVariantes()));
     }
 
     public static AcessorioResponseDTO toResponse(Acessorio a) {
@@ -77,13 +77,13 @@ public final class ProdutoResponseMapper {
                 a.getTags(),
                 a.getGarantiaMeses(),
                 a.getDataLancamento(),
-                a.getPreco(),
                 marca(a),
                 subcategoria(a),
                 fornecedor(a),
                 a.getStatus(),
                 a.isDestaque(),
-                a.getTipoAcessorio());
+                a.getTipoAcessorio(),
+                VarianteResponseMapper.toResponse(a.getVariantes()));
     }
 
     private static MarcaResponseDTO marca(Produto p) {

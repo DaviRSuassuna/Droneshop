@@ -1,12 +1,11 @@
 package br.com.droneshop.catalogo.dto;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import org.hibernate.validator.constraints.Length;
 
 import br.com.droneshop.util.Textos;
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 
 public record AcessorioRequestDTO(
@@ -39,9 +38,6 @@ public record AcessorioRequestDTO(
 
     LocalDate dataLancamento,
 
-    @DecimalMin(value = "0.0", message = "O preço não pode ser negativo (back).")
-    BigDecimal preco,
-
     Long idMarca,
 
     Long idSubcategoria,
@@ -53,7 +49,10 @@ public record AcessorioRequestDTO(
     Boolean destaque,
 
     @Length(max = 60, message = "O campo deve ter no máximo 60 caracteres (back).")
-    String tipoAcessorio
+    String tipoAcessorio,
+
+    // validadas item a item no ProdutoCadastro, para o erro sair como variantes[i].campo
+    List<VarianteRequestDTO> variantes
 ) implements ProdutoRequestDTO {
     public AcessorioRequestDTO {
         nome = Textos.nuloSeVazio(nome);
