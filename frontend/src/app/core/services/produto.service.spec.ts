@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { environment } from '../../../environments/environment';
-import { ProdutoDTO } from '../models/produto.model';
 import { ProdutoService } from './produto.service';
 
 describe('ProdutoService', () => {
@@ -21,7 +20,7 @@ describe('ProdutoService', () => {
   afterEach(() => http.verify());
 
   it('lista com paginação padrão de 10 e sem filtros vazios', () => {
-    service.listar({ nome: '   ', idMarca: null, idStatus: null }).subscribe();
+    service.listar({ idTipo: null, nome: '   ', idMarca: null, idStatus: null }).subscribe();
     const req = http.expectOne((r) => r.url === url);
     const params = req.request.params;
     expect(params.keys().sort()).toEqual(['page', 'pageSize']);
@@ -31,10 +30,15 @@ describe('ProdutoService', () => {
 
   it('envia só os filtros preenchidos, com o nome sem espaços nas pontas', () => {
     service
-      .listar({ nome: '  Mavic ', idMarca: 1, idCategoria: 2, idSubcategoria: 3, idStatus: 2 }, 2, 20)
+      .listar(
+        { idTipo: 1, nome: '  Mavic ', idMarca: 1, idCategoria: 2, idSubcategoria: 3, idStatus: 2 },
+        2,
+        20,
+      )
       .subscribe();
     const req = http.expectOne((r) => r.url === url);
     const params = req.request.params;
+    expect(params.get('idTipo')).toBe('1');
     expect(params.get('nome')).toBe('Mavic');
     expect(params.get('idMarca')).toBe('1');
     expect(params.get('idCategoria')).toBe('2');
@@ -52,17 +56,7 @@ describe('ProdutoService', () => {
     req.flush({ id: 1, slug: 'falcon-x2-pro' });
   });
 
-  it('cria, atualiza e exclui', () => {
-    const dto = { nome: 'Mavic', idStatus: 2 } as ProdutoDTO;
-    service.criar(dto).subscribe();
-    const post = http.expectOne(url);
-    expect(post.request.method).toBe('POST');
-    expect(post.request.body).toEqual(dto);
-    post.flush({ id: 1 });
-
-    service.atualizar(1, dto).subscribe();
-    expect(http.expectOne(`${url}/1`).request.method).toBe('PUT');
-
+  it('exclui pelo id', () => {
     service.excluir(1).subscribe();
     expect(http.expectOne(`${url}/1`).request.method).toBe('DELETE');
   });

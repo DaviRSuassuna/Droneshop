@@ -144,4 +144,18 @@ class DroneResourceTest {
         given().when().delete("/produtos/{id}", id).then().statusCode(204);
         given().when().get("/produtos/{id}", id).then().statusCode(404);
     }
+
+    @Test
+    void subcategoriaDeOutroTipoResponde400() {
+        Fixtures.Arvore a = Fixtures.arvore();
+        Map<String, Object> d = Fixtures.drone("Errado " + Dados.sufixo(), a, Fixtures.lista());
+        d.put("idSubcategoria", a.idSubcategoriaAcessorio());
+        given().contentType(ContentType.JSON).body(d).when().post("/drones")
+                .then().statusCode(400).body("errors.field", hasItem("idSubcategoria"));
+
+        Map<String, Object> ac = Fixtures.acessorio("Errado " + Dados.sufixo(), a, Fixtures.lista());
+        ac.put("idSubcategoria", a.idSubcategoria());
+        given().contentType(ContentType.JSON).body(ac).when().post("/acessorios")
+                .then().statusCode(400).body("errors.field", hasItem("idSubcategoria"));
+    }
 }

@@ -5,11 +5,19 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AdminNav } from '../../../../layout/admin/admin-nav/admin-nav';
 import { ProdutoService } from '../../../../core/services/produto.service';
+import { DroneService } from '../../../../core/services/drone.service';
+import { AcessorioService } from '../../../../core/services/acessorio.service';
 import { MarcaService } from '../../../../core/services/marca.service';
 import { CategoriaService } from '../../../../core/services/categoria.service';
 import { SubcategoriaService } from '../../../../core/services/subcategoria.service';
 import { FornecedorService } from '../../../../core/services/fornecedor.service';
-import { ProdutoDTO } from '../../../../core/models/produto.model';
+import {
+  AcessorioDTO,
+  DroneDTO,
+  Produto,
+  ProdutoDTO,
+  TIPO_PRODUTO,
+} from '../../../../core/models/produto.model';
 import { STATUS_FORNECEDOR, STATUS_PRODUTO } from '../../../../core/models/status.model';
 import { Marca } from '../../../../core/models/marca.model';
 import { Categoria } from '../../../../core/models/categoria.model';
@@ -17,15 +25,40 @@ import { Subcategoria } from '../../../../core/models/subcategoria.model';
 import { Fornecedor } from '../../../../core/models/fornecedor.model';
 import { ProblemDetail } from '../../../../core/models/problem.model';
 
+/** Opções dos selects de spec, como no protótipo. O valor salvo é texto livre na API. */
+const OPCOES = {
+  sensor: ['CMOS 1/1.3"', 'CMOS 1"', 'CMOS 4/3'],
+  video: ['4K 60 fps', '4K 30 fps', '5.1K 50 fps'],
+  estabilizacao: ['Gimbal mecânico 3 eixos', 'Gimbal 2 eixos', 'Eletrônica'],
+  bateria: ['LiPo 4S', 'LiPo 3S', 'Li-ion'],
+  classeAnac: ['Classe 3', 'Classe 2', 'Classe 1'],
+  tipoAcessorio: [
+    'Bateria',
+    'Hélice',
+    'Carregador',
+    'Maleta / mochila',
+    'Filtro',
+    'Cartão de memória',
+    'Peça de reposição',
+  ],
+} as const;
+
+type CampoOpcao = keyof typeof OPCOES;
+
+/**
+ * Cadastro de drone e de acessório (D27). A rota diz o tipo (data.tipo): drone mostra
+ * as specs e salva em /drones; acessório mostra o tipo de acessório e salva em /acessorios.
+ */
 @Component({
   selector: 'app-produto-cadastro',
-  standalone: true,
   imports: [ReactiveFormsModule, RouterLink, AdminNav],
   templateUrl: './produto-cadastro.html',
 })
 export class ProdutoCadastro implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly produtoService = inject(ProdutoService);
+  private readonly droneService = inject(DroneService);
+  private readonly acessorioService = inject(AcessorioService);
   private readonly marcaService = inject(MarcaService);
   private readonly categoriaService = inject(CategoriaService);
   private readonly subcategoriaService = inject(SubcategoriaService);
@@ -36,8 +69,15 @@ export class ProdutoCadastro implements OnInit {
   readonly STATUS = STATUS_PRODUTO;
   readonly FORNECEDOR_INATIVO = STATUS_FORNECEDOR.INATIVO;
 
+  readonly tipo: number = this.route.snapshot.data['tipo'] ?? TIPO_PRODUTO.DRONE;
+  readonly ehDrone = this.tipo === TIPO_PRODUTO.DRONE;
+  private readonly rotaListagem = '/admin/produtos';
+
   readonly produtoId = signal<number | null>(null);
   readonly modoEdicao = computed(() => this.produtoId() !== null);
+  readonly titulo = computed(
+    () => `${this.modoEdicao() ? 'Editar' : 'Cadastrar'} ${this.ehDrone ? 'drone' : 'acessório'}`,
+  );
 
   readonly marcas = signal<Marca[]>([]);
   readonly categorias = signal<Categoria[]>([]);
@@ -71,7 +111,6 @@ export class ProdutoCadastro implements OnInit {
     tags: this.fb.nonNullable.control(''),
     garantiaMeses: this.fb.control<number | null>(null),
     dataLancamento: this.fb.nonNullable.control(''),
-    preco: this.fb.control<number | null>(null),
     idMarca: this.fb.control<number | null>(null),
     // idCategoria só ajuda a escolher; o que vai para a API é idSubcategoria
     idCategoria: this.fb.control<number | null>(null),
@@ -81,13 +120,58 @@ export class ProdutoCadastro implements OnInit {
     destaque: this.fb.nonNullable.control(false),
   });
 
+  // specs do drone (D14); alcance é digitado em km e vai em metros para a API
+  readonly specs = this.fb.group({
+    pesoGramas: this.fb.control<number | null>(null),
+    dimensoesDobrado: this.fb.nonNullable.control(''),
+    dimensoesAberto: this.fb.nonNullable.control(''),
+    autonomiaMinutos: this.fb.control<number | null>(null),
+    alcanceKm: this.fb.control<number | null>(null),
+    velocidadeMaximaKmh: this.fb.control<number | null>(null),
+    resolucaoFotoMp: this.fb.control<number | null>(null),
+    tipoSensor: this.fb.nonNullable.control(''),
+    resolucaoVideo: this.fb.nonNullable.control(''),
+    estabilizacao: this.fb.nonNullable.control(''),
+    tipoBateria: this.fb.nonNullable.control(''),
+    capacidadeBateriaMah: this.fb.control<number | null>(null),
+    tempoCarregamentoMinutos: this.fb.control<number | null>(null),
+    gpsIntegrado: this.fb.nonNullable.control(false),
+    sensoresAnticolisao: this.fb.nonNullable.control(false),
+    exigeRegistroAnac: this.fb.nonNullable.control(false),
+    classeAnac: this.fb.nonNullable.control(''),
+    registroSisant: this.fb.nonNullable.control(''),
+  });
+
+  readonly tipoAcessorio = this.fb.nonNullable.control('');
+
+  /** Opções do select, mais o valor salvo quando ele não estiver na lista. */
+  opcoes(campo: CampoOpcao): readonly string[] {
+    const atual = campo === 'tipoAcessorio' ? this.tipoAcessorio.value : this.valorSpec(campo);
+    const lista: readonly string[] = OPCOES[campo];
+    return atual && !lista.includes(atual) ? [...lista, atual] : lista;
+  }
+
+  private valorSpec(campo: Exclude<CampoOpcao, 'tipoAcessorio'>): string {
+    const mapa = {
+      sensor: this.specs.controls.tipoSensor,
+      video: this.specs.controls.resolucaoVideo,
+      estabilizacao: this.specs.controls.estabilizacao,
+      bateria: this.specs.controls.tipoBateria,
+      classeAnac: this.specs.controls.classeAnac,
+    };
+    return mapa[campo].value;
+  }
+
   ngOnInit(): void {
     this.marcaService
       .listar(0, 1000)
       .subscribe((p) => this.marcas.set(p.items.filter((x) => x.nome)));
+    // só as categorias do tipo desta tela: drone não entra em categoria de acessório
     this.categoriaService
       .listar(0, 1000)
-      .subscribe((p) => this.categorias.set(p.items.filter((x) => x.nome)));
+      .subscribe((p) =>
+        this.categorias.set(p.items.filter((x) => x.nome && x.tipo?.id === this.tipo)),
+      );
     this.subcategoriaService
       .listar(null, 0, 1000)
       .subscribe((p) => this.subcategorias.set(p.items));
@@ -115,6 +199,14 @@ export class ProdutoCadastro implements OnInit {
     this.carregando.set(true);
     this.produtoService.buscarPorId(id).subscribe({
       next: (produto) => {
+        if (produto.tipo.id !== this.tipo) {
+          this.erroGeral.set(
+            `Este produto é ${produto.tipo.id === TIPO_PRODUTO.DRONE ? 'um drone' : 'um acessório'}; abra pela listagem de produtos.`,
+          );
+          this.carregando.set(false);
+          return;
+        }
+        this.preencherTipo(produto);
         this.form.patchValue({
           nome: produto.nome ?? '',
           modelo: produto.modelo ?? '',
@@ -126,7 +218,6 @@ export class ProdutoCadastro implements OnInit {
           tags: produto.tags ?? '',
           garantiaMeses: produto.garantiaMeses,
           dataLancamento: produto.dataLancamento ?? '',
-          preco: produto.preco,
           idMarca: produto.marca?.id ?? null,
           idCategoria: produto.subcategoria?.categoria.id ?? null,
           idSubcategoria: produto.subcategoria?.id ?? null,
@@ -137,9 +228,40 @@ export class ProdutoCadastro implements OnInit {
         this.carregando.set(false);
       },
       error: (err) => {
-        this.erroGeral.set(err.status === 404 ? 'Este produto não foi encontrado.' : 'Não foi possível carregar este produto.');
+        this.erroGeral.set(
+          err.status === 404
+            ? 'Este produto não foi encontrado.'
+            : 'Não foi possível carregar este produto.',
+        );
         this.carregando.set(false);
       },
+    });
+  }
+
+  private preencherTipo(produto: Produto): void {
+    if (!this.ehDrone) {
+      this.tipoAcessorio.setValue(produto.tipoAcessorio ?? '');
+      return;
+    }
+    this.specs.patchValue({
+      pesoGramas: produto.pesoGramas ?? null,
+      dimensoesDobrado: produto.dimensoesDobrado ?? '',
+      dimensoesAberto: produto.dimensoesAberto ?? '',
+      autonomiaMinutos: produto.autonomiaMinutos ?? null,
+      alcanceKm: produto.alcanceMetros == null ? null : produto.alcanceMetros / 1000,
+      velocidadeMaximaKmh: produto.velocidadeMaximaKmh ?? null,
+      resolucaoFotoMp: produto.resolucaoFotoMp ?? null,
+      tipoSensor: produto.tipoSensor ?? '',
+      resolucaoVideo: produto.resolucaoVideo ?? '',
+      estabilizacao: produto.estabilizacao ?? '',
+      tipoBateria: produto.tipoBateria ?? '',
+      capacidadeBateriaMah: produto.capacidadeBateriaMah ?? null,
+      tempoCarregamentoMinutos: produto.tempoCarregamentoMinutos ?? null,
+      gpsIntegrado: produto.gpsIntegrado ?? false,
+      sensoresAnticolisao: produto.sensoresAnticolisao ?? false,
+      exigeRegistroAnac: produto.exigeRegistroAnac ?? false,
+      classeAnac: produto.classeAnac ?? '',
+      registroSisant: produto.registroSisant ?? '',
     });
   }
 
@@ -165,9 +287,8 @@ export class ProdutoCadastro implements OnInit {
       metaTitle: v.metaTitle.trim(),
       metaDescription: v.metaDescription.trim(),
       tags: v.tags.trim(),
-      garantiaMeses: v.garantiaMeses === null || `${v.garantiaMeses}` === '' ? null : Number(v.garantiaMeses),
+      garantiaMeses: numero(v.garantiaMeses),
       dataLancamento: v.dataLancamento || null,
-      preco: v.preco,
       // o select devolve string; a API espera Long
       idMarca: v.idMarca ? Number(v.idMarca) : null,
       idSubcategoria: v.idSubcategoria ? Number(v.idSubcategoria) : null,
@@ -178,17 +299,50 @@ export class ProdutoCadastro implements OnInit {
 
     this.salvando.set(true);
     const id = this.produtoId();
-    const request$: Observable<unknown> = id
-      ? this.produtoService.atualizar(id, dto)
-      : this.produtoService.criar(dto);
+    let request$: Observable<unknown>;
+    if (this.ehDrone) {
+      const drone = this.droneDTO(dto);
+      request$ = id ? this.droneService.atualizar(id, drone) : this.droneService.criar(drone);
+    } else {
+      const acessorio: AcessorioDTO = { ...dto, tipoAcessorio: this.tipoAcessorio.value };
+      request$ = id
+        ? this.acessorioService.atualizar(id, acessorio)
+        : this.acessorioService.criar(acessorio);
+    }
 
     request$.subscribe({
       next: () => {
         this.salvando.set(false);
-        this.router.navigate(['/admin/produtos']);
+        this.router.navigate([this.rotaListagem]);
       },
       error: (err: HttpErrorResponse) => this.tratarErro(err),
     });
+  }
+
+  private droneDTO(comum: ProdutoDTO): DroneDTO {
+    const s = this.specs.getRawValue();
+    const alcanceKm = numero(s.alcanceKm);
+    return {
+      ...comum,
+      pesoGramas: numero(s.pesoGramas),
+      dimensoesDobrado: s.dimensoesDobrado.trim(),
+      dimensoesAberto: s.dimensoesAberto.trim(),
+      autonomiaMinutos: numero(s.autonomiaMinutos),
+      alcanceMetros: alcanceKm === null ? null : Math.round(alcanceKm * 1000),
+      velocidadeMaximaKmh: numero(s.velocidadeMaximaKmh),
+      resolucaoFotoMp: numero(s.resolucaoFotoMp),
+      tipoSensor: s.tipoSensor,
+      resolucaoVideo: s.resolucaoVideo,
+      estabilizacao: s.estabilizacao,
+      tipoBateria: s.tipoBateria,
+      capacidadeBateriaMah: numero(s.capacidadeBateriaMah),
+      tempoCarregamentoMinutos: numero(s.tempoCarregamentoMinutos),
+      gpsIntegrado: s.gpsIntegrado,
+      sensoresAnticolisao: s.sensoresAnticolisao,
+      exigeRegistroAnac: s.exigeRegistroAnac,
+      classeAnac: s.classeAnac,
+      registroSisant: s.registroSisant.trim(),
+    };
   }
 
   excluir(): void {
@@ -198,10 +352,12 @@ export class ProdutoCadastro implements OnInit {
 
     this.excluindo.set(true);
     this.produtoService.excluir(id).subscribe({
-      next: () => this.router.navigate(['/admin/produtos']),
-      error: () => {
+      next: () => this.router.navigate([this.rotaListagem]),
+      error: (err: HttpErrorResponse) => {
         this.excluindo.set(false);
-        this.erroGeral.set('Não foi possível excluir este produto.');
+        // 409: produto em uso (D28); o detail explica e sugere inativar
+        const problem = err.error as ProblemDetail | undefined;
+        this.erroGeral.set(problem?.detail ?? 'Não foi possível excluir este produto.');
       },
     });
   }
@@ -218,4 +374,9 @@ export class ProdutoCadastro implements OnInit {
       this.erroGeral.set(problem?.detail ?? 'Não foi possível salvar o produto. Tente novamente.');
     }
   }
+}
+
+/** Campo numérico do form: vazio vira null (o input type=number pode devolver ''). */
+function numero(valor: number | string | null): number | null {
+  return valor === null || `${valor}` === '' ? null : Number(valor);
 }

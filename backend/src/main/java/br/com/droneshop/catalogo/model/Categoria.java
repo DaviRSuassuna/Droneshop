@@ -28,6 +28,10 @@ public class Categoria extends DefaultEntity {
     @Column(length = 255, name = "icone_url")
     private String iconeUrl;
 
+    // A categoria organiza a vitrine dentro de um tipo: drone so entra em categoria de
+    // drone e acessorio em categoria de acessorio. Nulo so no rascunho.
+    private TipoProduto tipo;
+
     public String getNome() {
         return nome;
     }
@@ -74,6 +78,14 @@ public class Categoria extends DefaultEntity {
 
     public void setExibirMenu(boolean exibirMenu) {
         this.exibirMenu = exibirMenu;
+    }
+
+    public TipoProduto getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(TipoProduto tipo) {
+        this.tipo = tipo;
     }
 
     public String getIconeUrl() {

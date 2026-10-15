@@ -3,8 +3,9 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { PageResponse } from '../models/page.model';
-import { FiltroProduto, Produto, ProdutoDTO } from '../models/produto.model';
+import { FiltroProduto, Produto } from '../models/produto.model';
 
+/** Listagem, consulta e exclusão de todos os tipos. Cadastro e alteração ficam em DroneService e AcessorioService (D27). */
 @Injectable({ providedIn: 'root' })
 export class ProdutoService {
   private readonly http = inject(HttpClient);
@@ -24,20 +25,13 @@ export class ProdutoService {
     return this.http.get<Produto>(`${this.baseUrl}/slug/${encodeURIComponent(slug)}`);
   }
 
-  criar(dto: ProdutoDTO): Observable<Produto> {
-    return this.http.post<Produto>(this.baseUrl, dto);
-  }
-
-  atualizar(id: number, dto: ProdutoDTO): Observable<void> {
-    return this.http.put<void>(`${this.baseUrl}/${id}`, dto);
-  }
-
   excluir(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 
   private paramsDoFiltro(filtro: FiltroProduto): HttpParams {
     let params = new HttpParams();
+    if (filtro.idTipo) params = params.set('idTipo', filtro.idTipo);
     if (filtro.nome?.trim()) params = params.set('nome', filtro.nome.trim());
     if (filtro.idMarca) params = params.set('idMarca', filtro.idMarca);
     if (filtro.idCategoria) params = params.set('idCategoria', filtro.idCategoria);

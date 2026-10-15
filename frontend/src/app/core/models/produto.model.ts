@@ -3,8 +3,11 @@ import { Marca } from './marca.model';
 import { StatusRef } from './status.model';
 import { Subcategoria } from './subcategoria.model';
 
-/** Espelha o ProdutoResponseDTO devolvido pela API (relacionamentos aninhados). */
-export interface Produto {
+/** Ids de TipoProduto (GET /tipos-produto). */
+export const TIPO_PRODUTO = { DRONE: 1, ACESSORIO: 2 } as const;
+
+/** Campos comuns da resposta de /produtos (relacionamentos aninhados). */
+interface ProdutoBase {
   id: number;
   nome: string | null;
   modelo: string | null;
@@ -24,7 +27,38 @@ export interface Produto {
   destaque: boolean;
 }
 
-/** Espelha o ProdutoRequestDTO aceito pelo POST /produtos e PUT /produtos/{id}. */
+/** Specs do drone, colunas fixas (D14). */
+export interface DroneSpecs {
+  pesoGramas: number | null;
+  dimensoesDobrado: string | null;
+  dimensoesAberto: string | null;
+  autonomiaMinutos: number | null;
+  alcanceMetros: number | null;
+  velocidadeMaximaKmh: number | null;
+  resolucaoFotoMp: number | null;
+  tipoSensor: string | null;
+  resolucaoVideo: string | null;
+  estabilizacao: string | null;
+  tipoBateria: string | null;
+  capacidadeBateriaMah: number | null;
+  tempoCarregamentoMinutos: number | null;
+  gpsIntegrado: boolean;
+  sensoresAnticolisao: boolean;
+  exigeRegistroAnac: boolean;
+  classeAnac: string | null;
+  registroSisant: string | null;
+}
+
+/**
+ * Item de GET /produtos e resposta de GET /produtos/{id}. O tipo diz quais campos
+ * vêm: drone traz as specs, acessório traz tipoAcessorio.
+ */
+export interface Produto extends ProdutoBase, Partial<DroneSpecs> {
+  tipo: StatusRef;
+  tipoAcessorio?: string | null;
+}
+
+/** Campos comuns do corpo de POST/PUT em /drones e /acessorios. */
 export interface ProdutoDTO {
   nome: string;
   modelo: string;
@@ -36,7 +70,6 @@ export interface ProdutoDTO {
   tags: string;
   garantiaMeses: number | null;
   dataLancamento: string | null;
-  preco: number | null;
   idMarca: number | null;
   idSubcategoria: number | null;
   idFornecedor: number | null;
@@ -44,8 +77,17 @@ export interface ProdutoDTO {
   destaque: boolean;
 }
 
+/** Corpo de POST /drones e PUT /drones/{id}. */
+export type DroneDTO = ProdutoDTO & DroneSpecs;
+
+/** Corpo de POST /acessorios e PUT /acessorios/{id}. */
+export interface AcessorioDTO extends ProdutoDTO {
+  tipoAcessorio: string;
+}
+
 /** Filtros aceitos por GET /produtos. Campos vazios são ignorados. */
 export interface FiltroProduto {
+  idTipo?: number | null;
   nome?: string;
   idMarca?: number | null;
   idCategoria?: number | null;

@@ -1,15 +1,17 @@
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 import { AdminNav } from '../../../../layout/admin/admin-nav/admin-nav';
 import { ProdutoService } from '../../../../core/services/produto.service';
 import { MarcaService } from '../../../../core/services/marca.service';
 import { CategoriaService } from '../../../../core/services/categoria.service';
 import { SubcategoriaService } from '../../../../core/services/subcategoria.service';
-import { FiltroProduto, Produto } from '../../../../core/models/produto.model';
+import { FiltroProduto, Produto, TIPO_PRODUTO } from '../../../../core/models/produto.model';
 import { STATUS_PRODUTO, StatusRef } from '../../../../core/models/status.model';
 import { Marca } from '../../../../core/models/marca.model';
 import { Categoria } from '../../../../core/models/categoria.model';
 import { Subcategoria } from '../../../../core/models/subcategoria.model';
+import { ProblemDetail } from '../../../../core/models/problem.model';
 
 /**
  * Listagem administrativa de Produto (Produto N:1 Marca e Produto N:1 Subcategoria N:1 Categoria).
@@ -18,7 +20,6 @@ import { Subcategoria } from '../../../../core/models/subcategoria.model';
  */
 @Component({
   selector: 'app-produtos-listagem',
-  standalone: true,
   imports: [RouterLink, AdminNav],
   templateUrl: './produtos-listagem.html',
 })
@@ -29,6 +30,7 @@ export class ProdutosListagem implements OnInit, OnDestroy {
   private readonly subcategoriaService = inject(SubcategoriaService);
 
   readonly STATUS = STATUS_PRODUTO;
+  readonly TIPO = TIPO_PRODUTO;
   readonly tamanhosPagina = [5, 10, 20];
   readonly grid = 'minmax(0, 1fr) 130px 200px 120px 100px 64px';
 
@@ -44,6 +46,7 @@ export class ProdutosListagem implements OnInit, OnDestroy {
 
   // filtros
   readonly termoBusca = signal('');
+  readonly filtroTipo = signal<number | null>(null);
   readonly filtroMarca = signal<number | null>(null);
   readonly filtroCategoria = signal<number | null>(null);
   readonly filtroSubcategoria = signal<number | null>(null);
@@ -58,11 +61,19 @@ export class ProdutosListagem implements OnInit, OnDestroy {
     currency: 'BRL',
   });
 
+  /** Com um tipo escolhido, o select de categoria só mostra as categorias dele. */
+  readonly categoriasDoFiltro = computed(() => {
+    const tipo = this.filtroTipo();
+    return tipo ? this.categorias().filter((c) => c.tipo?.id === tipo) : this.categorias();
+  });
+
   /** O select de subcategoria só mostra as da categoria escolhida (ou todas, se nenhuma). */
   readonly subcategoriasDoFiltro = computed(() => {
     const categoria = this.filtroCategoria();
-    return categoria
-      ? this.subcategorias().filter((s) => s.categoria.id === categoria)
+    const tipo = this.filtroTipo();
+    if (categoria) return this.subcategorias().filter((s) => s.categoria.id === categoria);
+    return tipo
+      ? this.subcategorias().filter((s) => s.categoria.tipo?.id === tipo)
       : this.subcategorias();
   });
 
@@ -101,6 +112,9 @@ export class ProdutosListagem implements OnInit, OnDestroy {
         rotulo: `Busca: "${this.termoBusca().trim()}"`,
         limpar: () => this.aoDigitarBusca('', true),
       });
+    const tipo = this.filtroTipo();
+    if (tipo)
+      chips.push({ rotulo: `Tipo: ${this.nomeTipo(tipo)}`, limpar: () => this.aoMudarTipo('') });
     const marca = this.marcas().find((m) => m.id === this.filtroMarca());
     if (marca) chips.push({ rotulo: `Marca: ${marca.nome}`, limpar: () => this.aoMudarMarca('') });
     const categoria = this.categorias().find((c) => c.id === this.filtroCategoria());
@@ -144,6 +158,7 @@ export class ProdutosListagem implements OnInit, OnDestroy {
 
   private filtroAtual(): FiltroProduto {
     return {
+      idTipo: this.filtroTipo(),
       nome: this.termoBusca(),
       idMarca: this.filtroMarca(),
       idCategoria: this.filtroCategoria(),
@@ -181,6 +196,17 @@ export class ProdutosListagem implements OnInit, OnDestroy {
     else this.timerBusca = setTimeout(() => this.aplicarFiltro(), 350);
   }
 
+  aoMudarTipo(valor: string): void {
+    this.filtroTipo.set(valor ? Number(valor) : null);
+    // a categoria escolhida pode ser do outro tipo
+    const categoria = this.categorias().find((c) => c.id === this.filtroCategoria());
+    if (categoria && this.filtroTipo() && categoria.tipo?.id !== this.filtroTipo()) {
+      this.filtroCategoria.set(null);
+      this.filtroSubcategoria.set(null);
+    }
+    this.aplicarFiltro();
+  }
+
   aoMudarMarca(valor: string): void {
     this.filtroMarca.set(valor ? Number(valor) : null);
     this.aplicarFiltro();
@@ -207,6 +233,7 @@ export class ProdutosListagem implements OnInit, OnDestroy {
   limparFiltros(): void {
     clearTimeout(this.timerBusca);
     this.termoBusca.set('');
+    this.filtroTipo.set(null);
     this.filtroMarca.set(null);
     this.filtroCategoria.set(null);
     this.filtroSubcategoria.set(null);
@@ -228,7 +255,12 @@ export class ProdutosListagem implements OnInit, OnDestroy {
   excluir(evento: Event, produto: Produto): void {
     evento.preventDefault();
     evento.stopPropagation();
-    if (!confirm(`Excluir o produto "${produto.nome ?? 'sem nome'}"? Essa ação não pode ser desfeita.`)) return;
+    if (
+      !confirm(
+        `Excluir o produto "${produto.nome ?? 'sem nome'}"? Essa ação não pode ser desfeita.`,
+      )
+    )
+      return;
 
     this.produtoService.excluir(produto.id).subscribe({
       next: () => {
@@ -236,8 +268,23 @@ export class ProdutosListagem implements OnInit, OnDestroy {
         if (this.produtos().length === 1 && this.pagina() > 0) this.pagina.update((p) => p - 1);
         this.carregar();
       },
-      error: () => alert('Não foi possível excluir este produto.'),
+      // 409: produto em uso (D28); o detail explica e sugere inativar
+      error: (err: HttpErrorResponse) =>
+        alert(
+          (err.error as ProblemDetail | undefined)?.detail ??
+            'Não foi possível excluir este produto.',
+        ),
     });
+  }
+
+  /** Drone e acessório têm telas de cadastro próprias (D27). */
+  rotaEdicao(produto: Produto): (string | number)[] {
+    const base = produto.tipo.id === TIPO_PRODUTO.DRONE ? '/admin/drones' : '/admin/acessorios';
+    return [base, produto.id, 'editar'];
+  }
+
+  private nomeTipo(id: number): string {
+    return id === TIPO_PRODUTO.DRONE ? 'Drone' : 'Acessório';
   }
 
   formatarPreco(valor: number | null): string {

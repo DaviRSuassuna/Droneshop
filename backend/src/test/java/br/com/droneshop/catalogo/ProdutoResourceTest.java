@@ -17,11 +17,11 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 
 /**
- * Produto (base atual, antes de Drone/Acessório e variantes): CRUD em /produtos
- * com filtros combináveis. A #7 e a #8 ampliam este contrato.
+ * Produto: cadastro pelo /drones (D27) e listagem, consulta e exclusão em /produtos
+ * com filtros combináveis. Era "base"; a #8 migrou para /drones. A #9 tira o preço.
  */
 @QuarkusTest
-@Tag("base")
+@Tag("issue-8")
 class ProdutoResourceTest {
 
     /** Marca, subcategoria e fornecedor próprios do teste. */
@@ -47,12 +47,13 @@ class ProdutoResourceTest {
         p.put("idFornecedor", a.idFornecedor());
         p.put("idStatus", Dados.PRODUTO_ATIVO);
         p.put("destaque", false);
+        p.put("pesoGramas", 895);
         return p;
     }
 
     static long criar(Map<String, Object> dto) {
         return given().contentType(ContentType.JSON).body(dto)
-                .when().post("/produtos")
+                .when().post("/drones")
                 .then().statusCode(200)
                 .extract().jsonPath().getLong("id");
     }
@@ -62,7 +63,7 @@ class ProdutoResourceTest {
         String s = Dados.sufixo();
         Arvore a = arvore(s);
         given().contentType(ContentType.JSON).body(produto("Hélice " + s, "hel-" + s, a))
-                .when().post("/produtos")
+                .when().post("/drones")
                 .then().statusCode(200)
                 .body("modelo", equalTo(("HEL-" + s).toUpperCase()))
                 .body("marca.id", equalTo((int) a.idMarca()))
@@ -110,7 +111,7 @@ class ProdutoResourceTest {
         Arvore a = arvore(s);
         criar(produto("Um " + s, "DUP-" + s, a));
         given().contentType(ContentType.JSON).body(produto("Dois " + s, "dup-" + s, a))
-                .when().post("/produtos")
+                .when().post("/drones")
                 .then().statusCode(400)
                 .body("errors.field", hasItem("modelo"));
     }
@@ -119,7 +120,7 @@ class ProdutoResourceTest {
     void referenciasInexistentesRespondem400() {
         Arvore a = new Arvore(Dados.ID_INEXISTENTE, 0, Dados.ID_INEXISTENTE, Dados.ID_INEXISTENTE);
         given().contentType(ContentType.JSON).body(produto("Órfão", "ORF-" + Dados.sufixo(), a))
-                .when().post("/produtos")
+                .when().post("/drones")
                 .then().statusCode(400)
                 .body("errors.field", hasItem("idMarca"));
     }
@@ -127,9 +128,9 @@ class ProdutoResourceTest {
     @Test
     void obrigatoriosResponde400() {
         given().contentType(ContentType.JSON).body(Map.of())
-                .when().post("/produtos")
+                .when().post("/drones")
                 .then().statusCode(400)
-                .body("errors.field", hasItems("nome", "modelo", "preco", "idMarca", "idSubcategoria", "idFornecedor", "idStatus"));
+                .body("errors.field", hasItems("nome", "modelo", "idMarca", "idSubcategoria", "idFornecedor", "idStatus", "pesoGramas"));
     }
 
     @Test
@@ -138,7 +139,7 @@ class ProdutoResourceTest {
         Map<String, Object> dto = produto("Negativo " + s, "NEG-" + s, arvore(s));
         dto.put("preco", -1);
         given().contentType(ContentType.JSON).body(dto)
-                .when().post("/produtos")
+                .when().post("/drones")
                 .then().statusCode(400)
                 .body("errors.field", hasItem("preco"));
     }
@@ -152,7 +153,7 @@ class ProdutoResourceTest {
         Map<String, Object> dto = produto("Depois " + s, "ALT-" + s, a);
         dto.put("preco", 100);
         given().contentType(ContentType.JSON).body(dto)
-                .when().put("/produtos/{id}", id)
+                .when().put("/drones/{id}", id)
                 .then().statusCode(204);
         given().when().get("/produtos/{id}", id)
                 .then().statusCode(200)
@@ -167,7 +168,7 @@ class ProdutoResourceTest {
     void inexistenteResponde404() {
         String s = Dados.sufixo();
         given().contentType(ContentType.JSON).body(produto("Fantasma " + s, "FAN-" + s, arvore(s)))
-                .when().put("/produtos/{id}", Dados.ID_INEXISTENTE)
+                .when().put("/drones/{id}", Dados.ID_INEXISTENTE)
                 .then().statusCode(404);
         given().when().delete("/produtos/{id}", Dados.ID_INEXISTENTE)
                 .then().statusCode(404);

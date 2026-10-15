@@ -15,10 +15,10 @@ import io.restassured.http.ContentType;
 
 /**
  * O que está em uso não se exclui (409); a saída é inativar (D24).
- * Monta uma árvore própria marca + categoria > subcategoria + fornecedor > produto.
+ * Monta uma árvore própria marca + categoria > subcategoria + fornecedor > drone.
  */
 @QuarkusTest
-@Tag("base")
+@Tag("issue-8")
 class ExclusaoEmUsoTest {
 
     @Test
@@ -37,8 +37,9 @@ class ExclusaoEmUsoTest {
         produto.put("idSubcategoria", idSubcategoria);
         produto.put("idFornecedor", idFornecedor);
         produto.put("idStatus", Dados.PRODUTO_ATIVO);
+        produto.put("pesoGramas", 895);
         long idProduto = given().contentType(ContentType.JSON).body(produto)
-                .when().post("/produtos")
+                .when().post("/drones")
                 .then().statusCode(200)
                 .extract().jsonPath().getLong("id");
 
