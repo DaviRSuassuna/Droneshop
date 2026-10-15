@@ -61,7 +61,7 @@ Testes escritos a partir do contrato de cada issue (`docs/issues/NNN.md`), antes
 | `issue-8` | bloqueia o merge | `catalogo/AcessorioResourceTest`, `catalogo/CategoriaResourceTest`, `catalogo/DroneResourceTest`, `catalogo/ExclusaoEmUsoTest`, `catalogo/ProdutoResourceTest`, `catalogo/SubcategoriaResourceTest` | 29 |
 | `issue-9` | informativo | `catalogo/VarianteResourceTest` | 9 |
 | `issue-10` | informativo | `catalogo/KitResourceTest` | 7 |
-| `issue-11` | informativo | `catalogo/CompatibilidadeResourceTest` | 3 |
+| `issue-11` | bloqueia o merge | `catalogo/CompatibilidadeResourceTest` | 6 |
 | `issue-12` | informativo | `catalogo/MidiaProdutoResourceTest` | 8 |
 | `issue-13` | informativo | `estoque/MovimentoEstoqueResourceTest` | 9 |
 | `issue-14` | informativo | `catalogo/PromocaoResourceTest` | 6 |
@@ -101,7 +101,7 @@ Testes escritos a partir do contrato de cada issue (`docs/issues/NNN.md`), antes
 | `issue-empresas` | informativo | `atendimento/LeadEmpresaResourceTest` | 2 |
 | `issue-lote-csv` | informativo | `administracao/AcoesAdminResourceTest` | 6 |
 
-Total: 378 testes. Gerado por `scripts/vincular_testes_issues.py --matriz`.
+Total: 381 testes. Gerado por `scripts/vincular_testes_issues.py --matriz`.
 
 <!-- matriz:fim -->
 
