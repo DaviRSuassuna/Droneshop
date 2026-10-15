@@ -108,7 +108,7 @@ export const TELAS: Tela[] = [
     area: 'loja',
     api: { '/loja/produtos/falcon-x2-pro': produto, '/loja/produtos/falcon-x2-pro/compativeis': [] },
   },
-  { prototipo: 'ofertas.html', rota: '/ofertas', etiqueta: 'issue-14', area: 'loja' },
+  { prototipo: 'ofertas.html', rota: '/ofertas', etiqueta: 'issue-21', area: 'loja' },
   { prototipo: 'login.html', rota: '/entrar', etiqueta: 'issue-4', area: 'loja' },
   { prototipo: 'conta-perfil.html', rota: '/conta/perfil', etiqueta: 'issue-19', area: 'loja' },
   { prototipo: 'conta-enderecos.html', rota: '/conta/enderecos', etiqueta: 'issue-19', area: 'loja' },
