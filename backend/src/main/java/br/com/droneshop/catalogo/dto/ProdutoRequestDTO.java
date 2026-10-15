@@ -9,8 +9,6 @@ import br.com.droneshop.util.Textos;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 
-// Sem @NotBlank/@NotNull: rascunho salva so com o status (D28), entao a obrigatoriedade
-// (inclusive do idStatus) fica no ProdutoServiceImpl. Texto em branco vira null no construtor.
 public record ProdutoRequestDTO(
     @Length(min = 2, max = 120, message = "O campo deve conter entre 2 e 120 caracteres (back).")
     String nome,
@@ -36,7 +34,6 @@ public record ProdutoRequestDTO(
     @Length(max = 255, message = "O campo deve ter no máximo 255 caracteres (back).")
     String tags,
 
-    // vazio herda o padrao da configuracao da loja (D15)
     @Min(value = 0, message = "A garantia não pode ser negativa (back).")
     Integer garantiaMeses,
 

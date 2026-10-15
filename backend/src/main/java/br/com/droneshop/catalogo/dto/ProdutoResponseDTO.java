@@ -5,7 +5,6 @@ import java.time.LocalDate;
 
 import br.com.droneshop.catalogo.model.StatusProduto;
 
-// marca, subcategoria e fornecedor vem null enquanto o produto for um rascunho incompleto
 public record ProdutoResponseDTO(
     Long id,
     String nome,

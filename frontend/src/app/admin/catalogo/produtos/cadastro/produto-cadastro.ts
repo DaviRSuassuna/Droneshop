@@ -56,7 +56,6 @@ export class ProdutoCadastro implements OnInit {
   readonly erroGeral = signal<string | null>(null);
   readonly errosCampo = signal<Record<string, string>>({});
 
-  /** Abre o bloco de SEO quando a API recusa algum campo dele. */
   readonly erroNoSeo = computed(() =>
     ['slug', 'metaTitle', 'metaDescription', 'tags'].some((c) => c in this.errosCampo()),
   );
@@ -166,9 +165,7 @@ export class ProdutoCadastro implements OnInit {
       metaTitle: v.metaTitle.trim(),
       metaDescription: v.metaDescription.trim(),
       tags: v.tags.trim(),
-      // input number vazio chega como null ou ''
       garantiaMeses: v.garantiaMeses === null || `${v.garantiaMeses}` === '' ? null : Number(v.garantiaMeses),
-      // input date já devolve yyyy-MM-dd
       dataLancamento: v.dataLancamento || null,
       preco: v.preco,
       // o select devolve string; a API espera Long

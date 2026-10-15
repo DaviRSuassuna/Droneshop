@@ -3,10 +3,7 @@ import { Marca } from './marca.model';
 import { StatusRef } from './status.model';
 import { Subcategoria } from './subcategoria.model';
 
-/**
- * Espelha o ProdutoResponseDTO devolvido pela API (relacionamentos aninhados).
- * Rascunho salva só com o status (D28), por isso quase tudo pode vir null.
- */
+/** Espelha o ProdutoResponseDTO devolvido pela API (relacionamentos aninhados). */
 export interface Produto {
   id: number;
   nome: string | null;
@@ -18,7 +15,6 @@ export interface Produto {
   metaDescription: string | null;
   tags: string | null;
   garantiaMeses: number;
-  /** ISO yyyy-MM-dd */
   dataLancamento: string | null;
   preco: number | null;
   marca: Marca | null;
@@ -34,14 +30,11 @@ export interface ProdutoDTO {
   modelo: string;
   descricaoCurta: string;
   descricao: string;
-  /** vazio: a API gera a partir do nome */
   slug: string;
   metaTitle: string;
   metaDescription: string;
   tags: string;
-  /** null: a API usa o padrão da configuração da loja */
   garantiaMeses: number | null;
-  /** ISO yyyy-MM-dd ou null */
   dataLancamento: string | null;
   preco: number | null;
   idMarca: number | null;

@@ -10,9 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 // Versao inicial de Produto: ainda sem a heranca Drone/Acessorio e sem VarianteProduto
-// do diagrama. O preco fica aqui ate VarianteProduto existir (#9, D26).
-// Nome, modelo, preco e relacionamentos aceitam nulo porque o rascunho salva vazio (D28);
-// o ProdutoServiceImpl exige esses campos fora de RASCUNHO.
+// do diagrama. O preco fica aqui ate VarianteProduto existir.
 @Entity
 public class Produto extends DefaultEntity {
 

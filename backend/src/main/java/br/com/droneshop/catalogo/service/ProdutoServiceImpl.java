@@ -25,7 +25,7 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 public class ProdutoServiceImpl implements ProdutoService {
 
-    // PROVISORIO: trocar por ConfiguracaoLoja.prazoGarantiaDias quando a #6 entrar (D15)
+    // provisorio: quando ConfiguracaoLoja existir, ler prazoGarantiaDias dela e remover esta constante
     private static final int PRAZO_GARANTIA_PADRAO_DIAS = 365;
 
     private static final String OBRIGATORIO = "O campo deve ser informado (back).";
@@ -120,7 +120,6 @@ public class ProdutoServiceImpl implements ProdutoService {
         destino.setDestaque(Boolean.TRUE.equals(dto.destaque()));
     }
 
-    // RASCUNHO so exige o status (D28); ATIVO/INATIVO exige os dados para vender o produto
     private StatusProduto validarObrigatoriedade(ProdutoRequestDTO dto) {
         StatusProduto status = StatusProduto.valueOf(dto.idStatus());
         if (dto.idStatus() != null && status == null)
@@ -149,7 +148,6 @@ public class ProdutoServiceImpl implements ProdutoService {
         return status;
     }
 
-    // sem slug informado, gera a partir do nome; rascunho sem nome ganha um slug temporario
     private String resolverSlug(String slug, String nome) {
         if (slug != null)
             return Textos.slug(slug);
@@ -158,7 +156,6 @@ public class ProdutoServiceImpl implements ProdutoService {
         return "rascunho-" + UUID.randomUUID().toString().substring(0, 8);
     }
 
-    // dias -> meses, arredondando para cima (365 dias -> 13 meses)
     private int garantiaPadraoMeses() {
         return (int) Math.ceil(PRAZO_GARANTIA_PADRAO_DIAS / 30.0);
     }
