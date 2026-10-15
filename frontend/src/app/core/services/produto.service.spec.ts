@@ -45,6 +45,13 @@ describe('ProdutoService', () => {
     req.flush({ items: [], page: 0, pageSize: 10, totalItems: 0, totalPages: 0 });
   });
 
+  it('busca pelo slug', () => {
+    service.buscarPorSlug('falcon-x2-pro').subscribe();
+    const req = http.expectOne(`${url}/slug/falcon-x2-pro`);
+    expect(req.request.method).toBe('GET');
+    req.flush({ id: 1, slug: 'falcon-x2-pro' });
+  });
+
   it('cria, atualiza e exclui', () => {
     const dto = { nome: 'Mavic', idStatus: 2 } as ProdutoDTO;
     service.criar(dto).subscribe();

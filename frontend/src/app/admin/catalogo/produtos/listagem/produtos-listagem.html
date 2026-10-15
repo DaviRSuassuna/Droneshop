@@ -119,17 +119,19 @@
         >
           <span class="cell-name">
             <b>
-              {{ produto.nome }}
+              {{ produto.nome ?? 'Rascunho sem nome' }}
               @if (produto.destaque) {
                 <span class="star" title="Destaque na loja">★</span>
               }
             </b>
-            <span class="chip">{{ produto.modelo }}</span>
+            @if (produto.modelo) {
+              <span class="chip">{{ produto.modelo }}</span>
+            }
           </span>
-          <span class="ink">{{ produto.marca.nome }}</span>
+          <span class="ink">{{ produto.marca?.nome }}</span>
           <span class="cell-name">
-            <span class="ink">{{ produto.subcategoria.nome }}</span>
-            <span class="dim sm">{{ produto.subcategoria.categoria.nome }}</span>
+            <span class="ink">{{ produto.subcategoria?.nome }}</span>
+            <span class="dim sm">{{ produto.subcategoria?.categoria?.nome }}</span>
           </span>
           <span class="ink num">{{ formatarPreco(produto.preco) }}</span>
           <span class="status">
