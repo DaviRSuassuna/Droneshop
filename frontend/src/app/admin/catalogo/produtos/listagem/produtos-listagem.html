@@ -141,7 +141,7 @@
             <span class="ink">{{ produto.subcategoria?.nome }}</span>
             <span class="dim sm">{{ produto.subcategoria?.categoria?.nome }}</span>
           </span>
-          <span class="ink num">{{ formatarPreco(produto.preco) }}</span>
+          <span class="ink num">{{ formatarPreco(menorPreco(produto)) }}</span>
           <span class="status">
             <span class="dot" [style.background]="corStatus(produto.status)"></span>
             {{ statusLabel(produto.status) }}
