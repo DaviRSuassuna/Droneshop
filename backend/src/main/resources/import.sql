@@ -2,6 +2,9 @@
 -- Status (enums no padrao Regiao, gravados pelo id): marca, categoria, subcategoria e produto
 -- 1 = Rascunho, 2 = Ativa(o), 3 = Inativa(o); fornecedor 1 = Ativo, 2 = Inativo.
 
+insert into configuracao_loja (id, dados_fiscais, cep_origem_frete, remetente_padrao, prazo_arrependimento_dias, prazo_garantia_dias, prazo_analise_devolucao_dias_uteis, frete_reverso_por_conta_loja) values
+    (1, 'Aeria Drones Comércio Ltda.', '77001000', 'Aeria Drones', 7, 365, 5, true);
+
 insert into marca (nome, slug, pais_origem, site_oficial, descricao, logo_url, status, destacar_home) values
     ('Aerion', 'aerion', 'Estados Unidos', 'https://aerion-drones.com', 'Marca norte-americana focada em drones de alta performance para uso profissional.', 'https://cdn.aeriadrones.com/marcas/aerion.png', 2, true);
 insert into marca (nome, slug, pais_origem, site_oficial, descricao, logo_url, status, destacar_home) values

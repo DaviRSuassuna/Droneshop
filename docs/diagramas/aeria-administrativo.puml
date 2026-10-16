@@ -88,8 +88,8 @@ package "Configuração" {
     -freteReversoPorContaLoja: boolean
   }
   note bottom of ConfiguracaoLoja
-    Registro único (singleton):
-    parâmetros da política de devolução (D8)
+    Registro único (singleton): dados fiscais,
+    origem de frete e política de devolução (D8)
   end note
 }
 

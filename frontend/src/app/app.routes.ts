@@ -4,6 +4,11 @@ import { TIPO_PRODUTO } from './core/models/produto.model';
 export const routes: Routes = [
   { path: '', redirectTo: 'admin/marcas', pathMatch: 'full' },
   {
+    path: 'admin/configuracao',
+    loadComponent: () =>
+      import('./admin/configuracao/configuracao-loja').then((m) => m.ConfiguracaoLojaPage),
+  },
+  {
     path: 'admin/marcas',
     loadComponent: () =>
       import('./admin/catalogo/marcas/listagem/marcas-listagem').then((m) => m.MarcasListagem),

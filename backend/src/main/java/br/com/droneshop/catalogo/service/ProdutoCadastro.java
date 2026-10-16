@@ -9,6 +9,8 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import br.com.droneshop.administracao.model.ConfiguracaoLoja;
+import br.com.droneshop.administracao.repository.ConfiguracaoLojaRepository;
 import br.com.droneshop.catalogo.dto.ProdutoRequestDTO;
 import br.com.droneshop.catalogo.dto.VarianteRequestDTO;
 import br.com.droneshop.catalogo.model.Fornecedor;
@@ -38,9 +40,6 @@ import jakarta.validation.Validator;
 @ApplicationScoped
 public class ProdutoCadastro {
 
-    // provisorio: quando ConfiguracaoLoja existir, ler prazoGarantiaDias dela e remover esta constante
-    private static final int PRAZO_GARANTIA_PADRAO_DIAS = 365;
-
     public static final String OBRIGATORIO = "O campo deve ser informado (back).";
 
     @Inject
@@ -57,6 +56,9 @@ public class ProdutoCadastro {
 
     @Inject
     VarianteProdutoRepository varianteRepository;
+
+    @Inject
+    ConfiguracaoLojaRepository configuracaoLojaRepository;
 
     @Inject
     Validator validator;
@@ -256,7 +258,10 @@ public class ProdutoCadastro {
     }
 
     private int garantiaPadraoMeses() {
-        return (int) Math.ceil(PRAZO_GARANTIA_PADRAO_DIAS / 30.0);
+        ConfiguracaoLoja configuracao = configuracaoLojaRepository.buscarUnica();
+        if (configuracao == null)
+            throw new ResourceNotFoundException("Configuração da loja não encontrada.");
+        return (int) Math.ceil(configuracao.getPrazoGarantiaDias() / 30.0);
     }
 
     private Marca buscarMarcaOuFalhar(Long idMarca) {
