@@ -86,8 +86,8 @@ As telas citadas são as do [protótipo](design/README.md).
 | Método | Rota | Uso | Issue | Situação |
 |---|---|---|---|---|
 | GET | `/admin/dashboard?periodo=` | Visão geral: KPIs, vendas por produto, estoque baixo, pedidos pendentes | #18 | a fazer |
-| GET POST · GET PUT | `/admin/usuarios` · `/admin/usuarios/{id}` | Usuários, Novo usuário | #5 | a fazer |
-| GET | `/papeis-administrativos` · `/modulos-sistema` · `/admin/papeis/{id}/permissoes-padrao` | select de papel e permissões padrão por módulo | #5 | a fazer |
+| GET POST · GET PUT | `/admin/usuarios?nome=&idPapel=&ativo=&page=&pageSize=` · `/admin/usuarios/{id}` | Usuários, Novo usuário; perfil 0..1 e permissões por módulo | #5 | pronto |
+| GET | `/papeis-administrativos` · `/modulos-sistema` · `/admin/papeis/{id}/permissoes-padrao` | select de papel e permissões padrão por módulo | #5 | pronto |
 | GET PUT | `/admin/configuracao` | parâmetros da loja (registro único) | #6 | a fazer |
 | GET | `/loja/configuracao` | o que a loja mostra da configuração | #21 | a fazer |
 | GET | `/admin/auditoria?idUsuario=&entidade=` | Ver log de auditoria | #41 | a fazer |

@@ -31,7 +31,7 @@ public class Usuario extends DefaultEntity {
     @Column(nullable = false)
     private boolean ativo;
 
-    @OneToOne(mappedBy = "usuario", fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "usuario", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private PerfilAdministrativo perfilAdministrativo;
 
     @PrePersist

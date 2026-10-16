@@ -18,6 +18,8 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.annotation.security.RolesAllowed;
+import br.com.droneshop.administracao.ModuloAdmin;
+import br.com.droneshop.administracao.model.ModuloSistema;
 
 // Lista, consulta e exclui todos os tipos. Cadastro e alteracao ficam em /drones e
 // /acessorios (D27), entao POST e PUT aqui respondem 405.
@@ -25,6 +27,7 @@ import jakarta.annotation.security.RolesAllowed;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @RolesAllowed("ADMINISTRATIVO")
+@ModuloAdmin(ModuloSistema.CATALOGO)
 public class ProdutoResource {
 
     @Inject

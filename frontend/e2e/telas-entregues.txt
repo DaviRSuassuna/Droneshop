@@ -7,3 +7,4 @@
 #   e devolve a etiqueta.
 #
 issue-4
+issue-5

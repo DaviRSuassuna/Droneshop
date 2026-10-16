@@ -118,6 +118,21 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./admin/catalogo/produtos/cadastro/produto-cadastro').then((m) => m.ProdutoCadastro),
       },
+      {
+        path: 'usuarios',
+        loadComponent: () =>
+          import('./admin/usuarios/listagem/usuarios-listagem').then((m) => m.UsuariosListagem),
+      },
+      {
+        path: 'usuarios/novo',
+        loadComponent: () =>
+          import('./admin/usuarios/cadastro/usuario-cadastro').then((m) => m.UsuarioCadastro),
+      },
+      {
+        path: 'usuarios/:id/editar',
+        loadComponent: () =>
+          import('./admin/usuarios/cadastro/usuario-cadastro').then((m) => m.UsuarioCadastro),
+      },
     ],
   },
   {
