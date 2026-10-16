@@ -119,3 +119,16 @@ from produto p join (values
     ('ACC-HNM-0202', 79.00, 80, 20, 0.080, 3, 10, 15),
     ('ACC-HFPV-0203', 59.00, 50, 10, 0.050, 2, 8, 12)
 ) as v(modelo, preco, estoque, minimo, peso, altura, largura, comprimento) on v.modelo = p.modelo;
+
+-- compatibilidade acessorio -> produto (D17): baterias e helices com a linha de cada marca,
+-- e a bateria do Falcon tambem com as helices dele (acessorio-acessorio)
+insert into acessorio_compativel (id_acessorio, id_produto)
+select a.id, p.id
+from produto a join produto p on (a.modelo, p.modelo) in (
+    ('ACC-BFX2-0101', 'DRN-FX2P-0042'), ('ACC-BFX2-0101', 'DRN-FX2S-0041'),
+    ('ACC-HFX2-0201', 'DRN-FX2P-0042'), ('ACC-HFX2-0201', 'DRN-FX2S-0041'),
+    ('ACC-BNMP-0102', 'DRN-NM3-0038'), ('ACC-BNMP-0102', 'DRN-NM3C-0039'),
+    ('ACC-HNM-0202', 'DRN-NM3-0038'), ('ACC-HNM-0202', 'DRN-NM3C-0039'),
+    ('ACC-BAA-0103', 'DRN-AT10-0019'),
+    ('ACC-HFPV-0203', 'DRN-VFR-0027'),
+    ('ACC-BFX2-0101', 'ACC-HFX2-0201'));

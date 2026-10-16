@@ -12,10 +12,16 @@ import { CategoriaService } from '../../../../core/services/categoria.service';
 import { SubcategoriaService } from '../../../../core/services/subcategoria.service';
 import { FornecedorService } from '../../../../core/services/fornecedor.service';
 import {
+  CompativeisAcessorio,
+  VinculoCompativel,
+  rotuloTipo,
+} from './compativeis/compativeis-acessorio';
+import {
   AcessorioDTO,
   DroneDTO,
   Produto,
   ProdutoDTO,
+  ProdutoResumo,
   TIPO_PRODUTO,
   Variante,
   VarianteDTO,
@@ -53,7 +59,7 @@ type CampoOpcao = keyof typeof OPCOES;
  */
 @Component({
   selector: 'app-produto-cadastro',
-  imports: [ReactiveFormsModule, RouterLink, AdminNav],
+  imports: [ReactiveFormsModule, RouterLink, AdminNav, CompativeisAcessorio],
   templateUrl: './produto-cadastro.html',
 })
 export class ProdutoCadastro implements OnInit {
@@ -157,6 +163,11 @@ export class ProdutoCadastro implements OnInit {
     maximumFractionDigits: 2,
   });
 
+  // compatibilidade (D17): o acessório grava a lista; os dois tipos mostram o lado recíproco
+  readonly compativeis = signal<VinculoCompativel[]>([]);
+  readonly acessoriosCompativeis = signal<ProdutoResumo[]>([]);
+  readonly rotuloTipo = rotuloTipo;
+
   /** Opções do select, mais o valor salvo quando ele não estiver na lista. */
   opcoes(campo: CampoOpcao): readonly string[] {
     const atual = campo === 'tipoAcessorio' ? this.tipoAcessorio.value : this.valorSpec(campo);
@@ -255,7 +266,9 @@ export class ProdutoCadastro implements OnInit {
   }
 
   private preencherTipo(produto: Produto): void {
+    this.acessoriosCompativeis.set(produto.acessoriosCompativeis ?? []);
     if (!this.ehDrone) {
+      this.compativeis.set((produto.compativeis ?? []).map((p) => ({ produto: p, salvo: true })));
       this.tipoAcessorio.setValue(produto.tipoAcessorio ?? '');
       return;
     }
@@ -279,6 +292,12 @@ export class ProdutoCadastro implements OnInit {
       classeAnac: produto.classeAnac ?? '',
       registroSisant: produto.registroSisant ?? '',
     });
+  }
+
+  /** Rota de edição do produto citado, conforme o tipo dele. */
+  rotaEdicao(produto: ProdutoResumo): string {
+    const base = produto.tipo.id === TIPO_PRODUTO.DRONE ? 'drones' : 'acessorios';
+    return `/admin/${base}/${produto.id}/editar`;
   }
 
   campoInvalido(campo: string): boolean {
@@ -328,7 +347,11 @@ export class ProdutoCadastro implements OnInit {
       const drone = this.droneDTO(dto);
       request$ = id ? this.droneService.atualizar(id, drone) : this.droneService.criar(drone);
     } else {
-      const acessorio: AcessorioDTO = { ...dto, tipoAcessorio: this.tipoAcessorio.value };
+      const acessorio: AcessorioDTO = {
+        ...dto,
+        tipoAcessorio: this.tipoAcessorio.value,
+        idsCompativeis: this.compativeis().map((v) => v.produto.id),
+      };
       request$ = id
         ? this.acessorioService.atualizar(id, acessorio)
         : this.acessorioService.criar(acessorio);

@@ -25,6 +25,8 @@ public record AcessorioResponseDTO(
     StatusProduto status,
     boolean destaque,
     String tipoAcessorio,
-    List<VarianteResponseDTO> variantes
+    List<VarianteResponseDTO> variantes,
+    List<ProdutoResumoDTO> compativeis,
+    List<ProdutoResumoDTO> acessoriosCompativeis
 ) implements ProdutoResponseDTO {
 }

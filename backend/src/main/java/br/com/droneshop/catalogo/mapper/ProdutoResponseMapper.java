@@ -1,10 +1,15 @@
 package br.com.droneshop.catalogo.mapper;
 
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+
 import br.com.droneshop.catalogo.dto.AcessorioResponseDTO;
 import br.com.droneshop.catalogo.dto.DroneResponseDTO;
 import br.com.droneshop.catalogo.dto.FornecedorResponseDTO;
 import br.com.droneshop.catalogo.dto.MarcaResponseDTO;
 import br.com.droneshop.catalogo.dto.ProdutoResponseDTO;
+import br.com.droneshop.catalogo.dto.ProdutoResumoDTO;
 import br.com.droneshop.catalogo.dto.SubcategoriaResponseDTO;
 import br.com.droneshop.catalogo.model.Acessorio;
 import br.com.droneshop.catalogo.model.Drone;
@@ -60,7 +65,8 @@ public final class ProdutoResponseMapper {
                 d.isExigeRegistroAnac(),
                 d.getClasseAnac(),
                 d.getRegistroSisant(),
-                VarianteResponseMapper.toResponse(d.getVariantes()));
+                VarianteResponseMapper.toResponse(d.getVariantes()),
+                resumos(d.getAcessoriosCompativeis()));
     }
 
     public static AcessorioResponseDTO toResponse(Acessorio a) {
@@ -83,7 +89,18 @@ public final class ProdutoResponseMapper {
                 a.getStatus(),
                 a.isDestaque(),
                 a.getTipoAcessorio(),
-                VarianteResponseMapper.toResponse(a.getVariantes()));
+                VarianteResponseMapper.toResponse(a.getVariantes()),
+                resumos(a.getCompativeis()),
+                resumos(a.getAcessoriosCompativeis()));
+    }
+
+    // ordem por nome para a lista sair estavel; rascunho sem nome vai para o fim
+    private static List<ProdutoResumoDTO> resumos(Collection<? extends Produto> produtos) {
+        return produtos.stream()
+                .sorted(Comparator.comparing(Produto::getNome, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER))
+                        .thenComparing(Produto::getId))
+                .map(p -> new ProdutoResumoDTO(p.getId(), p.getNome(), p.getTipo()))
+                .toList();
     }
 
     private static MarcaResponseDTO marca(Produto p) {
