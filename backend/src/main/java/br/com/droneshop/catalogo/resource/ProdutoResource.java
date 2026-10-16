@@ -17,12 +17,14 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.annotation.security.RolesAllowed;
 
 // Lista, consulta e exclui todos os tipos. Cadastro e alteracao ficam em /drones e
 // /acessorios (D27), entao POST e PUT aqui respondem 405.
 @Path("produtos")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@RolesAllowed("ADMINISTRATIVO")
 public class ProdutoResource {
 
     @Inject

@@ -15,6 +15,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.annotation.security.RolesAllowed;
 
 import br.com.droneshop.catalogo.dto.CategoriaRequestDTO;
 import br.com.droneshop.catalogo.dto.CategoriaResponseDTO;
@@ -25,6 +26,7 @@ import br.com.droneshop.catalogo.service.CategoriaService;
 @Path("categorias")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@RolesAllowed("ADMINISTRATIVO")
 public class CategoriaResource {
 
     @Inject

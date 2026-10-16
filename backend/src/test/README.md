@@ -53,8 +53,8 @@ Testes escritos a partir do contrato de cada issue (`docs/issues/NNN.md`), antes
 
 | Etiqueta | Situação no CI | Arquivos | Testes |
 |---|---|---|---:|
-| `base` | bloqueia o merge | `catalogo/CategoriaResourceTest`, `catalogo/FornecedorResourceTest`, `catalogo/MarcaResourceTest`, `catalogo/SubcategoriaResourceTest`, `endereco/CepResourceTest`, `endereco/EstadoMunicipioResourceTest`, `exception/RotaInexistenteTest` | 74 |
-| `issue-4` | informativo | `identidade/AutenticacaoResourceTest` | 11 |
+| `base` | bloqueia o merge | `catalogo/CategoriaResourceTest`, `catalogo/ExclusaoEmUsoTest`, `catalogo/FornecedorResourceTest`, `catalogo/MarcaResourceTest`, `catalogo/ProdutoResourceTest`, `catalogo/SubcategoriaResourceTest`, `endereco/CepResourceTest`, `endereco/EstadoMunicipioResourceTest`, `exception/RotaInexistenteTest` | 81 |
+| `issue-4` | bloqueia o merge | `identidade/AutenticacaoResourceTest` | 12 |
 | `issue-5` | informativo | `administracao/UsuarioAdministrativoResourceTest` | 10 |
 | `issue-6` | informativo | `administracao/ConfiguracaoLojaResourceTest` | 4 |
 | `issue-7` | bloqueia o merge | `catalogo/ProdutoSeoResourceTest` | 7 |

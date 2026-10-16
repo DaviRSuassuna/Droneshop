@@ -6,4 +6,4 @@
 #   (docs/design/prototipo) e TIRA a etiqueta daqui; depois o PR que muda a tela real
 #   e devolve a etiqueta.
 #
-# Vazio por enquanto: nenhuma tela passa inteira (ver e2e/README.md, seção "Situação atual").
+issue-4

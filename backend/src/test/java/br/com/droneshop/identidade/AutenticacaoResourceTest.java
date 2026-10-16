@@ -17,7 +17,11 @@ import org.junit.jupiter.api.Test;
 
 import br.com.droneshop.testes.Api;
 import io.quarkus.test.junit.QuarkusTest;
+import io.smallrye.jwt.build.Jwt;
 import io.restassured.http.ContentType;
+
+import java.time.Duration;
+import java.util.Set;
 
 /**
  * #4 Usuario: login por e-mail e senha com JWT, rotas do admin protegidas.
@@ -98,6 +102,20 @@ class AutenticacaoResourceTest {
                 .when().post("/marcas").then().statusCode(401);
         anonimo().when().get("/fornecedores").then().statusCode(401);
         anonimo().when().get("/produtos").then().statusCode(401);
+    }
+
+    @Test
+    void usuarioSemPerfilAdministrativoRecebe403Problem() {
+        String token = Jwt.issuer("droneshop-api")
+                .subject("999")
+                .upn("cliente@aeria.com.br")
+                .groups(Set.of("CLIENTE"))
+                .expiresIn(Duration.ofMinutes(5))
+                .sign();
+        como(token).when().get("/marcas")
+                .then().statusCode(403)
+                .contentType("application/problem+json")
+                .body("type", endsWith("/errors/forbidden"));
     }
 
     @Test
