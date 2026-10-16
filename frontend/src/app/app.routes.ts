@@ -120,6 +120,11 @@ export const routes: Routes = [
           import('./admin/catalogo/produtos/cadastro/produto-cadastro').then((m) => m.ProdutoCadastro),
       },
       {
+        path: 'configuracao',
+        loadComponent: () =>
+          import('./admin/configuracao/configuracao-loja').then((m) => m.ConfiguracaoLojaPage),
+      },
+      {
         path: 'usuarios',
         loadComponent: () =>
           import('./admin/usuarios/listagem/usuarios-listagem').then((m) => m.UsuariosListagem),

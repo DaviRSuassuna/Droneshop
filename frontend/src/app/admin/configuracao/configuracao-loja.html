@@ -1,0 +1,142 @@
+<app-admin-nav />
+
+<main class="pad configuracao">
+  <header class="configuracao-heading">
+    <div>
+      <h1 class="h1 big">Configuração da loja</h1>
+      <p class="crumb">Administração · Parâmetros gerais da loja</p>
+    </div>
+  </header>
+
+  @if (erroGeral()) {
+    <div class="card p alert-error" role="alert">{{ erroGeral() }}</div>
+  }
+  @if (salvo()) {
+    <p class="save-success" role="status">Configuração salva.</p>
+  }
+
+  @if (carregando()) {
+    <section class="card p" aria-live="polite">Carregando configuração…</section>
+  } @else if (falhaCarregamento()) {
+    <button class="btn" type="button" (click)="carregar()">Tentar novamente</button>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="salvar()" novalidate>
+      <section class="card p">
+        <h2 class="card-t">Dados fiscais e de envio</h2>
+        <div class="form-grid">
+          <div class="f full" [class.erro]="resolveErrorMessage('dadosFiscais')">
+            <label for="dadosFiscais">Dados fiscais <span class="req">*</span></label>
+            <textarea
+              id="dadosFiscais"
+              rows="3"
+              maxlength="2000"
+              formControlName="dadosFiscais"
+              aria-describedby="dadosFiscais-erro"
+            ></textarea>
+            @if (resolveErrorMessage('dadosFiscais'); as mensagem) {
+              <span class="warn" id="dadosFiscais-erro">{{ mensagem }}</span>
+            }
+          </div>
+          <div class="f" [class.erro]="resolveErrorMessage('cepOrigemFrete')">
+            <label for="cepOrigemFrete">CEP de origem do frete <span class="req">*</span></label>
+            <input
+              id="cepOrigemFrete"
+              type="text"
+              inputmode="numeric"
+              autocomplete="postal-code"
+              maxlength="9"
+              placeholder="00000-000"
+              formControlName="cepOrigemFrete"
+              appMascara="cep"
+              aria-describedby="cepOrigemFrete-erro"
+            />
+            @if (resolveErrorMessage('cepOrigemFrete'); as mensagem) {
+              <span class="warn" id="cepOrigemFrete-erro">{{ mensagem }}</span>
+            }
+          </div>
+          <div class="f" [class.erro]="resolveErrorMessage('remetentePadrao')">
+            <label for="remetentePadrao">Remetente padrão <span class="req">*</span></label>
+            <input
+              id="remetentePadrao"
+              type="text"
+              maxlength="150"
+              formControlName="remetentePadrao"
+              aria-describedby="remetentePadrao-erro"
+            />
+            @if (resolveErrorMessage('remetentePadrao'); as mensagem) {
+              <span class="warn" id="remetentePadrao-erro">{{ mensagem }}</span>
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="card p">
+        <h2 class="card-t">Prazos e devoluções</h2>
+        <div class="form-grid">
+          <div class="f" [class.erro]="resolveErrorMessage('prazoArrependimentoDias')">
+            <label for="prazoArrependimentoDias">
+              Prazo de arrependimento (dias) <span class="req">*</span>
+            </label>
+            <input
+              id="prazoArrependimentoDias"
+              type="number"
+              min="7"
+              step="1"
+              formControlName="prazoArrependimentoDias"
+              aria-describedby="arrependimento-ajuda prazoArrependimentoDias-erro"
+            />
+            <span class="field-help" id="arrependimento-ajuda">O prazo mínimo permitido é 7 dias.</span>
+            @if (resolveErrorMessage('prazoArrependimentoDias'); as mensagem) {
+              <span class="warn" id="prazoArrependimentoDias-erro">{{ mensagem }}</span>
+            }
+          </div>
+          <div class="f" [class.erro]="resolveErrorMessage('prazoGarantiaDias')">
+            <label for="prazoGarantiaDias">Prazo de garantia (dias) <span class="req">*</span></label>
+            <input
+              id="prazoGarantiaDias"
+              type="number"
+              min="1"
+              step="1"
+              formControlName="prazoGarantiaDias"
+              aria-describedby="prazoGarantiaDias-erro"
+            />
+            @if (resolveErrorMessage('prazoGarantiaDias'); as mensagem) {
+              <span class="warn" id="prazoGarantiaDias-erro">{{ mensagem }}</span>
+            }
+          </div>
+          <div class="f" [class.erro]="resolveErrorMessage('prazoAnaliseDevolucaoDiasUteis')">
+            <label for="prazoAnaliseDevolucaoDiasUteis">
+              Análise de devolução (dias úteis) <span class="req">*</span>
+            </label>
+            <input
+              id="prazoAnaliseDevolucaoDiasUteis"
+              type="number"
+              min="1"
+              step="1"
+              formControlName="prazoAnaliseDevolucaoDiasUteis"
+              aria-describedby="prazoAnaliseDevolucaoDiasUteis-erro"
+            />
+            @if (resolveErrorMessage('prazoAnaliseDevolucaoDiasUteis'); as mensagem) {
+              <span class="warn" id="prazoAnaliseDevolucaoDiasUteis-erro">{{ mensagem }}</span>
+            }
+          </div>
+          <label class="reverse-shipping" for="freteReversoPorContaLoja">
+            <input
+              id="freteReversoPorContaLoja"
+              type="checkbox"
+              formControlName="freteReversoPorContaLoja"
+            />
+            <span>A loja paga o frete reverso</span>
+          </label>
+        </div>
+      </section>
+
+      <div class="actionbar">
+        <span class="action-note">Os parâmetros são aplicados à loja após salvar.</span>
+        <button class="btn p" type="submit" [disabled]="salvando()">
+          {{ salvando() ? 'Salvando…' : 'Salvar configuração' }}
+        </button>
+      </div>
+    </form>
+  }
+</main>

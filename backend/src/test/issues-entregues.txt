@@ -6,6 +6,7 @@
 base
 issue-4
 issue-5
+issue-6
 issue-7
 issue-8
 issue-9
