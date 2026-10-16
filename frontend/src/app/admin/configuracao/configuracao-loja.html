@@ -24,7 +24,7 @@
       <section class="card p">
         <h2 class="card-t">Dados fiscais e de envio</h2>
         <div class="form-grid">
-          <div class="f full" [class.erro]="mensagemErro('dadosFiscais')">
+          <div class="f full" [class.erro]="resolveErrorMessage('dadosFiscais')">
             <label for="dadosFiscais">Dados fiscais <span class="req">*</span></label>
             <textarea
               id="dadosFiscais"
@@ -33,11 +33,11 @@
               formControlName="dadosFiscais"
               aria-describedby="dadosFiscais-erro"
             ></textarea>
-            @if (mensagemErro('dadosFiscais'); as mensagem) {
+            @if (resolveErrorMessage('dadosFiscais'); as mensagem) {
               <span class="warn" id="dadosFiscais-erro">{{ mensagem }}</span>
             }
           </div>
-          <div class="f" [class.erro]="mensagemErro('cepOrigemFrete')">
+          <div class="f" [class.erro]="resolveErrorMessage('cepOrigemFrete')">
             <label for="cepOrigemFrete">CEP de origem do frete <span class="req">*</span></label>
             <input
               id="cepOrigemFrete"
@@ -50,11 +50,11 @@
               appMascara="cep"
               aria-describedby="cepOrigemFrete-erro"
             />
-            @if (mensagemErro('cepOrigemFrete'); as mensagem) {
+            @if (resolveErrorMessage('cepOrigemFrete'); as mensagem) {
               <span class="warn" id="cepOrigemFrete-erro">{{ mensagem }}</span>
             }
           </div>
-          <div class="f" [class.erro]="mensagemErro('remetentePadrao')">
+          <div class="f" [class.erro]="resolveErrorMessage('remetentePadrao')">
             <label for="remetentePadrao">Remetente padrão <span class="req">*</span></label>
             <input
               id="remetentePadrao"
@@ -63,7 +63,7 @@
               formControlName="remetentePadrao"
               aria-describedby="remetentePadrao-erro"
             />
-            @if (mensagemErro('remetentePadrao'); as mensagem) {
+            @if (resolveErrorMessage('remetentePadrao'); as mensagem) {
               <span class="warn" id="remetentePadrao-erro">{{ mensagem }}</span>
             }
           </div>
@@ -73,7 +73,7 @@
       <section class="card p">
         <h2 class="card-t">Prazos e devoluções</h2>
         <div class="form-grid">
-          <div class="f" [class.erro]="mensagemErro('prazoArrependimentoDias')">
+          <div class="f" [class.erro]="resolveErrorMessage('prazoArrependimentoDias')">
             <label for="prazoArrependimentoDias">
               Prazo de arrependimento (dias) <span class="req">*</span>
             </label>
@@ -86,11 +86,11 @@
               aria-describedby="arrependimento-ajuda prazoArrependimentoDias-erro"
             />
             <span class="field-help" id="arrependimento-ajuda">O prazo mínimo permitido é 7 dias.</span>
-            @if (mensagemErro('prazoArrependimentoDias'); as mensagem) {
+            @if (resolveErrorMessage('prazoArrependimentoDias'); as mensagem) {
               <span class="warn" id="prazoArrependimentoDias-erro">{{ mensagem }}</span>
             }
           </div>
-          <div class="f" [class.erro]="mensagemErro('prazoGarantiaDias')">
+          <div class="f" [class.erro]="resolveErrorMessage('prazoGarantiaDias')">
             <label for="prazoGarantiaDias">Prazo de garantia (dias) <span class="req">*</span></label>
             <input
               id="prazoGarantiaDias"
@@ -100,11 +100,11 @@
               formControlName="prazoGarantiaDias"
               aria-describedby="prazoGarantiaDias-erro"
             />
-            @if (mensagemErro('prazoGarantiaDias'); as mensagem) {
+            @if (resolveErrorMessage('prazoGarantiaDias'); as mensagem) {
               <span class="warn" id="prazoGarantiaDias-erro">{{ mensagem }}</span>
             }
           </div>
-          <div class="f" [class.erro]="mensagemErro('prazoAnaliseDevolucaoDiasUteis')">
+          <div class="f" [class.erro]="resolveErrorMessage('prazoAnaliseDevolucaoDiasUteis')">
             <label for="prazoAnaliseDevolucaoDiasUteis">
               Análise de devolução (dias úteis) <span class="req">*</span>
             </label>
@@ -116,7 +116,7 @@
               formControlName="prazoAnaliseDevolucaoDiasUteis"
               aria-describedby="prazoAnaliseDevolucaoDiasUteis-erro"
             />
-            @if (mensagemErro('prazoAnaliseDevolucaoDiasUteis'); as mensagem) {
+            @if (resolveErrorMessage('prazoAnaliseDevolucaoDiasUteis'); as mensagem) {
               <span class="warn" id="prazoAnaliseDevolucaoDiasUteis-erro">{{ mensagem }}</span>
             }
           </div>

@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AdminNav } from '../../layout/admin/admin-nav/admin-nav';
 import { ConfiguracaoLojaService } from '../../core/services/configuracao-loja.service';
@@ -21,9 +22,9 @@ export class ConfiguracaoLojaPage implements OnInit {
   readonly falhaCarregamento = signal(false);
   readonly salvando = signal(false);
   readonly erroGeral = signal<string | null>(null);
-  readonly errosCampo = signal<Record<string, string>>({});
   readonly salvo = signal(false);
 
+  // mensagens no mapa fieldMessages e erros do back aplicados no próprio controle como "api".
   readonly form = this.fb.nonNullable.group({
     dadosFiscais: ['', [Validators.required, Validators.maxLength(2000)]],
     cepOrigemFrete: ['', [Validators.required, Validators.pattern(/^\d{5}-\d{3}$/)]],
@@ -33,6 +34,41 @@ export class ConfiguracaoLojaPage implements OnInit {
     prazoAnaliseDevolucaoDiasUteis: [5, [Validators.required, Validators.min(1), Validators.pattern(/^\d+$/)]],
     freteReversoPorContaLoja: [true],
   });
+
+  private readonly fieldMessages: Record<string, Record<string, string>> = {
+    dadosFiscais: {
+      required: 'Informe os dados fiscais da loja.',
+      maxlength: 'Os dados fiscais devem ter no máximo 2000 caracteres.',
+    },
+    cepOrigemFrete: {
+      required: 'Informe o CEP de origem do frete.',
+      pattern: 'CEP inválido. Use o formato 00000-000.',
+    },
+    remetentePadrao: {
+      required: 'Informe o remetente padrão.',
+      maxlength: 'O remetente padrão deve ter no máximo 150 caracteres.',
+    },
+    prazoArrependimentoDias: {
+      required: 'Informe o prazo de arrependimento.',
+      min: 'O prazo de arrependimento deve ser de pelo menos 7 dias.',
+      pattern: 'Informe um número inteiro de dias.',
+    },
+    prazoGarantiaDias: {
+      required: 'Informe o prazo de garantia.',
+      min: 'O prazo de garantia deve ser de pelo menos 1 dia.',
+      pattern: 'Informe um número inteiro de dias.',
+    },
+    prazoAnaliseDevolucaoDiasUteis: {
+      required: 'Informe o prazo de análise da devolução.',
+      min: 'O prazo de análise deve ser de pelo menos 1 dia útil.',
+      pattern: 'Informe um número inteiro de dias.',
+    },
+  };
+
+  constructor() {
+    // "Configuração salva." só vale até a próxima alteração
+    this.form.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => this.salvo.set(false));
+  }
 
   ngOnInit(): void {
     this.carregar();
@@ -44,7 +80,7 @@ export class ConfiguracaoLojaPage implements OnInit {
     this.erroGeral.set(null);
     this.service.buscar().subscribe({
       next: (configuracao) => {
-        this.form.patchValue({
+        this.form.reset({
           ...configuracao,
           cepOrigemFrete: `${configuracao.cepOrigemFrete.slice(0, 5)}-${configuracao.cepOrigemFrete.slice(5)}`,
         });
@@ -53,18 +89,32 @@ export class ConfiguracaoLojaPage implements OnInit {
       error: (err: HttpErrorResponse) => {
         this.carregando.set(false);
         this.falhaCarregamento.set(true);
-        this.erroGeral.set(this.detalheProblema(err) ?? 'Não foi possível carregar a configuração da loja.');
+        const problem = err.error as ProblemDetail | undefined;
+        this.erroGeral.set(problem?.detail ?? 'Não foi possível carregar a configuração da loja.');
       },
     });
   }
 
+  /** Mensagem do primeiro erro do controle, só depois que o usuário mexeu nele (ou tentou salvar). */
+  resolveErrorMessage(path: string): string | null {
+    const control = this.form.get(path);
+    if (!control || !control.errors || !(control.touched || control.dirty)) return null;
+    if (control.errors['api']) return control.errors['api'];
+    const mensagens = this.fieldMessages[path] ?? {};
+    for (const tipo of Object.keys(control.errors)) {
+      if (mensagens[tipo]) return mensagens[tipo];
+    }
+    return 'Valor inválido.';
+  }
+
   salvar(): void {
     this.erroGeral.set(null);
-    this.errosCampo.set({});
     this.salvo.set(false);
 
+    // validação do front: não envia enquanto houver erro, e mostra todos de uma vez
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.erroGeral.set('Verifique os campos destacados.');
       return;
     }
 
@@ -78,39 +128,32 @@ export class ConfiguracaoLojaPage implements OnInit {
         this.salvando.set(false);
         this.salvo.set(true);
       },
-      error: (err: HttpErrorResponse) => {
-        this.salvando.set(false);
-        const problem = err.error as ProblemDetail | undefined;
-        if (problem?.errors?.length) {
-          this.errosCampo.set(Object.fromEntries(problem.errors.map(({ field, message }) => [field, message])));
-        }
-        this.erroGeral.set(this.detalheProblema(err) ?? 'Não foi possível salvar a configuração. Tente novamente.');
-      },
+      error: (err: HttpErrorResponse) => this.tratarErro(err),
     });
   }
 
-  mensagemErro(campo: keyof typeof this.form.controls): string | null {
-    const api = this.errosCampo()[campo];
-    if (api) return api;
-    const control = this.form.controls[campo];
-    if (!control.touched || control.valid) return null;
-
-    if (control.hasError('required')) return 'Este campo é obrigatório.';
-    if (control.hasError('pattern')) {
-      return campo === 'cepOrigemFrete'
-        ? 'Informe um CEP válido no formato 00000-000.'
-        : 'Informe um número inteiro de dias.';
+  /** Erro do back (Problem, RFC 7807): cada erro de campo vai para o controle certo como "api". */
+  private tratarErro(err: HttpErrorResponse): void {
+    this.salvando.set(false);
+    const problem = err.error as ProblemDetail | undefined;
+    if (problem?.errors?.length) {
+      for (const fe of problem.errors) {
+        this.aplicarErroApi(fe.field, fe.message);
+      }
+      // o detalhe de cada erro já aparece embaixo do campo
+      this.erroGeral.set('Verifique os campos destacados.');
+    } else {
+      this.erroGeral.set(problem?.detail ?? 'Não foi possível salvar a configuração. Tente novamente.');
     }
-    if (control.hasError('min')) {
-      const minimo = campo === 'prazoArrependimentoDias' ? 7 : 1;
-      return `Informe pelo menos ${minimo} ${campo === 'prazoArrependimentoDias' ? 'dias' : 'dia'}.`;
-    }
-    if (control.hasError('maxlength')) return 'O texto ultrapassou o limite de caracteres.';
-    return null;
   }
 
-  private detalheProblema(err: HttpErrorResponse): string | null {
-    const problem = err.error as ProblemDetail | undefined;
-    return problem?.detail ?? null;
+  private aplicarErroApi(path: string, mensagem: string): void {
+    const control = this.form.get(path);
+    if (!control) {
+      this.erroGeral.set(mensagem);
+      return;
+    }
+    control.setErrors({ ...(control.errors ?? {}), api: mensagem });
+    control.markAsTouched();
   }
 }
