@@ -5,16 +5,6 @@ import { TIPO_PRODUTO } from './core/models/produto.model';
 export const routes: Routes = [
   { path: '', redirectTo: 'admin/marcas', pathMatch: 'full' },
   {
-<<<<<<< HEAD
-    path: 'admin/configuracao',
-    loadComponent: () =>
-      import('./admin/configuracao/configuracao-loja').then((m) => m.ConfiguracaoLojaPage),
-  },
-  {
-    path: 'admin/marcas',
-    loadComponent: () =>
-      import('./admin/catalogo/marcas/listagem/marcas-listagem').then((m) => m.MarcasListagem),
-=======
     path: 'admin',
     canActivateChild: [adminAuthGuard],
     children: [
@@ -130,6 +120,11 @@ export const routes: Routes = [
           import('./admin/catalogo/produtos/cadastro/produto-cadastro').then((m) => m.ProdutoCadastro),
       },
       {
+        path: 'configuracao',
+        loadComponent: () =>
+          import('./admin/configuracao/configuracao-loja').then((m) => m.ConfiguracaoLojaPage),
+      },
+      {
         path: 'usuarios',
         loadComponent: () =>
           import('./admin/usuarios/listagem/usuarios-listagem').then((m) => m.UsuariosListagem),
@@ -145,7 +140,6 @@ export const routes: Routes = [
           import('./admin/usuarios/cadastro/usuario-cadastro').then((m) => m.UsuarioCadastro),
       },
     ],
->>>>>>> origin/develop
   },
   {
     path: 'entrar',

@@ -4,12 +4,9 @@
 #
 # "base" = entregas anteriores às issues (marca, categoria, subcategoria, fornecedor, estados/municípios e CEP).
 base
-<<<<<<< HEAD
-issue-6
-=======
 issue-4
 issue-5
->>>>>>> origin/develop
+issue-6
 issue-7
 issue-8
 issue-9

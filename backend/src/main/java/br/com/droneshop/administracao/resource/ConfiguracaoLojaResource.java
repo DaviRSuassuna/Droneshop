@@ -1,8 +1,11 @@
 package br.com.droneshop.administracao.resource;
 
+import br.com.droneshop.administracao.ModuloAdmin;
 import br.com.droneshop.administracao.dto.ConfiguracaoLojaRequestDTO;
 import br.com.droneshop.administracao.dto.ConfiguracaoLojaResponseDTO;
+import br.com.droneshop.administracao.model.ModuloSistema;
 import br.com.droneshop.administracao.service.ConfiguracaoLojaService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
@@ -15,6 +18,8 @@ import jakarta.ws.rs.core.MediaType;
 @Path("/admin/configuracao")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@RolesAllowed("ADMINISTRATIVO")
+@ModuloAdmin(ModuloSistema.ADMINISTRACAO)
 public class ConfiguracaoLojaResource {
 
     @Inject

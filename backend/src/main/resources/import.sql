@@ -2,10 +2,9 @@
 -- Status (enums no padrao Regiao, gravados pelo id): marca, categoria, subcategoria e produto
 -- 1 = Rascunho, 2 = Ativa(o), 3 = Inativa(o); fornecedor 1 = Ativo, 2 = Inativo.
 
-<<<<<<< HEAD
 insert into configuracao_loja (id, dados_fiscais, cep_origem_frete, remetente_padrao, prazo_arrependimento_dias, prazo_garantia_dias, prazo_analise_devolucao_dias_uteis, frete_reverso_por_conta_loja) values
     (1, 'Aeria Drones Comércio Ltda.', '77001000', 'Aeria Drones', 7, 365, 5, true);
-=======
+
 -- Administrador semente: login admin@aeria.com.br / aeria123
 insert into usuario (nome, email, senha_hash, email_verificado, ativo)
 values ('Administrador', 'admin@aeria.com.br',
@@ -18,7 +17,6 @@ from perfil_administrativo p
 cross join (values (1), (2), (3), (4), (5), (6), (7), (8)) as m(id)
 where p.usuario_id = (select id from usuario where email = 'admin@aeria.com.br');
 
->>>>>>> origin/develop
 
 insert into marca (nome, slug, pais_origem, site_oficial, descricao, logo_url, status, destacar_home) values
     ('Aerion', 'aerion', 'Estados Unidos', 'https://aerion-drones.com', 'Marca norte-americana focada em drones de alta performance para uso profissional.', 'https://cdn.aeriadrones.com/marcas/aerion.png', 2, true);
