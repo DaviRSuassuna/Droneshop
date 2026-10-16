@@ -52,7 +52,10 @@ public record AcessorioRequestDTO(
     String tipoAcessorio,
 
     // validadas item a item no ProdutoCadastro, para o erro sair como variantes[i].campo
-    List<VarianteRequestDTO> variantes
+    List<VarianteRequestDTO> variantes,
+
+    // produtos (drone ou acessorio) com que este acessorio e compativel (D17)
+    List<Long> idsCompativeis
 ) implements ProdutoRequestDTO {
     public AcessorioRequestDTO {
         nome = Textos.nuloSeVazio(nome);

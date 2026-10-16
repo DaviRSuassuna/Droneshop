@@ -2,7 +2,9 @@ package br.com.droneshop.catalogo.model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import br.com.droneshop.model.DefaultEntity;
 import jakarta.persistence.CascadeType;
@@ -13,6 +15,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
@@ -80,6 +83,10 @@ public abstract class Produto extends DefaultEntity {
     @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
     private List<VarianteProduto> variantes = new ArrayList<>();
+
+    // lado reciproco da compatibilidade (D17): so leitura, quem grava e o acessorio
+    @ManyToMany(mappedBy = "compativeis")
+    private Set<Acessorio> acessoriosCompativeis = new HashSet<>();
 
     public abstract TipoProduto getTipo();
 
@@ -209,6 +216,10 @@ public abstract class Produto extends DefaultEntity {
 
     public void setVariantes(List<VarianteProduto> variantes) {
         this.variantes = variantes;
+    }
+
+    public Set<Acessorio> getAcessoriosCompativeis() {
+        return acessoriosCompativeis;
     }
 
 }

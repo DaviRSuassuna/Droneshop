@@ -364,6 +364,38 @@
               }
             </div>
           </div>
+          <app-compativeis-acessorio
+            [(vinculos)]="compativeis"
+            [idAtual]="produtoId()"
+            [erro]="mensagemErro('idsCompativeis')"
+          />
+        </section>
+      }
+
+      @if (ehDrone || modoEdicao()) {
+        <section class="card p">
+          <div class="card-h">
+            <span class="card-t">Acessórios compatíveis</span>
+            <span class="card-n">O vínculo é feito no cadastro do acessório</span>
+          </div>
+          @if (acessoriosCompativeis().length) {
+            <ul
+              class="tbl"
+              style="list-style: none; margin: 0; padding: 0"
+              aria-label="Acessórios compatíveis"
+            >
+              @for (acessorio of acessoriosCompativeis(); track acessorio.id) {
+                <li class="trow" style="grid-template-columns: minmax(0, 1fr) auto">
+                  <span class="ink">{{ acessorio.nome || 'Sem nome (rascunho)' }}</span>
+                  <a class="dim" [routerLink]="rotaEdicao(acessorio)">Abrir acessório</a>
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="dim">
+              Nenhum acessório vinculado. Para vincular, abra o acessório e use “Compatível com”.
+            </p>
+          }
         </section>
       }
 

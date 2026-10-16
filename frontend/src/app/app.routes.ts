@@ -94,6 +94,7 @@ export const routes: Routes = [
             (m) => m.ProdutosListagem,
           ),
       },
+      // drone e acessório usam a mesma tela de cadastro; o tipo vem do data da rota (D27)
       {
         path: 'drones/novo',
         data: { tipo: TIPO_PRODUTO.DRONE },

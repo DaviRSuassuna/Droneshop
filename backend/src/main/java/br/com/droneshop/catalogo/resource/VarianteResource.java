@@ -9,6 +9,7 @@ import br.com.droneshop.catalogo.mapper.VarianteResponseMapper;
 import br.com.droneshop.catalogo.model.VarianteProduto;
 import br.com.droneshop.catalogo.service.VarianteService;
 import br.com.droneshop.dto.PageResponse;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DefaultValue;

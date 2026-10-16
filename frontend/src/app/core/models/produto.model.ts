@@ -86,6 +86,13 @@ export interface DroneSpecs {
   registroSisant: string | null;
 }
 
+/** Produto citado dentro de outro, como na compatibilidade (D17). */
+export interface ProdutoResumo {
+  id: number;
+  nome: string | null;
+  tipo: StatusRef;
+}
+
 /**
  * Item de GET /produtos e resposta de GET /produtos/{id}. O tipo diz quais campos
  * vêm: drone traz as specs, acessório traz tipoAcessorio.
@@ -93,6 +100,10 @@ export interface DroneSpecs {
 export interface Produto extends ProdutoBase, Partial<DroneSpecs> {
   tipo: StatusRef;
   tipoAcessorio?: string | null;
+  /** Só no acessório: produtos com que ele é compatível (D17). */
+  compativeis?: ProdutoResumo[];
+  /** Em todo produto: acessórios que se declararam compatíveis com ele (lado recíproco). */
+  acessoriosCompativeis?: ProdutoResumo[];
 }
 
 /** Campos comuns do corpo de POST/PUT em /drones e /acessorios. */
@@ -121,6 +132,7 @@ export type DroneDTO = ProdutoDTO & DroneSpecs;
 /** Corpo de POST /acessorios e PUT /acessorios/{id}. */
 export interface AcessorioDTO extends ProdutoDTO {
   tipoAcessorio: string;
+  idsCompativeis: number[];
 }
 
 /** Filtros aceitos por GET /produtos. Campos vazios são ignorados. */

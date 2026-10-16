@@ -4,6 +4,7 @@ import br.com.droneshop.catalogo.dto.DroneRequestDTO;
 import br.com.droneshop.catalogo.dto.DroneResponseDTO;
 import br.com.droneshop.catalogo.mapper.ProdutoResponseMapper;
 import br.com.droneshop.catalogo.service.DroneService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
