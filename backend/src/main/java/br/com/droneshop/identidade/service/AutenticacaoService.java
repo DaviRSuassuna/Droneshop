@@ -36,7 +36,7 @@ public class AutenticacaoService {
         Usuario usuario = usuarios.porEmail(dto.email());
         if (usuario == null || !usuario.isAtivo() || usuario.getSenhaHash() == null
                 || !BcryptUtil.matches(dto.senha(), usuario.getSenhaHash())) {
-            throw new NotAuthorizedException(ERRO_LOGIN);
+            throw new NotAuthorizedException(ERRO_LOGIN, "Bearer");
         }
 
         LocalDateTime expiraEm = LocalDateTime.now().plus(DURACAO_TOKEN);
@@ -56,7 +56,7 @@ public class AutenticacaoService {
     public UsuarioResponseDTO usuarioAtivo(Long id) {
         Usuario usuario = usuarios.findById(id);
         if (usuario == null || !usuario.isAtivo()) {
-            throw new NotAuthorizedException(ERRO_LOGIN);
+            throw new NotAuthorizedException(ERRO_LOGIN, "Bearer");
         }
         return new UsuarioResponseDTO(usuario.getId(), usuario.getNome(), usuario.getEmail(), perfisDo(usuario));
     }

@@ -54,6 +54,7 @@ class AutenticacaoResourceTest {
                 .then().statusCode(401)
                 .contentType("application/problem+json")
                 .body("type", endsWith("/errors/unauthorized"))
+                .body("detail", equalTo("E-mail ou senha inválidos."))
                 .extract().jsonPath().getString("detail");
         String erroEmail = Api.tentarLogin("ninguem@aeria.com.br", "senha-errada")
                 .then().statusCode(401)
@@ -92,7 +93,9 @@ class AutenticacaoResourceTest {
 
     @Test
     void tokenInvalidoResponde401() {
-        como("isto-nao-e-um-jwt").when().get("/auth/me").then().statusCode(401);
+        como("isto-nao-e-um-jwt").when().get("/auth/me").then().statusCode(401)
+                .contentType("application/problem+json")
+                .body("type", endsWith("/errors/unauthorized"));
     }
 
     @Test
