@@ -37,7 +37,7 @@ class UsuarioAdministrativoResourceTest {
     @Inject
     UsuarioRepository usuarioRepository;
 
-    static final long MODULO_CATALOGO = 1, MODULO_ESTOQUE = 2;
+    static final long MODULO_CATALOGO = 1, MODULO_ESTOQUE = 2, MODULO_ADMINISTRACAO = 8;
 
     static Map<String, Object> usuario(String email, long idPapel) {
         Map<String, Object> u = new HashMap<>();
@@ -221,6 +221,30 @@ class UsuarioAdministrativoResourceTest {
         given().contentType(ContentType.JSON).body(u)
                 .when().put("/admin/usuarios/{id}", idAdmin)
                 .then().statusCode(409);
+    }
+
+    @Test
+    void ninguemTiraAPropriaPermissao() {
+        String email = Dados.sufixo() + "@aeria.com.br";
+        Map<String, Object> u = usuario(email, Fixtures.PAPEL_SOMENTE_LEITURA);
+        u.put("permissoes", List.of(Map.of("idModulo", MODULO_ADMINISTRACAO, "podeEditar", true)));
+        long id = Fixtures.criar("/admin/usuarios", u);
+        String token = Api.login(email, "provisoria123");
+
+        u.remove("senha");
+        u.put("permissoes", List.of(Map.of("idModulo", MODULO_ADMINISTRACAO, "podeEditar", false)));
+        como(token).contentType(ContentType.JSON).body(u)
+                .when().put("/admin/usuarios/{id}", id)
+                .then().statusCode(409);
+
+        u.put("permissoes", List.of(Map.of("idModulo", MODULO_CATALOGO, "podeVer", false)));
+        como(token).contentType(ContentType.JSON).body(u)
+                .when().put("/admin/usuarios/{id}", id)
+                .then().statusCode(409);
+
+        given().when().get("/admin/usuarios/{id}", id).then().statusCode(200)
+                .body("permissoes.find { it.modulo.nome == 'ADMINISTRACAO' }.podeEditar", equalTo(true))
+                .body("permissoes.find { it.modulo.nome == 'CATALOGO' }.podeVer", equalTo(true));
     }
 
     @Test

@@ -196,6 +196,9 @@ public class UsuarioAdministrativoService {
                     throw new ConflitoException("Ninguém desativa nem rebaixa o próprio usuário.");
                 }
             }
+            if (removePermissao(usuario.getPerfilAdministrativo(), mapearOverrides(dto.permissoes()))) {
+                throw new ConflitoException("Ninguém desativa nem rebaixa o próprio usuário.");
+            }
         }
 
         if (dto.nome() != null) {
@@ -254,6 +257,20 @@ public class UsuarioAdministrativoService {
             }
         }
         return overrides;
+    }
+
+    // rebaixar também é tirar do próprio perfil uma permissão que ele já tem
+    private static boolean removePermissao(PerfilAdministrativo perfil, Map<Long, PermissaoItemRequestDTO> overrides) {
+        for (PermissaoModulo atual : perfil.getPermissoes()) {
+            PermissaoItemRequestDTO novo = overrides.get(atual.getModulo().getId());
+            if (novo == null) continue;
+            if ((atual.isPodeVer() && Boolean.FALSE.equals(novo.podeVer()))
+                    || (atual.isPodeEditar() && Boolean.FALSE.equals(novo.podeEditar()))
+                    || (atual.isPodeExcluir() && Boolean.FALSE.equals(novo.podeExcluir()))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void aplicarPadroes(PerfilAdministrativo perfil, PapelAdministrativo papel) {
