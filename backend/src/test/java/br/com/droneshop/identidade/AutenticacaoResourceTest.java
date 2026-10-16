@@ -17,7 +17,11 @@ import org.junit.jupiter.api.Test;
 
 import br.com.droneshop.testes.Api;
 import io.quarkus.test.junit.QuarkusTest;
+import io.smallrye.jwt.build.Jwt;
 import io.restassured.http.ContentType;
+
+import java.time.Duration;
+import java.util.Set;
 
 /**
  * #4 Usuario: login por e-mail e senha com JWT, rotas do admin protegidas.
@@ -50,6 +54,7 @@ class AutenticacaoResourceTest {
                 .then().statusCode(401)
                 .contentType("application/problem+json")
                 .body("type", endsWith("/errors/unauthorized"))
+                .body("detail", equalTo("E-mail ou senha inválidos."))
                 .extract().jsonPath().getString("detail");
         String erroEmail = Api.tentarLogin("ninguem@aeria.com.br", "senha-errada")
                 .then().statusCode(401)
@@ -88,7 +93,9 @@ class AutenticacaoResourceTest {
 
     @Test
     void tokenInvalidoResponde401() {
-        como("isto-nao-e-um-jwt").when().get("/auth/me").then().statusCode(401);
+        como("isto-nao-e-um-jwt").when().get("/auth/me").then().statusCode(401)
+                .contentType("application/problem+json")
+                .body("type", endsWith("/errors/unauthorized"));
     }
 
     @Test
@@ -98,6 +105,20 @@ class AutenticacaoResourceTest {
                 .when().post("/marcas").then().statusCode(401);
         anonimo().when().get("/fornecedores").then().statusCode(401);
         anonimo().when().get("/produtos").then().statusCode(401);
+    }
+
+    @Test
+    void usuarioSemPerfilAdministrativoRecebe403Problem() {
+        String token = Jwt.issuer("droneshop-api")
+                .subject("999")
+                .upn("cliente@aeria.com.br")
+                .groups(Set.of("CLIENTE"))
+                .expiresIn(Duration.ofMinutes(5))
+                .sign();
+        como(token).when().get("/marcas")
+                .then().statusCode(403)
+                .contentType("application/problem+json")
+                .body("type", endsWith("/errors/forbidden"));
     }
 
     @Test

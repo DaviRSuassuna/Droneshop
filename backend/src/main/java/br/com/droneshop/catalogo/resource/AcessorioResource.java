@@ -4,6 +4,7 @@ import br.com.droneshop.catalogo.dto.AcessorioRequestDTO;
 import br.com.droneshop.catalogo.dto.AcessorioResponseDTO;
 import br.com.droneshop.catalogo.mapper.ProdutoResponseMapper;
 import br.com.droneshop.catalogo.service.AcessorioService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -17,6 +18,7 @@ import jakarta.ws.rs.core.MediaType;
 @Path("acessorios")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@RolesAllowed("ADMINISTRATIVO")
 public class AcessorioResource {
 
     @Inject
