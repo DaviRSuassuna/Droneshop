@@ -6,8 +6,8 @@
 insert into usuario (nome, email, senha_hash, email_verificado, ativo)
 values ('Administrador', 'admin@aeria.com.br',
         '$2a$10$DvWOf27oHRLntAxdCeuH0.l7dTe/yzd3gcRdmdOAV4u6XqEmZ6Nka', true, true);
-insert into usuario_perfis (usuario_id, perfil)
-select id, 'ADMINISTRATIVO' from usuario where email = 'admin@aeria.com.br';
+insert into perfil_administrativo (papel, usuario_id)
+select 1, id from usuario where email = 'admin@aeria.com.br';
 
 insert into marca (nome, slug, pais_origem, site_oficial, descricao, logo_url, status, destacar_home) values
     ('Aerion', 'aerion', 'Estados Unidos', 'https://aerion-drones.com', 'Marca norte-americana focada em drones de alta performance para uso profissional.', 'https://cdn.aeriadrones.com/marcas/aerion.png', 2, true);

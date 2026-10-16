@@ -1,101 +1,114 @@
 import { Routes } from '@angular/router';
+import { adminAuthGuard } from './core/guards/admin-auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'admin/marcas', pathMatch: 'full' },
   {
-    path: 'admin/marcas',
-    loadComponent: () =>
-      import('./admin/catalogo/marcas/listagem/marcas-listagem').then((m) => m.MarcasListagem),
+    path: 'admin',
+    canActivateChild: [adminAuthGuard],
+    children: [
+      { path: '', redirectTo: 'marcas', pathMatch: 'full' },
+      {
+        path: 'marcas',
+        loadComponent: () =>
+          import('./admin/catalogo/marcas/listagem/marcas-listagem').then((m) => m.MarcasListagem),
+      },
+      {
+        path: 'marcas/novo',
+        loadComponent: () =>
+          import('./admin/catalogo/marcas/cadastro/marca-cadastro').then((m) => m.MarcaCadastro),
+      },
+      {
+        path: 'marcas/:id/editar',
+        loadComponent: () =>
+          import('./admin/catalogo/marcas/cadastro/marca-cadastro').then((m) => m.MarcaCadastro),
+      },
+      {
+        path: 'categorias',
+        loadComponent: () =>
+          import('./admin/catalogo/categorias/listagem/categorias-listagem').then(
+            (m) => m.CategoriasListagem,
+          ),
+      },
+      {
+        path: 'categorias/novo',
+        loadComponent: () =>
+          import('./admin/catalogo/categorias/cadastro/categoria-cadastro').then(
+            (m) => m.CategoriaCadastro,
+          ),
+      },
+      {
+        path: 'categorias/:id/editar',
+        loadComponent: () =>
+          import('./admin/catalogo/categorias/cadastro/categoria-cadastro').then(
+            (m) => m.CategoriaCadastro,
+          ),
+      },
+      {
+        path: 'subcategorias',
+        loadComponent: () =>
+          import('./admin/catalogo/subcategorias/listagem/subcategorias-listagem').then(
+            (m) => m.SubcategoriasListagem,
+          ),
+      },
+      {
+        path: 'subcategorias/novo',
+        loadComponent: () =>
+          import('./admin/catalogo/subcategorias/cadastro/subcategoria-cadastro').then(
+            (m) => m.SubcategoriaCadastro,
+          ),
+      },
+      {
+        path: 'subcategorias/:id/editar',
+        loadComponent: () =>
+          import('./admin/catalogo/subcategorias/cadastro/subcategoria-cadastro').then(
+            (m) => m.SubcategoriaCadastro,
+          ),
+      },
+      {
+        path: 'fornecedores',
+        loadComponent: () =>
+          import('./admin/catalogo/fornecedores/listagem/fornecedores-listagem').then(
+            (m) => m.FornecedoresListagem,
+          ),
+      },
+      {
+        path: 'fornecedores/novo',
+        loadComponent: () =>
+          import('./admin/catalogo/fornecedores/cadastro/fornecedor-cadastro').then(
+            (m) => m.FornecedorCadastro,
+          ),
+      },
+      {
+        path: 'fornecedores/:id/editar',
+        loadComponent: () =>
+          import('./admin/catalogo/fornecedores/cadastro/fornecedor-cadastro').then(
+            (m) => m.FornecedorCadastro,
+          ),
+      },
+      {
+        path: 'produtos',
+        loadComponent: () =>
+          import('./admin/catalogo/produtos/listagem/produtos-listagem').then(
+            (m) => m.ProdutosListagem,
+          ),
+      },
+      {
+        path: 'produtos/novo',
+        loadComponent: () =>
+          import('./admin/catalogo/produtos/cadastro/produto-cadastro').then((m) => m.ProdutoCadastro),
+      },
+      {
+        path: 'produtos/:id/editar',
+        loadComponent: () =>
+          import('./admin/catalogo/produtos/cadastro/produto-cadastro').then((m) => m.ProdutoCadastro),
+      },
+    ],
   },
   {
-    path: 'admin/marcas/novo',
+    path: 'entrar',
     loadComponent: () =>
-      import('./admin/catalogo/marcas/cadastro/marca-cadastro').then((m) => m.MarcaCadastro),
-  },
-  {
-    path: 'admin/marcas/:id/editar',
-    loadComponent: () =>
-      import('./admin/catalogo/marcas/cadastro/marca-cadastro').then((m) => m.MarcaCadastro),
-  },
-  {
-    path: 'admin/categorias',
-    loadComponent: () =>
-      import('./admin/catalogo/categorias/listagem/categorias-listagem').then(
-        (m) => m.CategoriasListagem,
-      ),
-  },
-  {
-    path: 'admin/categorias/novo',
-    loadComponent: () =>
-      import('./admin/catalogo/categorias/cadastro/categoria-cadastro').then(
-        (m) => m.CategoriaCadastro,
-      ),
-  },
-  {
-    path: 'admin/categorias/:id/editar',
-    loadComponent: () =>
-      import('./admin/catalogo/categorias/cadastro/categoria-cadastro').then(
-        (m) => m.CategoriaCadastro,
-      ),
-  },
-  {
-    path: 'admin/subcategorias',
-    loadComponent: () =>
-      import('./admin/catalogo/subcategorias/listagem/subcategorias-listagem').then(
-        (m) => m.SubcategoriasListagem,
-      ),
-  },
-  {
-    path: 'admin/subcategorias/novo',
-    loadComponent: () =>
-      import('./admin/catalogo/subcategorias/cadastro/subcategoria-cadastro').then(
-        (m) => m.SubcategoriaCadastro,
-      ),
-  },
-  {
-    path: 'admin/subcategorias/:id/editar',
-    loadComponent: () =>
-      import('./admin/catalogo/subcategorias/cadastro/subcategoria-cadastro').then(
-        (m) => m.SubcategoriaCadastro,
-      ),
-  },
-  {
-    path: 'admin/fornecedores',
-    loadComponent: () =>
-      import('./admin/catalogo/fornecedores/listagem/fornecedores-listagem').then(
-        (m) => m.FornecedoresListagem,
-      ),
-  },
-  {
-    path: 'admin/fornecedores/novo',
-    loadComponent: () =>
-      import('./admin/catalogo/fornecedores/cadastro/fornecedor-cadastro').then(
-        (m) => m.FornecedorCadastro,
-      ),
-  },
-  {
-    path: 'admin/fornecedores/:id/editar',
-    loadComponent: () =>
-      import('./admin/catalogo/fornecedores/cadastro/fornecedor-cadastro').then(
-        (m) => m.FornecedorCadastro,
-      ),
-  },
-  {
-    path: 'admin/produtos',
-    loadComponent: () =>
-      import('./admin/catalogo/produtos/listagem/produtos-listagem').then(
-        (m) => m.ProdutosListagem,
-      ),
-  },
-  {
-    path: 'admin/produtos/novo',
-    loadComponent: () =>
-      import('./admin/catalogo/produtos/cadastro/produto-cadastro').then((m) => m.ProdutoCadastro),
-  },
-  {
-    path: 'admin/produtos/:id/editar',
-    loadComponent: () =>
-      import('./admin/catalogo/produtos/cadastro/produto-cadastro').then((m) => m.ProdutoCadastro),
+      import('./storefront/auth/login/login').then((m) => m.Login),
   },
   { path: '**', redirectTo: 'admin/marcas' },
 ];

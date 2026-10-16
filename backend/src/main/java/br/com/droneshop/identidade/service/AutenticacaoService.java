@@ -3,6 +3,9 @@ package br.com.droneshop.identidade.service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import br.com.droneshop.identidade.dto.LoginRequestDTO;
 import br.com.droneshop.identidade.dto.LoginResponseDTO;
@@ -21,7 +24,9 @@ public class AutenticacaoService {
 
     private static final Duration DURACAO_TOKEN = Duration.ofHours(1);
     private static final String ERRO_LOGIN = "E-mail ou senha inválidos.";
-    private static final String EMISSOR = "droneshop-api";
+
+    @ConfigProperty(name = "mp.jwt.verify.issuer")
+    String emissor;
 
     @Inject
     UsuarioRepository usuarios;
@@ -35,14 +40,14 @@ public class AutenticacaoService {
         }
 
         LocalDateTime expiraEm = LocalDateTime.now().plus(DURACAO_TOKEN);
-        String token = Jwt.issuer(EMISSOR)
+        List<String> perfis = perfisDo(usuario);
+        String token = Jwt.issuer(emissor)
                 .subject(usuario.getId().toString())
                 .upn(usuario.getEmail())
-                .groups(usuario.getPerfis())
+                .groups(Set.copyOf(perfis))
                 .expiresIn(DURACAO_TOKEN)
                 .sign();
 
-        List<String> perfis = usuario.getPerfis().stream().sorted().toList();
         return new LoginResponseDTO(token, expiraEm,
                 new UsuarioResponseDTO(usuario.getId(), usuario.getNome(), usuario.getEmail(), perfis), perfis);
     }
@@ -53,7 +58,10 @@ public class AutenticacaoService {
         if (usuario == null || !usuario.isAtivo()) {
             throw new NotAuthorizedException(ERRO_LOGIN);
         }
-        List<String> perfis = usuario.getPerfis().stream().sorted().toList();
-        return new UsuarioResponseDTO(usuario.getId(), usuario.getNome(), usuario.getEmail(), perfis);
+        return new UsuarioResponseDTO(usuario.getId(), usuario.getNome(), usuario.getEmail(), perfisDo(usuario));
+    }
+
+    private List<String> perfisDo(Usuario usuario) {
+        return usuario.getPerfilAdministrativo() == null ? List.of() : List.of("ADMINISTRATIVO");
     }
 }

@@ -13,6 +13,13 @@ const ENUM = /^\/(status|tipos|origens|papeis|modulos|escopos|metodos|modalidade
 const LISTA_SIMPLES = /^\/(estados|loja\/categorias|loja\/marcas|conta\/enderecos|conta\/desejos|conta\/cartoes|conta\/sessoes)$/;
 
 export async function simularApi(page: Page, especificas: Record<string, unknown> = {}): Promise<void> {
+  await page.addInitScript(() => {
+    const payload = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }))
+      .replace(/=/g, '')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_');
+    localStorage.setItem('aeria-auth-token', `eyJhbGciOiJub25lIn0.${payload}.`);
+  });
   await page.route(`${API}/**`, async (route) => {
     const req = route.request();
     const caminho = new URL(req.url()).pathname;

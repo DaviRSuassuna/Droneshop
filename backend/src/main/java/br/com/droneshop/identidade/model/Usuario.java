@@ -1,16 +1,13 @@
 package br.com.droneshop.identidade.model;
 
-import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
 
+import br.com.droneshop.administracao.model.PerfilAdministrativo;
 import br.com.droneshop.model.DefaultEntity;
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -34,10 +31,8 @@ public class Usuario extends DefaultEntity {
     @Column(nullable = false)
     private boolean ativo;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "usuario_perfis", joinColumns = @JoinColumn(name = "usuario_id"))
-    @Column(name = "perfil", nullable = false, length = 32)
-    private Set<String> perfis = new HashSet<>();
+    @OneToOne(mappedBy = "usuario", fetch = FetchType.EAGER)
+    private PerfilAdministrativo perfilAdministrativo;
 
     @PrePersist
     @PreUpdate
@@ -87,11 +82,11 @@ public class Usuario extends DefaultEntity {
         this.ativo = ativo;
     }
 
-    public Set<String> getPerfis() {
-        return perfis;
+    public PerfilAdministrativo getPerfilAdministrativo() {
+        return perfilAdministrativo;
     }
 
-    public void setPerfis(Set<String> perfis) {
-        this.perfis = perfis;
+    public void setPerfilAdministrativo(PerfilAdministrativo perfilAdministrativo) {
+        this.perfilAdministrativo = perfilAdministrativo;
     }
 }
