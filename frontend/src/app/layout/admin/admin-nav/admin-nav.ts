@@ -31,7 +31,7 @@ export class AdminNav {
     { rotulo: 'Cupons' },
     { rotulo: 'Estoque' },
     { rotulo: 'Pedidos' },
-    { rotulo: 'Usuários' },
+    { rotulo: 'Usuários', rota: '/admin/usuarios' },
   ];
 
   readonly tema = signal(this.temaInicial());

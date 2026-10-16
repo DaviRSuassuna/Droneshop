@@ -1,0 +1,110 @@
+<app-admin-nav />
+
+<div class="pagebar">
+  <div style="display:flex;align-items:baseline;gap:12px">
+    <h1 class="h1">Usuários</h1>
+    <span class="sub">{{ totalItens() }} usuários administrativos · {{ totalAtivos() }} ativos nesta página</span>
+  </div>
+  <div class="actions">
+    <button class="btn" type="button">Ver log de auditoria</button>
+    <a class="btn p" routerLink="/admin/usuarios/novo">Novo usuário</a>
+  </div>
+</div>
+
+<div class="pad-t" style="display:flex;flex-direction:column;gap:16px">
+  <div class="filters">
+    <div class="f grow">
+      <input
+        type="text"
+        placeholder="Buscar por nome ou e-mail"
+        [value]="termoBusca()"
+        (input)="aoDigitarBusca($any($event.target).value)"
+      />
+    </div>
+    <div class="f">
+      <select [value]="filtroPapel()" (change)="aoMudarPapel($any($event.target).value)">
+        <option value="">Papel</option>
+        @for (papel of papeis(); track papel.id) {
+          <option [value]="papel.id">{{ nomePapelExibicao(papel.nome) }}</option>
+        }
+      </select>
+    </div>
+    <div class="f">
+      <select [value]="filtroStatus()" (change)="aoMudarStatus($any($event.target).value)">
+        <option value="">Status</option>
+        <option value="true">Ativo</option>
+        <option value="false">Inativo</option>
+      </select>
+    </div>
+  </div>
+
+  <p class="legend" style="margin:0">
+    Um <span class="chip">Usuario</span> pode ter perfil de cliente e perfil administrativo ao mesmo tempo. Esta lista mostra apenas quem tem <span class="chip">PerfilAdministrativo</span>.
+  </p>
+
+  @if (carregando()) {
+    <div class="tbl">
+      <div class="pager"><span>Carregando usuários…</span></div>
+    </div>
+  } @else if (erro()) {
+    <div class="tbl">
+      <div class="pager">
+        <span class="warn">{{ erro() }}</span>
+        <button class="btn sm" type="button" (click)="carregar()">Tentar novamente</button>
+      </div>
+    </div>
+  } @else {
+    <div class="tbl">
+      <div class="trow head" style="grid-template-columns:minmax(0,1fr) 170px 90px 150px 118px 44px">
+        <span>Usuário</span>
+        <span>Papel</span>
+        <span>2FA</span>
+        <span>Último acesso</span>
+        <span>Status</span>
+        <span></span>
+      </div>
+
+      @for (u of usuariosPagina(); track u.id) {
+        <a
+          class="trow"
+          style="grid-template-columns:minmax(0,1fr) 170px 90px 150px 118px 44px"
+          [routerLink]="['/admin/usuarios', u.id, 'editar']"
+        >
+          <span class="cell-name">
+            <b>{{ u.nome }}</b>
+            <span class="chip">{{ u.email }}</span>
+          </span>
+          <span class="dim" style="color:var(--ink2)">{{ nomePapelExibicao(u.papel?.nome) }}</span>
+          <span class="dim">{{ u.twoFAHabilitado ? 'Ativo' : 'Inativo' }}</span>
+          <span class="dim">-</span>
+          <span class="status">
+            <span class="dot" [style.background]="u.ativo ? 'var(--ok)' : 'var(--dim2)'"></span>
+            {{ u.ativo ? 'Ativo' : 'Inativo' }}
+          </span>
+          <span style="justify-self:end;color:var(--mute)">⋯</span>
+        </a>
+      } @empty {
+        <div class="pager"><span>Nenhum usuário encontrado.</span></div>
+      }
+
+      <div class="pager">
+        <span>Exibindo {{ intervaloExibido() }} de {{ totalItens() }}</span>
+        <span class="pages">
+          <a
+            (click)="paginaAnterior()"
+            [style.opacity]="pagina() === 0 ? 0.4 : 1"
+            [style.cursor]="pagina() === 0 ? 'default' : 'pointer'"
+            >‹</a
+          >
+          <span>Página {{ pagina() + 1 }} de {{ totalPaginas() }}</span>
+          <a
+            (click)="proximaPagina()"
+            [style.opacity]="pagina() + 1 >= totalPaginas() ? 0.4 : 1"
+            [style.cursor]="pagina() + 1 >= totalPaginas() ? 'default' : 'pointer'"
+            >›</a
+          >
+        </span>
+      </div>
+    </div>
+  }
+</div>
