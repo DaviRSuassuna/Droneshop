@@ -14,11 +14,16 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
+import jakarta.annotation.security.RolesAllowed;
+import br.com.droneshop.administracao.ModuloAdmin;
+import br.com.droneshop.administracao.model.ModuloSistema;
+
 // Consulta, listagem e exclusao ficam em /produtos (D27)
 @Path("acessorios")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @RolesAllowed("ADMINISTRATIVO")
+@ModuloAdmin(ModuloSistema.CATALOGO)
 public class AcessorioResource {
 
     @Inject

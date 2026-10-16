@@ -15,11 +15,16 @@ import java.util.Map;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import br.com.droneshop.identidade.model.Usuario;
+import br.com.droneshop.identidade.repository.UsuarioRepository;
 import br.com.droneshop.testes.Api;
 import br.com.droneshop.testes.Dados;
 import br.com.droneshop.testes.Fixtures;
+import io.quarkus.elytron.security.common.BcryptUtil;
+import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import jakarta.inject.Inject;
 
 /**
  * #5 PerfilAdministrativo com papéis e permissões por módulo.
@@ -29,7 +34,10 @@ import io.restassured.http.ContentType;
 @Tag("issue-5")
 class UsuarioAdministrativoResourceTest {
 
-    static final long MODULO_CATALOGO = 1, MODULO_ESTOQUE = 2;
+    @Inject
+    UsuarioRepository usuarioRepository;
+
+    static final long MODULO_CATALOGO = 1, MODULO_ESTOQUE = 2, MODULO_ADMINISTRACAO = 8;
 
     static Map<String, Object> usuario(String email, long idPapel) {
         Map<String, Object> u = new HashMap<>();
@@ -64,6 +72,24 @@ class UsuarioAdministrativoResourceTest {
     }
 
     @Test
+    void permissoesPadraoDeOperadorAtendimentoEAdmin() {
+        given().when().get("/admin/papeis/{id}/permissoes-padrao", Fixtures.PAPEL_ADMIN)
+                .then().statusCode(200)
+                .body("find { it.modulo.nome == 'ADMINISTRACAO' }.podeExcluir", equalTo(true));
+        given().when().get("/admin/papeis/{id}/permissoes-padrao", Fixtures.PAPEL_OPERADOR)
+                .then().statusCode(200)
+                .body("find { it.modulo.nome == 'ESTOQUE' }.podeEditar", equalTo(true))
+                .body("find { it.modulo.nome == 'PEDIDO' }.podeEditar", equalTo(true))
+                .body("find { it.modulo.nome == 'DEVOLUCAO' }.podeEditar", equalTo(true))
+                .body("find { it.modulo.nome == 'CATALOGO' }.podeEditar", equalTo(false));
+        given().when().get("/admin/papeis/{id}/permissoes-padrao", Fixtures.PAPEL_ATENDIMENTO)
+                .then().statusCode(200)
+                .body("find { it.modulo.nome == 'ATENDIMENTO' }.podeEditar", equalTo(true))
+                .body("find { it.modulo.nome == 'DEVOLUCAO' }.podeEditar", equalTo(true))
+                .body("find { it.modulo.nome == 'ESTOQUE' }.podeEditar", equalTo(false));
+    }
+
+    @Test
     void criaUsuarioComPermissoesDoPapel() {
         String email = Dados.sufixo() + "@aeria.com.br";
         given().contentType(ContentType.JSON).body(usuario(email, Fixtures.PAPEL_SOMENTE_LEITURA))
@@ -94,6 +120,10 @@ class UsuarioAdministrativoResourceTest {
                 .when().post("/admin/usuarios")
                 .then().statusCode(400).body("errors.field", hasItem("email"));
 
+        given().contentType(ContentType.JSON).body(usuario("marcos@", Fixtures.PAPEL_ADMIN))
+                .when().post("/admin/usuarios")
+                .then().statusCode(400).body("errors.field", hasItem("email"));
+
         Map<String, Object> curta = usuario(Dados.sufixo() + "@aeria.com.br", Fixtures.PAPEL_ADMIN);
         curta.put("senha", "123");
         given().contentType(ContentType.JSON).body(curta)
@@ -103,6 +133,46 @@ class UsuarioAdministrativoResourceTest {
         given().contentType(ContentType.JSON).body(usuario(Dados.sufixo() + "@aeria.com.br", 99))
                 .when().post("/admin/usuarios")
                 .then().statusCode(400).body("errors.field", hasItem("idPapel"));
+    }
+
+    @Test
+    void contaExistenteRecebePerfilAdministrativoSemTrocarSenha() {
+        String email = Dados.sufixo() + "@cliente.com.br";
+        Usuario existente = new Usuario();
+        existente.setNome("Cliente " + email);
+        existente.setEmail(email);
+        existente.setSenhaHash(BcryptUtil.bcryptHash("senha-original"));
+        existente.setEmailVerificado(true);
+        existente.setAtivo(true);
+        QuarkusTransaction.requiringNew().run(() -> usuarioRepository.persist(existente));
+
+        Map<String, Object> novoPerfil = usuario(email, Fixtures.PAPEL_CATALOGO);
+        novoPerfil.put("senha", "ignorada");
+
+        given().contentType(ContentType.JSON).body(novoPerfil)
+                .when().post("/admin/usuarios")
+                .then().statusCode(200)
+                .body("email", equalTo(email))
+                .body("papel.nome", equalTo("CATALOGO"));
+
+        Api.tentarLogin(email, "senha-original").then().statusCode(200);
+        Api.tentarLogin(email, "ignorada").then().statusCode(401);
+    }
+
+    @Test
+    void trocaDePapelRegeneraPermissoesPadrao() {
+        String email = Dados.sufixo() + "@aeria.com.br";
+        long id = Fixtures.criar("/admin/usuarios", usuario(email, Fixtures.PAPEL_SOMENTE_LEITURA));
+        Map<String, Object> atualizacao = usuario(email, Fixtures.PAPEL_CATALOGO);
+        atualizacao.remove("senha");
+
+        given().contentType(ContentType.JSON).body(atualizacao)
+                .when().put("/admin/usuarios/{id}", id)
+                .then().statusCode(204);
+        given().when().get("/admin/usuarios/{id}", id)
+                .then().statusCode(200)
+                .body("papel.nome", equalTo("CATALOGO"))
+                .body("permissoes.find { it.modulo.nome == 'CATALOGO' }.podeEditar", equalTo(true));
     }
 
     @Test
@@ -145,6 +215,36 @@ class UsuarioAdministrativoResourceTest {
         given().contentType(ContentType.JSON).body(u)
                 .when().put("/admin/usuarios/{id}", idAdmin)
                 .then().statusCode(409);
+
+        u.put("ativo", true);
+        u.put("idPapel", Fixtures.PAPEL_CATALOGO);
+        given().contentType(ContentType.JSON).body(u)
+                .when().put("/admin/usuarios/{id}", idAdmin)
+                .then().statusCode(409);
+    }
+
+    @Test
+    void ninguemTiraAPropriaPermissao() {
+        String email = Dados.sufixo() + "@aeria.com.br";
+        Map<String, Object> u = usuario(email, Fixtures.PAPEL_SOMENTE_LEITURA);
+        u.put("permissoes", List.of(Map.of("idModulo", MODULO_ADMINISTRACAO, "podeEditar", true)));
+        long id = Fixtures.criar("/admin/usuarios", u);
+        String token = Api.login(email, "provisoria123");
+
+        u.remove("senha");
+        u.put("permissoes", List.of(Map.of("idModulo", MODULO_ADMINISTRACAO, "podeEditar", false)));
+        como(token).contentType(ContentType.JSON).body(u)
+                .when().put("/admin/usuarios/{id}", id)
+                .then().statusCode(409);
+
+        u.put("permissoes", List.of(Map.of("idModulo", MODULO_CATALOGO, "podeVer", false)));
+        como(token).contentType(ContentType.JSON).body(u)
+                .when().put("/admin/usuarios/{id}", id)
+                .then().statusCode(409);
+
+        given().when().get("/admin/usuarios/{id}", id).then().statusCode(200)
+                .body("permissoes.find { it.modulo.nome == 'ADMINISTRACAO' }.podeEditar", equalTo(true))
+                .body("permissoes.find { it.modulo.nome == 'CATALOGO' }.podeVer", equalTo(true));
     }
 
     @Test

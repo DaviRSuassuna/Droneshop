@@ -1393,6 +1393,60 @@ a.trow:hover {
   }
 }
 
+@media (max-width: 640px) {
+  .tb {
+    position: relative;
+    align-items: flex-start;
+    padding: 10px 16px;
+  }
+  .tb-l {
+    width: 100%;
+    min-width: 0;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .tb-nav {
+    width: 100%;
+    gap: 0 14px;
+  }
+  .tb-r {
+    display: none;
+  }
+  .pagebar {
+    position: static;
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 14px 16px;
+  }
+  .pad {
+    padding: 18px 16px 80px;
+  }
+  .pad-t {
+    padding: 18px 16px 28px;
+  }
+  .filters {
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+  .filters .f,
+  .filters .grow {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+  .pad-t .trow {
+    grid-template-columns: minmax(0, 1fr) 118px 44px !important;
+    gap: 8px;
+  }
+  .pad-t .trow > :nth-child(2),
+  .pad-t .trow > :nth-child(3),
+  .pad-t .trow > :nth-child(4) {
+    display: none;
+  }
+  .actionbar {
+    padding: 10px 16px;
+  }
+}
+
 .pcard,
 .cat,
 .scard,

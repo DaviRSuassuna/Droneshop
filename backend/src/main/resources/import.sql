@@ -6,8 +6,14 @@
 insert into usuario (nome, email, senha_hash, email_verificado, ativo)
 values ('Administrador', 'admin@aeria.com.br',
         '$2a$10$DvWOf27oHRLntAxdCeuH0.l7dTe/yzd3gcRdmdOAV4u6XqEmZ6Nka', true, true);
-insert into perfil_administrativo (papel, usuario_id)
-select 1, id from usuario where email = 'admin@aeria.com.br';
+insert into perfil_administrativo (papel, usuario_id, two_fa_habilitado)
+select 1, id, false from usuario where email = 'admin@aeria.com.br';
+insert into permissao_modulo (perfil_administrativo_id, modulo, pode_ver, pode_editar, pode_excluir)
+select p.id, m.id, true, true, true
+from perfil_administrativo p
+cross join (values (1), (2), (3), (4), (5), (6), (7), (8)) as m(id)
+where p.usuario_id = (select id from usuario where email = 'admin@aeria.com.br');
+
 
 insert into marca (nome, slug, pais_origem, site_oficial, descricao, logo_url, status, destacar_home) values
     ('Aerion', 'aerion', 'Estados Unidos', 'https://aerion-drones.com', 'Marca norte-americana focada em drones de alta performance para uso profissional.', 'https://cdn.aeriadrones.com/marcas/aerion.png', 2, true);
