@@ -48,6 +48,7 @@ end note
 
 class Categoria {
   -status: StatusCategoria
+  -tipo: TipoProduto
   -nome: String
   -slug: String
   -ordemExibicao: Integer
@@ -55,6 +56,11 @@ class Categoria {
   -exibirMenu: boolean
   -iconeUrl: String
 }
+note right of Categoria
+  Organiza a vitrine dentro de um tipo (D39):
+  drone só em categoria de drone,
+  acessório só em categoria de acessório
+end note
 
 class Subcategoria {
   -status: StatusCategoria
@@ -120,8 +126,14 @@ enum StatusProduto {
   INATIVO = 3
 }
 
+enum TipoProduto {
+  DRONE = 1
+  ACESSORIO = 2
+}
+
 abstract class Produto {
   -status: StatusProduto
+  -tipo: TipoProduto
   -nome: String
   -modelo: String
   -descricaoCurta: String
@@ -136,7 +148,9 @@ abstract class Produto {
 }
 note right of Produto
   garantiaMeses sobrepõe o padrão de
-  ConfiguracaoLoja.prazoGarantiaDias (D15)
+  ConfiguracaoLoja.prazoGarantiaDias (D15).
+  Herança JOINED (D27): tipo é a coluna
+  discriminadora de produto
 end note
 
 class Drone {
@@ -178,7 +192,7 @@ end note
 class VarianteProduto {
   -sku: String
   -nome: String
-  -precoAdicional: BigDecimal
+  -preco: BigDecimal
   -custoAquisicao: BigDecimal
   -estoqueFisico: Integer
   -estoqueMinimo: Integer

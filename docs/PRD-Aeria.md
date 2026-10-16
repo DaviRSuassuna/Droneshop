@@ -1,7 +1,7 @@
 # PRD: Aeria Drones
 
 **Produto:** E-commerce de drones e acessórios (storefront + painel administrativo)
-**Versão do documento:** 1.6
+**Versão do documento:** 1.7
 **Status:** rascunho para validação
 **Base:** protótipo de 36 telas + 8 diagramas de classes por contexto delimitado, em `diagramas/`
 
@@ -45,7 +45,7 @@ Um detalhe estrutural: **a conta é única e os perfis são acumuláveis**. `Usu
 
 ### 4.1 Catálogo
 
-Produto se divide em **Drone** e **Acessório**, com atributos próprios de cada tipo. As especificações técnicas são **colunas fixas e tipadas** na entidade, não atributo dinâmico (ver D14): em `Drone` são peso, dimensões dobrado/aberto, autonomia, alcance, velocidade máxima, resolução de foto, sensor, resolução de vídeo, estabilização, tipo e capacidade de bateria, tempo de carregamento, GPS, anticolisão, exigência e classe ANAC, registro SISANT. Spec nova é migration, e o preço disso é assumido conscientemente. Todo produto pertence a uma marca, uma subcategoria (que pertence a uma categoria) e um fornecedor. A compatibilidade entre acessório e produto é **relação N:N**, não texto descritivo (ver D17): é ela que alimenta a lista de acessórios compatíveis na página do drone e a sugestão do carrinho.
+Produto se divide em **Drone** e **Acessório**, com atributos próprios de cada tipo. As especificações técnicas são **colunas fixas e tipadas** na entidade, não atributo dinâmico (ver D14): em `Drone` são peso, dimensões dobrado/aberto, autonomia, alcance, velocidade máxima, resolução de foto, sensor, resolução de vídeo, estabilização, tipo e capacidade de bateria, tempo de carregamento, GPS, anticolisão, exigência e classe ANAC, registro SISANT. Spec nova é migration, e o preço disso é assumido conscientemente. Todo produto pertence a uma marca, uma subcategoria (que pertence a uma categoria) e um fornecedor. **Tipo e categoria não guardam a mesma informação** (D39): o tipo (Drone ou Acessório) diz o que o produto é e quais campos ele tem; a categoria só organiza a vitrine **dentro** de um tipo ("Profissionais" e "Lazer e criação" são categorias de drone; "Peças e energia" é de acessório). Por isso não existem as categorias "Drones" e "Acessórios": essa separação é o tipo. A compatibilidade entre acessório e produto é **relação N:N**, não texto descritivo (ver D17): é ela que alimenta a lista de acessórios compatíveis na página do drone e a sugestão do carrinho.
 
 A **unidade vendável é a variante**, não o produto: "Padrão", "Fly More", "Enterprise" têm SKU, preço, custo e estoque próprios. Produto sem opções tem uma variante única. Isso existe porque uma configuração pode esgotar enquanto outra continua disponível.
 
@@ -143,7 +143,7 @@ Verificação de e-mail, recuperação de senha por token (só se aplica a quem 
 | # | Área | Requisito |
 |---|---|---|
 | RF01 | Catálogo | Cadastrar produtos do tipo Drone e Acessório, cada um com atributos técnicos próprios. |
-| RF02 | Catálogo | Todo produto pertence a uma marca, uma subcategoria e um fornecedor. Categoria e subcategoria são entidades separadas: cada subcategoria pertence a uma categoria, sem categoria pai. |
+| RF02 | Catálogo | Todo produto pertence a uma marca, uma subcategoria e um fornecedor. Categoria e subcategoria são entidades separadas: cada subcategoria pertence a uma categoria, sem categoria pai. Toda categoria pertence a um tipo de produto, e o produto só entra em subcategoria de categoria do seu tipo (D39). |
 | RF03 | Catálogo | Produto tem uma ou mais variantes vendáveis, cada uma com SKU, preço de venda, custo, estoque e dimensões de embalagem próprios (D26). |
 | RF04 | Catálogo | Variante pode ser marcada como kit, composta por outras variantes com quantidade definida, sem estoque próprio. |
 | RF05 | Catálogo | Cadastrar promoções com vigência (início/fim) e escopo de produto, carrinho ou frete. |
@@ -309,6 +309,7 @@ O painel administrativo vem primeiro (D19): a loja só tem o que vender e o que 
 | D36 | **O modelo vence o protótipo.** "Categoria pai" sai das telas de categoria (RF02); "Inscrição estadual", "Observações internas" e "Disponível para vincular" saem do cadastro de fornecedor. As rotas que as telas pedem e não tinham issue viram duas issues novas: "Ações em lote, reordenação de categorias, exportação CSV e etiqueta de pedido" e "Proposta comercial para empresas" (`docs/issues/`). |
 | D37 | **Login com Google por ID token.** O front usa o botão do Google Identity Services e manda o ID token para `POST /auth/google`; o backend valida no endpoint `tokeninfo` do Google e usa o `sub` como identificador (D6). Não há redirecionamento OAuth pelo backend. |
 | D38 | **O protótipo é a referência das telas.** Cada tela do Angular é testada contra a tela correspondente do protótipo publicado (`frontend/e2e`, Playwright): estrutura, tokens e estilo, e ausência de rolagem horizontal no celular. Mudança de design começa por um PR no protótipo; só depois a tela real muda. As telas que já seguem o protótipo ficam em `frontend/e2e/telas-entregues.txt` e bloqueiam o merge. |
+| D39 | **Tipo e categoria têm papéis diferentes.** O tipo (`DRONE`, `ACESSORIO`) é o único que separa drone de acessório: define os campos (D14), a tabela (D27) e as rotas. A categoria organiza a vitrine dentro de um tipo: `Categoria` ganha `tipo` (obrigatório fora do rascunho), drone só entra em subcategoria de categoria de drone e acessório só em de acessório (400 em `idSubcategoria`), e categoria ou subcategoria com produtos não muda de tipo (409). As páginas "Drones" e "Acessórios" da loja filtram por tipo, não por categoria. Evita guardar a mesma informação em dois lugares sem nada que as mantenha iguais. |
 
 ## 11. Pendências em aberto
 

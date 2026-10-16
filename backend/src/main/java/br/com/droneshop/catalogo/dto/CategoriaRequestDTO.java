@@ -6,7 +6,7 @@ import br.com.droneshop.util.Textos;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
-// nome e ordemExibicao so sao obrigatorios fora de RASCUNHO (CategoriaServiceImpl).
+// nome, ordemExibicao e idTipo so sao obrigatorios fora de RASCUNHO (CategoriaServiceImpl).
 // Texto em branco vira null no construtor, como em MarcaRequestDTO.
 public record CategoriaRequestDTO(
     @Length(min = 2, max = 100, message = "O campo deve conter entre 2 e 100 caracteres (back).")
@@ -23,6 +23,8 @@ public record CategoriaRequestDTO(
 
     @NotNull(message = "O status deve ser informado (back).")
     Long idStatus,
+
+    Long idTipo,
 
     Boolean exibirMenu,
 

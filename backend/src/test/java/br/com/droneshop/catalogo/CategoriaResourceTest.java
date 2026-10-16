@@ -19,12 +19,14 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import br.com.droneshop.testes.Dados;
+import br.com.droneshop.testes.Fixtures;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 
 /**
  * Categoria (entrega anterior às issues): CRUD em /categorias.
- * RASCUNHO aceita campos vazios; ATIVA/INATIVA exige nome e ordem de exibição.
+ * RASCUNHO aceita campos vazios; ATIVA/INATIVA exige nome, ordem de exibição e,
+ * desde a #8, o tipo (a categoria organiza a vitrine dentro de drones ou de acessórios).
  */
 @QuarkusTest
 @Tag("base")
@@ -36,6 +38,7 @@ class CategoriaResourceTest {
         c.put("ordemExibicao", ordem);
         c.put("descricao", "Categoria criada pelo teste.");
         c.put("idStatus", Dados.ATIVA);
+        c.put("idTipo", Fixtures.TIPO_DRONE);
         c.put("exibirMenu", true);
         c.put("iconeUrl", "https://cdn.exemplo.com.br/icone.svg");
         return c;
@@ -84,6 +87,43 @@ class CategoriaResourceTest {
                 .then().statusCode(200)
                 .body("slug", startsWith("rascunho-"))
                 .body("iconeUrl", nullValue());
+    }
+
+    @Test
+    @Tag("issue-8")
+    void tipoVoltaNaRespostaEAtivaSemTipoResponde400() {
+        String s = Dados.sufixo();
+        given().contentType(ContentType.JSON).body(categoriaAtiva("Baterias " + s, 1))
+                .when().post("/categorias")
+                .then().statusCode(200)
+                .body("tipo.nome", equalTo("DRONE"));
+
+        Map<String, Object> semTipo = categoriaAtiva("Sem tipo " + s, 1);
+        semTipo.remove("idTipo");
+        given().contentType(ContentType.JSON).body(semTipo)
+                .when().post("/categorias")
+                .then().statusCode(400)
+                .body("errors.field", hasItem("idTipo"));
+
+        Map<String, Object> tipoInvalido = categoriaAtiva("Tipo invalido " + s, 1);
+        tipoInvalido.put("idTipo", 99);
+        given().contentType(ContentType.JSON).body(tipoInvalido)
+                .when().post("/categorias")
+                .then().statusCode(400)
+                .body("errors.field", hasItem("idTipo"));
+    }
+
+    @Test
+    @Tag("issue-8")
+    void naoMudaOTipoDeCategoriaComProduto() {
+        Fixtures.Arvore a = Fixtures.arvore();
+        Fixtures.criarDrone(a, 5000.0, 1);
+        Map<String, Object> c = categoriaAtiva("Categoria " + Dados.sufixo(), 1);
+        c.put("idTipo", Fixtures.TIPO_ACESSORIO);
+        given().contentType(ContentType.JSON).body(c)
+                .when().put("/categorias/{id}", a.idCategoria())
+                .then().statusCode(409)
+                .body("detail", containsString("1 produto"));
     }
 
     @Test

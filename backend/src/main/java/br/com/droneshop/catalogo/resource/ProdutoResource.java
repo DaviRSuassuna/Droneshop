@@ -2,14 +2,16 @@ package br.com.droneshop.catalogo.resource;
 
 import java.util.List;
 
+import br.com.droneshop.catalogo.dto.ProdutoResponseDTO;
+import br.com.droneshop.catalogo.mapper.ProdutoResponseMapper;
+import br.com.droneshop.catalogo.model.Produto;
+import br.com.droneshop.catalogo.service.ProdutoService;
 import br.com.droneshop.dto.PageResponse;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -17,12 +19,8 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.annotation.security.RolesAllowed;
 
-import br.com.droneshop.catalogo.dto.ProdutoRequestDTO;
-import br.com.droneshop.catalogo.dto.ProdutoResponseDTO;
-import br.com.droneshop.catalogo.mapper.ProdutoResponseMapper;
-import br.com.droneshop.catalogo.model.Produto;
-import br.com.droneshop.catalogo.service.ProdutoService;
-
+// Lista, consulta e exclui todos os tipos. Cadastro e alteracao ficam em /drones e
+// /acessorios (D27), entao POST e PUT aqui respondem 405.
 @Path("produtos")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -34,15 +32,17 @@ public class ProdutoResource {
 
     // filtros combinaveis; cada um vazio e ignorado. nome busca tambem no modelo
     @GET
-    public PageResponse<ProdutoResponseDTO> buscarTodos(@QueryParam("nome") String nome,
+    public PageResponse<ProdutoResponseDTO> buscarTodos(@QueryParam("idTipo") Long idTipo,
+            @QueryParam("nome") String nome,
             @QueryParam("idMarca") Long idMarca,
             @QueryParam("idCategoria") Long idCategoria,
             @QueryParam("idSubcategoria") Long idSubcategoria,
             @QueryParam("idStatus") Long idStatus,
             @QueryParam("page") @DefaultValue("0") int page,
             @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
-        List<Produto> produtos = service.findComFiltro(nome, idMarca, idCategoria, idSubcategoria, idStatus, page, pageSize);
-        long totalItems = service.countComFiltro(nome, idMarca, idCategoria, idSubcategoria, idStatus);
+        List<Produto> produtos = service.findComFiltro(idTipo, nome, idMarca, idCategoria, idSubcategoria, idStatus,
+                page, pageSize);
+        long totalItems = service.countComFiltro(idTipo, nome, idMarca, idCategoria, idSubcategoria, idStatus);
 
         return PageResponse.of(produtos, page, pageSize, totalItems, ProdutoResponseMapper::toResponse);
     }
@@ -57,17 +57,6 @@ public class ProdutoResource {
     @Path("/slug/{slug}")
     public ProdutoResponseDTO buscarPorSlug(@PathParam("slug") String slug) {
         return ProdutoResponseMapper.toResponse(service.findBySlug(slug));
-    }
-
-    @POST
-    public ProdutoResponseDTO incluir(ProdutoRequestDTO dto) {
-        return ProdutoResponseMapper.toResponse(service.create(dto));
-    }
-
-    @PUT
-    @Path("/{id}")
-    public void alterar(@PathParam("id") Long id, ProdutoRequestDTO dto) {
-        service.update(id, dto);
     }
 
     @DELETE

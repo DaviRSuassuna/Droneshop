@@ -45,8 +45,13 @@ public final class Fixtures {
 
     // ---------------------------------------------------------------- catálogo
 
+    /**
+     * Categoria e subcategoria são de drone; as "Acessorio" são a categoria e a subcategoria
+     * de acessório da mesma árvore (a categoria pertence a um tipo, #8).
+     */
     public record Arvore(long idMarca, String slugMarca, long idCategoria, String slugCategoria,
-            long idSubcategoria, String slugSubcategoria, long idFornecedor) {
+            long idSubcategoria, String slugSubcategoria, long idFornecedor,
+            long idCategoriaAcessorio, long idSubcategoriaAcessorio) {
     }
 
     public record ProdutoCriado(long id, String slug, long idVariante, String sku) {
@@ -58,7 +63,7 @@ public final class Fixtures {
         return idPalmas;
     }
 
-    /** Marca, categoria > subcategoria e fornecedor ativos, criados pelas rotas já entregues. */
+    /** Marca, categoria > subcategoria (uma de drone e uma de acessório) e fornecedor ativos. */
     public static Arvore arvore() {
         String s = Dados.sufixo();
         Map<String, Object> marca = new HashMap<>();
@@ -69,19 +74,10 @@ public final class Fixtures {
         marca.put("destacarHome", true);
         long idMarca = criar("/marcas", marca);
 
-        Map<String, Object> categoria = new HashMap<>();
-        categoria.put("nome", "Categoria " + s);
-        categoria.put("ordemExibicao", 1);
-        categoria.put("idStatus", Dados.ATIVA);
-        categoria.put("exibirMenu", true);
-        long idCategoria = criar("/categorias", categoria);
-
-        Map<String, Object> sub = new HashMap<>();
-        sub.put("nome", "Sub " + s);
-        sub.put("idCategoria", idCategoria);
-        sub.put("ordemExibicao", 1);
-        sub.put("idStatus", Dados.ATIVA);
-        long idSub = criar("/subcategorias", sub);
+        long idCategoria = categoria("Categoria " + s, TIPO_DRONE);
+        long idSub = subcategoria("Sub " + s, idCategoria);
+        long idCategoriaAcessorio = categoria("Categoria acessorios " + s, TIPO_ACESSORIO);
+        long idSubAcessorio = subcategoria("Sub acessorios " + s, idCategoriaAcessorio);
 
         Map<String, Object> endereco = new HashMap<>();
         endereco.put("cep", "77001002");
@@ -99,7 +95,27 @@ public final class Fixtures {
         forn.put("idStatus", Dados.FORNECEDOR_ATIVO);
         long idForn = criar("/fornecedores", forn);
 
-        return new Arvore(idMarca, "marca-" + s, idCategoria, "categoria-" + s, idSub, "sub-" + s, idForn);
+        return new Arvore(idMarca, "marca-" + s, idCategoria, "categoria-" + s, idSub, "sub-" + s, idForn,
+                idCategoriaAcessorio, idSubAcessorio);
+    }
+
+    private static long categoria(String nome, long idTipo) {
+        Map<String, Object> categoria = new HashMap<>();
+        categoria.put("nome", nome);
+        categoria.put("ordemExibicao", 1);
+        categoria.put("idStatus", Dados.ATIVA);
+        categoria.put("idTipo", idTipo);
+        categoria.put("exibirMenu", true);
+        return criar("/categorias", categoria);
+    }
+
+    private static long subcategoria(String nome, long idCategoria) {
+        Map<String, Object> sub = new HashMap<>();
+        sub.put("nome", nome);
+        sub.put("idCategoria", idCategoria);
+        sub.put("ordemExibicao", 1);
+        sub.put("idStatus", Dados.ATIVA);
+        return criar("/subcategorias", sub);
     }
 
     /** Variante completa (publicável), com embalagem. */
@@ -162,9 +178,10 @@ public final class Fixtures {
         return d;
     }
 
-    /** Corpo de acessório ATIVO. */
+    /** Corpo de acessório ATIVO, na subcategoria de acessório da árvore. */
     public static Map<String, Object> acessorio(String nome, Arvore a, List<Map<String, Object>> variantes) {
         Map<String, Object> d = produtoBase(nome, a);
+        d.put("idSubcategoria", a.idSubcategoriaAcessorio());
         d.put("tipoAcessorio", "Bateria");
         d.put("variantes", variantes);
         return d;
@@ -194,8 +211,11 @@ public final class Fixtures {
                 .when().post("/acessorios").then().statusCode(200).extract().jsonPath(), sku);
     }
 
+    // Até a #9 o produto não devolve variantes; aí idVariante fica 0.
     private static ProdutoCriado extrairProduto(JsonPath j, String sku) {
-        return new ProdutoCriado(j.getLong("id"), j.getString("slug"), j.getLong("variantes[0].id"), sku);
+        List<Object> variantes = j.getList("variantes");
+        long idVariante = (variantes == null || variantes.isEmpty()) ? 0 : j.getLong("variantes[0].id");
+        return new ProdutoCriado(j.getLong("id"), j.getString("slug"), idVariante, sku);
     }
 
     // ---------------------------------------------------------------- pessoas

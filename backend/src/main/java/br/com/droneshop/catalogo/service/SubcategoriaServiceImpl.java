@@ -93,12 +93,26 @@ public class SubcategoriaServiceImpl implements SubcategoriaService {
         if (subcategoriaRepository.findBySlugExceptId(slug, idAtual) != null)
             throw ValidationException.of("slug", "Já existe uma subcategoria cadastrada com esse slug.");
 
+        Categoria categoria = buscarCategoriaOuFalhar(dto.idCategoria());
+        validarTrocaDeTipo(destino, categoria);
+
         destino.setNome(dto.nome().trim());
         destino.setSlug(slug);
-        destino.setCategoria(buscarCategoriaOuFalhar(dto.idCategoria()));
+        destino.setCategoria(categoria);
         destino.setOrdemExibicao(dto.ordemExibicao() == null ? 0 : dto.ordemExibicao());
         destino.setDescricao(dto.descricao());
         destino.setStatus(status);
+    }
+
+    // Mover para categoria de outro tipo deixaria os produtos dela no tipo errado
+    private void validarTrocaDeTipo(Subcategoria subcategoria, Categoria nova) {
+        Categoria atual = subcategoria.getCategoria();
+        if (atual == null || atual.getTipo() == null || atual.getTipo() == nova.getTipo())
+            return;
+        long produtos = produtoRepository.count("subcategoria.id", subcategoria.getId());
+        if (produtos > 0)
+            throw new ConflitoException("Esta subcategoria tem " + produtos + (produtos == 1 ? " produto" : " produtos")
+                    + ". Não é possível movê-la para uma categoria de outro tipo.");
     }
 
     private Subcategoria buscarSubcategoriaOuFalhar(long id) {

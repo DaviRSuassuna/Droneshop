@@ -8,6 +8,8 @@ export interface Categoria {
   ordemExibicao: number;
   descricao: string | null;
   status: StatusRef;
+  /** Drone ou acessório: a categoria organiza a vitrine dentro de um tipo. Nulo só no rascunho. */
+  tipo: StatusRef | null;
   exibirMenu: boolean;
   iconeUrl: string | null;
 }
@@ -19,6 +21,7 @@ export interface CategoriaDTO {
   ordemExibicao: number;
   descricao: string;
   idStatus: number;
+  idTipo: number | null;
   exibirMenu: boolean;
   iconeUrl: string;
 }

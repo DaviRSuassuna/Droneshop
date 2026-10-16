@@ -1,6 +1,7 @@
 package br.com.droneshop.catalogo;
 
 import static br.com.droneshop.testes.Api.given;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.hasItem;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import br.com.droneshop.testes.Dados;
+import br.com.droneshop.testes.Fixtures;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 
@@ -159,5 +161,16 @@ class SubcategoriaResourceTest {
                 .then().statusCode(404);
         given().when().delete("/subcategorias/{id}", Dados.ID_INEXISTENTE)
                 .then().statusCode(404);
+    }
+
+    @Test
+    @Tag("issue-8")
+    void naoMoveSubcategoriaComProdutoParaCategoriaDeOutroTipo() {
+        Fixtures.Arvore a = Fixtures.arvore();
+        Fixtures.criarDrone(a, 5000.0, 1);
+        given().contentType(ContentType.JSON).body(subcategoria("Sub " + Dados.sufixo(), a.idCategoriaAcessorio()))
+                .when().put("/subcategorias/{id}", a.idSubcategoria())
+                .then().statusCode(409)
+                .body("detail", containsString("1 produto"));
     }
 }

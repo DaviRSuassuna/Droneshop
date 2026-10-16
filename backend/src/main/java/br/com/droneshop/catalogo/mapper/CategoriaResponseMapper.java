@@ -16,6 +16,7 @@ public final class CategoriaResponseMapper {
                 categoria.getOrdemExibicao(),
                 categoria.getDescricao(),
                 categoria.getStatus(),
+                categoria.getTipo(),
                 categoria.isExibirMenu(),
                 categoria.getIconeUrl());
     }

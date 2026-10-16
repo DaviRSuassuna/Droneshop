@@ -17,8 +17,8 @@ import io.restassured.http.ContentType;
 
 /**
  * #7 Produto: SEO, garantia e lançamento.
- * Contrato: docs/issues/007.md. Ainda usa POST /produtos e o preço no produto;
- * a #8 (rotas /drones e /acessorios) e a #9 (preço na variante) migram estes testes.
+ * Contrato: docs/issues/007.md. Cria pelo /drones desde a #8 (D27); o preço vai
+ * na variante desde a #9.
  */
 @QuarkusTest
 @Tag("issue-7")
@@ -38,7 +38,7 @@ class ProdutoSeoResourceTest {
     }
 
     static io.restassured.response.ValidatableResponse post(Map<String, Object> p) {
-        return given().contentType(ContentType.JSON).body(p).when().post("/produtos").then();
+        return given().contentType(ContentType.JSON).body(p).when().post("/drones").then();
     }
 
     @Test
