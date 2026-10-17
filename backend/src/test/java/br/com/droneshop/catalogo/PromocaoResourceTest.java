@@ -145,6 +145,7 @@ class PromocaoResourceTest {
         long variante = Fixtures.criarDrone(1000.0, 5).idVariante();
         long idPromocao = post(promocao(variante, -1, 5)).statusCode(200).extract().jsonPath().getLong("id");
         String sufixo = Dados.sufixo();
+        long[] ids = new long[3]; // pedido, perfil, usuario
 
         QuarkusTransaction.requiringNew().run(() -> {
             Promocao promocao = entityManager.find(Promocao.class, idPromocao);
@@ -175,8 +176,20 @@ class PromocaoResourceTest {
             desconto.setPromocao(promocao);
             pedido.setDescontos(new ArrayList<>(List.of(desconto)));
             entityManager.persist(pedido);
+            ids[0] = pedido.getId();
+            ids[1] = cliente.getId();
+            ids[2] = usuario.getId();
         });
 
-        given().when().delete("/promocoes/{id}", idPromocao).then().statusCode(409);
+        try {
+            given().when().delete("/promocoes/{id}", idPromocao).then().statusCode(409);
+        } finally {
+            // O pedido sem itens não pode sobrar: Fixtures.pedidoDaCarga() pega o mais recente de cada status.
+            QuarkusTransaction.requiringNew().run(() -> {
+                entityManager.remove(entityManager.find(Pedido.class, ids[0])); // o desconto vai junto (cascade)
+                entityManager.remove(entityManager.find(PerfilCliente.class, ids[1]));
+                entityManager.remove(entityManager.find(Usuario.class, ids[2]));
+            });
+        }
     }
 }
