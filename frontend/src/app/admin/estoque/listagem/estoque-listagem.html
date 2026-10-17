@@ -1,0 +1,214 @@
+<app-admin-nav />
+
+<div class="pagebar">
+  <div style="display: flex; align-items: baseline; gap: 12px">
+    <h1 class="h1">Estoque</h1>
+    <span class="sub"
+      >{{ totalVariantes() }} variantes · {{ totalAbaixo() }} abaixo do mínimo ·
+      {{ totalZerado() }} sem estoque</span
+    >
+  </div>
+  <div class="actions">
+    <button class="btn" type="button" disabled title="Em construção">Exportar CSV</button>
+    <a class="btn p" routerLink="/admin/estoque/movimento">Novo movimento</a>
+  </div>
+</div>
+
+<div class="pad-t" style="display: flex; flex-direction: column; gap: 16px">
+  <nav class="tabs" aria-label="Visões do estoque">
+    <a
+      href="#"
+      [class.on]="aba() === 'saldo'"
+      [attr.aria-current]="aba() === 'saldo' ? 'true' : null"
+      (click)="selecionarAba($event, 'saldo')"
+      >Saldo por variante <em>{{ totalVariantes() }}</em></a
+    >
+    <a
+      href="#"
+      [class.on]="aba() === 'movimentos'"
+      [attr.aria-current]="aba() === 'movimentos' ? 'true' : null"
+      (click)="selecionarAba($event, 'movimentos')"
+      >Movimentos <em>{{ totalMovimentos() }}</em></a
+    >
+    <a
+      href="#"
+      class="aba-off"
+      aria-disabled="true"
+      title="Disponível quando as reservas existirem"
+      (click)="abaIndisponivel($event)"
+      >Reservas ativas</a
+    >
+    <a
+      href="#"
+      class="aba-off"
+      aria-disabled="true"
+      title="Disponível quando os números de série existirem"
+      (click)="abaIndisponivel($event)"
+      >Números de série</a
+    >
+  </nav>
+
+  @if (aba() === 'saldo') {
+    <div class="filters">
+      <div class="f grow">
+        <input
+          type="text"
+          placeholder="Buscar por SKU, variante ou produto"
+          [value]="termoBusca()"
+          (input)="aoDigitarBusca($any($event.target).value)"
+        />
+      </div>
+      <div class="f" style="width: 180px">
+        <select disabled title="Em construção">
+          <option>Marca</option>
+        </select>
+      </div>
+      <div class="f" style="width: 180px">
+        <select [value]="situacao()" (change)="aoMudarSituacao($any($event.target).value)">
+          @for (s of situacoes; track s.valor) {
+            <option [value]="s.valor" [selected]="s.valor === situacao()">{{ s.rotulo }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <p class="legend" style="margin: 0">
+      O saldo pertence à <span class="chip">VarianteProduto</span>, nunca ao produto. Disponível =
+      físico − reservado. Kit não tem estoque próprio: a disponibilidade vem do mínimo entre os
+      componentes.
+    </p>
+  } @else {
+    <div class="filters">
+      <div class="f" style="width: 220px">
+        <select (change)="aoMudarTipo($any($event.target).value)">
+          <option value="" [selected]="idTipo() === null">Tipo de movimento</option>
+          @for (t of tiposMovimento; track t.id) {
+            <option [value]="t.id" [selected]="t.id === idTipo()">{{ t.rotulo }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  }
+
+  @if (erro()) {
+    <div class="tbl">
+      <div class="pager">
+        <span class="warn">{{ erro() }}</span>
+        <button class="btn sm" type="button" (click)="carregar()">Tentar novamente</button>
+      </div>
+    </div>
+  } @else {
+    <div class="tbl" [class.is-loading]="carregando()">
+      @if (aba() === 'saldo') {
+        <div class="trow head est">
+          <span class="m-nome">Variante</span>
+          <span>Físico</span>
+          <span>Reservado</span>
+          <span class="m-disp">Disponível</span>
+          <span>Mínimo</span>
+          <span class="m-st">Situação</span>
+          <span></span>
+        </div>
+
+        @for (item of itens(); track item.variante.id) {
+          @let st = situacaoDoItem(item);
+          @if (item.variante.ehKit) {
+            <div class="trow est" title="Kit não recebe movimento: a baixa é sempre no componente">
+              <span class="cell-name m-nome"
+                ><b>{{ nomeVariante(item) }}</b
+                ><span class="chip">{{ item.variante.sku }}</span></span
+              >
+              <span class="dim">derivado</span>
+              <span class="dim">-</span>
+              <span class="ink m-disp"
+                ><span class="so-celular">Disponível </span>{{ item.disponivel }}</span
+              >
+              <span class="dim">-</span>
+              <span class="status m-st"
+                ><span class="dot" [style.background]="st.cor"></span>{{ st.rotulo }}</span
+              >
+              <span></span>
+            </div>
+          } @else {
+            <a
+              class="trow est"
+              routerLink="/admin/estoque/movimento"
+              [queryParams]="{ idVariante: item.variante.id }"
+            >
+              <span class="cell-name m-nome"
+                ><b>{{ nomeVariante(item) }}</b
+                ><span class="chip">{{ item.variante.sku }}</span></span
+              >
+              <span class="dim">{{ item.estoqueFisico ?? 0 }}</span>
+              <span class="dim">{{ item.reservado }}</span>
+              <span class="ink m-disp"
+                ><span class="so-celular">Disponível </span>{{ item.disponivel }}</span
+              >
+              <span class="dim">{{ item.estoqueMinimo }}</span>
+              <span class="status m-st"
+                ><span class="dot" [style.background]="st.cor"></span>{{ st.rotulo }}</span
+              >
+              <span style="justify-self: end; color: var(--mute)">⋯</span>
+            </a>
+          }
+        } @empty {
+          @if (!carregando()) {
+            <div class="empty">
+              <b>Nenhuma variante encontrada.</b>Ajuste a busca ou a situação.
+            </div>
+          }
+        }
+      } @else {
+        <div class="trow head mov">
+          <span>Data</span>
+          <span class="m-nome">Variante</span>
+          <span class="m-tipo">Tipo</span>
+          <span class="m-qtd">Qtd.</span>
+          <span>Saldo</span>
+          <span>Autor</span>
+        </div>
+
+        @for (m of movimentos(); track m.id) {
+          <div class="trow mov">
+            <span class="dim">{{ m.dataCadastro | date: 'dd/MM HH:mm' }}</span>
+            <span class="cell-name m-nome"
+              ><b>{{ m.variante.nome ?? 'Variante sem nome' }}</b
+              ><span class="chip">{{ m.variante.sku }}</span></span
+            >
+            <span class="ink m-tipo">{{ rotuloTipo(m) }}</span>
+            <span class="dim m-qtd">{{ variacao(m) }}</span>
+            <span class="ink">{{ m.saldoResultante }}</span>
+            <span class="dim">{{ autor(m) }}</span>
+          </div>
+        } @empty {
+          @if (!carregando()) {
+            <div class="empty"><b>Nenhum movimento encontrado.</b>Ajuste o tipo do movimento.</div>
+          }
+        }
+      }
+
+      <div class="pager">
+        <span>Exibindo {{ intervaloExibido() }} de {{ totalItens() }}</span>
+        <nav class="pages" aria-label="Paginação">
+          <button
+            type="button"
+            (click)="irParaPagina(pagina() - 1)"
+            [disabled]="pagina() === 0"
+            aria-label="Página anterior"
+          >
+            ‹
+          </button>
+          <span>Página {{ pagina() + 1 }} de {{ totalPaginas() }}</span>
+          <button
+            type="button"
+            (click)="irParaPagina(pagina() + 1)"
+            [disabled]="pagina() + 1 >= totalPaginas()"
+            aria-label="Próxima página"
+          >
+            ›
+          </button>
+        </nav>
+      </div>
+    </div>
+  }
+</div>

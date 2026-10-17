@@ -17,7 +17,7 @@ const CHAVE_TEMA = 'aeria-theme';
 })
 export class AdminNav {
   // Somente "Produtos", "Marcas", "Categorias", "Subcategorias", "Fornecedores",
-  // "Configuração" e "Pedidos" estão implementados nesta etapa; os demais
+  // "Configuração", "Estoque" e "Pedidos" estão implementados nesta etapa; os demais
   // módulos do admin ainda não têm rota e por isso aparecem como itens inertes.
   readonly itens: ItemNav[] = [
     { rotulo: 'Dashboard' },
@@ -29,7 +29,7 @@ export class AdminNav {
     { rotulo: 'Configuração', rota: '/admin/configuracao' },
     { rotulo: 'Promoções' },
     { rotulo: 'Cupons' },
-    { rotulo: 'Estoque' },
+    { rotulo: 'Estoque', rota: '/admin/estoque' },
     { rotulo: 'Pedidos', rota: '/admin/pedidos' },
     { rotulo: 'Usuários', rota: '/admin/usuarios' },
   ];
