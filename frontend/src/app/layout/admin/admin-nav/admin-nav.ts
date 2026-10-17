@@ -4,6 +4,8 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 interface ItemNav {
   rotulo: string;
   rota?: string;
+  /** Só marca como ativo na rota exata (o Dashboard é /admin, prefixo de todas as outras). */
+  exata?: boolean;
 }
 
 const CHAVE_TEMA = 'aeria-theme';
@@ -16,10 +18,15 @@ const CHAVE_TEMA = 'aeria-theme';
   styleUrl: './admin-nav.scss',
 })
 export class AdminNav {
+<<<<<<< HEAD
   // "Promoções" também possui telas implementadas; os demais
+=======
+  // Somente "Dashboard", "Produtos", "Marcas", "Categorias", "Subcategorias", "Fornecedores",
+  // "Configuração", "Estoque" e "Pedidos" estão implementados nesta etapa; os demais
+>>>>>>> origin/develop
   // módulos do admin ainda não têm rota e por isso aparecem como itens inertes.
   readonly itens: ItemNav[] = [
-    { rotulo: 'Dashboard' },
+    { rotulo: 'Dashboard', rota: '/admin', exata: true },
     { rotulo: 'Produtos', rota: '/admin/produtos' },
     { rotulo: 'Marcas', rota: '/admin/marcas' },
     { rotulo: 'Categorias', rota: '/admin/categorias' },
@@ -28,7 +35,7 @@ export class AdminNav {
     { rotulo: 'Configuração', rota: '/admin/configuracao' },
     { rotulo: 'Promoções', rota: '/admin/promocoes' },
     { rotulo: 'Cupons' },
-    { rotulo: 'Estoque' },
+    { rotulo: 'Estoque', rota: '/admin/estoque' },
     { rotulo: 'Pedidos', rota: '/admin/pedidos' },
     { rotulo: 'Usuários', rota: '/admin/usuarios' },
   ];

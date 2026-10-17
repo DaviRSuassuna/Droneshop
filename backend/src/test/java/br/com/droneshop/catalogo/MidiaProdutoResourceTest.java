@@ -79,6 +79,27 @@ class MidiaProdutoResourceTest {
     }
 
     @Test
+    void extensaoDaImagemDeveCorresponderAoArquivo() {
+        long id = Fixtures.criarDrone(1000.0, 1).id();
+        given().multiPart("idTipo", String.valueOf(IMAGEM))
+                .multiPart("arquivo", "foto.jpg", PNG, "image/jpeg")
+                .multiPart("altText", "Drone de frente")
+                .when().post("/produtos/{id}/midias", id)
+                .then().statusCode(400).body("errors.field", hasItem("arquivo"));
+    }
+
+    @Test
+    void arquivoMaiorQue20MbResponde400() {
+        long id = Fixtures.criarDrone(1000.0, 1).id();
+        byte[] acimaDoLimite = new byte[20 * 1024 * 1024 + 1];
+        given().multiPart("idTipo", String.valueOf(IMAGEM))
+                .multiPart("arquivo", "foto.png", acimaDoLimite, "image/png")
+                .multiPart("altText", "Imagem grande")
+                .when().post("/produtos/{id}/midias", id)
+                .then().statusCode(400).body("errors.field", hasItem("arquivo"));
+    }
+
+    @Test
     void sobeManualEVideoPorUrl() {
         long id = Fixtures.criarDrone(1000.0, 1).id();
         given().multiPart("idTipo", String.valueOf(MANUAL_PDF))
@@ -108,16 +129,61 @@ class MidiaProdutoResourceTest {
     }
 
     @Test
+    void alteraOrdemETextoAlternativo() {
+        long idProduto = Fixtures.criarDrone(1000.0, 1).id();
+        long idMidia = imagem(idProduto, "Frente", true).statusCode(200).extract().jsonPath().getLong("id");
+        given().contentType(ContentType.JSON).body(Map.of("ordem", 4))
+                .when().patch("/midias/{id}", idMidia).then().statusCode(204);
+        given().contentType(ContentType.JSON).body(Map.of("altText", "Vista frontal"))
+                .when().patch("/midias/{id}", idMidia).then().statusCode(204);
+        given().when().get("/produtos/{id}/midias", idProduto).then().statusCode(200)
+                .body("[0].ordem", equalTo(4))
+                .body("[0].altText", equalTo("Vista frontal"));
+    }
+
+    @Test
     void reordenaEExclui() {
         long id = Fixtures.criarDrone(1000.0, 1).id();
-        long a = imagem(id, "A", true).statusCode(200).extract().jsonPath().getLong("id");
+        var primeiroUpload = imagem(id, "A", true).statusCode(200);
+        long a = primeiroUpload.extract().jsonPath().getLong("id");
+        String urlArquivo = primeiroUpload.extract().jsonPath().getString("url");
         long b = imagem(id, "B", false).statusCode(200).extract().jsonPath().getLong("id");
         given().contentType(ContentType.JSON).body(Map.of("ids", List.of(b, a)))
                 .when().patch("/produtos/{id}/midias/ordem", id).then().statusCode(204);
         given().when().get("/produtos/{id}/midias", id)
                 .then().statusCode(200).body("altText", contains("B", "A"));
         given().when().delete("/midias/{id}", a).then().statusCode(204);
+        anonimo().when().get(urlArquivo).then().statusCode(404);
         given().when().get("/produtos/{id}/midias", id).then().statusCode(200).body("$", hasSize(1));
+    }
+
+    @Test
+    void excluirCompactaAOrdem() {
+        long id = Fixtures.criarDrone(1000.0, 1).id();
+        imagem(id, "A", true).statusCode(200);
+        long b = imagem(id, "B", false).statusCode(200).extract().jsonPath().getLong("id");
+        imagem(id, "C", false).statusCode(200);
+        given().when().delete("/midias/{id}", b).then().statusCode(204);
+        given().when().get("/produtos/{id}/midias", id).then().statusCode(200)
+                .body("altText", contains("A", "C"))
+                .body("ordem", contains(1, 2));
+    }
+
+    @Test
+    void excluirOProdutoApagaAsMidias() {
+        long id = Fixtures.criarDrone(1000.0, 1).id();
+        String url = imagem(id, "Frente", true).statusCode(200).extract().jsonPath().getString("url");
+        given().when().delete("/produtos/{id}", id).then().statusCode(204);
+        anonimo().when().get(url).then().statusCode(404);
+    }
+
+    @Test
+    void semTokenNaoAlteraMidias() {
+        long id = Fixtures.criarDrone(1000.0, 1).id();
+        anonimo().multiPart("idTipo", String.valueOf(VIDEO))
+                .multiPart("url", "https://www.youtube.com/watch?v=abc")
+                .when().post("/produtos/{id}/midias", id).then().statusCode(401);
+        anonimo().when().delete("/midias/{id}", 1).then().statusCode(401);
     }
 
     @Test

@@ -1,5 +1,8 @@
 package br.com.droneshop.pedido.repository;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,5 +55,34 @@ public class PedidoRepository implements PanacheRepository<Pedido> {
                 .getResultList()
                 .forEach(linha -> contagem.put((StatusPedido) linha[0], (Long) linha[1]));
         return contagem;
+    }
+
+    // #18: a mesma contagem, só dos pedidos criados em [inicio, fimExclusivo)
+    public Map<StatusPedido, Long> contarPorStatus(LocalDateTime inicio, LocalDateTime fimExclusivo) {
+        Map<StatusPedido, Long> contagem = new EnumMap<>(StatusPedido.class);
+        getEntityManager()
+                .createQuery("SELECT p.status, COUNT(p) FROM Pedido p "
+                        + "WHERE p.dataCadastro >= :inicio AND p.dataCadastro < :fim GROUP BY p.status", Object[].class)
+                .setParameter("inicio", inicio)
+                .setParameter("fim", fimExclusivo)
+                .getResultList()
+                .forEach(linha -> contagem.put((StatusPedido) linha[0], (Long) linha[1]));
+        return contagem;
+    }
+
+    public record Totais(long quantidade, BigDecimal valorTotal) {
+    }
+
+    // quantidade e soma de valorTotal dos pedidos com um destes status criados em [inicio, fimExclusivo)
+    public Totais totalizar(Collection<StatusPedido> status, LocalDateTime inicio, LocalDateTime fimExclusivo) {
+        Object[] linha = getEntityManager()
+                .createQuery("SELECT COUNT(p), SUM(p.valorTotal) FROM Pedido p WHERE p.status IN :status "
+                        + "AND p.dataCadastro >= :inicio AND p.dataCadastro < :fim", Object[].class)
+                .setParameter("status", status)
+                .setParameter("inicio", inicio)
+                .setParameter("fim", fimExclusivo)
+                .getSingleResult();
+        BigDecimal soma = linha[1] instanceof BigDecimal b ? b : BigDecimal.ZERO;
+        return new Totais((Long) linha[0], soma);
     }
 }

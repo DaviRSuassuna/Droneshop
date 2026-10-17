@@ -30,6 +30,7 @@ import br.com.droneshop.catalogo.repository.MarcaRepository;
 import br.com.droneshop.catalogo.repository.ProdutoRepository;
 import br.com.droneshop.catalogo.repository.SubcategoriaRepository;
 import br.com.droneshop.catalogo.repository.VarianteProdutoRepository;
+import br.com.droneshop.estoque.service.MovimentoEstoqueService;
 import br.com.droneshop.exception.ConflitoException;
 import br.com.droneshop.exception.Problem;
 import br.com.droneshop.exception.ResourceNotFoundException;
@@ -68,6 +69,9 @@ public class ProdutoCadastro {
 
     @Inject
     ConfiguracaoLojaRepository configuracaoLojaRepository;
+
+    @Inject
+    MovimentoEstoqueService movimentoEstoqueService;
 
     @Inject
     Validator validator;
@@ -415,9 +419,9 @@ public class ProdutoCadastro {
             if (variante == null) {
                 variante = new VarianteProduto();
                 variante.setProduto(produto);
-                // saldo inicial; o movimento ENTRADA correspondente chega com a #13. Kit nao tem (D7)
+                // saldo inicial com o movimento ENTRADA correspondente (#13). Kit nao tem (D7)
                 if (!ehKit(dto, null))
-                    variante.setEstoqueFisico(dto.estoqueFisico() == null ? 0 : dto.estoqueFisico());
+                    movimentoEstoqueService.entradaInicial(variante, dto.estoqueFisico() == null ? 0 : dto.estoqueFisico());
                 produto.getVariantes().add(variante);
             }
             aplicarVariante(variante, dto);

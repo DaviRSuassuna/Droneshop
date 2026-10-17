@@ -55,8 +55,13 @@ As telas citadas são as do [protótipo](design/README.md).
 | GET · GET PUT | `/variantes?busca=` · `/variantes/{id}` | select de variante (estoque, promoção, kit); preço e margem (D26) | #9 | pronto |
 | (corpo) | `componentes[]` na variante kit; toda variante responde `disponivel`, e o kit `pesoSobrescrito`/`dimensoesSobrescritas` | Kit ou combo (D7, D16) | #10 | pronto |
 | (corpo) | `idsCompativeis[]` no acessório; resposta com `compativeis[]` e, em todo produto, `acessoriosCompativeis[]` (lado recíproco) | Compatível com (D17) | #11 | pronto |
+<<<<<<< HEAD
 | GET POST · PATCH · DELETE | `/produtos/{id}/midias` (multipart) · `/midias/{id}` · `/produtos/{id}/midias/ordem` · `/midias/arquivos/{nome}` | imagem e manual por upload, vídeo por URL (D29) | #12 | a fazer |
 | GET POST · GET PUT DELETE | `/promocoes?situacao=` · `/promocoes/{id}` | Promoções (abas Vigentes/Agendadas/Encerradas), Criar promoção | #14 | pronto |
+=======
+| GET · GET POST · PATCH · DELETE | `/tipos-midia` · `/produtos/{id}/midias` (multipart) · `/midias/{id}` · `/produtos/{id}/midias/ordem` · `/midias/arquivos/{nome}` | imagem e manual por upload, vídeo por URL (D29) | #12 | pronto |
+| GET POST · GET PUT DELETE | `/promocoes?situacao=` · `/promocoes/{id}` | Promoções (abas Vigentes/Agendadas/Encerradas), Criar promoção | #14 | a fazer |
+>>>>>>> origin/develop
 | GET POST · GET PUT DELETE | `/cupons?situacao=&codigo=` · `/cupons/{id}` | Cupons, Criar cupom | #15 | a fazer |
 | GET | `/cupons/{id}/usos` | Exportar usos | #15 | a fazer |
 
@@ -77,8 +82,8 @@ As telas citadas são as do [protótipo](design/README.md).
 | GET | `/origens-desconto` (+ `/{id}`) | origens CUPOM e PROMOCAO de descontos em pedidos | #29 | pronto |
 | GET | `/pedidos?idStatus=&dataInicio=&dataFim=&busca=` · `/pedidos/resumo-status` | Pedidos (abas com contagem por status, filtro de período) | #16 | a fazer |
 | GET | `/pedidos/{id}` | Detalhe do pedido (itens, endereço congelado D12, pagamento) | #16 | a fazer |
-| PATCH | `/pedidos/{id}/status` | Marcar como enviado, Cancelar pedido (transição inválida 409, D30) | #17 | a fazer |
-| GET | `/pedidos/{id}/historico` | linha do tempo do pedido | #17 | a fazer |
+| PATCH | `/pedidos/{id}/status` | Marcar como enviado, Cancelar pedido (transição inválida 409, D30) | #17 | pronto |
+| GET | `/pedidos/{id}/historico` | linha do tempo do pedido | #17 | pronto |
 | GET POST · PUT | `/pedidos/{id}/rastreio` · `/pedidos/{id}/entrega/codigo-rastreio` | Rastreio (eventos) | #31 | a fazer |
 | GET | `/pedidos/{id}/pagamentos` | pagamentos do pedido | #27 | a fazer |
 | GET POST | `/pedidos/{id}/nota-fiscal` | NF-e simulada (venda e devolução) | #35 | a fazer |
