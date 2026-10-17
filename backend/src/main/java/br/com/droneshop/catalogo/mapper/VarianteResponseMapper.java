@@ -4,10 +4,12 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
+import br.com.droneshop.catalogo.dto.ComponenteKitResponseDTO;
 import br.com.droneshop.catalogo.dto.VarianteListagemResponseDTO;
 import br.com.droneshop.catalogo.dto.VarianteResponseDTO;
 import br.com.droneshop.catalogo.model.Produto;
 import br.com.droneshop.catalogo.model.VarianteProduto;
+import br.com.droneshop.catalogo.service.KitCalculo;
 
 public final class VarianteResponseMapper {
 
@@ -17,6 +19,7 @@ public final class VarianteResponseMapper {
     }
 
     public static VarianteResponseDTO toResponse(VarianteProduto v) {
+        boolean kit = v.isEhKit();
         return new VarianteResponseDTO(
                 v.getId(),
                 v.getNome(),
@@ -25,13 +28,20 @@ public final class VarianteResponseMapper {
                 v.getCustoAquisicao(),
                 margemPercentual(v.getPreco(), v.getCustoAquisicao()),
                 v.getEstoqueFisico(),
+                KitCalculo.disponivel(v),
                 v.getEstoqueMinimo(),
-                v.getPesoEmbalagemKg(),
-                v.getAlturaEmbalagemCm(),
-                v.getLarguraEmbalagemCm(),
-                v.getComprimentoEmbalagemCm(),
-                v.isEhKit(),
-                v.isAtiva());
+                KitCalculo.peso(v),
+                KitCalculo.altura(v),
+                KitCalculo.largura(v),
+                KitCalculo.comprimento(v),
+                kit && v.getPesoEmbalagemKg() != null,
+                kit && (v.getAlturaEmbalagemCm() != null || v.getLarguraEmbalagemCm() != null
+                        || v.getComprimentoEmbalagemCm() != null),
+                kit,
+                v.isAtiva(),
+                v.getComponentes().stream()
+                        .map(c -> new ComponenteKitResponseDTO(toListagem(c.getComponente()), c.getQuantidade()))
+                        .toList());
     }
 
     public static List<VarianteResponseDTO> toResponse(List<VarianteProduto> variantes) {
@@ -46,6 +56,7 @@ public final class VarianteResponseMapper {
                 v.getNome(),
                 v.getPreco(),
                 v.getEstoqueFisico(),
+                KitCalculo.disponivel(v),
                 v.isEhKit(),
                 new VarianteListagemResponseDTO.ProdutoResumo(p.getId(), p.getNome(), p.getTipo()));
     }

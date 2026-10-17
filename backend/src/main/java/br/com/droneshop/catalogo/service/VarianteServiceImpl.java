@@ -1,6 +1,7 @@
 package br.com.droneshop.catalogo.service;
 
 import java.util.List;
+import java.util.Set;
 
 import br.com.droneshop.catalogo.dto.VarianteRequestDTO;
 import br.com.droneshop.catalogo.model.StatusProduto;
@@ -28,8 +29,12 @@ public class VarianteServiceImpl implements VarianteService {
     public void update(long id, VarianteRequestDTO dto) {
         VarianteProduto variante = buscarOuFalhar(id);
 
+        List<Problem.FieldError> errosKit = cadastro.errosDoKit(dto, "", variante, Set.of());
+        if (!errosKit.isEmpty())
+            throw new ValidationException("Revise a composição do kit.", errosKit);
+
         if (variante.getProduto().getStatus() != StatusProduto.RASCUNHO) {
-            List<Problem.FieldError> erros = cadastro.obrigatoriosDaVariante(dto, "");
+            List<Problem.FieldError> erros = cadastro.obrigatoriosDaVariante(dto, "", cadastro.ehKit(dto, variante));
             if (!erros.isEmpty())
                 throw new ValidationException("Preencha os campos obrigatórios da variante.", erros);
         }

@@ -6,7 +6,11 @@ import { Subcategoria } from './subcategoria.model';
 /** Ids de TipoProduto (GET /tipos-produto). */
 export const TIPO_PRODUTO = { DRONE: 1, ACESSORIO: 2 } as const;
 
-/** Variante da resposta (D26): o preço é dela; a margem vem calculada do backend. */
+/**
+ * Variante da resposta (D26): o preço é dela; a margem vem calculada do backend.
+ * No kit (D7) não há estoque físico, disponivel vem dos componentes, e peso/dimensões
+ * já chegam derivados deles, salvo quando pesoSobrescrito/dimensoesSobrescritas (D16).
+ */
 export interface Variante {
   id: number;
   nome: string | null;
@@ -15,18 +19,53 @@ export interface Variante {
   custoAquisicao: number | null;
   margemPercentual: number | null;
   estoqueFisico: number | null;
+  disponivel: number;
   estoqueMinimo: number;
   pesoEmbalagemKg: number | null;
   alturaEmbalagemCm: number | null;
   larguraEmbalagemCm: number | null;
   comprimentoEmbalagemCm: number | null;
+  pesoSobrescrito: boolean;
+  dimensoesSobrescritas: boolean;
   ehKit: boolean;
   ativa: boolean;
+  componentes: ComponenteKit[];
+}
+
+/** Item de GET /variantes: usado nos selects de variante (kit, estoque, promoção). */
+export interface VarianteListagem {
+  id: number;
+  sku: string | null;
+  nome: string | null;
+  preco: number | null;
+  estoqueFisico: number | null;
+  disponivel: number;
+  ehKit: boolean;
+  produto: { id: number; nome: string | null; tipo: StatusRef };
+}
+
+/** Filtros aceitos por GET /variantes. Campos vazios são ignorados. */
+export interface FiltroVariante {
+  busca?: string;
+  ativa?: boolean | null;
+}
+
+/** Item do kit na resposta: a variante componente e quantas o kit leva. */
+export interface ComponenteKit {
+  variante: VarianteListagem;
+  quantidade: number;
+}
+
+/** Item do kit no corpo da variante. */
+export interface ComponenteKitDTO {
+  idVariante: number | null;
+  quantidade: number | null;
 }
 
 /**
  * Linha da tabela de variantes no corpo do drone/acessório (D13). Com id altera,
  * sem id cria; a que sai da lista é excluída. estoqueFisico só vale na criação.
+ * Kit: sem estoqueFisico; peso e dimensões vazios são derivados dos componentes.
  */
 export interface VarianteDTO {
   id: number | null;
@@ -40,6 +79,8 @@ export interface VarianteDTO {
   alturaEmbalagemCm: number | null;
   larguraEmbalagemCm: number | null;
   comprimentoEmbalagemCm: number | null;
+  ehKit: boolean;
+  componentes: ComponenteKitDTO[];
   ativa: boolean;
 }
 

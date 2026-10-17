@@ -446,6 +446,12 @@
                   [readonly]="semOpcoes.value"
                   [attr.aria-label]="'Nome da variante ' + (i + 1)"
                 />
+                @if (linha.controls.ehKit.value) {
+                  <span class="dim" style="font-size: 11px">Kit · ver Kit ou combo</span>
+                }
+                @if (erroVariante(i, 'ehKit'); as erro) {
+                  <span class="warn">{{ erro }}</span>
+                }
                 @if (erroVariante(i, 'nome'); as erro) {
                   <span class="warn">{{ erro }}</span>
                 }
@@ -495,36 +501,52 @@
               >
                 {{ formatarMargem(linha.controls.margemPercentual.value) }}
               </span>
-              <div class="f">
-                <input
-                  type="number"
-                  style="padding: 0 6px"
-                  min="0"
-                  step="1"
-                  formControlName="estoqueFisico"
-                  [readonly]="varianteSalva(i)"
-                  [title]="
-                    varianteSalva(i) ? 'Depois de criada, o estoque muda só por movimento' : ''
-                  "
-                  [attr.aria-label]="'Estoque da variante ' + (i + 1)"
-                />
-                @if (erroVariante(i, 'estoqueFisico'); as erro) {
-                  <span class="warn">{{ erro }}</span>
-                }
-              </div>
-              <div class="f">
-                <input
-                  type="number"
-                  style="padding: 0 6px"
-                  min="0"
-                  step="1"
-                  formControlName="estoqueMinimo"
-                  [attr.aria-label]="'Estoque mínimo da variante ' + (i + 1)"
-                />
-                @if (erroVariante(i, 'estoqueMinimo'); as erro) {
-                  <span class="warn">{{ erro }}</span>
-                }
-              </div>
+              @if (linha.controls.ehKit.value) {
+                <!-- kit não tem estoque próprio (D7): mostra o disponível derivado -->
+                <div class="f">
+                  <span
+                    class="dim"
+                    style="line-height: 38px"
+                    title="Kit: mínimo entre componentes ÷ quantidade exigida"
+                    >{{ disponibilidadeKit(i) }} un.</span
+                  >
+                  @if (erroVariante(i, 'estoqueFisico'); as erro) {
+                    <span class="warn">{{ erro }}</span>
+                  }
+                </div>
+                <span class="dim" style="line-height: 38px">—</span>
+              } @else {
+                <div class="f">
+                  <input
+                    type="number"
+                    style="padding: 0 6px"
+                    min="0"
+                    step="1"
+                    formControlName="estoqueFisico"
+                    [readonly]="varianteSalva(i)"
+                    [title]="
+                      varianteSalva(i) ? 'Depois de criada, o estoque muda só por movimento' : ''
+                    "
+                    [attr.aria-label]="'Estoque da variante ' + (i + 1)"
+                  />
+                  @if (erroVariante(i, 'estoqueFisico'); as erro) {
+                    <span class="warn">{{ erro }}</span>
+                  }
+                </div>
+                <div class="f">
+                  <input
+                    type="number"
+                    style="padding: 0 6px"
+                    min="0"
+                    step="1"
+                    formControlName="estoqueMinimo"
+                    [attr.aria-label]="'Estoque mínimo da variante ' + (i + 1)"
+                  />
+                  @if (erroVariante(i, 'estoqueMinimo'); as erro) {
+                    <span class="warn">{{ erro }}</span>
+                  }
+                </div>
+              }
               <div class="f">
                 <input
                   type="number"
@@ -532,6 +554,12 @@
                   min="0"
                   step="0.001"
                   formControlName="pesoEmbalagemKg"
+                  [placeholder]="linha.controls.ehKit.value ? linha.controls.pesoAuto.value : ''"
+                  [title]="
+                    linha.controls.ehKit.value
+                      ? 'Vazio: soma dos componentes. Preencha só para sobrescrever'
+                      : ''
+                  "
                   [attr.aria-label]="'Peso da embalagem da variante ' + (i + 1)"
                 />
                 @if (erroVariante(i, 'pesoEmbalagemKg'); as erro) {
@@ -542,7 +570,14 @@
                 <input
                   type="text"
                   formControlName="dimensoes"
-                  placeholder="15×28×38"
+                  [placeholder]="
+                    linha.controls.ehKit.value ? linha.controls.dimensoesAuto.value : '15×28×38'
+                  "
+                  [title]="
+                    linha.controls.ehKit.value
+                      ? 'Vazio: maior altura e largura e comprimentos somados. Preencha só para sobrescrever'
+                      : ''
+                  "
                   [attr.aria-label]="
                     'Altura × largura × comprimento da embalagem da variante ' + (i + 1)
                   "
@@ -590,6 +625,143 @@
             </button>
           }
         </div>
+      </section>
+
+      <section class="card p">
+        <div class="card-h">
+          <span class="card-t">Kit ou combo</span>
+          <span class="card-n">Variante sem estoque próprio, composta por outras variantes</span>
+        </div>
+        <label class="ck full" style="margin-bottom: 16px">
+          <input
+            type="checkbox"
+            [checked]="indicesKit().length > 0"
+            (change)="alternarKit($event)"
+          />
+          Criar uma variante do tipo kit para este produto
+        </label>
+        @for (i of indicesKit(); track i) {
+          @let kit = variantes.at(i);
+          @if (indicesKit().length > 1) {
+            <strong style="display: block; margin: 8px 0">{{
+              kit.controls.nome.value || 'Kit sem nome'
+            }}</strong>
+          }
+          @if (erroVariante(i, 'componentes'); as erro) {
+            <span class="warn" style="display: block; margin-bottom: 12px">{{ erro }}</span>
+          }
+          <div class="tbl">
+            <div class="trow head" [style.grid-template-columns]="gridKit" style="gap: 8px">
+              <span>Variante componente</span>
+              <span>Qtd.</span>
+              <span>Disponível</span>
+              <span></span>
+            </div>
+            @for (comp of kit.controls.componentes.controls; track comp; let j = $index) {
+              <div
+                class="trow"
+                [formGroup]="comp"
+                [style.grid-template-columns]="gridKit"
+                style="gap: 8px; align-items: start"
+              >
+                <div class="f" style="min-width: 0">
+                  <select
+                    formControlName="idVariante"
+                    [attr.aria-label]="'Variante componente ' + (j + 1) + ' do kit'"
+                  >
+                    <option [ngValue]="null">Selecione</option>
+                    @for (op of opcoesComponente(); track op.id) {
+                      <option [ngValue]="op.id">{{ rotuloVariante(op) }}</option>
+                    }
+                  </select>
+                  @if (erroComponente(i, j); as erro) {
+                    <span class="warn">{{ erro }}</span>
+                  }
+                </div>
+                <div class="f">
+                  <input
+                    type="number"
+                    style="padding: 0 6px"
+                    min="1"
+                    step="1"
+                    formControlName="quantidade"
+                    [attr.aria-label]="'Quantidade do componente ' + (j + 1)"
+                  />
+                </div>
+                <span class="dim" style="line-height: 38px">
+                  @if (disponivelDe(comp.controls.idVariante.value); as d) {
+                    {{ d }} un.
+                  } @else if (comp.controls.idVariante.value !== null) {
+                    0 un.
+                  } @else {
+                    —
+                  }
+                </span>
+                <button
+                  class="btn sm d ghost"
+                  type="button"
+                  (click)="removerComponente(i, j)"
+                  [attr.aria-label]="'Remover componente ' + (j + 1)"
+                >
+                  ✕
+                </button>
+              </div>
+            }
+          </div>
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 16px;
+              margin-top: 14px;
+              flex-wrap: wrap;
+            "
+          >
+            <span class="dim"
+              >Disponibilidade do kit: <strong>{{ disponibilidadeKit(i) }} un.</strong> (mínimo
+              entre componentes ÷ quantidade exigida). A baixa acontece no componente, nunca no
+              kit</span
+            >
+            <button class="sbtn sm" type="button" (click)="adicionarComponente(i)">
+              + Adicionar componente
+            </button>
+          </div>
+        } @empty {
+          <div class="tbl">
+            <div class="trow head" [style.grid-template-columns]="gridKit" style="gap: 8px">
+              <span>Variante componente</span>
+              <span>Qtd.</span>
+              <span>Disponível</span>
+              <span></span>
+            </div>
+            <div class="trow">
+              <span class="dim"
+                >Este produto não tem kit. Marque a opção acima para montar um.</span
+              >
+            </div>
+          </div>
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 16px;
+              margin-top: 14px;
+              flex-wrap: wrap;
+            "
+          >
+            <span class="dim">A baixa acontece no componente, nunca no kit</span>
+            <button class="sbtn sm" type="button" (click)="adicionarComponente()">
+              + Adicionar componente
+            </button>
+          </div>
+        }
+        @if (!modoEdicao()) {
+          <p class="legend" style="margin-top: 14px">
+            As variantes deste produto entram na lista de componentes depois que ele for salvo.
+          </p>
+        }
       </section>
 
       <section class="card p" [formGroup]="form">
