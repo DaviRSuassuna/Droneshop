@@ -94,6 +94,21 @@ export const routes: Routes = [
             (m) => m.ProdutosListagem,
           ),
       },
+      {
+        path: 'cupons',
+        loadComponent: () =>
+          import('./admin/cupons/listagem/cupons-listagem').then((m) => m.CuponsListagem),
+      },
+      {
+        path: 'cupons/novo',
+        loadComponent: () =>
+          import('./admin/cupons/cadastro/cupom-cadastro').then((m) => m.CupomCadastro),
+      },
+      {
+        path: 'cupons/:id/editar',
+        loadComponent: () =>
+          import('./admin/cupons/cadastro/cupom-cadastro').then((m) => m.CupomCadastro),
+      },
       // drone e acessório usam a mesma tela de cadastro; o tipo vem do data da rota (D27)
       {
         path: 'drones/novo',

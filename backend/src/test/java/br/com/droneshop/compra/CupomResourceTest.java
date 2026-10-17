@@ -11,10 +11,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import br.com.droneshop.identidade.model.PerfilCliente;
+import br.com.droneshop.identidade.model.TipoPessoa;
+import br.com.droneshop.identidade.model.Usuario;
+import br.com.droneshop.pedido.model.Pedido;
+import br.com.droneshop.pedido.model.StatusPedido;
 import br.com.droneshop.testes.Dados;
+import br.com.droneshop.compra.model.Cupom;
+import br.com.droneshop.compra.model.UsoCupom;
+import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
@@ -28,6 +38,9 @@ import io.restassured.response.ValidatableResponse;
 public class CupomResourceTest {
 
     public static final long PERCENTUAL = 1, VALOR_FIXO = 2;
+
+    @Inject
+    EntityManager entityManager;
 
     static String dias(int d) {
         return LocalDateTime.now().plusDays(d).truncatedTo(ChronoUnit.SECONDS).toString();
@@ -106,5 +119,49 @@ public class CupomResourceTest {
         given().when().get("/cupons/{id}/usos", id).then().statusCode(200).body("totalItems", equalTo(0));
         given().when().delete("/cupons/{id}", id).then().statusCode(204);
         given().when().get("/cupons/{id}", id).then().statusCode(404);
+    }
+
+    @Test
+    void cupomUsadoNaoPodeSerExcluido() {
+        String codigo = "USADO" + Dados.sufixo().toUpperCase();
+        long id = post(cupom(codigo, PERCENTUAL, 10)).statusCode(200).extract().jsonPath().getLong("id");
+        String sufixo = Dados.sufixo();
+
+        QuarkusTransaction.requiringNew().run(() -> {
+            Cupom cupom = entityManager.find(Cupom.class, id);
+            Usuario usuario = new Usuario();
+            usuario.setNome("Cliente " + sufixo);
+            usuario.setEmail(sufixo + "@cliente.com.br");
+            usuario.setEmailVerificado(true);
+            usuario.setAtivo(true);
+            entityManager.persist(usuario);
+
+            PerfilCliente cliente = new PerfilCliente();
+            cliente.setUsuario(usuario);
+            cliente.setTipoPessoa(TipoPessoa.PF);
+            cliente.setNome(usuario.getNome());
+            cliente.setDocumento(br.com.droneshop.testes.Fixtures.cpfValido());
+            entityManager.persist(cliente);
+
+            Pedido pedido = new Pedido();
+            pedido.setCliente(cliente);
+            pedido.setStatus(StatusPedido.PENDENTE);
+            pedido.setValorTotal(java.math.BigDecimal.ZERO);
+            pedido.setValorFrete(java.math.BigDecimal.ZERO);
+            pedido.setValorDesconto(java.math.BigDecimal.TEN);
+            entityManager.persist(pedido);
+
+            UsoCupom uso = new UsoCupom();
+            uso.setCupom(cupom);
+            uso.setCliente(cliente);
+            uso.setPedido(pedido);
+            entityManager.persist(uso);
+        });
+
+        given().when().delete("/cupons/{id}", id).then().statusCode(409);
+        given().when().get("/cupons/{id}/usos", id).then().statusCode(200)
+                .body("totalItems", equalTo(1))
+                .body("items[0].pedido.id", org.hamcrest.Matchers.notNullValue())
+                .body("items[0].cliente.nome", equalTo("Cliente " + sufixo));
     }
 }

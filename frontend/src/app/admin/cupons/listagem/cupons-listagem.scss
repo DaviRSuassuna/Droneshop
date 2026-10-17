@@ -1,0 +1,12 @@
+:host { display: block; }
+.coupon-title { display: flex; align-items: baseline; gap: 12px; }
+.coupon-list { display: flex; flex-direction: column; gap: 16px; }
+.coupon-row { grid-template-columns: minmax(0, 1fr) 130px 200px 170px 118px 44px; }
+.row-menu { justify-self: end; color: var(--mute); }
+.underlined { text-decoration: underline; }
+
+@media (max-width: 700px) {
+  .coupon-row { grid-template-columns: minmax(0, 1fr) 90px 90px; }
+  .coupon-row > :nth-child(3), .coupon-row > :nth-child(4) { display: none; }
+  .coupon-row > :nth-child(5) { justify-self: end; }
+}

@@ -1,0 +1,143 @@
+<app-admin-nav />
+
+@if (carregando()) {
+  <div class="pad"><span class="sub">Carregando cupom…</span></div>
+} @else {
+  <div class="pad cols coupon-form">
+    <div class="main">
+      <div>
+        <h1 class="h1 big">{{ modoEdicao() ? 'Editar cupom' : 'Criar cupom' }}</h1>
+        <div class="crumb">Compra · <a routerLink="/admin/cupons">Cupons</a> · {{ modoEdicao() ? 'Editar cupom' : 'Novo cupom' }}</div>
+      </div>
+
+      @if (erro()) {
+        <div class="card p form-error"><span class="warn">{{ erro() }}</span></div>
+      }
+
+      <section class="card p" [formGroup]="form">
+        <div class="card-h"><span class="card-t">Código e desconto</span><span class="card-n">O código é digitado pelo cliente no carrinho</span></div>
+        <div class="g2">
+          <div class="f">
+            <label>Código <span class="req">*</span></label>
+            <input type="text" placeholder="PILOTO10" formControlName="codigo" />
+          </div>
+          <div class="f">
+            <label>Tipo de desconto <span class="req">*</span></label>
+            <select formControlName="idTipoDesconto">
+              <option [value]="1">Percentual</option>
+              <option [value]="2">Valor fixo</option>
+            </select>
+          </div>
+          <div class="f">
+            <label>Valor <span class="req">*</span></label>
+            <input type="number" min="0.01" step="0.01" placeholder="10 (%) ou 50,00 (R$)" formControlName="valor" />
+          </div>
+          <div class="f">
+            <label>Valor mínimo do pedido (R$)</label>
+            <input type="number" min="0" step="0.01" placeholder="Ex: 999,00" formControlName="valorMinimo" />
+          </div>
+          <div class="f full">
+            <label>Descrição interna</label>
+            <input type="text" placeholder="Campanha de e-mail da semana do piloto" formControlName="descricao" />
+          </div>
+        </div>
+        <p class="legend">Campos com <span class="req">*</span> são obrigatórios</p>
+      </section>
+
+      <section class="card p" [formGroup]="form">
+        <div class="card-h"><span class="card-t">Vigência e limites</span><span class="card-n">Limites são validados contra UsoCupom</span></div>
+        <div class="g2">
+          <div class="f">
+            <label>Início <span class="req">*</span></label>
+            <input type="datetime-local" formControlName="dataInicio" />
+          </div>
+          <div class="f">
+            <label>Fim</label>
+            <input type="datetime-local" formControlName="dataFim" />
+            <small class="dim">Vazio = sem prazo</small>
+          </div>
+          <div class="f">
+            <label>Limite total de usos</label>
+            <input type="number" min="1" step="1" placeholder="Ex: 500 · vazio = ilimitado" formControlName="limiteTotalUso" />
+          </div>
+          <div class="f">
+            <label>Limite por cliente</label>
+            <input type="number" min="1" step="1" placeholder="Ex: 1" formControlName="limitePorCliente" />
+          </div>
+          <label class="ck full"><input type="checkbox" formControlName="primeiroPedido" /> Válido apenas para o primeiro pedido do cliente</label>
+          <label class="ck full"><input type="checkbox" formControlName="acumulaPromocoes" /> Acumula com promoções ativas</label>
+        </div>
+      </section>
+
+      <section class="card p">
+        <div class="card-h"><span class="card-t">Restrições de escopo</span><span class="card-n">Vazio significa vale para a loja inteira</span></div>
+        <div class="g2">
+          <div class="f">
+            <label>Categorias</label>
+            <select multiple aria-label="Categorias" [value]="idsParaSelect(idsCategorias())" (change)="aoSelecionar($event, 'categorias')">
+              @for (categoria of categorias(); track categoria.id) {
+                <option [value]="categoria.id">{{ categoria.nome }}</option>
+              }
+            </select>
+          </div>
+          <div class="f">
+            <label>Marcas</label>
+            <select multiple aria-label="Marcas" [value]="idsParaSelect(idsMarcas())" (change)="aoSelecionar($event, 'marcas')">
+              @for (marca of marcas(); track marca.id) {
+                <option [value]="marca.id">{{ marca.nome }}</option>
+              }
+            </select>
+          </div>
+          <div class="f full">
+            <label>Produtos específicos</label>
+            <select multiple aria-label="Produtos específicos" [value]="idsParaSelect(idsVariantes())" (change)="aoSelecionar($event, 'variantes')">
+              @for (variante of variantes(); track variante.id) {
+                <option [value]="variante.id">{{ variante.produto.nome }} · {{ variante.nome }} · {{ variante.sku }}</option>
+              }
+            </select>
+            <small class="dim">Busque pelo nome ou SKU; mantenha Ctrl/Cmd para selecionar várias variantes.</small>
+          </div>
+        </div>
+        <p class="legend">As três restrições são relações muitos-para-muitos de <span class="chip">Cupom</span> com <span class="chip">Categoria</span>, <span class="chip">Marca</span> e <span class="chip">VarianteProduto</span>.</p>
+      </section>
+    </div>
+
+    <aside class="rail" [formGroup]="form">
+      <section class="card p2">
+        <div class="eyebrow">Publicação</div>
+        <div class="stack">
+          <div class="f">
+            <label>Status <span class="req">*</span></label>
+            <select formControlName="ativo"><option [ngValue]="true">Ativo</option><option [ngValue]="false">Pausado</option></select>
+          </div>
+          <label class="ck full"><input type="checkbox" formControlName="exibirOfertas" /> Exibir na página Ofertas</label>
+        </div>
+      </section>
+      <section class="card p2">
+        <div class="eyebrow">Prévia no carrinho</div>
+        <div class="stack preview">
+          <div class="kv"><span class="dim">Subtotal</span><span class="ink">R$ 15.228</span></div>
+          <div class="kv"><span class="dim">{{ form.controls.codigo.value || 'Cupom novo' }}</span><span class="discount">{{ previewDesconto() }}</span></div>
+          <div class="kv total"><span class="ink">Total</span><span class="ink">{{ previewTotal() }}</span></div>
+        </div>
+      </section>
+      <section class="card p2">
+        <div class="eyebrow">Pendências</div>
+        @if (pendencias().length) {
+          <div class="stack"><span class="warn">{{ pendencias().length }} campos obrigatórios vazios</span><span class="pending-list">{{ pendencias().join(' · ') }}</span></div>
+        } @else {
+          <div class="stack"><span class="discount">Campos obrigatórios preenchidos</span></div>
+        }
+      </section>
+    </aside>
+  </div>
+
+  <div class="actionbar">
+    <span class="sub">Código precisa ser único · a validação roda ao salvar</span>
+    <div class="actions">
+      <a class="btn" routerLink="/admin/cupons">Cancelar</a>
+      <button class="btn" type="button" [disabled]="salvando()" (click)="salvar(false)">Salvar rascunho</button>
+      <button class="btn p" type="button" [disabled]="salvando()" (click)="salvar(true)">Ativar cupom</button>
+    </div>
+  </div>
+}
