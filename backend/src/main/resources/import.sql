@@ -1,6 +1,7 @@
 -- Carga de dados do dev/test (depois de localidades.sql).
 -- Status (enums no padrao Regiao, gravados pelo id): marca, categoria, subcategoria e produto
 -- 1 = Rascunho, 2 = Ativa(o), 3 = Inativa(o); fornecedor 1 = Ativo, 2 = Inativo.
+-- TipoMidia (#12) é enum persistido pelo conversor; 1 = IMAGEM, 2 = VIDEO, 3 = MANUAL_PDF.
 
 insert into configuracao_loja (id, dados_fiscais, cep_origem_frete, remetente_padrao, prazo_arrependimento_dias, prazo_garantia_dias, prazo_analise_devolucao_dias_uteis, frete_reverso_por_conta_loja) values
     (1, 'Aeria Drones Comércio Ltda.', '77001000', 'Aeria Drones', 7, 365, 5, true);
@@ -163,6 +164,15 @@ from variante_produto k
 join (values ('DRN-FX2P-0042-STD', 1), ('ACC-BFX2-0101-STD', 2)) as v(sku, quantidade) on true
 join variante_produto c on c.sku = v.sku
 where k.sku = 'DRN-FX2P-0042-FLY';
+
+-- #13 estoque fisico so muda por movimento (RF14): o saldo inicial de cada variante comum
+-- vira uma ENTRADA (tipo 1) MANUAL (origem 1) do admin semente (D11). Kit nao tem estoque (D7).
+insert into movimento_estoque (id_variante, tipo, origem, quantidade, saldo_resultante, observacao, id_autor, dataCadastro)
+select v.id, 1, 1, v.estoque_fisico, v.estoque_fisico, 'Saldo inicial',
+       (select id from usuario where email = 'admin@aeria.com.br'), now()
+from variante_produto v
+where v.eh_kit = false and v.estoque_fisico > 0
+order by v.id;
 
 -- #16 Pedidos da carga (D19): cliente semente cliente@aeria.com.br / aeria123 e tres pedidos por status.
 -- Itens so de acessorios (a regra de numero de serie da #34 nao trava as transicoes) com o preco atual

@@ -5,12 +5,16 @@ import java.util.List;
 
 import br.com.droneshop.catalogo.model.VarianteProduto;
 import br.com.droneshop.identidade.model.PerfilCliente;
+import br.com.droneshop.identidade.model.Usuario;
+import br.com.droneshop.model.OrigemRegistro;
 import br.com.droneshop.pedido.dto.ClientePedidoResponseDTO;
 import br.com.droneshop.pedido.dto.EnderecoPedidoResponseDTO;
+import br.com.droneshop.pedido.dto.HistoricoStatusPedidoResponseDTO;
 import br.com.droneshop.pedido.dto.ItemPedidoResponseDTO;
 import br.com.droneshop.pedido.dto.PedidoListagemResponseDTO;
 import br.com.droneshop.pedido.dto.PedidoResponseDTO;
 import br.com.droneshop.pedido.model.EnderecoPedido;
+import br.com.droneshop.pedido.model.HistoricoStatusPedido;
 import br.com.droneshop.pedido.model.ItemPedido;
 import br.com.droneshop.pedido.model.Pedido;
 
@@ -48,6 +52,17 @@ public final class PedidoResponseMapper {
                 List.of(),
                 null,
                 p.getDataCadastro());
+    }
+
+    public static HistoricoStatusPedidoResponseDTO toHistorico(HistoricoStatusPedido h) {
+        Usuario autor = h.getOrigem() == OrigemRegistro.MANUAL ? h.getAutor() : null;
+        return new HistoricoStatusPedidoResponseDTO(
+                h.getStatusAnterior(),
+                h.getStatusNovo(),
+                h.getOrigem(),
+                autor == null ? null : new HistoricoStatusPedidoResponseDTO.AutorResumo(autor.getId(), autor.getNome()),
+                h.getObservacao(),
+                h.getDataCadastro());
     }
 
     static ItemPedidoResponseDTO item(ItemPedido i) {

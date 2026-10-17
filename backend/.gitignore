@@ -43,3 +43,6 @@ nb-configuration.xml
 /.quarkus/cli/plugins/
 # TLS Certificates
 .certs/
+
+# Uploads de midia do dev (aeria.midias.diretorio)
+midias/

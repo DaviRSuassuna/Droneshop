@@ -1,0 +1,154 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.form-error {
+  border-color: var(--warn-b);
+}
+
+.variant-table {
+  overflow: hidden;
+}
+
+.variant-row {
+  grid-template-columns: 2.2fr 1.2fr 1fr 1fr 0.5fr;
+}
+
+.remove-variant {
+  justify-self: end;
+  border: 0;
+  background: none;
+  color: var(--dim);
+  cursor: pointer;
+}
+
+.variant-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.add-variant {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.add-variant select {
+  max-width: 240px;
+  height: 36px;
+  border: 1px solid var(--b2);
+  border-radius: 6px;
+  background: var(--field);
+  color: var(--ink2);
+  padding: 0 10px;
+}
+
+.promo-preview .media {
+  height: 120px;
+  position: relative;
+}
+
+.promo-preview .body {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 14px;
+}
+
+.promo-preview .nm {
+  font-size: 14px;
+}
+
+.promo-preview .pr {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+}
+
+.promo-preview .pr b {
+  font-size: 15px;
+}
+
+.appear-links,
+.pending-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  font-size: 12px;
+}
+
+.appear-links {
+  color: var(--dim);
+}
+
+.pending-list span:last-child {
+  color: var(--mute);
+}
+
+.actionbar {
+  z-index: 10;
+}
+
+@media (max-width: 640px) {
+  .pad.cols {
+    gap: 18px;
+  }
+
+  .card.p {
+    padding: 18px 16px 20px;
+  }
+
+  .card-h {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .variant-row {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    gap: 8px;
+  }
+
+  .variant-row > :nth-child(2),
+  .variant-row > :nth-child(3),
+  .variant-row > :nth-child(4) {
+    display: none;
+  }
+
+  .variant-row > :last-child {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .variant-actions,
+  .add-variant {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .add-variant select {
+    max-width: none;
+    width: 100%;
+  }
+
+  .actionbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .actionbar > .sub {
+    display: none;
+  }
+
+  .actionbar .actions {
+    flex-wrap: wrap;
+  }
+
+  .actionbar .btn {
+    flex: 1 1 auto;
+  }
+}

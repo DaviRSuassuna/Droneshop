@@ -99,8 +99,8 @@ note bottom of EnderecoPedido
 end note
 
 enum OrigemDesconto {
-  CUPOM
-  PROMOCAO
+  CUPOM = 1
+  PROMOCAO = 2
 }
 
 class DescontoPedido {

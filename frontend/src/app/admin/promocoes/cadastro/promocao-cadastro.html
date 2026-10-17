@@ -1,0 +1,209 @@
+<app-admin-nav />
+
+@if (carregando()) {
+  <div class="pad"><span class="sub">Carregando promoção…</span></div>
+} @else {
+  <div class="pad cols promotion-form">
+    <div class="main">
+      <div>
+        <h1 class="h1 big">{{ modoEdicao() ? 'Editar promoção' : 'Criar promoção' }}</h1>
+        <div class="crumb">
+          Catálogo · <a routerLink="/admin/promocoes">Promoções</a> ·
+          {{ modoEdicao() ? 'Editar promoção' : 'Nova promoção' }}
+        </div>
+      </div>
+
+      @if (erro()) {
+        <div class="card p form-error"><span class="warn">{{ erro() }}</span></div>
+      }
+
+      <section class="card p" [formGroup]="form">
+        <div class="card-h">
+          <span class="card-t">Identificação</span>
+          <span class="card-n">O escopo define onde o desconto incide</span>
+        </div>
+        <div class="g2">
+          <div class="f full">
+            <label>Nome da promoção <span class="req">*</span></label>
+            <input type="text" placeholder="Ex: Semana do piloto" formControlName="nome" />
+          </div>
+          <div class="f">
+            <label>Escopo <span class="req">*</span></label>
+            <select
+              [value]="form.controls.idEscopo.value"
+              (change)="aoMudarEscopo($any($event.target).value)"
+            >
+              @for (escopo of escopos; track escopo.id) {
+                <option [value]="escopo.id">{{ escopo.nome }}</option>
+              }
+            </select>
+          </div>
+          <div class="f">
+            <label>Prioridade</label>
+            <input type="number" placeholder="Ex: 1 · maior vence em caso de empate" formControlName="prioridade" />
+          </div>
+          <div class="f full">
+            <label>Chamada exibida na vitrine</label>
+            <input type="text" placeholder="Até 20% em kits com bateria extra" formControlName="chamada" />
+          </div>
+        </div>
+      </section>
+
+      <section class="card p" [formGroup]="form">
+        <div class="card-h">
+          <span class="card-t">Desconto</span>
+          <span class="card-n">Preencha percentual OU valor, nunca os dois</span>
+        </div>
+        <div class="g2">
+          <div class="f">
+            <label>Percentual (%)</label>
+            <input type="number" min="0" max="100" step="0.01" placeholder="Ex: 22" formControlName="percentualDesconto" />
+          </div>
+          <div class="f">
+            <label>Valor fixo (R$)</label>
+            <input type="number" min="0" step="0.01" placeholder="Ex: 500,00" formControlName="valorDesconto" />
+          </div>
+          <div class="f">
+            <label>Valor mínimo do carrinho (R$)</label>
+            <input type="number" min="0" step="0.01" placeholder="Só para escopo carrinho ou frete" formControlName="valorMinimoCarrinho" />
+          </div>
+          <div class="f">
+            <label>Teto de desconto (R$)</label>
+            <input type="number" min="0" step="0.01" placeholder="Opcional" formControlName="tetoDesconto" />
+          </div>
+        </div>
+        <p class="legend">
+          A promoção nunca grava preço no produto. O preço cheio continua na variante, e o valor
+          aplicado é registrado em <span class="chip">DescontoPedido</span> quando a venda fecha.
+        </p>
+      </section>
+
+      <section class="card p" [formGroup]="form">
+        <div class="card-h">
+          <span class="card-t">Vigência</span>
+          <span class="card-n">Fora da janela a promoção some da vitrine sozinha</span>
+        </div>
+        <div class="g2">
+          <div class="f">
+            <label>Início <span class="req">*</span></label>
+            <input type="datetime-local" formControlName="dataInicio" />
+          </div>
+          <div class="f">
+            <label>Fim <span class="req">*</span></label>
+            <input type="datetime-local" formControlName="dataFim" />
+          </div>
+          <label class="ck full">
+            <input type="checkbox" formControlName="encerrarSemEstoque" />
+            Encerrar automaticamente quando o estoque das variantes acabar
+          </label>
+        </div>
+      </section>
+
+      <section class="card p">
+        <div class="card-h">
+          <span class="card-t">Variantes em promoção</span>
+          <span class="card-n">Obrigatório quando o escopo é Produto</span>
+        </div>
+        <div class="tbl variant-table">
+          <div class="trow head variant-row">
+            <span>Variante</span><span>SKU</span><span>Preço cheio</span><span>Preço com desconto</span><span></span>
+          </div>
+          @for (variante of variantesSelecionadas(); track variante.id) {
+            <div class="trow variant-row">
+              <span class="ink">{{ nomeVariante(variante) }}</span>
+              <span class="chip">{{ variante.sku || '—' }}</span>
+              <span class="dim">{{ moeda(variante.preco) }}</span>
+              <span class="ink">{{ moeda(precoPromocional(variante)) }}</span>
+              <button class="remove-variant" type="button" (click)="removerVariante(variante.id)" [attr.aria-label]="'Remover ' + nomeVariante(variante)">✕</button>
+            </div>
+          } @empty {
+            <div class="pager"><span>Nenhuma variante selecionada.</span></div>
+          }
+        </div>
+        <div class="variant-actions">
+          <span class="dim">{{ idsVariantes().length }} variantes selecionadas · também é possível selecionar por marca ou categoria inteira</span>
+          <div class="add-variant">
+            <select
+              aria-label="Variante para adicionar"
+              [value]="varianteParaAdicionar()"
+              (change)="aoSelecionarVariante($any($event.target).value)"
+            >
+              <option value="">Selecione uma variante</option>
+              @for (variante of variantesDisponiveis(); track variante.id) {
+                @if (!idsVariantes().includes(variante.id)) {
+                  <option [value]="variante.id">{{ nomeVariante(variante) }} · {{ variante.sku }}</option>
+                }
+              }
+            </select>
+            <button class="sbtn sm" type="button" (click)="adicionarVariante()">+ Adicionar variante</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="rail" [formGroup]="form">
+      <section class="card p2">
+        <div class="eyebrow">Publicação</div>
+        <div class="stack">
+          <div class="f">
+            <label>Status <span class="req">*</span></label>
+            <select [value]="form.controls.status.value" (change)="aoMudarStatus($any($event.target).value)">
+              <option value="RASCUNHO">Rascunho</option>
+              <option value="AGENDADA">Agendada</option>
+              <option value="ATIVA">Ativa</option>
+              <option value="ENCERRADA">Encerrada</option>
+            </select>
+          </div>
+          <label class="ck full"><input type="checkbox" formControlName="exibirOfertas" /> Exibir na página Ofertas</label>
+          <label class="ck full"><input type="checkbox" formControlName="exibirSelo" /> Exibir selo Oferta nos cards</label>
+          <label class="ck full"><input type="checkbox" formControlName="destacarBanner" /> Destacar no banner da home</label>
+        </div>
+      </section>
+
+      <section class="card p2">
+        <div class="eyebrow">Prévia do card</div>
+        <div class="pcard promo-preview">
+          <div class="ph media"><span class="badge">Oferta</span></div>
+          <div class="body">
+            <span class="nm">{{ form.controls.nome.value || 'Nimbus Mini 3' }}</span>
+            <span class="tg">34 min · 10 km · 4K 30fps</span>
+            <span class="pr"><b>{{ moeda(precoPromocional(variantesSelecionadas()[0]) ?? 4290) }}</b><s>{{ moeda(variantesSelecionadas()[0]?.preco ?? 4790) }}</s></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card p2">
+        <div class="eyebrow">Onde isso aparece</div>
+        <div class="appear-links">
+          <a routerLink="/ofertas">Ofertas · página inteira ↗</a>
+          <a routerLink="/">Home · selo e preço riscado ↗</a>
+          <a routerLink="/drones">Listagem de drones ↗</a>
+          <a routerLink="/">Página do produto ↗</a>
+        </div>
+      </section>
+
+      @if (pendencias().length > 0) {
+        <section class="card p2">
+          <div class="eyebrow">Pendências</div>
+          <div class="pending-list">
+            <span class="warn">{{ pendencias().length }} campos obrigatórios vazios</span>
+            <span>{{ pendencias().join(' · ') }}</span>
+          </div>
+        </section>
+      }
+    </aside>
+  </div>
+
+  <div class="actionbar">
+    <span class="sub">Promoção não altera o preço cadastrado da variante</span>
+    <div class="actions">
+      <a class="btn" routerLink="/admin/promocoes">Cancelar</a>
+      <button class="btn" type="button" (click)="salvar()" [disabled]="salvando()">
+        {{ salvando() ? 'Salvando…' : 'Salvar rascunho' }}
+      </button>
+      <button class="btn p" type="button" (click)="salvar(true)" [disabled]="salvando()">
+        {{ salvando() ? 'Publicando…' : 'Publicar promoção' }}
+      </button>
+    </div>
+  </div>
+}

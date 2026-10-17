@@ -1,0 +1,130 @@
+<section class="card p2">
+  <div class="eyebrow">Mídia</div>
+
+  @if (estado.erro() || erroArquivo(); as erro) {
+    <p class="warn" role="alert">{{ erro }}</p>
+  }
+
+  @if (escolha(); as e) {
+    <div class="escolha">
+      <img [src]="e.previa" alt="" />
+      <div class="f">
+        <label for="altTextMidia">Texto alternativo <span class="req">*</span></label>
+        <input
+          id="altTextMidia"
+          type="text"
+          maxlength="160"
+          placeholder="Descreva a imagem"
+          [ngModel]="altText()"
+          (ngModelChange)="altText.set($event)"
+          (keydown.enter)="$event.preventDefault(); confirmar()"
+        />
+      </div>
+      <div class="escolha-acoes">
+        <button class="sbtn sm" type="button" (click)="cancelar()">Cancelar</button>
+        <button
+          class="sbtn sm p"
+          type="button"
+          (click)="confirmar()"
+          [disabled]="!altText().trim() || estado.ocupado()"
+        >
+          {{ e.principal ? 'Usar como principal' : 'Adicionar à galeria' }}
+        </button>
+      </div>
+    </div>
+  }
+
+  <div class="stack">
+    <div class="f">
+      <label>Imagem principal <span class="req">*</span></label>
+      @if (estado.principal(); as p) {
+        <div class="principal">
+          <img [src]="p.src" [alt]="p.altText ?? ''" />
+          <span class="dim sm">{{ p.altText }}</span>
+          <div class="principal-acoes">
+            <label class="sbtn sm">
+              Trocar
+              <input
+                type="file"
+                hidden
+                accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+                (change)="aoEscolher($event, true)"
+              />
+            </label>
+            <button class="sbtn sm" type="button" (click)="excluir(p)">Excluir</button>
+          </div>
+        </div>
+      } @else {
+        <label class="up" (dragover)="permitirSoltar($event)" (drop)="aoSoltar($event, true)">
+          Arraste um arquivo ou clique<small>JPG ou PNG · mín. 1200×1200 px</small>
+          <input
+            type="file"
+            hidden
+            accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+            (change)="aoEscolher($event, true)"
+          />
+        </label>
+        @if (publicado()) {
+          <span class="warn">Produto publicado precisa de imagem principal</span>
+        }
+      }
+    </div>
+
+    <div class="f">
+      <label>Galeria de imagens adicionais</label>
+      @if (estado.galeria().length > 0) {
+        <div class="galeria">
+          @for (item of estado.galeria(); track item.chave; let i = $index; let ultimo = $last) {
+            <figure class="miniatura">
+              <img [src]="item.src" [alt]="item.altText ?? ''" [title]="item.altText ?? ''" />
+              <figcaption>
+                <button
+                  type="button"
+                  [disabled]="i === 0"
+                  (click)="estado.mover(item, -1)"
+                  aria-label="Mover para a esquerda"
+                >
+                  ←
+                </button>
+                <button
+                  type="button"
+                  [disabled]="ultimo"
+                  (click)="estado.mover(item, 1)"
+                  aria-label="Mover para a direita"
+                >
+                  →
+                </button>
+                <button
+                  type="button"
+                  (click)="estado.definirPrincipal(item)"
+                  aria-label="Usar como imagem principal"
+                  title="Usar como principal"
+                >
+                  ★
+                </button>
+                <button type="button" (click)="excluir(item)" aria-label="Excluir imagem">✕</button>
+              </figcaption>
+            </figure>
+          }
+        </div>
+      }
+      @if (estado.galeria().length < LIMITE_GALERIA) {
+        <label class="up" (dragover)="permitirSoltar($event)" (drop)="aoSoltar($event, false)">
+          Arraste um arquivo ou clique<small
+            >Até {{ LIMITE_GALERIA }} imagens · use ← → para ordenar</small
+          >
+          <input
+            type="file"
+            hidden
+            accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+            (change)="aoEscolher($event, false)"
+          />
+        </label>
+      }
+    </div>
+
+    @if (estado.temFila()) {
+      <span class="dim sm">As mídias sobem quando o produto for salvo.</span>
+    }
+  </div>
+</section>

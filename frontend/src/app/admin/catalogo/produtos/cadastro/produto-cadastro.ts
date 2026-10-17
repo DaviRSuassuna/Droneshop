@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AdminNav } from '../../../../layout/admin/admin-nav/admin-nav';
@@ -34,6 +35,9 @@ import { Categoria } from '../../../../core/models/categoria.model';
 import { Subcategoria } from '../../../../core/models/subcategoria.model';
 import { Fornecedor } from '../../../../core/models/fornecedor.model';
 import { ProblemDetail } from '../../../../core/models/problem.model';
+import { ProdutoMidias } from './midias/produto-midias';
+import { ProdutoMidiasExtras } from './midias/produto-midias-extras';
+import { ProdutoMidiasEstado } from './midias/produto-midias-estado';
 
 /** Opções dos selects de spec, como no protótipo. O valor salvo é texto livre na API. */
 const OPCOES = {
@@ -61,8 +65,16 @@ type CampoOpcao = keyof typeof OPCOES;
  */
 @Component({
   selector: 'app-produto-cadastro',
-  imports: [ReactiveFormsModule, RouterLink, AdminNav, CompativeisAcessorio],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    AdminNav,
+    CompativeisAcessorio,
+    ProdutoMidias,
+    ProdutoMidiasExtras,
+  ],
   templateUrl: './produto-cadastro.html',
+  providers: [ProdutoMidiasEstado],
 })
 export class ProdutoCadastro implements OnInit {
   private readonly fb = inject(FormBuilder);
@@ -76,6 +88,8 @@ export class ProdutoCadastro implements OnInit {
   private readonly varianteService = inject(VarianteService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly location = inject(Location);
+  readonly midias = inject(ProdutoMidiasEstado);
 
   readonly STATUS = STATUS_PRODUTO;
   readonly FORNECEDOR_INATIVO = STATUS_FORNECEDOR.INATIVO;
@@ -234,6 +248,7 @@ export class ProdutoCadastro implements OnInit {
       const id = Number(idParam);
       this.produtoId.set(id);
       this.carregarProduto(id);
+      this.midias.carregar(id);
     }
   }
 
@@ -358,7 +373,7 @@ export class ProdutoCadastro implements OnInit {
 
     this.salvando.set(true);
     const id = this.produtoId();
-    let request$: Observable<unknown>;
+    let request$: Observable<Produto | void>;
     if (this.ehDrone) {
       const drone = this.droneDTO(dto);
       request$ = id ? this.droneService.atualizar(id, drone) : this.droneService.criar(drone);
@@ -374,9 +389,26 @@ export class ProdutoCadastro implements OnInit {
     }
 
     request$.subscribe({
-      next: () => {
-        this.salvando.set(false);
-        this.router.navigate([this.rotaListagem]);
+      next: (produto) => {
+        const criado = id === null ? (produto as Produto).id : null;
+        if (criado === null) {
+          this.salvando.set(false);
+          this.router.navigate([this.rotaListagem]);
+          return;
+        }
+        // produto novo: sobe as mídias da fila; se alguma falhar, a tela vira a de edição
+        this.midias.enviarFila(criado).subscribe({
+          complete: () => {
+            this.salvando.set(false);
+            this.router.navigate([this.rotaListagem]);
+          },
+          error: () => {
+            this.salvando.set(false);
+            this.produtoId.set(criado);
+            const tipoRota = this.ehDrone ? 'drones' : 'acessorios';
+            this.location.replaceState(`/admin/${tipoRota}/${criado}/editar`);
+          },
+        });
       },
       error: (err: HttpErrorResponse) => this.tratarErro(err),
     });

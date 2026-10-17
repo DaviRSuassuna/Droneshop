@@ -24,6 +24,23 @@ export const EXIBICAO_STATUS_PEDIDO: Record<number, { rotulo: string; cor: strin
   [STATUS_PEDIDO.CANCELADO]: { rotulo: 'Cancelado', cor: 'var(--warn)' },
 };
 
+/** Transições permitidas (#17), as mesmas de StatusPedido.podeIrPara no backend. */
+export const TRANSICOES_STATUS_PEDIDO: Record<number, readonly number[]> = {
+  [STATUS_PEDIDO.PENDENTE]: [STATUS_PEDIDO.PAGO, STATUS_PEDIDO.CANCELADO],
+  [STATUS_PEDIDO.PAGO]: [STATUS_PEDIDO.SEPARACAO, STATUS_PEDIDO.CANCELADO],
+  [STATUS_PEDIDO.SEPARACAO]: [STATUS_PEDIDO.ENVIADO, STATUS_PEDIDO.CANCELADO],
+  [STATUS_PEDIDO.ENVIADO]: [STATUS_PEDIDO.ENTREGUE],
+  [STATUS_PEDIDO.ENTREGUE]: [STATUS_PEDIDO.EM_DEVOLUCAO],
+  [STATUS_PEDIDO.EM_DEVOLUCAO]: [STATUS_PEDIDO.DEVOLVIDO, STATUS_PEDIDO.ENTREGUE],
+};
+
+export function podeMudarStatus(atual: number, novo: number): boolean {
+  return TRANSICOES_STATUS_PEDIDO[atual]?.includes(novo) ?? false;
+}
+
+/** Ids de OrigemRegistro (D11). */
+export const ORIGEM_REGISTRO = { MANUAL: 1, SISTEMA: 2, INTEGRACAO: 3 } as const;
+
 export interface ClientePedido {
   id: number;
   nome: string;
@@ -75,6 +92,16 @@ export interface Pedido {
   pagamentos: unknown[];
   entrega: unknown | null;
   dataCadastro?: string;
+}
+
+/** Item de GET /pedidos/{id}/historico, em ordem cronológica. autor só quando a origem é MANUAL. */
+export interface HistoricoStatusPedido {
+  statusAnterior: StatusRef | null;
+  statusNovo: StatusRef;
+  origem: StatusRef;
+  autor: { id: number; nome: string } | null;
+  observacao: string | null;
+  dataCadastro: string;
 }
 
 export interface ResumoStatusPedido {

@@ -8,7 +8,11 @@ export const routes: Routes = [
     path: 'admin',
     canActivateChild: [adminAuthGuard],
     children: [
-      { path: '', redirectTo: 'marcas', pathMatch: 'full' },
+      {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () => import('./admin/dashboard/dashboard').then((m) => m.Dashboard),
+      },
       {
         path: 'marcas',
         loadComponent: () =>
@@ -88,6 +92,27 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'promocoes',
+        loadComponent: () =>
+          import('./admin/promocoes/listagem/promocoes-listagem').then(
+            (m) => m.PromocoesListagem,
+          ),
+      },
+      {
+        path: 'promocoes/nova',
+        loadComponent: () =>
+          import('./admin/promocoes/cadastro/promocao-cadastro').then(
+            (m) => m.PromocaoCadastro,
+          ),
+      },
+      {
+        path: 'promocoes/:id/editar',
+        loadComponent: () =>
+          import('./admin/promocoes/cadastro/promocao-cadastro').then(
+            (m) => m.PromocaoCadastro,
+          ),
+      },
+      {
         path: 'produtos',
         loadComponent: () =>
           import('./admin/catalogo/produtos/listagem/produtos-listagem').then(
@@ -138,6 +163,16 @@ export const routes: Routes = [
         path: 'configuracao',
         loadComponent: () =>
           import('./admin/configuracao/configuracao-loja').then((m) => m.ConfiguracaoLojaPage),
+      },
+      {
+        path: 'estoque',
+        loadComponent: () =>
+          import('./admin/estoque/listagem/estoque-listagem').then((m) => m.EstoqueListagem),
+      },
+      {
+        path: 'estoque/movimento',
+        loadComponent: () =>
+          import('./admin/estoque/movimento/estoque-movimento').then((m) => m.EstoqueMovimento),
       },
       {
         path: 'pedidos',
