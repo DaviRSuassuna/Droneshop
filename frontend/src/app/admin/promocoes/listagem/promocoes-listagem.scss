@@ -1,0 +1,53 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.page-title {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  min-width: 0;
+}
+
+.promo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.promo-row {
+  grid-template-columns: minmax(0, 1fr) 220px 200px 128px 44px;
+}
+
+.row-menu {
+  justify-self: end;
+  color: var(--mute);
+}
+
+.underlined {
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .page-title {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .tabs {
+    flex-wrap: wrap;
+    gap: 0 2px;
+  }
+
+  .tabs a {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .promo-row {
+    min-width: 0;
+  }
+}

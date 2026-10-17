@@ -64,7 +64,7 @@ Testes escritos a partir do contrato de cada issue (`docs/issues/NNN.md`), antes
 | `issue-11` | bloqueia o merge | `catalogo/CompatibilidadeResourceTest` | 6 |
 | `issue-12` | bloqueia o merge | `catalogo/MidiaProdutoResourceTest` | 14 |
 | `issue-13` | bloqueia o merge | `estoque/MovimentoEstoqueResourceTest` | 9 |
-| `issue-14` | informativo | `catalogo/PromocaoResourceTest` | 6 |
+| `issue-14` | bloqueia o merge | `catalogo/PromocaoResourceTest` | 7 |
 | `issue-15` | informativo | `compra/CupomResourceTest` | 5 |
 | `issue-16` | bloqueia o merge | `pedido/PedidoResourceTest` | 7 |
 | `issue-17` | bloqueia o merge | `pedido/StatusPedidoResourceTest` | 5 |

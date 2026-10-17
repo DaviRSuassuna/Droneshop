@@ -92,6 +92,27 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'promocoes',
+        loadComponent: () =>
+          import('./admin/promocoes/listagem/promocoes-listagem').then(
+            (m) => m.PromocoesListagem,
+          ),
+      },
+      {
+        path: 'promocoes/nova',
+        loadComponent: () =>
+          import('./admin/promocoes/cadastro/promocao-cadastro').then(
+            (m) => m.PromocaoCadastro,
+          ),
+      },
+      {
+        path: 'promocoes/:id/editar',
+        loadComponent: () =>
+          import('./admin/promocoes/cadastro/promocao-cadastro').then(
+            (m) => m.PromocaoCadastro,
+          ),
+      },
+      {
         path: 'produtos',
         loadComponent: () =>
           import('./admin/catalogo/produtos/listagem/produtos-listagem').then(

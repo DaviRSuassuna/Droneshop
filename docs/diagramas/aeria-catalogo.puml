@@ -246,9 +246,9 @@ note right of MidiaProduto
 end note
 
 enum EscopoPromocao {
-  PRODUTO
-  CARRINHO
-  FRETE
+  PRODUTO = 1
+  CARRINHO = 2
+  FRETE = 3
 }
 
 class Promocao {
@@ -261,6 +261,11 @@ class Promocao {
   -valorMinimoCarrinho: BigDecimal
   -ativa: boolean
 }
+note right of Promocao
+  Escopo e vigência controlam a aplicação;
+  apenas PRODUTO vincula variantes.
+  Promoções usadas em pedidos não se excluem.
+end note
 
 class TermoBuscado {
   -termo: String
