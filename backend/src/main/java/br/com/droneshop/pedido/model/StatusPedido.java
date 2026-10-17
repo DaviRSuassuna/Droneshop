@@ -31,6 +31,19 @@ public enum StatusPedido {
         return nome;
     }
 
+    // Transições permitidas (#17); DEVOLVIDO e CANCELADO são finais
+    public boolean podeIrPara(StatusPedido novo) {
+        return switch (this) {
+            case PENDENTE -> novo == PAGO || novo == CANCELADO;
+            case PAGO -> novo == SEPARACAO || novo == CANCELADO;
+            case SEPARACAO -> novo == ENVIADO || novo == CANCELADO;
+            case ENVIADO -> novo == ENTREGUE;
+            case ENTREGUE -> novo == EM_DEVOLUCAO;
+            case EM_DEVOLUCAO -> novo == DEVOLVIDO || novo == ENTREGUE;
+            case DEVOLVIDO, CANCELADO -> false;
+        };
+    }
+
     public static StatusPedido valueOf(Long id) {
         if (id == null)
             return null;
