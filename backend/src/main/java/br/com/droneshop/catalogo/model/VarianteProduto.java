@@ -1,16 +1,23 @@
 package br.com.droneshop.catalogo.model;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
+import br.com.droneshop.estoque.model.MovimentoEstoque;
 import br.com.droneshop.model.DefaultEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 
 // Unidade vendavel do catalogo (RF03). Peso e dimensoes sao os da embalagem, base do
 // frete (D16). estoqueFisico so muda na criacao (saldo inicial) ou por movimento (#13).
+// Kit (D7): estoqueFisico nulo; peso e dimensoes nulos sao derivados dos componentes.
 @Entity
 @Table(name = "variante_produto")
 public class VarianteProduto extends DefaultEntity {
@@ -55,6 +62,15 @@ public class VarianteProduto extends DefaultEntity {
 
     @Column(nullable = false)
     private boolean ativa;
+
+    // so no kit: as variantes que ele reune, cada uma com a quantidade exigida
+    @OneToMany(mappedBy = "kit", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id")
+    private List<ComponenteKit> componentes = new ArrayList<>();
+
+    // historico do estoque fisico (#13); sai junto com a variante
+    @OneToMany(mappedBy = "variante", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MovimentoEstoque> movimentos = new ArrayList<>();
 
     public Produto getProduto() {
         return produto;
@@ -158,6 +174,22 @@ public class VarianteProduto extends DefaultEntity {
 
     public void setAtiva(boolean ativa) {
         this.ativa = ativa;
+    }
+
+    public List<ComponenteKit> getComponentes() {
+        return componentes;
+    }
+
+    public void setComponentes(List<ComponenteKit> componentes) {
+        this.componentes = componentes;
+    }
+
+    public List<MovimentoEstoque> getMovimentos() {
+        return movimentos;
+    }
+
+    public void setMovimentos(List<MovimentoEstoque> movimentos) {
+        this.movimentos = movimentos;
     }
 
 }

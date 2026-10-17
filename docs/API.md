@@ -52,7 +52,7 @@ As telas citadas são as do [protótipo](design/README.md).
 | POST · PUT | `/acessorios` · `/acessorios/{id}` | Cadastrar acessório | #8 | pronto |
 | (corpo) | `variantes[]` dentro do drone/acessório | tabela de variantes na própria tela (D13) | #9 | pronto |
 | GET · GET PUT | `/variantes?busca=` · `/variantes/{id}` | select de variante (estoque, promoção, kit); preço e margem (D26) | #9 | pronto |
-| (corpo) | `componentes[]` na variante kit | Kit ou combo (D7) | #10 | a fazer |
+| (corpo) | `componentes[]` na variante kit; toda variante responde `disponivel`, e o kit `pesoSobrescrito`/`dimensoesSobrescritas` | Kit ou combo (D7, D16) | #10 | pronto |
 | (corpo) | `idsCompativeis[]` no acessório; resposta com `compativeis[]` e, em todo produto, `acessoriosCompativeis[]` (lado recíproco) | Compatível com (D17) | #11 | pronto |
 | GET · GET POST · PATCH · DELETE | `/tipos-midia` · `/produtos/{id}/midias` (multipart) · `/midias/{id}` · `/produtos/{id}/midias/ordem` · `/midias/arquivos/{nome}` | imagem e manual por upload, vídeo por URL (D29) | #12 | pronto |
 | GET POST · GET PUT DELETE | `/promocoes?situacao=` · `/promocoes/{id}` | Promoções (abas Vigentes/Agendadas/Encerradas), Criar promoção | #14 | a fazer |
@@ -75,8 +75,8 @@ As telas citadas são as do [protótipo](design/README.md).
 |---|---|---|---|---|
 | GET | `/pedidos?idStatus=&dataInicio=&dataFim=&busca=` · `/pedidos/resumo-status` | Pedidos (abas com contagem por status, filtro de período) | #16 | a fazer |
 | GET | `/pedidos/{id}` | Detalhe do pedido (itens, endereço congelado D12, pagamento) | #16 | a fazer |
-| PATCH | `/pedidos/{id}/status` | Marcar como enviado, Cancelar pedido (transição inválida 409, D30) | #17 | a fazer |
-| GET | `/pedidos/{id}/historico` | linha do tempo do pedido | #17 | a fazer |
+| PATCH | `/pedidos/{id}/status` | Marcar como enviado, Cancelar pedido (transição inválida 409, D30) | #17 | pronto |
+| GET | `/pedidos/{id}/historico` | linha do tempo do pedido | #17 | pronto |
 | GET POST · PUT | `/pedidos/{id}/rastreio` · `/pedidos/{id}/entrega/codigo-rastreio` | Rastreio (eventos) | #31 | a fazer |
 | GET | `/pedidos/{id}/pagamentos` | pagamentos do pedido | #27 | a fazer |
 | GET POST | `/pedidos/{id}/nota-fiscal` | NF-e simulada (venda e devolução) | #35 | a fazer |

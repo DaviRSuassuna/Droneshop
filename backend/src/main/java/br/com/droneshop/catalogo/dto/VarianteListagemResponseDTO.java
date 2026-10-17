@@ -11,6 +11,7 @@ public record VarianteListagemResponseDTO(
     String nome,
     BigDecimal preco,
     Integer estoqueFisico,
+    int disponivel,
     boolean ehKit,
     ProdutoResumo produto
 ) {
