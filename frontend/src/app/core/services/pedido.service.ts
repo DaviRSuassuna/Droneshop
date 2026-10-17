@@ -3,9 +3,15 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { PageResponse } from '../models/page.model';
-import { FiltroPedidos, Pedido, PedidoListagem, ResumoStatusPedido } from '../models/pedido.model';
+import {
+  FiltroPedidos,
+  HistoricoStatusPedido,
+  Pedido,
+  PedidoListagem,
+  ResumoStatusPedido,
+} from '../models/pedido.model';
 
-/** Pedidos no admin: só leitura nesta fase (D19). */
+/** Pedidos no admin: consulta e mudança de status (o pedido nasce no checkout). */
 @Injectable({ providedIn: 'root' })
 export class PedidoService {
   private readonly http = inject(HttpClient);
@@ -31,5 +37,18 @@ export class PedidoService {
 
   buscarPorId(id: number): Observable<Pedido> {
     return this.http.get<Pedido>(`${this.baseUrl}/${id}`);
+  }
+
+  /** 204; 409 quando a transição não é permitida a partir do status atual (D30). */
+  alterarStatus(id: number, idStatus: number, observacao?: string | null): Observable<void> {
+    const texto = observacao?.trim();
+    return this.http.patch<void>(`${this.baseUrl}/${id}/status`, {
+      idStatus,
+      observacao: texto ? texto : null,
+    });
+  }
+
+  historico(id: number): Observable<HistoricoStatusPedido[]> {
+    return this.http.get<HistoricoStatusPedido[]>(`${this.baseUrl}/${id}/historico`);
   }
 }
