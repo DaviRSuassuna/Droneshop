@@ -1,0 +1,104 @@
+<app-admin-nav />
+
+<div class="pagebar">
+  <div class="page-title">
+    <h1 class="h1">Promoções</h1>
+    @if (!carregando()) {
+      <span class="sub">
+        {{ quantidadeAtivas() }} ativas · {{ quantidadeAgendadas() }} agendada(s) ·
+        {{ variantesEmOferta() }} produtos em oferta
+      </span>
+    }
+  </div>
+  <div class="actions">
+    <a class="btn" routerLink="/ofertas">Ver na loja ↗</a>
+    <a class="btn p" routerLink="/admin/promocoes/nova">Nova promoção</a>
+  </div>
+</div>
+
+<div class="pad-t promo-list">
+  <nav class="tabs" aria-label="Situação das promoções">
+    <a href="#" [class.on]="aba() === 'TODAS'" (click)="selecionarAba($event, 'TODAS')"
+      >Todas <em>{{ promocoes().length }}</em></a
+    >
+    <a href="#" [class.on]="aba() === 'VIGENTE'" (click)="selecionarAba($event, 'VIGENTE')"
+      >Ativas <em>{{ quantidadeAtivas() }}</em></a
+    >
+    <a href="#" [class.on]="aba() === 'AGENDADA'" (click)="selecionarAba($event, 'AGENDADA')"
+      >Agendadas <em>{{ quantidadeAgendadas() }}</em></a
+    >
+    <a href="#" [class.on]="aba() === 'ENCERRADA'" (click)="selecionarAba($event, 'ENCERRADA')"
+      >Encerradas <em>{{ quantidadeEncerradas() }}</em></a
+    >
+  </nav>
+
+  <div class="filters">
+    <div class="f grow">
+      <input
+        type="text"
+        placeholder="Buscar por nome da promoção"
+        [value]="termoBusca()"
+        (input)="termoBusca.set($any($event.target).value)"
+      />
+    </div>
+    <div class="f">
+      <select [value]="filtroEscopo() ?? ''" (change)="aoMudarEscopo($any($event.target).value)">
+        <option value="">Escopo</option>
+        @for (escopo of escopos; track escopo.id) {
+          <option [value]="escopo.id">{{ escopo.nome }}</option>
+        }
+      </select>
+    </div>
+    <div class="f">
+      <select [value]="filtroVigencia()" (change)="filtroVigencia.set($any($event.target).value)">
+        <option value="">Vigência</option>
+        <option value="HOJE">Vigentes hoje</option>
+        <option value="FUTURAS">Futuras</option>
+      </select>
+    </div>
+  </div>
+
+  <p class="legend" style="margin: 0">
+    Desconto nunca é campo do produto: quem alimenta o selo <span class="chip">Oferta</span>, o preço
+    riscado da vitrine e a página <a routerLink="/ofertas" class="underlined">Ofertas</a> é a entidade
+    <span class="chip">Promocao</span>, com vigência e escopo.
+  </p>
+
+  @if (carregando()) {
+    <div class="tbl">
+      <div class="pager"><span>Carregando promoções…</span></div>
+    </div>
+  } @else if (erro()) {
+    <div class="tbl">
+      <div class="pager">
+        <span class="warn">{{ erro() }}</span>
+        <button class="btn sm" type="button" (click)="carregar()">Tentar novamente</button>
+      </div>
+    </div>
+  } @else {
+    <div class="tbl">
+      <div class="trow head promo-row">
+        <span>Promoção</span><span>Desconto</span><span>Vigência</span><span>Status</span><span></span>
+      </div>
+      @for (promocao of filtradas(); track promocao.id) {
+        <a class="trow promo-row" [routerLink]="['/admin/promocoes', promocao.id, 'editar']">
+          <span class="cell-name">
+            <b>{{ promocao.nome }}</b>
+            <span class="chip">escopo: {{ rotuloEscopo(promocao.escopo.id) }}</span>
+          </span>
+          <span class="ink">{{ descontoRotulo(promocao) }}</span>
+          <span class="dim">{{ vigencia(promocao) }}</span>
+          <span class="status"><span class="dot" [style.background]="statusCor(promocao)"></span>{{ statusRotulo(promocao) }}</span>
+          <span class="row-menu" aria-hidden="true">⋯</span>
+        </a>
+      } @empty {
+        @if (!carregando()) {
+          <div class="pager empty">
+            <span>Nenhuma promoção encontrada com os filtros atuais.</span>
+          </div>
+        }
+      }
+      <div class="pager"><span>Exibindo {{ filtradas().length }} de {{ promocoes().length }}</span><span>Página 1 de 1</span></div>
+    </div>
+  }
+</div>

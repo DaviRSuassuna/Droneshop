@@ -6,17 +6,30 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.EntityManager;
+import jakarta.inject.Inject;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import br.com.droneshop.catalogo.model.Promocao;
+import br.com.droneshop.identidade.model.PerfilCliente;
+import br.com.droneshop.identidade.model.TipoPessoa;
+import br.com.droneshop.identidade.model.Usuario;
+import br.com.droneshop.pedido.model.DescontoPedido;
+import br.com.droneshop.pedido.model.OrigemDesconto;
+import br.com.droneshop.pedido.model.Pedido;
+import br.com.droneshop.pedido.model.StatusPedido;
 import br.com.droneshop.testes.Dados;
 import br.com.droneshop.testes.Fixtures;
+import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
@@ -30,6 +43,9 @@ import io.restassured.response.ValidatableResponse;
 class PromocaoResourceTest {
 
     static final long PRODUTO = 1, CARRINHO = 2, FRETE = 3;
+
+    @Inject
+    EntityManager entityManager;
 
     static String dias(int d) {
         return LocalDateTime.now().plusDays(d).truncatedTo(ChronoUnit.SECONDS).toString();
@@ -66,6 +82,9 @@ class PromocaoResourceTest {
                 .body("variantes[0].id", equalTo((int) v));
         post(promocao(v, -1, 5)).statusCode(200).body("situacao", equalTo("VIGENTE"));
         post(promocao(v, -10, -5)).statusCode(200).body("situacao", equalTo("ENCERRADA"));
+        Map<String, Object> inativa = promocao(v, -1, 5);
+        inativa.put("ativa", false);
+        post(inativa).statusCode(200).body("situacao", equalTo("INATIVA"));
     }
 
     @Test
@@ -119,5 +138,45 @@ class PromocaoResourceTest {
         given().when().get("/promocoes/{id}", id).then().statusCode(200).body("nome", equalTo("Alterada"));
         given().when().delete("/promocoes/{id}", id).then().statusCode(204);
         given().when().get("/promocoes/{id}", id).then().statusCode(404);
+    }
+
+    @Test
+    void promocaoAplicadaEmPedidoNaoPodeSerExcluida() {
+        long variante = Fixtures.criarDrone(1000.0, 5).idVariante();
+        long idPromocao = post(promocao(variante, -1, 5)).statusCode(200).extract().jsonPath().getLong("id");
+        String sufixo = Dados.sufixo();
+
+        QuarkusTransaction.requiringNew().run(() -> {
+            Promocao promocao = entityManager.find(Promocao.class, idPromocao);
+            Usuario usuario = new Usuario();
+            usuario.setNome("Cliente " + sufixo);
+            usuario.setEmail(sufixo + "@cliente.com.br");
+            usuario.setEmailVerificado(true);
+            usuario.setAtivo(true);
+            entityManager.persist(usuario);
+            PerfilCliente cliente = new PerfilCliente();
+            cliente.setUsuario(usuario);
+            cliente.setTipoPessoa(TipoPessoa.PF);
+            cliente.setNome(usuario.getNome());
+            cliente.setDocumento(Fixtures.cpfValido());
+            entityManager.persist(cliente);
+
+            Pedido pedido = new Pedido();
+            pedido.setCliente(cliente);
+            pedido.setStatus(StatusPedido.PENDENTE);
+            pedido.setValorTotal(BigDecimal.ZERO);
+            pedido.setValorFrete(BigDecimal.ZERO);
+            pedido.setValorDesconto(BigDecimal.ZERO);
+            DescontoPedido desconto = new DescontoPedido();
+            desconto.setOrigem(OrigemDesconto.PROMOCAO);
+            desconto.setDescricao(promocao.getNome());
+            desconto.setValor(BigDecimal.TEN);
+            desconto.setPedido(pedido);
+            desconto.setPromocao(promocao);
+            pedido.setDescontos(new ArrayList<>(List.of(desconto)));
+            entityManager.persist(pedido);
+        });
+
+        given().when().delete("/promocoes/{id}", idPromocao).then().statusCode(409);
     }
 }

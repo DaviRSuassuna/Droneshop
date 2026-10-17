@@ -49,6 +49,10 @@ public class Pedido extends DefaultEntity {
     @OrderBy("dataCadastro, id")
     private List<HistoricoStatusPedido> historico = new ArrayList<>();
 
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id")
+    private List<DescontoPedido> descontos = new ArrayList<>();
+
     public StatusPedido getStatus() {
         return status;
     }
@@ -111,5 +115,13 @@ public class Pedido extends DefaultEntity {
 
     public void setHistorico(List<HistoricoStatusPedido> historico) {
         this.historico = historico;
+    }
+
+    public List<DescontoPedido> getDescontos() {
+        return descontos;
+    }
+
+    public void setDescontos(List<DescontoPedido> descontos) {
+        this.descontos = descontos;
     }
 }

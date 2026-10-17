@@ -60,5 +60,5 @@ Rodado em 14/10/2026 sobre as telas já implementadas (`@base`). Os estilos (tok
 | Fornecedores | colunas "Cidade/UF" e "Telefone" diferentes do protótipo |
 | Cadastrar fornecedor | faltam os campos "Cidade" e "UF" |
 
-Todas as telas do admin rolam para o lado no celular (117 a 125px), e o protótipo também não tem layout para telas estreitas. As telas das issues ainda não existem no Angular.
+Todas as telas do admin já existentes naquela rodada rolavam para o lado no celular (117 a 125px), e o protótipo também não tinha layout para telas estreitas. As telas das issues ainda não implementadas no Angular não foram avaliadas nessa rodada. Promoções (`@issue-14`) foram implementadas depois e passaram nas verificações de estrutura, estilo e celular.
 <!-- situacao:fim -->

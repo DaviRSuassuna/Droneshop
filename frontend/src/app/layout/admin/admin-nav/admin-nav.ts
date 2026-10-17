@@ -16,8 +16,7 @@ const CHAVE_TEMA = 'aeria-theme';
   styleUrl: './admin-nav.scss',
 })
 export class AdminNav {
-  // Somente "Produtos", "Marcas", "Categorias", "Subcategorias", "Fornecedores",
-  // "Configuração" e "Pedidos" estão implementados nesta etapa; os demais
+  // "Promoções" também possui telas implementadas; os demais
   // módulos do admin ainda não têm rota e por isso aparecem como itens inertes.
   readonly itens: ItemNav[] = [
     { rotulo: 'Dashboard' },
@@ -27,7 +26,7 @@ export class AdminNav {
     { rotulo: 'Subcategorias', rota: '/admin/subcategorias' },
     { rotulo: 'Fornecedores', rota: '/admin/fornecedores' },
     { rotulo: 'Configuração', rota: '/admin/configuracao' },
-    { rotulo: 'Promoções' },
+    { rotulo: 'Promoções', rota: '/admin/promocoes' },
     { rotulo: 'Cupons' },
     { rotulo: 'Estoque' },
     { rotulo: 'Pedidos', rota: '/admin/pedidos' },
