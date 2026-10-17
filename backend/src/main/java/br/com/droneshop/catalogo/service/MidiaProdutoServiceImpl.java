@@ -29,6 +29,10 @@ import br.com.droneshop.exception.ValidationException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.LockModeType;
+import io.quarkus.logging.Log;
+import jakarta.transaction.Status;
+import jakarta.transaction.Synchronization;
+import jakarta.transaction.TransactionSynchronizationRegistry;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -48,6 +52,9 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
 
     @Inject
     Validator validator;
+
+    @Inject
+    TransactionSynchronizationRegistry transacao;
 
     @ConfigProperty(name = "aeria.midias.diretorio")
     String diretorio;
@@ -149,8 +156,15 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
     @Transactional
     public void excluir(long id) {
         MidiaProduto midia = buscarMidia(id);
+        long idProduto = midia.getProduto().getId();
+        buscarProdutoComLock(idProduto);
         removerArquivo(midia);
         midiaRepository.delete(midia);
+        // as que sobram voltam a ser 1..n, sem buraco na ordem
+        int ordem = 1;
+        for (MidiaProduto restante : midiaRepository.findByProdutoId(idProduto))
+            if (restante.getId() != id)
+                restante.setOrdem(ordem++);
     }
 
     @Override
@@ -294,6 +308,7 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
         } catch (IOException e) {
             throw new IllegalStateException("Não foi possível gravar o arquivo de mídia.", e);
         }
+        apagarAoTerminar(destino, false);
         return "/midias/arquivos/" + salvo;
     }
 
@@ -303,11 +318,28 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
         String nome = midia.getUrl().substring(midia.getUrl().lastIndexOf('/') + 1);
         if (!NOME_ARQUIVO.matcher(nome).matches())
             throw new IllegalStateException("A mídia contém um caminho de arquivo inválido.");
-        try {
-            Files.deleteIfExists(diretorio().resolve(nome).normalize());
-        } catch (IOException e) {
-            throw new IllegalStateException("Não foi possível excluir o arquivo de mídia.", e);
-        }
+        apagarAoTerminar(diretorio().resolve(nome).normalize(), true);
+    }
+
+    // O disco nao participa da transacao: o arquivo so e apagado depois que o banco decide.
+    // aposCommit = true apaga se confirmou (exclusao); false apaga se desfez (upload que nao foi salvo).
+    private void apagarAoTerminar(Path arquivo, boolean aposCommit) {
+        transacao.registerInterposedSynchronization(new Synchronization() {
+            @Override
+            public void beforeCompletion() {
+            }
+
+            @Override
+            public void afterCompletion(int status) {
+                if ((status == Status.STATUS_COMMITTED) != aposCommit)
+                    return;
+                try {
+                    Files.deleteIfExists(arquivo);
+                } catch (IOException e) {
+                    Log.warnf(e, "Não foi possível apagar o arquivo de mídia %s", arquivo);
+                }
+            }
+        });
     }
 
     private Path diretorio() {

@@ -5,12 +5,15 @@ import java.util.List;
 import org.jboss.resteasy.reactive.RestForm;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
+import br.com.droneshop.administracao.ModuloAdmin;
+import br.com.droneshop.administracao.model.ModuloSistema;
 import br.com.droneshop.catalogo.dto.MidiaProdutoOrdemRequestDTO;
 import br.com.droneshop.catalogo.dto.MidiaProdutoRequestDTO;
 import br.com.droneshop.catalogo.dto.MidiaProdutoResponseDTO;
 import br.com.droneshop.catalogo.mapper.MidiaProdutoResponseMapper;
 import br.com.droneshop.catalogo.model.MidiaProduto;
 import br.com.droneshop.catalogo.service.MidiaProdutoService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -23,6 +26,8 @@ import jakarta.ws.rs.core.MediaType;
 
 @Path("produtos/{id}/midias")
 @Produces(MediaType.APPLICATION_JSON)
+@RolesAllowed("ADMINISTRATIVO")
+@ModuloAdmin(ModuloSistema.CATALOGO)
 public class ProdutoMidiaResource {
 
     @Inject

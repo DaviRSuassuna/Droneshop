@@ -158,6 +158,35 @@ class MidiaProdutoResourceTest {
     }
 
     @Test
+    void excluirCompactaAOrdem() {
+        long id = Fixtures.criarDrone(1000.0, 1).id();
+        imagem(id, "A", true).statusCode(200);
+        long b = imagem(id, "B", false).statusCode(200).extract().jsonPath().getLong("id");
+        imagem(id, "C", false).statusCode(200);
+        given().when().delete("/midias/{id}", b).then().statusCode(204);
+        given().when().get("/produtos/{id}/midias", id).then().statusCode(200)
+                .body("altText", contains("A", "C"))
+                .body("ordem", contains(1, 2));
+    }
+
+    @Test
+    void excluirOProdutoApagaAsMidias() {
+        long id = Fixtures.criarDrone(1000.0, 1).id();
+        String url = imagem(id, "Frente", true).statusCode(200).extract().jsonPath().getString("url");
+        given().when().delete("/produtos/{id}", id).then().statusCode(204);
+        anonimo().when().get(url).then().statusCode(404);
+    }
+
+    @Test
+    void semTokenNaoAlteraMidias() {
+        long id = Fixtures.criarDrone(1000.0, 1).id();
+        anonimo().multiPart("idTipo", String.valueOf(VIDEO))
+                .multiPart("url", "https://www.youtube.com/watch?v=abc")
+                .when().post("/produtos/{id}/midias", id).then().statusCode(401);
+        anonimo().when().delete("/midias/{id}", 1).then().statusCode(401);
+    }
+
+    @Test
     void produtoInexistenteResponde404() {
         imagem(Dados.ID_INEXISTENTE, "x", false).statusCode(404);
     }
