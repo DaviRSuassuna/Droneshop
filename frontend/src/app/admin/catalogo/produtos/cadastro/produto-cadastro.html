@@ -807,10 +807,11 @@
             list-style: none;
           "
         >
-          <span class="card-t">SEO</span>
+          <span class="card-t">Mostrar mais opções</span>
           <span class="dim">Expandir ▾</span>
         </summary>
         <div class="g2" style="margin-top: 20px">
+          <app-produto-midias-extras />
           <div class="f full">
             <label for="slug">Slug (URL amigável)</label>
             <input
@@ -885,6 +886,8 @@
           </label>
         </div>
       </section>
+
+      <app-produto-midias [publicado]="form.controls.idStatus.value !== STATUS.RASCUNHO" />
 
       @if (modoEdicao()) {
         <section class="card p2">

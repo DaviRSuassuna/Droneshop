@@ -60,15 +60,15 @@ Testes escritos a partir do contrato de cada issue (`docs/issues/NNN.md`), antes
 | `issue-7` | bloqueia o merge | `catalogo/ProdutoSeoResourceTest` | 7 |
 | `issue-8` | bloqueia o merge | `catalogo/AcessorioResourceTest`, `catalogo/CategoriaResourceTest`, `catalogo/DroneResourceTest`, `catalogo/ExclusaoEmUsoTest`, `catalogo/ProdutoResourceTest`, `catalogo/SubcategoriaResourceTest` | 29 |
 | `issue-9` | bloqueia o merge | `catalogo/VarianteResourceTest` | 9 |
-| `issue-10` | informativo | `catalogo/KitResourceTest` | 7 |
+| `issue-10` | bloqueia o merge | `catalogo/KitResourceTest` | 7 |
 | `issue-11` | bloqueia o merge | `catalogo/CompatibilidadeResourceTest` | 6 |
-| `issue-12` | informativo | `catalogo/MidiaProdutoResourceTest` | 8 |
-| `issue-13` | informativo | `estoque/MovimentoEstoqueResourceTest` | 9 |
+| `issue-12` | bloqueia o merge | `catalogo/MidiaProdutoResourceTest` | 14 |
+| `issue-13` | bloqueia o merge | `estoque/MovimentoEstoqueResourceTest` | 9 |
 | `issue-14` | informativo | `catalogo/PromocaoResourceTest` | 6 |
 | `issue-15` | informativo | `compra/CupomResourceTest` | 5 |
-| `issue-16` | informativo | `pedido/PedidoResourceTest` | 7 |
-| `issue-17` | informativo | `pedido/StatusPedidoResourceTest` | 5 |
-| `issue-18` | informativo | `administracao/DashboardResourceTest` | 4 |
+| `issue-16` | bloqueia o merge | `pedido/PedidoResourceTest` | 7 |
+| `issue-17` | bloqueia o merge | `pedido/StatusPedidoResourceTest` | 5 |
+| `issue-18` | bloqueia o merge | `administracao/DashboardResourceTest` | 4 |
 | `issue-19` | informativo | `identidade/ClienteResourceTest`, `identidade/EnderecoClienteResourceTest` | 17 |
 | `issue-20` | informativo | `identidade/SessaoResourceTest` | 7 |
 | `issue-21` | informativo | `catalogo/LojaProdutoResourceTest`, `catalogo/LojaVitrineResourceTest` | 11 |
@@ -101,7 +101,7 @@ Testes escritos a partir do contrato de cada issue (`docs/issues/NNN.md`), antes
 | `issue-empresas` | informativo | `atendimento/LeadEmpresaResourceTest` | 2 |
 | `issue-lote-csv` | informativo | `administracao/AcoesAdminResourceTest` | 6 |
 
-Total: 386 testes. Gerado por `scripts/vincular_testes_issues.py --matriz`.
+Total: 392 testes. Gerado por `scripts/vincular_testes_issues.py --matriz`.
 
 <!-- matriz:fim -->
 
