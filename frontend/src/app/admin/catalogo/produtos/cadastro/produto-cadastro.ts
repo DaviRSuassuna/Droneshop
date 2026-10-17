@@ -32,6 +32,7 @@ import { Categoria } from '../../../../core/models/categoria.model';
 import { Subcategoria } from '../../../../core/models/subcategoria.model';
 import { Fornecedor } from '../../../../core/models/fornecedor.model';
 import { ProblemDetail } from '../../../../core/models/problem.model';
+import { ProdutoMidias } from './midias/produto-midias';
 
 /** Opções dos selects de spec, como no protótipo. O valor salvo é texto livre na API. */
 const OPCOES = {
@@ -59,7 +60,7 @@ type CampoOpcao = keyof typeof OPCOES;
  */
 @Component({
   selector: 'app-produto-cadastro',
-  imports: [ReactiveFormsModule, RouterLink, AdminNav, CompativeisAcessorio],
+  imports: [ReactiveFormsModule, RouterLink, AdminNav, CompativeisAcessorio, ProdutoMidias],
   templateUrl: './produto-cadastro.html',
 })
 export class ProdutoCadastro implements OnInit {
@@ -342,7 +343,7 @@ export class ProdutoCadastro implements OnInit {
 
     this.salvando.set(true);
     const id = this.produtoId();
-    let request$: Observable<unknown>;
+    let request$: Observable<Produto | void>;
     if (this.ehDrone) {
       const drone = this.droneDTO(dto);
       request$ = id ? this.droneService.atualizar(id, drone) : this.droneService.criar(drone);
@@ -358,8 +359,20 @@ export class ProdutoCadastro implements OnInit {
     }
 
     request$.subscribe({
-      next: () => {
+      next: (produto) => {
         this.salvando.set(false);
+        if (
+          id === null &&
+          produto !== undefined &&
+          typeof produto === 'object' &&
+          'id' in produto &&
+          typeof produto.id === 'number'
+        ) {
+          this.produtoId.set(produto.id);
+          const tipoRota = this.ehDrone ? 'drones' : 'acessorios';
+          this.router.navigate([`/admin/${tipoRota}/${produto.id}/editar`]);
+          return;
+        }
         this.router.navigate([this.rotaListagem]);
       },
       error: (err: HttpErrorResponse) => this.tratarErro(err),

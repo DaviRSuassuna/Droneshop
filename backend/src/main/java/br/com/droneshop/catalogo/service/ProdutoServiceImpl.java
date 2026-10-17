@@ -18,12 +18,16 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Inject
     ProdutoRepository produtoRepository;
 
+    @Inject
+    MidiaProdutoService midiaProdutoService;
+
     // remove pela entidade (e nao por deleteById) para apagar as linhas de produto e do subtipo.
     // Compatibilidade nao e "uso" (D17): os vinculos que apontam para ele saem junto.
     @Override
     @Transactional
     public void delete(long id) {
         Produto produto = buscarProdutoOuFalhar(id);
+        midiaProdutoService.excluirDoProduto(id);
         for (Acessorio acessorio : produto.getAcessoriosCompativeis())
             acessorio.getCompativeis().remove(produto);
         produtoRepository.delete(produto);

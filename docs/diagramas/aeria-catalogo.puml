@@ -221,10 +221,16 @@ class ComponenteKit {
 }
 
 enum TipoMidia {
-  IMAGEM
-  VIDEO
-  MANUAL_PDF
+  IMAGEM = 1
+  VIDEO = 2
+  MANUAL_PDF = 3
 }
+note right of TipoMidia
+  A imagem aceita PNG/JPG e texto alternativo;
+  o manual é PDF e o vídeo é salvo por URL (D29).
+  Arquivos são limitados a 20 MB e ficam no
+  diretório aeria.midias.diretorio.
+end note
 
 class MidiaProduto {
   -tipo: TipoMidia
@@ -233,6 +239,11 @@ class MidiaProduto {
   -ordem: int
   -altText: String
 }
+note right of MidiaProduto
+  Cada mídia pertence a um produto.
+  No máximo uma mídia por produto é principal;
+  ordem é sequencial e editável no admin.
+end note
 
 enum EscopoPromocao {
   PRODUTO
