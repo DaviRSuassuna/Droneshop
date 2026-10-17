@@ -161,6 +161,15 @@ join (values ('DRN-FX2P-0042-STD', 1), ('ACC-BFX2-0101-STD', 2)) as v(sku, quant
 join variante_produto c on c.sku = v.sku
 where k.sku = 'DRN-FX2P-0042-FLY';
 
+-- #13 estoque fisico so muda por movimento (RF14): o saldo inicial de cada variante comum
+-- vira uma ENTRADA (tipo 1) MANUAL (origem 1) do admin semente (D11). Kit nao tem estoque (D7).
+insert into movimento_estoque (id_variante, tipo, origem, quantidade, saldo_resultante, observacao, id_autor, dataCadastro)
+select v.id, 1, 1, v.estoque_fisico, v.estoque_fisico, 'Saldo inicial',
+       (select id from usuario where email = 'admin@aeria.com.br'), now()
+from variante_produto v
+where v.eh_kit = false and v.estoque_fisico > 0
+order by v.id;
+
 -- #16 Pedidos da carga (D19): cliente semente cliente@aeria.com.br / aeria123 e tres pedidos por status.
 -- Itens so de acessorios (a regra de numero de serie da #34 nao trava as transicoes) com o preco atual
 -- da variante congelado (RN06). Status: 1 PENDENTE, 2 PAGO, 3 SEPARACAO, 4 ENVIADO, 5 ENTREGUE,
