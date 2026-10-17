@@ -11,6 +11,7 @@ import { MarcaService } from '../../../../core/services/marca.service';
 import { CategoriaService } from '../../../../core/services/categoria.service';
 import { SubcategoriaService } from '../../../../core/services/subcategoria.service';
 import { FornecedorService } from '../../../../core/services/fornecedor.service';
+import { VarianteService } from '../../../../core/services/variante.service';
 import {
   CompativeisAcessorio,
   VinculoCompativel,
@@ -25,6 +26,7 @@ import {
   TIPO_PRODUTO,
   Variante,
   VarianteDTO,
+  VarianteListagem,
 } from '../../../../core/models/produto.model';
 import { STATUS_FORNECEDOR, STATUS_PRODUTO } from '../../../../core/models/status.model';
 import { Marca } from '../../../../core/models/marca.model';
@@ -71,6 +73,7 @@ export class ProdutoCadastro implements OnInit {
   private readonly categoriaService = inject(CategoriaService);
   private readonly subcategoriaService = inject(SubcategoriaService);
   private readonly fornecedorService = inject(FornecedorService);
+  private readonly varianteService = inject(VarianteService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
@@ -163,6 +166,16 @@ export class ProdutoCadastro implements OnInit {
     maximumFractionDigits: 2,
   });
 
+  // Kit (D7): variantes que podem ser componente, por id. Vem de GET /variantes (ativas)
+  // mais os componentes já salvos no kit, para o select mostrar mesmo um inativo.
+  readonly variantesConhecidas = signal<Map<number, VarianteListagem>>(new Map());
+  readonly opcoesComponente = computed(() =>
+    [...this.variantesConhecidas().values()]
+      .filter((v) => !v.ehKit)
+      .sort((a, b) => this.rotuloVariante(a).localeCompare(this.rotuloVariante(b), 'pt-BR')),
+  );
+  readonly gridKit = '2.4fr 0.8fr 1.2fr 32px';
+
   // compatibilidade (D17): o acessório grava a lista; os dois tipos mostram o lado recíproco
   readonly compativeis = signal<VinculoCompativel[]>([]);
   readonly acessoriosCompativeis = signal<ProdutoResumo[]>([]);
@@ -200,6 +213,9 @@ export class ProdutoCadastro implements OnInit {
       .listar(null, 0, 1000)
       .subscribe((p) => this.subcategorias.set(p.items));
     this.fornecedorService.listar(0, 1000).subscribe((p) => this.fornecedores.set(p.items));
+    this.varianteService
+      .listar({ ativa: true }, 0, 1000)
+      .subscribe((p) => this.conhecerVariantes(p.items));
 
     this.semOpcoes.valueChanges.subscribe(() => this.alternarSemOpcoes());
 
@@ -396,7 +412,12 @@ export class ProdutoCadastro implements OnInit {
    * Linha da tabela de variantes. A variante já salva tem o estoque só para leitura:
    * depois da criação ele muda só por movimento de estoque.
    */
-  private linhaVariante(v?: Variante, nome = 'Padrão') {
+  private linhaVariante(v?: Variante, nome = 'Padrão', kit = false) {
+    const ehKit = v?.ehKit ?? kit;
+    // no kit, peso e dimensões só vão para o campo quando foram informados nele (D16);
+    // o derivado dos componentes aparece como placeholder
+    const pesoDerivado = ehKit && v && !v.pesoSobrescrito;
+    const dimensoesDerivadas = ehKit && v && !v.dimensoesSobrescritas;
     return this.fb.group({
       id: this.fb.control<number | null>(v?.id ?? null),
       nome: this.fb.nonNullable.control(v ? (v.nome ?? '') : nome),
@@ -405,10 +426,33 @@ export class ProdutoCadastro implements OnInit {
       custoAquisicao: this.fb.control<number | null>(v?.custoAquisicao ?? null),
       estoqueFisico: this.fb.control<number | null>(v?.estoqueFisico ?? null),
       estoqueMinimo: this.fb.control<number | null>(v?.estoqueMinimo ?? null),
-      pesoEmbalagemKg: this.fb.control<number | null>(v?.pesoEmbalagemKg ?? null),
-      dimensoes: this.fb.nonNullable.control(v ? formatarDimensoes(v) : ''),
+      pesoEmbalagemKg: this.fb.control<number | null>(
+        pesoDerivado ? null : (v?.pesoEmbalagemKg ?? null),
+      ),
+      dimensoes: this.fb.nonNullable.control(v && !dimensoesDerivadas ? formatarDimensoes(v) : ''),
       ativa: this.fb.nonNullable.control(v?.ativa ?? true),
       margemPercentual: this.fb.control<number | null>(v?.margemPercentual ?? null),
+      ehKit: this.fb.nonNullable.control(ehKit),
+      componentes: this.fb.array(
+        (v?.componentes ?? []).map((c) => this.linhaComponente(c.variante.id, c.quantidade)),
+      ),
+      pesoAuto: this.fb.nonNullable.control(
+        pesoDerivado && v && v.pesoEmbalagemKg !== null
+          ? `${String(v.pesoEmbalagemKg).replace('.', ',')} · auto`
+          : 'auto',
+      ),
+      dimensoesAuto: this.fb.nonNullable.control(
+        dimensoesDerivadas && v && v.alturaEmbalagemCm !== null
+          ? `${formatarDimensoes(v)} · auto`
+          : 'auto',
+      ),
+    });
+  }
+
+  private linhaComponente(idVariante: number | null = null, quantidade: number | null = 1) {
+    return this.fb.group({
+      idVariante: this.fb.control<number | null>(idVariante),
+      quantidade: this.fb.control<number | null>(quantidade),
     });
   }
 
@@ -416,6 +460,88 @@ export class ProdutoCadastro implements OnInit {
     this.variantes.clear();
     for (const v of lista) this.variantes.push(this.linhaVariante(v));
     this.semOpcoes.setValue(lista.length === 1 && lista[0].nome === 'Padrão', { emitEvent: false });
+    this.conhecerVariantes(lista.flatMap((v) => v.componentes ?? []).map((c) => c.variante));
+  }
+
+  private conhecerVariantes(lista: VarianteListagem[]): void {
+    const mapa = new Map(this.variantesConhecidas());
+    for (const v of lista) mapa.set(v.id, v);
+    this.variantesConhecidas.set(mapa);
+  }
+
+  rotuloVariante(v: VarianteListagem): string {
+    return `${v.produto.nome ?? 'Produto sem nome'} · ${v.nome ?? v.sku ?? 'Sem nome'}`;
+  }
+
+  ehLinhaKit(i: number): boolean {
+    return this.variantes.at(i).controls.ehKit.value;
+  }
+
+  /** Índices das linhas que são kit, na ordem da tabela de variantes. */
+  indicesKit(): number[] {
+    return this.variantes.controls.flatMap((l, i) => (l.controls.ehKit.value ? [i] : []));
+  }
+
+  /** O checkbox cria a variante kit (D7) ou tira os kits do produto. */
+  alternarKit(evento: Event): void {
+    const caixa = evento.target as HTMLInputElement;
+    if (caixa.checked) {
+      this.criarKit();
+      return;
+    }
+    const kits = this.indicesKit();
+    if (
+      kits.some((i) => this.varianteSalva(i)) &&
+      !confirm('O kit será excluído ao salvar. Continuar?')
+    ) {
+      caixa.checked = true;
+      return;
+    }
+    for (const i of kits.reverse()) this.variantes.removeAt(i);
+  }
+
+  private criarKit(): void {
+    // kit é uma opção a mais, então o produto deixa de ser "sem opções"
+    this.semOpcoes.setValue(false, { emitEvent: false });
+    const linha = this.linhaVariante(undefined, 'Kit', true);
+    linha.controls.componentes.push(this.linhaComponente());
+    this.variantes.push(linha);
+  }
+
+  adicionarComponente(i?: number): void {
+    if (i === undefined) {
+      this.criarKit();
+      return;
+    }
+    this.variantes.at(i).controls.componentes.push(this.linhaComponente());
+  }
+
+  removerComponente(i: number, j: number): void {
+    this.variantes.at(i).controls.componentes.removeAt(j);
+  }
+
+  disponivelDe(idVariante: number | null): number | null {
+    if (idVariante === null) return null;
+    return this.variantesConhecidas().get(Number(idVariante))?.disponivel ?? null;
+  }
+
+  /** Mínimo entre (disponível do componente ÷ quantidade), como o backend calcula. */
+  disponibilidadeKit(i: number): number {
+    const componentes = this.variantes.at(i).controls.componentes.getRawValue();
+    let menor: number | null = null;
+    for (const c of componentes) {
+      const disponivel = this.disponivelDe(c.idVariante);
+      const quantidade = numero(c.quantidade);
+      if (disponivel === null || !quantidade || quantidade < 1) continue;
+      const kits = Math.floor(disponivel / quantidade);
+      menor = menor === null ? kits : Math.min(menor, kits);
+    }
+    return menor ?? 0;
+  }
+
+  erroComponente(i: number, j: number): string | null {
+    const p = `variantes[${i}].componentes[${j}].`;
+    return this.mensagemErro(p + 'idVariante') ?? this.mensagemErro(p + 'quantidade');
   }
 
   varianteSalva(i: number): boolean {
@@ -430,7 +556,7 @@ export class ProdutoCadastro implements OnInit {
     this.variantes.removeAt(i);
   }
 
-  /** "Sem opções" deixa uma linha só, chamada "Padrão" (D13). */
+  /** "Sem opções" deixa uma linha só, chamada "Padrão" (D13); kit também sai. */
   alternarSemOpcoes(): void {
     if (!this.semOpcoes.value) return;
     if (
@@ -440,8 +566,10 @@ export class ProdutoCadastro implements OnInit {
       this.semOpcoes.setValue(false, { emitEvent: false });
       return;
     }
-    while (this.variantes.length > 1) this.variantes.removeAt(this.variantes.length - 1);
-    if (this.variantes.length === 0) this.variantes.push(this.linhaVariante());
+    const primeira = this.variantes.controls.findIndex((l) => !l.controls.ehKit.value);
+    const manter = primeira === -1 ? null : this.variantes.at(primeira);
+    this.variantes.clear();
+    this.variantes.push(manter ?? this.linhaVariante());
     this.variantes.at(0).controls.nome.setValue('Padrão');
   }
 
@@ -478,12 +606,20 @@ export class ProdutoCadastro implements OnInit {
         sku: v.sku.trim(),
         preco: numero(v.preco),
         custoAquisicao: numero(v.custoAquisicao),
-        estoqueFisico: numero(v.estoqueFisico),
-        estoqueMinimo: numero(v.estoqueMinimo),
+        // o kit não tem estoque próprio (D7)
+        estoqueFisico: v.ehKit ? null : numero(v.estoqueFisico),
+        estoqueMinimo: v.ehKit ? null : numero(v.estoqueMinimo),
         pesoEmbalagemKg: numero(v.pesoEmbalagemKg),
         alturaEmbalagemCm: medidas?.[0] ?? null,
         larguraEmbalagemCm: medidas?.[1] ?? null,
         comprimentoEmbalagemCm: medidas?.[2] ?? null,
+        ehKit: v.ehKit,
+        componentes: v.ehKit
+          ? v.componentes.map((c) => ({
+              idVariante: c.idVariante === null ? null : Number(c.idVariante),
+              quantidade: numero(c.quantidade),
+            }))
+          : [],
         ativa: v.ativa,
       };
     });

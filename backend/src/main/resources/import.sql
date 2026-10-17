@@ -149,6 +149,18 @@ from produto a join produto p on (a.modelo, p.modelo) in (
     ('ACC-HFPV-0203', 'DRN-VFR-0027'),
     ('ACC-BFX2-0101', 'ACC-HFX2-0201'));
 
+-- kit (D7): Fly More do Falcon X2 Pro = 1 drone + 2 baterias, sem estoque proprio;
+-- peso e dimensoes ficam nulos e saem dos componentes (D16)
+insert into variante_produto (id_produto, nome, sku, preco, custo_aquisicao, estoque_fisico, estoque_minimo, peso_embalagem_kg, altura_embalagem_cm, largura_embalagem_cm, comprimento_embalagem_cm, eh_kit, ativa)
+select p.id, 'Fly More Combo', 'DRN-FX2P-0042-FLY', 13999.00, round(13999.00 * 0.65, 2), null, 0, null, null, null, null, true, true
+from produto p where p.modelo = 'DRN-FX2P-0042';
+insert into componente_kit (id_kit, id_componente, quantidade)
+select k.id, c.id, v.quantidade
+from variante_produto k
+join (values ('DRN-FX2P-0042-STD', 1), ('ACC-BFX2-0101-STD', 2)) as v(sku, quantidade) on true
+join variante_produto c on c.sku = v.sku
+where k.sku = 'DRN-FX2P-0042-FLY';
+
 -- #16 Pedidos da carga (D19): cliente semente cliente@aeria.com.br / aeria123 e tres pedidos por status.
 -- Itens so de acessorios (a regra de numero de serie da #34 nao trava as transicoes) com o preco atual
 -- da variante congelado (RN06). Status: 1 PENDENTE, 2 PAGO, 3 SEPARACAO, 4 ENVIADO, 5 ENTREGUE,

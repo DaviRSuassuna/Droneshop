@@ -1,15 +1,18 @@
 package br.com.droneshop.catalogo.dto;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.hibernate.validator.constraints.Length;
 
 import br.com.droneshop.util.Textos;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 
 // Linha da tabela de variantes do drone/acessorio (D13) e corpo de PUT /variantes/{id}.
 // No PUT do produto, com id altera e sem id cria. estoqueFisico so vale na criacao.
+// Kit (D7): sem estoqueFisico e com componentes; peso e dimensoes vazios sao derivados (D16).
 public record VarianteRequestDTO(
     Long id,
 
@@ -42,6 +45,11 @@ public record VarianteRequestDTO(
 
     @Min(value = 1, message = "A medida deve ser maior que zero (back).")
     Integer comprimentoEmbalagemCm,
+
+    // nulo mantem o da variante salva; na criacao, nulo e false
+    Boolean ehKit,
+
+    List<@Valid ComponenteKitRequestDTO> componentes,
 
     Boolean ativa
 ) {
