@@ -4,7 +4,12 @@
     <nav class="tb-nav">
       @for (item of itens; track item.rotulo) {
         @if (item.rota) {
-          <a [routerLink]="item.rota" routerLinkActive="on">{{ item.rotulo }}</a>
+          <a
+            [routerLink]="item.rota"
+            routerLinkActive="on"
+            [routerLinkActiveOptions]="{ exact: !!item.exata }"
+            >{{ item.rotulo }}</a
+          >
         } @else {
           <span class="tb-nav-em-breve" title="Em construção">{{ item.rotulo }}</span>
         }
