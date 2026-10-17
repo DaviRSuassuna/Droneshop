@@ -1,0 +1,67 @@
+<app-admin-nav />
+
+<div class="pagebar">
+  <div class="coupon-title">
+    <h1 class="h1">Cupons</h1>
+    @if (!carregando()) {
+      <span class="sub">{{ ativos() }} ativos · {{ agendados() }} agendado(s) · {{ usosTotais() }} usos no ano</span>
+    }
+  </div>
+  <div class="actions">
+    <button class="btn" type="button" [disabled]="cupons().length === 0" (click)="exportarUsos()">Exportar usos</button>
+    <a class="btn p" routerLink="/admin/cupons/novo">Novo cupom</a>
+  </div>
+</div>
+
+<div class="pad-t coupon-list">
+  <div class="filters">
+    <div class="f grow">
+      <input type="text" placeholder="Buscar por código" [value]="busca()" (input)="busca.set($any($event.target).value)" />
+    </div>
+    <div class="f">
+      <select [value]="tipoFiltro()" (change)="tipoFiltro.set($any($event.target).value)">
+        <option value="">Tipo de desconto</option>
+        <option value="1">Percentual</option>
+        <option value="2">Valor fixo</option>
+      </select>
+    </div>
+    <div class="f">
+      <select [value]="situacaoFiltro()" (change)="situacaoFiltro.set($any($event.target).value)">
+        <option value="">Status</option>
+        <option value="VIGENTE">Ativo</option>
+        <option value="AGENDADO">Agendado</option>
+        <option value="ESGOTADO">Esgotado</option>
+      </select>
+    </div>
+  </div>
+
+  <p class="legend" style="margin: 0">
+    Cada resgate grava um <span class="chip">UsoCupom</span> (cliente + pedido), que é o que sustenta o
+    limite por cliente e o campo de desconto do <a routerLink="/admin/pedidos" class="underlined">pedido</a>.
+  </p>
+
+  @if (carregando()) {
+    <div class="tbl"><div class="pager"><span>Carregando cupons…</span></div></div>
+  } @else if (erro()) {
+    <div class="tbl"><div class="pager"><span class="warn">{{ erro() }}</span><button class="btn sm" type="button" (click)="carregar()">Tentar novamente</button></div></div>
+  } @else {
+    <div class="tbl">
+      <div class="trow head coupon-row">
+        <span>Cupom</span><span>Valor</span><span>Vigência</span><span>Usos</span><span>Status</span><span></span>
+      </div>
+      @for (cupom of filtrados(); track cupom.id) {
+        <a class="trow coupon-row" [routerLink]="['/admin/cupons', cupom.id, 'editar']">
+          <span class="cell-name"><b>{{ cupom.codigo }}</b><span class="chip">{{ tipoNome(cupom) }}</span></span>
+          <span class="ink">{{ valor(cupom) }}</span>
+          <span class="dim">{{ vigencia(cupom) }}</span>
+          <span class="dim">{{ usos(cupom) }}</span>
+          <span class="status"><span class="dot" [style.background]="cor(cupom)"></span>{{ status(cupom) }}</span>
+          <span class="row-menu" aria-hidden="true">⋯</span>
+        </a>
+      } @empty {
+        <div class="pager"><span>Nenhum cupom encontrado.</span></div>
+      }
+      <div class="pager"><span>Exibindo {{ filtrados().length }} de {{ cupons().length }}</span><span>Página 1 de 1</span></div>
+    </div>
+  }
+</div>

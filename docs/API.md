@@ -133,6 +133,9 @@ As telas citadas são as do [protótipo](design/README.md).
 
 | Método | Rota | Uso | Issue | Situação |
 |---|---|---|---|---|
+| GET | `/tipos-desconto-cupom` (+ `/{id}`) | tipos percentual e valor fixo | #15 | pronto |
+| GET POST · GET PUT DELETE | `/cupons?situacao=&codigo=` · `/cupons/{id}` | Cadastro e consulta de cupons no admin | #15 | pronto |
+| GET | `/cupons/{id}/usos` | Usos do cupom (pedido, cliente e data) | #15 | pronto |
 | GET POST DELETE | `/conta/desejos` · `/conta/desejos/{idVariante}` | Lista de desejos | #22 | a fazer |
 | GET POST · POST · PATCH DELETE | `/carrinho` · `/carrinho/itens` · `/carrinho/itens/{id}` (header `X-Carrinho-Token`) · `/conta/carrinho` | Carrinho anônimo por token | #24 | a fazer |
 | POST | `/carrinho/reservar` | reserva ao entrar no checkout | #23 | a fazer |

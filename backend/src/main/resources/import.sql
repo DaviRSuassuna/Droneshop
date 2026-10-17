@@ -6,6 +6,9 @@
 insert into configuracao_loja (id, dados_fiscais, cep_origem_frete, remetente_padrao, prazo_arrependimento_dias, prazo_garantia_dias, prazo_analise_devolucao_dias_uteis, frete_reverso_por_conta_loja) values
     (1, 'Aeria Drones Comércio Ltda.', '77001000', 'Aeria Drones', 7, 365, 5, true);
 
+insert into cupom (codigo, tipo_desconto, valor, data_inicio, data_fim, valor_minimo, limite_total_uso, limite_por_cliente, ativo) values
+    ('AERIA10', 1, 10.00, '2026-01-01 00:00:00', '2030-12-31 23:59:59', 0.00, 500, 1, true);
+
 -- Administrador semente: login admin@aeria.com.br / aeria123
 insert into usuario (nome, email, senha_hash, email_verificado, ativo)
 values ('Administrador', 'admin@aeria.com.br',

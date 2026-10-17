@@ -65,7 +65,7 @@ Testes escritos a partir do contrato de cada issue (`docs/issues/NNN.md`), antes
 | `issue-12` | bloqueia o merge | `catalogo/MidiaProdutoResourceTest` | 14 |
 | `issue-13` | bloqueia o merge | `estoque/MovimentoEstoqueResourceTest` | 9 |
 | `issue-14` | bloqueia o merge | `catalogo/PromocaoResourceTest` | 7 |
-| `issue-15` | informativo | `compra/CupomResourceTest` | 5 |
+| `issue-15` | bloqueia o merge | `compra/CupomResourceTest` | 6 |
 | `issue-16` | bloqueia o merge | `pedido/PedidoResourceTest` | 7 |
 | `issue-17` | bloqueia o merge | `pedido/StatusPedidoResourceTest` | 5 |
 | `issue-18` | bloqueia o merge | `administracao/DashboardResourceTest` | 4 |
@@ -101,7 +101,7 @@ Testes escritos a partir do contrato de cada issue (`docs/issues/NNN.md`), antes
 | `issue-empresas` | informativo | `atendimento/LeadEmpresaResourceTest` | 2 |
 | `issue-lote-csv` | informativo | `administracao/AcoesAdminResourceTest` | 6 |
 
-Total: 392 testes. Gerado por `scripts/vincular_testes_issues.py --matriz`.
+Total: 394 testes. Gerado por `scripts/vincular_testes_issues.py --matriz`.
 
 <!-- matriz:fim -->
 

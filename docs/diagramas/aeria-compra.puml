@@ -39,8 +39,8 @@ class ItemListaDesejos {
 }
 
 enum TipoDescontoCupom {
-  PERCENTUAL
-  VALOR_FIXO
+  PERCENTUAL = 1
+  VALOR_FIXO = 2
 }
 
 class Cupom {
@@ -52,6 +52,7 @@ class Cupom {
   -valorMinimo: BigDecimal
   -limiteTotalUso: int
   -limitePorCliente: int
+  -ativo: boolean
 }
 
 class UsoCupom {
