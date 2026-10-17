@@ -8,7 +8,11 @@ export const routes: Routes = [
     path: 'admin',
     canActivateChild: [adminAuthGuard],
     children: [
-      { path: '', redirectTo: 'marcas', pathMatch: 'full' },
+      {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () => import('./admin/dashboard/dashboard').then((m) => m.Dashboard),
+      },
       {
         path: 'marcas',
         loadComponent: () =>
