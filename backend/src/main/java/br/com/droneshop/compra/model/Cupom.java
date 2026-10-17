@@ -9,7 +9,6 @@ import br.com.droneshop.catalogo.model.Categoria;
 import br.com.droneshop.catalogo.model.Marca;
 import br.com.droneshop.catalogo.model.VarianteProduto;
 import br.com.droneshop.model.DefaultEntity;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;

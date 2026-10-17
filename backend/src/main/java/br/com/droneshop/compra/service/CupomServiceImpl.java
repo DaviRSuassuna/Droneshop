@@ -6,9 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
-import br.com.droneshop.catalogo.model.Categoria;
-import br.com.droneshop.catalogo.model.Marca;
-import br.com.droneshop.catalogo.model.VarianteProduto;
 import br.com.droneshop.catalogo.repository.CategoriaRepository;
 import br.com.droneshop.catalogo.repository.MarcaRepository;
 import br.com.droneshop.catalogo.repository.VarianteProdutoRepository;
