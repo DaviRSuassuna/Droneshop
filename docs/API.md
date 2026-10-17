@@ -55,13 +55,8 @@ As telas citadas são as do [protótipo](design/README.md).
 | GET · GET PUT | `/variantes?busca=` · `/variantes/{id}` | select de variante (estoque, promoção, kit); preço e margem (D26) | #9 | pronto |
 | (corpo) | `componentes[]` na variante kit; toda variante responde `disponivel`, e o kit `pesoSobrescrito`/`dimensoesSobrescritas` | Kit ou combo (D7, D16) | #10 | pronto |
 | (corpo) | `idsCompativeis[]` no acessório; resposta com `compativeis[]` e, em todo produto, `acessoriosCompativeis[]` (lado recíproco) | Compatível com (D17) | #11 | pronto |
-<<<<<<< HEAD
-| GET POST · PATCH · DELETE | `/produtos/{id}/midias` (multipart) · `/midias/{id}` · `/produtos/{id}/midias/ordem` · `/midias/arquivos/{nome}` | imagem e manual por upload, vídeo por URL (D29) | #12 | a fazer |
-| GET POST · GET PUT DELETE | `/promocoes?situacao=` · `/promocoes/{id}` | Promoções (abas Vigentes/Agendadas/Encerradas), Criar promoção | #14 | pronto |
-=======
 | GET · GET POST · PATCH · DELETE | `/tipos-midia` · `/produtos/{id}/midias` (multipart) · `/midias/{id}` · `/produtos/{id}/midias/ordem` · `/midias/arquivos/{nome}` | imagem e manual por upload, vídeo por URL (D29) | #12 | pronto |
-| GET POST · GET PUT DELETE | `/promocoes?situacao=` · `/promocoes/{id}` | Promoções (abas Vigentes/Agendadas/Encerradas), Criar promoção | #14 | a fazer |
->>>>>>> origin/develop
+| GET POST · GET PUT DELETE | `/promocoes?situacao=` · `/promocoes/{id}` | Promoções (abas Vigentes/Agendadas/Encerradas), Criar promoção | #14 | pronto |
 | GET POST · GET PUT DELETE | `/cupons?situacao=&codigo=` · `/cupons/{id}` | Cupons, Criar cupom | #15 | a fazer |
 | GET | `/cupons/{id}/usos` | Exportar usos | #15 | a fazer |
 

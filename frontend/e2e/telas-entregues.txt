@@ -10,8 +10,5 @@ issue-4
 issue-5
 issue-13
 issue-16
-<<<<<<< HEAD
 issue-14
-=======
 issue-18
->>>>>>> origin/develop
