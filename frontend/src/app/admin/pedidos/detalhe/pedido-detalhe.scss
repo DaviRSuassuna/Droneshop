@@ -38,6 +38,14 @@
   margin: 0;
 }
 
+.tl-i .obs {
+  color: var(--dim2);
+}
+
+.erro-acao {
+  color: var(--warn);
+}
+
 // Celular (D20): item sem a coluna de preço unitário; botões da barra quebram linha
 @media (max-width: 640px) {
   .trow.item {

@@ -75,8 +75,8 @@ As telas citadas são as do [protótipo](design/README.md).
 |---|---|---|---|---|
 | GET | `/pedidos?idStatus=&dataInicio=&dataFim=&busca=` · `/pedidos/resumo-status` | Pedidos (abas com contagem por status, filtro de período) | #16 | a fazer |
 | GET | `/pedidos/{id}` | Detalhe do pedido (itens, endereço congelado D12, pagamento) | #16 | a fazer |
-| PATCH | `/pedidos/{id}/status` | Marcar como enviado, Cancelar pedido (transição inválida 409, D30) | #17 | a fazer |
-| GET | `/pedidos/{id}/historico` | linha do tempo do pedido | #17 | a fazer |
+| PATCH | `/pedidos/{id}/status` | Marcar como enviado, Cancelar pedido (transição inválida 409, D30) | #17 | pronto |
+| GET | `/pedidos/{id}/historico` | linha do tempo do pedido | #17 | pronto |
 | GET POST · PUT | `/pedidos/{id}/rastreio` · `/pedidos/{id}/entrega/codigo-rastreio` | Rastreio (eventos) | #31 | a fazer |
 | GET | `/pedidos/{id}/pagamentos` | pagamentos do pedido | #27 | a fazer |
 | GET POST | `/pedidos/{id}/nota-fiscal` | NF-e simulada (venda e devolução) | #35 | a fazer |

@@ -109,6 +109,15 @@ npm run e2e                     # telas x protótipo (Playwright); npm run e2e:r
 
 A API libera CORS para `http://localhost:4200`.
 
+### Usuários de teste
+
+Criados pela carga de dados (`import.sql`) a cada subida em modo dev. Só para desenvolvimento e testes.
+
+| Perfil | E-mail | Senha | Onde entra |
+|---|---|---|---|
+| Administrador (papel `ADMIN`) | `admin@aeria.com.br` | `aeria123` | `http://localhost:4200/admin` |
+| Cliente | `cliente@aeria.com.br` | `aeria123` | loja (`/entrar`), dono dos 24 pedidos da carga |
+
 ## Documentação
 
 | Documento | Conteúdo |

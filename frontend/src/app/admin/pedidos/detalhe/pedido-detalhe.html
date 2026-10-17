@@ -48,7 +48,36 @@
 
       <section class="card p">
         <div class="card-h"><span class="card-t">Rastreio</span></div>
-        <p class="sub vazio">O rastreio aparece aqui depois que o pedido for enviado.</p>
+        @if (erroHistorico()) {
+          <p class="sub vazio">Não foi possível carregar o histórico do pedido.</p>
+        } @else if (historico().length === 0) {
+          <p class="sub vazio">Nenhuma mudança de status registrada.</p>
+        } @else {
+          <div class="tl">
+            @for (h of historico(); track $index; let ultimo = $last) {
+              <div class="tl-i">
+                <span class="dot" [style.background]="ultimo ? 'var(--pure)' : 'var(--ok)'"></span>
+                <div>
+                  <b [style.color]="ultimo ? 'var(--ink)' : 'var(--ink2)'">{{ tituloEvento(h) }}</b>
+                  <small
+                    >{{ h.dataCadastro | date: 'dd/MM/yyyy · HH:mm' }} · {{ responsavel(h) }}</small
+                  >
+                  @if (h.observacao) {
+                    <small class="obs">{{ h.observacao }}</small>
+                  }
+                </div>
+              </div>
+            }
+            @for (s of proximasEtapas(); track s) {
+              <div class="tl-i">
+                <span class="dot" style="background: var(--b3)"></span>
+                <div>
+                  <b style="color: var(--mute2)">{{ rotuloStatus(s) }}</b>
+                </div>
+              </div>
+            }
+          </div>
+        }
       </section>
     </div>
 
@@ -93,11 +122,29 @@
   </div>
 
   <div class="actionbar">
-    <span class="sub">Alterações de status notificam o cliente por e-mail</span>
+    @if (erroAcao(); as msg) {
+      <span class="sub erro-acao" role="alert">{{ msg }}</span>
+    } @else {
+      <span class="sub">Alterações de status notificam o cliente por e-mail</span>
+    }
     <div class="actions">
-      <button class="btn d" type="button" disabled title="Em construção">Cancelar pedido</button>
+      <button
+        class="btn d"
+        type="button"
+        [disabled]="!podeCancelar()"
+        [title]="podeCancelar() ? '' : 'O pedido não pode ser cancelado neste status'"
+        (click)="cancelar()"
+      >
+        Cancelar pedido
+      </button>
       <button class="btn" type="button" disabled title="Em construção">Imprimir etiqueta</button>
-      <button class="btn p" type="button" disabled title="Em construção">
+      <button
+        class="btn p"
+        type="button"
+        [disabled]="!podeEnviar()"
+        [title]="podeEnviar() ? '' : 'Só pedidos em separação podem ser marcados como enviados'"
+        (click)="marcarComoEnviado()"
+      >
         Marcar como enviado
       </button>
     </div>

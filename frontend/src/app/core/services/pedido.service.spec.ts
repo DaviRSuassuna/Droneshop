@@ -67,4 +67,49 @@ describe('PedidoService', () => {
     expect(req.request.method).toBe('GET');
     req.flush({ id: 7, numero: 'AER-000007' });
   });
+
+  it('altera o status com PATCH e observação sem espaços', () => {
+    let concluiu = false;
+    service.alterarStatus(7, 4, '  Postado nos Correios ').subscribe(() => (concluiu = true));
+    const req = http.expectOne(`${url}/7/status`);
+    expect(req.request.method).toBe('PATCH');
+    expect(req.request.body).toEqual({ idStatus: 4, observacao: 'Postado nos Correios' });
+    req.flush(null, { status: 204, statusText: 'No Content' });
+    expect(concluiu).toBe(true);
+  });
+
+  it('manda observação nula quando vazia', () => {
+    service.alterarStatus(7, 8, '   ').subscribe();
+    const req = http.expectOne(`${url}/7/status`);
+    expect(req.request.body).toEqual({ idStatus: 8, observacao: null });
+    req.flush(null, { status: 204, statusText: 'No Content' });
+  });
+
+  it('repassa o 409 da transição não permitida', () => {
+    let status = 0;
+    service.alterarStatus(7, 2).subscribe({ error: (e) => (status = e.status) });
+    http
+      .expectOne(`${url}/7/status`)
+      .flush(
+        { type: '/errors/conflict', detail: 'O pedido não pode passar de ENTREGUE para PAGO.' },
+        { status: 409, statusText: 'Conflict' },
+      );
+    expect(status).toBe(409);
+  });
+
+  it('busca o histórico do pedido', () => {
+    service.historico(7).subscribe((h) => expect(h[0].statusNovo.nome).toBe('PENDENTE'));
+    const req = http.expectOne(`${url}/7/historico`);
+    expect(req.request.method).toBe('GET');
+    req.flush([
+      {
+        statusAnterior: null,
+        statusNovo: { id: 1, nome: 'PENDENTE' },
+        origem: { id: 2, nome: 'SISTEMA' },
+        autor: null,
+        observacao: null,
+        dataCadastro: '2026-10-01T10:00:00',
+      },
+    ]);
+  });
 });

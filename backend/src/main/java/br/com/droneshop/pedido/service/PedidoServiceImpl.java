@@ -8,15 +8,22 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import br.com.droneshop.exception.ConflitoException;
 import br.com.droneshop.exception.ResourceNotFoundException;
 import br.com.droneshop.exception.ValidationException;
 import br.com.droneshop.pedido.dto.PedidoFiltro;
+import br.com.droneshop.identidade.model.Usuario;
+import br.com.droneshop.identidade.repository.UsuarioRepository;
+import br.com.droneshop.model.OrigemRegistro;
 import br.com.droneshop.pedido.dto.ResumoStatusPedidoResponseDTO;
+import br.com.droneshop.pedido.dto.StatusPedidoRequestDTO;
+import br.com.droneshop.pedido.model.HistoricoStatusPedido;
 import br.com.droneshop.pedido.model.Pedido;
 import br.com.droneshop.pedido.model.StatusPedido;
 import br.com.droneshop.pedido.repository.PedidoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class PedidoServiceImpl implements PedidoService {
@@ -26,6 +33,9 @@ public class PedidoServiceImpl implements PedidoService {
 
     @Inject
     PedidoRepository pedidoRepository;
+
+    @Inject
+    UsuarioRepository usuarioRepository;
 
     @Override
     public PedidoFiltro filtro(String idStatus, String dataInicio, String dataFim, String busca) {
@@ -84,6 +94,40 @@ public class PedidoServiceImpl implements PedidoService {
         if (pedido == null)
             throw new ResourceNotFoundException("Pedido não encontrado.");
         return pedido;
+    }
+
+    @Override
+    @Transactional
+    public void alterarStatus(long id, StatusPedidoRequestDTO dto, long idAutor) {
+        Pedido pedido = findById(id);
+        StatusPedido novo = dto == null ? null : StatusPedido.valueOf(dto.idStatus());
+        if (novo == null)
+            throw ValidationException.of("idStatus", "Status de pedido inexistente.");
+
+        StatusPedido atual = pedido.getStatus();
+        if (!atual.podeIrPara(novo))
+            throw new ConflitoException(
+                    "O pedido não pode passar de " + atual.getNome() + " para " + novo.getNome() + ".");
+
+        Usuario autor = usuarioRepository.findById(idAutor);
+        if (autor == null)
+            throw new ResourceNotFoundException("Usuário não encontrado.");
+
+        HistoricoStatusPedido historico = new HistoricoStatusPedido();
+        historico.setPedido(pedido);
+        historico.setStatusAnterior(atual);
+        historico.setStatusNovo(novo);
+        historico.setOrigem(OrigemRegistro.MANUAL);
+        historico.setAutor(autor);
+        historico.setObservacao(dto.observacao());
+
+        pedido.setStatus(novo);
+        pedido.getHistorico().add(historico);
+    }
+
+    @Override
+    public List<HistoricoStatusPedido> historico(long id) {
+        return findById(id).getHistorico();
     }
 
     private static boolean temTexto(String s) {
