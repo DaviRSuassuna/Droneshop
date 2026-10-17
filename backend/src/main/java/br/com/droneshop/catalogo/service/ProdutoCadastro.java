@@ -1,7 +1,9 @@
 package br.com.droneshop.catalogo.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,8 +13,10 @@ import java.util.stream.Collectors;
 
 import br.com.droneshop.administracao.model.ConfiguracaoLoja;
 import br.com.droneshop.administracao.repository.ConfiguracaoLojaRepository;
+import br.com.droneshop.catalogo.dto.ComponenteKitRequestDTO;
 import br.com.droneshop.catalogo.dto.ProdutoRequestDTO;
 import br.com.droneshop.catalogo.dto.VarianteRequestDTO;
+import br.com.droneshop.catalogo.model.ComponenteKit;
 import br.com.droneshop.catalogo.model.Fornecedor;
 import br.com.droneshop.catalogo.model.Marca;
 import br.com.droneshop.catalogo.model.Produto;
@@ -20,11 +24,13 @@ import br.com.droneshop.catalogo.model.StatusProduto;
 import br.com.droneshop.catalogo.model.Subcategoria;
 import br.com.droneshop.catalogo.model.TipoProduto;
 import br.com.droneshop.catalogo.model.VarianteProduto;
+import br.com.droneshop.catalogo.repository.ComponenteKitRepository;
 import br.com.droneshop.catalogo.repository.FornecedorRepository;
 import br.com.droneshop.catalogo.repository.MarcaRepository;
 import br.com.droneshop.catalogo.repository.ProdutoRepository;
 import br.com.droneshop.catalogo.repository.SubcategoriaRepository;
 import br.com.droneshop.catalogo.repository.VarianteProdutoRepository;
+import br.com.droneshop.exception.ConflitoException;
 import br.com.droneshop.exception.Problem;
 import br.com.droneshop.exception.ResourceNotFoundException;
 import br.com.droneshop.exception.ValidationException;
@@ -58,6 +64,9 @@ public class ProdutoCadastro {
     VarianteProdutoRepository varianteRepository;
 
     @Inject
+    ComponenteKitRepository componenteKitRepository;
+
+    @Inject
     ConfiguracaoLojaRepository configuracaoLojaRepository;
 
     @Inject
@@ -78,14 +87,18 @@ public class ProdutoCadastro {
         return tipo.cast(produto);
     }
 
-    // Rascunho so exige o status (D28). Fora dele, junta os obrigatorios comuns com os
+    // Rascunho so exige o status e um kit bem formado (D28). Fora dele, junta os obrigatorios comuns com os
     // do tipo (errosDoTipo) e responde tudo num 400 so.
     public void validarObrigatorios(ProdutoRequestDTO dto, StatusProduto status, List<Problem.FieldError> errosDoTipo) {
         validarFormatoDasVariantes(dto.variantes());
-        if (status == StatusProduto.RASCUNHO)
+        List<Problem.FieldError> errosKit = errosDosKits(dto.variantes());
+        if (status == StatusProduto.RASCUNHO) {
+            if (!errosKit.isEmpty())
+                throw new ValidationException("Revise a composição do kit.", errosKit);
             return;
+        }
 
-        List<Problem.FieldError> erros = new ArrayList<>();
+        List<Problem.FieldError> erros = new ArrayList<>(errosKit);
         if (dto.nome() == null)
             erros.add(new Problem.FieldError("nome", OBRIGATORIO));
         if (dto.modelo() == null)
@@ -133,9 +146,10 @@ public class ProdutoCadastro {
     }
 
     // Fora do rascunho (D28): variante precisa de nome, SKU e preco; a ativa precisa
-    // tambem de peso e dimensoes da embalagem, senao nao cota frete (RN18).
+    // tambem de peso e dimensoes da embalagem, senao nao cota frete (RN18). No kit, o
+    // que nao for informado vem dos componentes (D16), e ele precisa de ao menos um.
     // prefixo e "variantes[i]." no corpo do produto e "" no PUT /variantes/{id}.
-    public List<Problem.FieldError> obrigatoriosDaVariante(VarianteRequestDTO dto, String prefixo) {
+    public List<Problem.FieldError> obrigatoriosDaVariante(VarianteRequestDTO dto, String prefixo, boolean kit) {
         List<Problem.FieldError> erros = new ArrayList<>();
         if (dto.nome() == null)
             erros.add(new Problem.FieldError(prefixo + "nome", OBRIGATORIO));
@@ -143,23 +157,114 @@ public class ProdutoCadastro {
             erros.add(new Problem.FieldError(prefixo + "sku", OBRIGATORIO));
         if (dto.preco() == null)
             erros.add(new Problem.FieldError(prefixo + "preco", "Informe o preço da variante (back)."));
+        if (kit && (dto.componentes() == null || dto.componentes().isEmpty()))
+            erros.add(new Problem.FieldError(prefixo + "componentes",
+                    "Escolha ao menos uma variante componente para publicar o kit (back)."));
         if (!Boolean.FALSE.equals(dto.ativa())) {
-            String embalagem = "Informe o peso e as dimensões da embalagem para publicar a variante (back).";
-            if (dto.pesoEmbalagemKg() == null)
+            List<KitCalculo.Parte> partes = kit ? partesDoKit(dto) : List.of();
+            String embalagem = kit
+                    ? "Informe a medida do kit ou complete a dos componentes para publicar (back)."
+                    : "Informe o peso e as dimensões da embalagem para publicar a variante (back).";
+            if (dto.pesoEmbalagemKg() == null && KitCalculo.pesoDerivado(partes) == null)
                 erros.add(new Problem.FieldError(prefixo + "pesoEmbalagemKg", embalagem));
-            if (dto.alturaEmbalagemCm() == null)
+            if (dto.alturaEmbalagemCm() == null && KitCalculo.alturaDerivada(partes) == null)
                 erros.add(new Problem.FieldError(prefixo + "alturaEmbalagemCm", embalagem));
-            if (dto.larguraEmbalagemCm() == null)
+            if (dto.larguraEmbalagemCm() == null && KitCalculo.larguraDerivada(partes) == null)
                 erros.add(new Problem.FieldError(prefixo + "larguraEmbalagemCm", embalagem));
-            if (dto.comprimentoEmbalagemCm() == null)
+            if (dto.comprimentoEmbalagemCm() == null && KitCalculo.comprimentoDerivado(partes) == null)
                 erros.add(new Problem.FieldError(prefixo + "comprimentoEmbalagemCm", embalagem));
         }
         return erros;
     }
 
+    // ehKit nulo no corpo mantem o da variante salva; na criacao, nulo e false
+    public boolean ehKit(VarianteRequestDTO dto, VarianteProduto atual) {
+        if (dto.ehKit() != null)
+            return dto.ehKit();
+        if (atual != null)
+            return atual.isEhKit();
+        if (dto.id() != null) {
+            VarianteProduto salva = varianteRepository.findById(dto.id());
+            return salva != null && salva.isEhKit();
+        }
+        return false;
+    }
+
+    // Regras do kit (D7) que valem ate no rascunho. atual e a variante salva (nula na
+    // criacao); removidas sao as variantes que saem do produto neste mesmo PUT.
+    public List<Problem.FieldError> errosDoKit(VarianteRequestDTO dto, String prefixo, VarianteProduto atual,
+            Set<Long> removidas) {
+        List<Problem.FieldError> erros = new ArrayList<>();
+        boolean kit = ehKit(dto, atual);
+        if (atual != null && kit != atual.isEhKit())
+            erros.add(new Problem.FieldError(prefixo + "ehKit", atual.isEhKit()
+                    ? "Este kit já foi criado e não vira variante comum; crie outra variante (back)."
+                    : "Esta variante já tem estoque próprio e não vira kit; crie outra variante para o kit (back)."));
+
+        List<ComponenteKitRequestDTO> componentes = (dto.componentes() == null) ? List.of() : dto.componentes();
+        String campo = prefixo + "componentes";
+        if (!kit) {
+            if (!componentes.isEmpty())
+                erros.add(new Problem.FieldError(campo, "Só a variante marcada como kit tem componentes (back)."));
+            return erros;
+        }
+        if (dto.estoqueFisico() != null)
+            erros.add(new Problem.FieldError(prefixo + "estoqueFisico",
+                    "O kit não tem estoque próprio: a disponibilidade vem dos componentes (back)."));
+
+        Set<Long> vistos = new HashSet<>();
+        for (ComponenteKitRequestDTO c : componentes) {
+            if (c == null) {
+                erros.add(new Problem.FieldError(campo, "Componente inválido (back)."));
+                continue;
+            }
+            Long id = c.idVariante();
+            if (id == null)
+                continue; // a Bean Validation ja apontou
+            if (!vistos.add(id)) {
+                erros.add(new Problem.FieldError(campo, "A mesma variante aparece duas vezes no kit; some as quantidades (back)."));
+                continue;
+            }
+            if (atual != null && id.equals(atual.getId())) {
+                erros.add(new Problem.FieldError(campo, "O kit não pode conter a si mesmo (back)."));
+                continue;
+            }
+            VarianteProduto componente = varianteRepository.findById(id);
+            if (removidas.contains(id))
+                erros.add(new Problem.FieldError(campo, "Esta variante está saindo do produto; tire-a do kit também (back)."));
+            else if (componente == null)
+                erros.add(new Problem.FieldError(campo, "Variante componente não encontrada (back)."));
+            else if (componente.isEhKit())
+                erros.add(new Problem.FieldError(campo, "Um kit não pode conter outro kit (back)."));
+        }
+        return erros;
+    }
+
+    // 409 se alguma das variantes e componente de kit de outro produto (D24)
+    public void conferirUsoEmKits(Collection<Long> idsVariantes, Long idProduto) {
+        ComponenteKit uso = componenteKitRepository.findUsoForaDoProduto(idsVariantes, idProduto);
+        if (uso == null)
+            return;
+        VarianteProduto kit = uso.getKit();
+        String produto = kit.getProduto().getNome() == null ? "produto sem nome" : kit.getProduto().getNome();
+        throw new ConflitoException("A variante " + rotulo(uso.getComponente()) + " faz parte do kit "
+                + rotulo(kit) + " (" + produto + "). Tire-a do kit antes de excluir, ou inative-a.");
+    }
+
+    // Antes de excluir o produto: solta os componentes dos kits dele, senao a chave
+    // estrangeira barra a exclusao da variante que e componente de um kit do mesmo produto
+    public void prepararExclusao(Produto produto) {
+        conferirUsoEmKits(produto.getVariantes().stream().map(VarianteProduto::getId).toList(), produto.getId());
+        produto.getVariantes().forEach(v -> v.getComponentes().clear());
+        produtoRepository.flush();
+    }
+
     // Campos que o PUT /variantes/{id} tambem altera. estoqueFisico fica de fora: depois
     // da criacao ele so muda por movimento de estoque (#13).
     public void aplicarVariante(VarianteProduto destino, VarianteRequestDTO dto) {
+        boolean kit = ehKit(dto, destino);
+        destino.setEhKit(kit);
+        sincronizarComponentes(destino, kit ? dto.componentes() : null);
         destino.setNome(dto.nome() == null ? null : dto.nome().trim());
         destino.setSku(normalizarSku(dto.sku()));
         destino.setPreco(dto.preco());
@@ -199,9 +304,64 @@ public class ProdutoCadastro {
             return List.of(new Problem.FieldError("variantes",
                     "Cadastre ao menos uma variante para publicar o produto (back)."));
         List<Problem.FieldError> erros = new ArrayList<>();
-        for (int i = 0; i < variantes.size(); i++)
-            erros.addAll(obrigatoriosDaVariante(variantes.get(i), "variantes[" + i + "]."));
+        for (int i = 0; i < variantes.size(); i++) {
+            VarianteRequestDTO v = variantes.get(i);
+            erros.addAll(obrigatoriosDaVariante(v, "variantes[" + i + "].", ehKit(v, null)));
+        }
         return erros;
+    }
+
+    // aplicarVariantes confere de novo, ja sabendo quais variantes saem do produto
+    private List<Problem.FieldError> errosDosKits(List<VarianteRequestDTO> variantes) {
+        List<Problem.FieldError> erros = new ArrayList<>();
+        if (variantes == null)
+            return erros;
+        for (int i = 0; i < variantes.size(); i++) {
+            VarianteRequestDTO v = variantes.get(i);
+            VarianteProduto atual = (v.id() == null) ? null : varianteRepository.findById(v.id());
+            erros.addAll(errosDoKit(v, "variantes[" + i + "].", atual, Set.of()));
+        }
+        return erros;
+    }
+
+    // Componentes validos do corpo, para derivar peso e dimensoes antes de salvar
+    private List<KitCalculo.Parte> partesDoKit(VarianteRequestDTO dto) {
+        List<KitCalculo.Parte> partes = new ArrayList<>();
+        if (dto.componentes() == null)
+            return partes;
+        for (ComponenteKitRequestDTO c : dto.componentes()) {
+            if (c == null || c.idVariante() == null || c.quantidade() == null || c.quantidade() < 1)
+                continue;
+            VarianteProduto componente = varianteRepository.findById(c.idVariante());
+            if (componente != null && !componente.isEhKit())
+                partes.add(new KitCalculo.Parte(componente, c.quantidade()));
+        }
+        return partes;
+    }
+
+    // Atualiza no lugar em vez de apagar e recriar: o Hibernate insere antes de apagar,
+    // e a mesma variante bateria na chave unica (kit, componente)
+    private void sincronizarComponentes(VarianteProduto kit, List<ComponenteKitRequestDTO> dtos) {
+        Map<Long, Integer> pedidas = new LinkedHashMap<>();
+        if (dtos != null)
+            for (ComponenteKitRequestDTO c : dtos)
+                pedidas.put(c.idVariante(), c.quantidade());
+        kit.getComponentes().removeIf(c -> !pedidas.containsKey(c.getComponente().getId()));
+        for (ComponenteKit c : kit.getComponentes())
+            c.setQuantidade(pedidas.remove(c.getComponente().getId()));
+        pedidas.forEach((idVariante, quantidade) -> {
+            ComponenteKit c = new ComponenteKit();
+            c.setKit(kit);
+            c.setComponente(varianteRepository.findById(idVariante));
+            c.setQuantidade(quantidade);
+            kit.getComponentes().add(c);
+        });
+    }
+
+    private static String rotulo(VarianteProduto v) {
+        if (v.getSku() != null)
+            return v.getSku();
+        return (v.getNome() != null) ? v.getNome() : "#" + v.getId();
     }
 
     // Variante com id altera, sem id cria e a que sumiu da lista e excluida.
@@ -227,18 +387,37 @@ public class ProdutoCadastro {
                 throw ValidationException.of("variantes[" + i + "].id", "Variante não encontrada neste produto.");
             mantidas.add(id);
         }
+        Set<Long> removidas = new HashSet<>(atuais.keySet());
+        removidas.removeAll(mantidas);
 
-        // apaga antes de inserir: um SKU removido pode voltar numa variante nova no mesmo PUT
-        if (produto.getVariantes().removeIf(v -> !mantidas.contains(v.getId())))
+        List<Problem.FieldError> errosKit = new ArrayList<>();
+        for (int i = 0; i < lista.size(); i++) {
+            VarianteRequestDTO dto = lista.get(i);
+            errosKit.addAll(errosDoKit(dto, "variantes[" + i + "].", atuais.get(dto.id()), removidas));
+        }
+        if (!errosKit.isEmpty())
+            throw new ValidationException("Revise a composição do kit.", errosKit);
+
+        // apaga antes de inserir: um SKU removido pode voltar numa variante nova no mesmo PUT.
+        // Antes, solta dos kits as ligacoes com o que sai, senao a chave estrangeira barra.
+        if (!removidas.isEmpty()) {
+            conferirUsoEmKits(removidas, produto.getId());
+            for (VarianteProduto v : produto.getVariantes())
+                v.getComponentes().removeIf(c -> removidas.contains(v.getId())
+                        || removidas.contains(c.getComponente().getId()));
             produtoRepository.flush();
+            produto.getVariantes().removeIf(v -> removidas.contains(v.getId()));
+            produtoRepository.flush();
+        }
 
         for (VarianteRequestDTO dto : lista) {
             VarianteProduto variante = (dto.id() == null) ? null : atuais.get(dto.id());
             if (variante == null) {
                 variante = new VarianteProduto();
                 variante.setProduto(produto);
-                // saldo inicial; o movimento ENTRADA correspondente chega com a #13
-                variante.setEstoqueFisico(dto.estoqueFisico() == null ? 0 : dto.estoqueFisico());
+                // saldo inicial; o movimento ENTRADA correspondente chega com a #13. Kit nao tem (D7)
+                if (!ehKit(dto, null))
+                    variante.setEstoqueFisico(dto.estoqueFisico() == null ? 0 : dto.estoqueFisico());
                 produto.getVariantes().add(variante);
             }
             aplicarVariante(variante, dto);
