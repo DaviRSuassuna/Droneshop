@@ -1,171 +1,130 @@
-<section class="card p">
-  <div class="card-h">
-    <span class="card-t">Mídias do produto</span>
-    <span class="card-n">Imagens, vídeo e manual PDF</span>
-  </div>
+<section class="card p2">
+  <div class="eyebrow">Mídia</div>
 
-  @if (erro()) {
-    <p class="warn" role="alert">{{ erro() }}</p>
+  @if (estado.erro() || erroArquivo(); as erro) {
+    <p class="warn" role="alert">{{ erro }}</p>
   }
 
-  @if (produtoId === null) {
-    <p class="dim">Salve o produto para adicionar imagens, vídeos e manuais.</p>
-  } @else {
-    <div class="midia-form">
+  @if (escolha(); as e) {
+    <div class="escolha">
+      <img [src]="e.previa" alt="" />
       <div class="f">
-        <label for="tipoMidia">Tipo de mídia</label>
-        <select id="tipoMidia" [ngModel]="tipoSelecionado()" (ngModelChange)="aoMudarTipo($event)">
-          @for (tipo of tipos(); track tipo.id) {
-            <option [value]="tipo.nome">
-              {{ tipo.nome === 'MANUAL_PDF' ? 'Manual PDF' : tipo.nome }}
-            </option>
-          }
-        </select>
+        <label for="altTextMidia">Texto alternativo <span class="req">*</span></label>
+        <input
+          id="altTextMidia"
+          type="text"
+          maxlength="160"
+          placeholder="Descreva a imagem"
+          [ngModel]="altText()"
+          (ngModelChange)="altText.set($event)"
+          (keydown.enter)="$event.preventDefault(); confirmar()"
+        />
       </div>
+      <div class="escolha-acoes">
+        <button class="sbtn sm" type="button" (click)="cancelar()">Cancelar</button>
+        <button
+          class="sbtn sm p"
+          type="button"
+          (click)="confirmar()"
+          [disabled]="!altText().trim() || estado.ocupado()"
+        >
+          {{ e.principal ? 'Usar como principal' : 'Adicionar à galeria' }}
+        </button>
+      </div>
+    </div>
+  }
 
-      @if (tipoSelecionado() === 'VIDEO') {
-        <div class="f midia-url">
-          <label for="urlVideo">URL do vídeo</label>
-          <input
-            id="urlVideo"
-            type="url"
-            placeholder="https://www.youtube.com/watch?v=..."
-            [ngModel]="url()"
-            (ngModelChange)="url.set($event)"
-          />
+  <div class="stack">
+    <div class="f">
+      <label>Imagem principal <span class="req">*</span></label>
+      @if (estado.principal(); as p) {
+        <div class="principal">
+          <img [src]="p.src" [alt]="p.altText ?? ''" />
+          <span class="dim sm">{{ p.altText }}</span>
+          <div class="principal-acoes">
+            <label class="sbtn sm">
+              Trocar
+              <input
+                type="file"
+                hidden
+                accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+                (change)="aoEscolher($event, true)"
+              />
+            </label>
+            <button class="sbtn sm" type="button" (click)="excluir(p)">Excluir</button>
+          </div>
         </div>
       } @else {
-        <div class="f midia-file">
-          <label for="arquivoMidia">
-            {{ tipoSelecionado() === 'IMAGEM' ? 'Imagem (PNG ou JPG)' : 'Manual (PDF)' }}
-          </label>
+        <label class="up" (dragover)="permitirSoltar($event)" (drop)="aoSoltar($event, true)">
+          Arraste um arquivo ou clique<small>JPG ou PNG · mín. 1200×1200 px</small>
           <input
-            id="arquivoMidia"
             type="file"
-            [accept]="aceitaArquivo"
-            (change)="aoEscolherArquivo($event)"
+            hidden
+            accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+            (change)="aoEscolher($event, true)"
           />
-        </div>
+        </label>
+        @if (publicado()) {
+          <span class="warn">Produto publicado precisa de imagem principal</span>
+        }
       }
-
-      @if (tipoSelecionado() === 'IMAGEM') {
-        <div class="f midia-alt">
-          <label for="altTextMidia">Texto alternativo <span class="req">*</span></label>
-          <input
-            id="altTextMidia"
-            type="text"
-            maxlength="160"
-            placeholder="Descreva a imagem"
-            [ngModel]="altText()"
-            (ngModelChange)="altText.set($event)"
-          />
-        </div>
-      }
-
-      <label class="ck midia-principal">
-        <input type="checkbox" [ngModel]="principal()" (ngModelChange)="principal.set($event)" />
-        Principal
-      </label>
-      <button class="btn p" type="button" (click)="enviar()" [disabled]="!podeEnviar">
-        {{ enviando() ? 'Enviando…' : 'Adicionar mídia' }}
-      </button>
     </div>
 
-    @if (carregando()) {
-      <p class="dim">Carregando mídias…</p>
-    } @else if (midias().length === 0) {
-      <p class="dim">Este produto ainda não tem mídias.</p>
-    } @else {
-      <div class="midia-lista" aria-label="Mídias do produto">
-        @for (midia of midias(); track midia.id; let i = $index) {
-          <article class="midia-item">
-            @if (midia.tipo.nome === 'IMAGEM') {
-              <img class="midia-preview" [src]="arquivoUrl(midia)" [alt]="midia.altText ?? ''" />
-            } @else if (midia.tipo.nome === 'MANUAL_PDF') {
-              <a
-                class="midia-preview midia-documento"
-                [href]="arquivoUrl(midia)"
-                target="_blank"
-                rel="noopener"
-              >
-                PDF
-              </a>
-            } @else {
-              <a
-                class="midia-preview midia-documento"
-                [href]="midia.url"
-                target="_blank"
-                rel="noopener"
-              >
-                Vídeo
-              </a>
-            }
-
-            <div class="midia-info">
-              <strong>{{
-                midia.tipo.nome === 'MANUAL_PDF' ? 'Manual PDF' : midia.tipo.nome
-              }}</strong>
-              @if (midia.tipo.nome === 'IMAGEM') {
-                <span class="dim">{{ midia.altText }}</span>
-              } @else {
-                <a class="midia-link" [href]="midia.url" target="_blank" rel="noopener">{{
-                  midia.url
-                }}</a>
-              }
-              @if (midia.principal) {
-                <span class="chip">Principal</span>
-              }
-            </div>
-
-            <div class="midia-acoes">
-              <span class="dim" [attr.aria-label]="'Ordem ' + midia.ordem">{{ midia.ordem }}</span>
-              <button
-                class="sbtn sm"
-                type="button"
-                (click)="mover(i, -1)"
-                [disabled]="i === 0"
-                [attr.aria-label]="'Mover ' + midia.tipo.nome + ' para cima'"
-              >
-                ↑
-              </button>
-              <button
-                class="sbtn sm"
-                type="button"
-                (click)="mover(i, 1)"
-                [disabled]="i === midias().length - 1"
-                [attr.aria-label]="'Mover ' + midia.tipo.nome + ' para baixo'"
-              >
-                ↓
-              </button>
-              @if (!midia.principal) {
-                <button class="sbtn sm" type="button" (click)="definirPrincipal(midia)">
-                  Definir principal
+    <div class="f">
+      <label>Galeria de imagens adicionais</label>
+      @if (estado.galeria().length > 0) {
+        <div class="galeria">
+          @for (item of estado.galeria(); track item.chave; let i = $index; let ultimo = $last) {
+            <figure class="miniatura">
+              <img [src]="item.src" [alt]="item.altText ?? ''" [title]="item.altText ?? ''" />
+              <figcaption>
+                <button
+                  type="button"
+                  [disabled]="i === 0"
+                  (click)="estado.mover(item, -1)"
+                  aria-label="Mover para a esquerda"
+                >
+                  ←
                 </button>
-              }
-              <button
-                class="btn sm d ghost"
-                type="button"
-                (click)="excluir(midia)"
-                [attr.aria-label]="'Excluir mídia ' + (i + 1)"
-              >
-                Excluir
-              </button>
-            </div>
-          </article>
-        }
-      </div>
-
-      @if (ordemAlterada()) {
-        <button
-          class="btn"
-          type="button"
-          style="margin-top: 14px"
-          (click)="salvarOrdem()"
-          [disabled]="salvandoOrdem()"
-        >
-          {{ salvandoOrdem() ? 'Salvando ordem…' : 'Salvar ordem' }}
-        </button>
+                <button
+                  type="button"
+                  [disabled]="ultimo"
+                  (click)="estado.mover(item, 1)"
+                  aria-label="Mover para a direita"
+                >
+                  →
+                </button>
+                <button
+                  type="button"
+                  (click)="estado.definirPrincipal(item)"
+                  aria-label="Usar como imagem principal"
+                  title="Usar como principal"
+                >
+                  ★
+                </button>
+                <button type="button" (click)="excluir(item)" aria-label="Excluir imagem">✕</button>
+              </figcaption>
+            </figure>
+          }
+        </div>
       }
+      @if (estado.galeria().length < LIMITE_GALERIA) {
+        <label class="up" (dragover)="permitirSoltar($event)" (drop)="aoSoltar($event, false)">
+          Arraste um arquivo ou clique<small
+            >Até {{ LIMITE_GALERIA }} imagens · use ← → para ordenar</small
+          >
+          <input
+            type="file"
+            hidden
+            accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+            (change)="aoEscolher($event, false)"
+          />
+        </label>
+      }
+    </div>
+
+    @if (estado.temFila()) {
+      <span class="dim sm">As mídias sobem quando o produto for salvo.</span>
     }
-  }
+  </div>
 </section>
