@@ -125,6 +125,16 @@ export const routes: Routes = [
           import('./admin/configuracao/configuracao-loja').then((m) => m.ConfiguracaoLojaPage),
       },
       {
+        path: 'pedidos',
+        loadComponent: () =>
+          import('./admin/pedidos/listagem/pedidos-listagem').then((m) => m.PedidosListagem),
+      },
+      {
+        path: 'pedidos/:id',
+        loadComponent: () =>
+          import('./admin/pedidos/detalhe/pedido-detalhe').then((m) => m.PedidoDetalhe),
+      },
+      {
         path: 'usuarios',
         loadComponent: () =>
           import('./admin/usuarios/listagem/usuarios-listagem').then((m) => m.UsuariosListagem),

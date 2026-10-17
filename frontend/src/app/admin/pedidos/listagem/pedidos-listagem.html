@@ -1,0 +1,125 @@
+<app-admin-nav />
+
+<div class="pagebar">
+  <div style="display: flex; align-items: baseline; gap: 12px">
+    <h1 class="h1">Pedidos</h1>
+    <span class="sub">{{ totalItens() }} no período · {{ aguardandoAcao() }} aguardando ação</span>
+  </div>
+  <div class="actions">
+    <button class="btn" type="button" disabled title="Em construção">Exportar</button>
+    <button class="btn p" type="button" disabled title="Em construção">Imprimir etiquetas</button>
+  </div>
+</div>
+
+<div class="pad-t" style="display: flex; flex-direction: column; gap: 16px">
+  <nav class="tabs" aria-label="Status do pedido">
+    @for (a of abas; track a.rotulo) {
+      <a
+        href="#"
+        [class.on]="aba() === a.idStatus"
+        [attr.aria-current]="aba() === a.idStatus ? 'true' : null"
+        (click)="selecionarAba($event, a.idStatus)"
+        >{{ a.rotulo }} <em>{{ contagemDaAba(a.idStatus) }}</em></a
+      >
+    }
+  </nav>
+
+  <div class="filters">
+    <div class="f grow">
+      <input
+        type="text"
+        placeholder="Buscar por nº do pedido, cliente ou código de rastreio"
+        [value]="termoBusca()"
+        (input)="aoDigitarBusca($any($event.target).value)"
+      />
+    </div>
+    <div class="f" style="width: 180px">
+      <select [value]="periodoDias()" (change)="aoMudarPeriodo($any($event.target).value)">
+        @for (p of periodos; track p.dias) {
+          <option [value]="p.dias" [selected]="p.dias === periodoDias()">{{ p.rotulo }}</option>
+        }
+      </select>
+    </div>
+    <div class="f" style="width: 180px">
+      <select disabled title="Disponível quando os pagamentos existirem">
+        <option>Pagamento</option>
+      </select>
+    </div>
+    <div class="f" style="width: 180px">
+      <select disabled title="Em construção">
+        <option>Canal</option>
+      </select>
+    </div>
+  </div>
+
+  @if (erro()) {
+    <div class="tbl">
+      <div class="pager">
+        <span class="warn">{{ erro() }}</span>
+        <button class="btn sm" type="button" (click)="carregar()">Tentar novamente</button>
+      </div>
+    </div>
+  } @else {
+    <div class="tbl" [class.is-loading]="carregando()">
+      <div class="trow head ped">
+        <span></span>
+        <span class="m-num">Pedido</span>
+        <span class="m-cli">Cliente</span>
+        <span>Data</span>
+        <span>Itens</span>
+        <span class="m-tot">Total</span>
+        <span>Pagamento</span>
+        <span class="m-st">Status</span>
+        <span></span>
+      </div>
+
+      @for (p of pedidos(); track p.id) {
+        <a class="trow ped" [routerLink]="['/admin/pedidos', p.id]">
+          <span></span>
+          <span class="m-num"
+            ><span class="chip">#{{ p.numero }}</span></span
+          >
+          <span class="ink m-cli">{{ p.cliente.nome }}</span>
+          <span class="dim">{{ p.dataCadastro | date: 'dd/MM' }}</span>
+          <span class="dim">{{ p.quantidadeItens }}</span>
+          <span class="ink m-tot">{{ moeda(p.valorTotal) }}</span>
+          <span class="dim">-</span>
+          <span class="status m-st">
+            <span class="dot" [style.background]="corStatus(p.status.id)"></span
+            >{{ rotuloStatus(p.status.id) }}
+          </span>
+          <span style="justify-self: end; color: var(--mute)">⋯</span>
+        </a>
+      } @empty {
+        @if (!carregando()) {
+          <div class="empty">
+            <b>Nenhum pedido encontrado.</b>Ajuste a busca, o período ou a aba.
+          </div>
+        }
+      }
+
+      <div class="pager">
+        <span>Exibindo {{ intervaloExibido() }} de {{ totalItens() }}</span>
+        <nav class="pages" aria-label="Paginação">
+          <button
+            type="button"
+            (click)="irParaPagina(pagina() - 1)"
+            [disabled]="pagina() === 0"
+            aria-label="Página anterior"
+          >
+            ‹
+          </button>
+          <span>Página {{ pagina() + 1 }} de {{ totalPaginas() }}</span>
+          <button
+            type="button"
+            (click)="irParaPagina(pagina() + 1)"
+            [disabled]="pagina() + 1 >= totalPaginas()"
+            aria-label="Próxima página"
+          >
+            ›
+          </button>
+        </nav>
+      </div>
+    </div>
+  }
+</div>

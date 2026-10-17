@@ -148,3 +148,112 @@ from produto a join produto p on (a.modelo, p.modelo) in (
     ('ACC-BAA-0103', 'DRN-AT10-0019'),
     ('ACC-HFPV-0203', 'DRN-VFR-0027'),
     ('ACC-BFX2-0101', 'ACC-HFX2-0201'));
+
+-- #16 Pedidos da carga (D19): cliente semente cliente@aeria.com.br / aeria123 e tres pedidos por status.
+-- Itens so de acessorios (a regra de numero de serie da #34 nao trava as transicoes) com o preco atual
+-- da variante congelado (RN06). Status: 1 PENDENTE, 2 PAGO, 3 SEPARACAO, 4 ENVIADO, 5 ENTREGUE,
+-- 6 EM_DEVOLUCAO, 7 DEVOLVIDO, 8 CANCELADO. Origem do historico: 1 MANUAL (autor = admin), 2 SISTEMA, 3 INTEGRACAO.
+-- Os ENTREGUE foram entregues ha 60 dias (#37). O endereco de entrega e a fotografia congelada (D12).
+insert into usuario (nome, email, senha_hash, email_verificado, ativo)
+values ('Cliente Semente', 'cliente@aeria.com.br',
+        '$2a$10$DvWOf27oHRLntAxdCeuH0.l7dTe/yzd3gcRdmdOAV4u6XqEmZ6Nka', true, true);
+insert into perfil_cliente (tipo_pessoa, nome, documento, telefone, usuario_id)
+select 1, 'Cliente Semente', '52998224725', '63999990000', id from usuario where email = 'cliente@aeria.com.br';
+
+insert into pedido (status, id_perfil_cliente, valor_total, valor_frete, valor_desconto, entrega_destinatario, entrega_logradouro, entrega_numero, entrega_complemento, entrega_bairro, entrega_cidade, entrega_uf, entrega_cep, dataCadastro)
+select v.status, c.id, 0, v.frete, 0, 'Cliente Semente', 'Quadra 104 Norte', '10', null, 'Plano Diretor Norte', 'Palmas', 'TO', '77001002',
+       date_trunc('minute', now()) - make_interval(days => v.dias)
+from (select pc.id from perfil_cliente pc join usuario u on u.id = pc.usuario_id where u.email = 'cliente@aeria.com.br') c
+cross join (values
+    (1, 1, 1, 39.90), (2, 1, 2, 39.90), (3, 1, 3, 0.00),
+    (4, 2, 3, 39.90), (5, 2, 4, 39.90), (6, 2, 5, 0.00),
+    (7, 3, 5, 39.90), (8, 3, 6, 39.90), (9, 3, 7, 0.00),
+    (10, 4, 8, 39.90), (11, 4, 9, 39.90), (12, 4, 10, 0.00),
+    (13, 5, 67, 39.90), (14, 5, 68, 39.90), (15, 5, 69, 0.00),
+    (16, 6, 30, 39.90), (17, 6, 31, 39.90), (18, 6, 32, 0.00),
+    (19, 7, 45, 39.90), (20, 7, 46, 39.90), (21, 7, 47, 0.00),
+    (22, 8, 12, 39.90), (23, 8, 13, 39.90), (24, 8, 14, 0.00)
+) as v(seq, status, dias, frete)
+order by v.seq;
+
+-- itens: seq = ordem de criacao do pedido do cliente semente
+insert into item_pedido (id_pedido, id_variante, quantidade, preco_unitario_congelado)
+select p.id, vp.id, i.qtd, vp.preco
+from (select pd.id, row_number() over (order by pd.id) as seq
+      from pedido pd join perfil_cliente pc on pc.id = pd.id_perfil_cliente
+      where pc.documento = '52998224725') p
+join (values
+    (1, 1, 'ACC-BFX2-0101-STD', 1), (1, 2, 'ACC-HFX2-0201-STD', 2),
+    (2, 1, 'ACC-BNMP-0102-STD', 2),
+    (3, 1, 'ACC-HNM-0202-STD', 1), (3, 2, 'ACC-BNMP-0102-STD', 1),
+    (4, 1, 'ACC-BAA-0103-STD', 1),
+    (5, 1, 'ACC-BFX2-0101-STD', 2),
+    (6, 1, 'ACC-HFX2-0201-STD', 1), (6, 2, 'ACC-HNM-0202-STD', 1),
+    (7, 1, 'ACC-BNMP-0102-STD', 1),
+    (8, 1, 'ACC-BFX2-0101-STD', 1), (8, 2, 'ACC-HFX2-0201-STD', 1),
+    (9, 1, 'ACC-BAA-0103-STD', 2),
+    (10, 1, 'ACC-HNM-0202-STD', 4),
+    (11, 1, 'ACC-BFX2-0101-STD', 1),
+    (12, 1, 'ACC-BNMP-0102-STD', 2), (12, 2, 'ACC-HNM-0202-STD', 2),
+    (13, 1, 'ACC-BFX2-0101-STD', 1), (13, 2, 'ACC-HFX2-0201-STD', 2),
+    (14, 1, 'ACC-BNMP-0102-STD', 1),
+    (15, 1, 'ACC-HFX2-0201-STD', 2),
+    (16, 1, 'ACC-BFX2-0101-STD', 1),
+    (17, 1, 'ACC-BNMP-0102-STD', 2),
+    (18, 1, 'ACC-BAA-0103-STD', 1),
+    (19, 1, 'ACC-HFX2-0201-STD', 1),
+    (20, 1, 'ACC-BFX2-0101-STD', 2),
+    (21, 1, 'ACC-HNM-0202-STD', 2),
+    (22, 1, 'ACC-BNMP-0102-STD', 1),
+    (23, 1, 'ACC-BAA-0103-STD', 1),
+    (24, 1, 'ACC-HFX2-0201-STD', 2), (24, 2, 'ACC-HNM-0202-STD', 1)
+) as i(seq, ord, sku, qtd) on i.seq = p.seq
+join variante_produto vp on vp.sku = i.sku
+order by p.id, i.ord;
+
+update pedido p set valor_total = p.valor_frete - p.valor_desconto
+    + (select sum(i.quantidade * i.preco_unitario_congelado) from item_pedido i where i.id_pedido = p.id)
+where p.id_perfil_cliente = (select id from perfil_cliente where documento = '52998224725');
+
+-- historico: transicoes da #17 a partir da criacao (horas depois do dataCadastro do pedido)
+insert into historico_status_pedido (id_pedido, status_anterior, status_novo, origem, id_autor, observacao, dataCadastro)
+select p.id, h.anterior, h.novo, h.origem,
+       case when h.origem = 1 then (select id from usuario where email = 'admin@aeria.com.br') end,
+       h.obs,
+       case when p.status = 5 and h.novo = 5 then date_trunc('minute', now()) - interval '60 days'
+            else p.dataCadastro + make_interval(hours => h.horas) end
+from pedido p
+join (values
+    (1, 1, null, 1, 2, 0, 'Pedido criado'),
+    (2, 1, null, 1, 2, 0, 'Pedido criado'),
+    (2, 2, 1, 2, 3, 1, 'Pagamento confirmado pelo gateway'),
+    (3, 1, null, 1, 2, 0, 'Pedido criado'),
+    (3, 2, 1, 2, 3, 1, 'Pagamento confirmado pelo gateway'),
+    (3, 3, 2, 3, 1, 24, 'Separação iniciada no CD'),
+    (4, 1, null, 1, 2, 0, 'Pedido criado'),
+    (4, 2, 1, 2, 3, 1, 'Pagamento confirmado pelo gateway'),
+    (4, 3, 2, 3, 1, 24, 'Separação iniciada no CD'),
+    (4, 4, 3, 4, 1, 48, 'Postado na transportadora'),
+    (5, 1, null, 1, 2, 0, 'Pedido criado'),
+    (5, 2, 1, 2, 3, 1, 'Pagamento confirmado pelo gateway'),
+    (5, 3, 2, 3, 1, 24, 'Separação iniciada no CD'),
+    (5, 4, 3, 4, 1, 48, 'Postado na transportadora'),
+    (5, 5, 4, 5, 3, 120, 'Entrega confirmada pela transportadora'),
+    (6, 1, null, 1, 2, 0, 'Pedido criado'),
+    (6, 2, 1, 2, 3, 1, 'Pagamento confirmado pelo gateway'),
+    (6, 3, 2, 3, 1, 24, 'Separação iniciada no CD'),
+    (6, 4, 3, 4, 1, 48, 'Postado na transportadora'),
+    (6, 5, 4, 5, 3, 120, 'Entrega confirmada pela transportadora'),
+    (6, 6, 5, 6, 1, 240, 'Devolução aprovada'),
+    (7, 1, null, 1, 2, 0, 'Pedido criado'),
+    (7, 2, 1, 2, 3, 1, 'Pagamento confirmado pelo gateway'),
+    (7, 3, 2, 3, 1, 24, 'Separação iniciada no CD'),
+    (7, 4, 3, 4, 1, 48, 'Postado na transportadora'),
+    (7, 5, 4, 5, 3, 120, 'Entrega confirmada pela transportadora'),
+    (7, 6, 5, 6, 1, 240, 'Devolução aprovada'),
+    (7, 7, 6, 7, 1, 480, 'Reembolso concluído'),
+    (8, 1, null, 1, 2, 0, 'Pedido criado'),
+    (8, 2, 1, 8, 2, 72, 'Pagamento não confirmado no prazo')
+) as h(final, ordem, anterior, novo, origem, horas, obs) on h.final = p.status
+where p.id_perfil_cliente = (select id from perfil_cliente where documento = '52998224725')
+order by p.id, h.ordem;
