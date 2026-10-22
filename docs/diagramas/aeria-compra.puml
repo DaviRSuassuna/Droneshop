@@ -79,23 +79,23 @@ class Reserva <<externo>> {
   aeria-estoque.puml
 }
 
-class VarianteProduto <<externo>> {
+class Produto <<externo>> {
   aeria-catalogo.puml
 }
 
 Carrinho "0..1" --> "0..1" PerfilCliente
 Carrinho "*" --> "0..1" Cupom : cupomAplicado
 Carrinho "1" *-- "*" ItemCarrinho
-ItemCarrinho "*" --> "1" VarianteProduto
+ItemCarrinho "*" --> "1" Produto
 ItemCarrinho "1" o-- "0..1" Reserva
 PerfilCliente "1" *-- "0..1" ListaDesejos
 ListaDesejos "1" *-- "*" ItemListaDesejos
-ItemListaDesejos "*" --> "1" VarianteProduto
+ItemListaDesejos "*" --> "1" Produto
 Cupom "1" *-- "*" UsoCupom
 UsoCupom "*" --> "1" PerfilCliente
 UsoCupom "*" --> "1" Pedido
 Cupom "*" --> "*" Categoria : restrição
 Cupom "*" --> "*" Marca : restrição
-Cupom "*" --> "*" VarianteProduto : restrição produto
+Cupom "*" --> "*" Produto : restrição produto
 
 @enduml
