@@ -76,7 +76,7 @@ note bottom of UnidadeIndividual
   recebe N unidades na expedição (RN12/RN14)
 end note
 
-class VarianteProduto <<externo>> {
+class Produto <<externo>> {
   aeria-catalogo.puml
 }
 
@@ -88,9 +88,9 @@ class Usuario <<externo>> {
   aeria-identidade.puml
 }
 
-VarianteProduto "1" *-- "*" Reserva
-VarianteProduto "1" *-- "*" MovimentoEstoque
-VarianteProduto "1" *-- "*" UnidadeIndividual
+Produto "1" *-- "*" Reserva
+Produto "1" *-- "*" MovimentoEstoque
+Produto "1" *-- "*" UnidadeIndividual
 MovimentoEstoque "*" --> "0..1" Usuario : autor (só se MANUAL)
 UnidadeIndividual "*" --> "0..1" ItemPedido : vendida em
 

@@ -1,55 +1,31 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Marcas · Admin Aeria</title>
-<link rel="stylesheet" href="../assets/site.css">
-<script src="../assets/theme.js"></script>
-</head>
-<body>
-<header class="tb">
-  <div class="tb-l">
-    <a class="tb-brand" href="index.html">ADMIN</a>
-    <nav class="tb-nav">
-      <a href="index.html">Dashboard</a>
-      <a href="produtos.html">Produtos</a>
-      <a href="marcas.html" class="on">Marcas</a>
-      <a href="categorias.html">Categorias</a>
-      <a href="fornecedores.html">Fornecedores</a>
-      <a href="promocoes.html">Promoções</a>
-      <a href="cupons.html">Cupons</a>
-      <a href="estoque.html">Estoque</a>
-      <a href="pedidos.html">Pedidos</a>
-      <a href="usuarios.html">Usuários</a>
-    </nav>
-  </div>
-  <div class="tb-r">
-    <span class="tb-search">Buscar no painel</span>
-    <a href="../index.html">Ver loja ↗</a>
-    <span class="avatar">MR</span>
-  </div>
-</header>
-<div class="pagebar">
-  <div style="display:flex;align-items:baseline;gap:12px"><h1 class="h1">Marcas</h1><span class="sub">6 marcas · 108 produtos vinculados</span></div>
-  <div class="actions"><button class="btn">Exportar CSV</button><a class="btn p" href="marca-nova.html">Nova marca</a></div>
-</div>
-<div class="pad-t" style="display:flex;flex-direction:column;gap:16px">
-  <div class="filters">
-    <div class="f grow"><input type="text" placeholder="Buscar por nome ou slug"></div>
-    <div class="f"><select><option>País de origem</option><option>Brasil</option><option>China</option><option>Estados Unidos</option><option>França</option></select></div>
-    <div class="f"><select><option>Status</option><option>Ativa</option><option>Inativa</option></select></div>
-  </div>
-  <div class="tbl">
-    <div class="trow head" style="grid-template-columns:54px minmax(0,1fr) 180px 120px 118px 44px"><span></span><span>Marca</span><span>País de origem</span><span>Produtos</span><span>Status</span><span></span></div>
-    <a class="trow" style="grid-template-columns:54px minmax(0,1fr) 180px 120px 118px 44px" href="marca-nova.html"><span class="ph thumb"></span><span class="cell-name"><b>Aerion</b><span class="chip">aerion</span></span><span class="dim">Estados Unidos</span><span class="ink">24</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativa</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
-    <a class="trow" style="grid-template-columns:54px minmax(0,1fr) 180px 120px 118px 44px" href="marca-nova.html"><span class="ph thumb"></span><span class="cell-name"><b>Skyline</b><span class="chip">skyline</span></span><span class="dim">China</span><span class="ink">31</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativa</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
-    <a class="trow" style="grid-template-columns:54px minmax(0,1fr) 180px 120px 118px 44px" href="marca-nova.html"><span class="ph thumb"></span><span class="cell-name"><b>Vortex</b><span class="chip">vortex</span></span><span class="dim">Brasil</span><span class="ink">18</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativa</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
-    <a class="trow" style="grid-template-columns:54px minmax(0,1fr) 180px 120px 118px 44px" href="marca-nova.html"><span class="ph thumb"></span><span class="cell-name"><b>Atlas</b><span class="chip">atlas</span></span><span class="dim">Brasil</span><span class="ink">9</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativa</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
-    <a class="trow" style="grid-template-columns:54px minmax(0,1fr) 180px 120px 118px 44px" href="marca-nova.html"><span class="ph thumb"></span><span class="cell-name"><b>Heron</b><span class="chip">heron</span></span><span class="dim">França</span><span class="ink">12</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativa</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
-    <a class="trow" style="grid-template-columns:54px minmax(0,1fr) 180px 120px 118px 44px" href="marca-nova.html"><span class="ph thumb"></span><span class="cell-name"><b>Sparrow</b><span class="chip">sparrow</span></span><span class="dim">China</span><span class="ink">14</span><span class="status"><span class="dot" style="background:var(--dim2)"></span>Inativa</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
-    <div class="pager"><span>Exibindo 1–6 de 6</span><span>Página 1 de 1</span></div>
-  </div>
-</div>
-</body>
-</html>
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Aeria Admin Marcas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&family=DM+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/admin.css">
+</head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></symbol>
+<symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
+<symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V4h10v5M7 17H5v-6h14v6h-2M7 14h10v6H7z"/></symbol>
+<symbol id="i-up" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></symbol>
+</svg>
+<header class="tb"><div class="in gut">
+  <a class="brand" href="index.html">AERIA <span>ADMIN</span></a>
+  <nav class="tabs" aria-label="Painel"><a href="index.html">Dashboard</a><a href="produtos.html">Produtos</a><a href="marcas.html" aria-current="page">Marcas</a><a href="categorias.html">Categorias</a><a href="fornecedores.html">Fornecedores</a><a href="promocoes.html">Promoções</a><a href="cupons.html">Cupons</a><a href="estoque.html">Estoque</a><a href="pedidos.html">Pedidos</a><a href="usuarios.html">Usuários</a></nav>
+  <div class="r"><div class="search"><svg class="ico"><use href="#i-search"/></svg>Buscar no painel<kbd>/</kbd></div><a class="store" href="../index.html">Ver loja ↗</a><span class="avatar" title="Marina Ribeiro">MR</span></div>
+</div><nav class="mnav" aria-label="Painel (celular)"><a href="index.html">Dashboard</a><a href="produtos.html">Produtos</a><a href="marcas.html" aria-current="page">Marcas</a><a href="categorias.html">Categorias</a><a href="fornecedores.html">Fornecedores</a><a href="promocoes.html">Promoções</a><a href="cupons.html">Cupons</a><a href="estoque.html">Estoque</a><a href="pedidos.html">Pedidos</a><a href="usuarios.html">Usuários</a></nav></header>
+<main class="gut">
+<div class="ph"><div><span class="lbl">Catálogo</span><h1>Marcas</h1><div class="sub">6 marcas · 108 produtos vinculados</div></div><div class="acts"><button class="btn"><svg class="ico"><use href="#i-down"/></svg>Exportar CSV</button><a class="btn p" href="marca-nova.html"><svg class="ico"><use href="#i-plus"/></svg>Nova marca</a></div></div>
+<div class="toolbar"><label class="field-s grow"><svg class="ico"><use href="#i-search"/></svg><input placeholder="Buscar por nome" aria-label="Buscar"></label><select class="sel" aria-label="País de origem"><option>País de origem</option><option>Brasil</option><option>China</option><option>Estados Unidos</option><option>França</option></select><select class="sel" aria-label="Status"><option>Status</option><option>Ativa</option><option>Inativa</option></select></div>
+<div class="info">Marca com produtos vinculados não se exclui: <b>inative</b> (D24). A marca inativa some dos filtros da loja, mas os produtos continuam no histórico de pedidos.</div>
+<div class="tw"><table><thead><tr><th class="">Marca</th><th class="">País de origem</th><th class="r">Produtos</th><th class="">Status</th><th></th></tr></thead><tbody><tr><td><div class="pc"><span class="av">AE</span><div><b>Aerion</b><span class="slug">/aerion</span></div></div></td><td data-l="País de origem" style="color:var(--ink2)">Estados Unidos</td><td data-l="Produtos" class="r num mono">24</td><td data-l="Status"><span class="st ok"><span>Ativa</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr><td><div class="pc"><span class="av">SK</span><div><b>Skyline</b><span class="slug">/skyline</span></div></div></td><td data-l="País de origem" style="color:var(--ink2)">China</td><td data-l="Produtos" class="r num mono">31</td><td data-l="Status"><span class="st ok"><span>Ativa</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr><td><div class="pc"><span class="av">VO</span><div><b>Vortex</b><span class="slug">/vortex</span></div></div></td><td data-l="País de origem" style="color:var(--ink2)">Brasil</td><td data-l="Produtos" class="r num mono">18</td><td data-l="Status"><span class="st ok"><span>Ativa</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr><td><div class="pc"><span class="av">AT</span><div><b>Atlas</b><span class="slug">/atlas</span></div></div></td><td data-l="País de origem" style="color:var(--ink2)">Brasil</td><td data-l="Produtos" class="r num mono">9</td><td data-l="Status"><span class="st ok"><span>Ativa</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr><td><div class="pc"><span class="av">HE</span><div><b>Heron</b><span class="slug">/heron</span></div></div></td><td data-l="País de origem" style="color:var(--ink2)">França</td><td data-l="Produtos" class="r num mono">12</td><td data-l="Status"><span class="st ok"><span>Ativa</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr><td><div class="pc"><span class="av">SP</span><div><b>Sparrow</b><span class="slug">/sparrow</span></div></div></td><td data-l="País de origem" style="color:var(--ink2)">China</td><td data-l="Produtos" class="r num mono">14</td><td data-l="Status"><span class="st mute"><span>Inativa</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr></tbody></table></div>
+<div class="pager"><span>Exibindo 1 a 6 de 6</span><div class="pages"><a href="#">‹</a><a href="#" aria-current="page">1</a><a href="#">›</a></div></div>
+<p class="foot-note">Protótipo acadêmico · dados fictícios · Aeria 2026</p>
+</main>
+<script>document.querySelectorAll("tbody tr").forEach(r=>r.addEventListener("click",e=>{if(!e.target.closest("button,input"))location.href="marca-nova.html"}));document.querySelectorAll(".stabs a[href=\"#\"]").forEach(a=>a.onclick=e=>{e.preventDefault();document.querySelectorAll(".stabs a").forEach(x=>x.removeAttribute("aria-current"));a.setAttribute("aria-current","page")})</script>
+</body></html>

@@ -172,7 +172,7 @@ class Usuario <<externo>> {
   aeria-identidade.puml
 }
 
-class VarianteProduto <<externo>> {
+class Produto <<externo>> {
   aeria-catalogo.puml
 }
 
@@ -183,7 +183,7 @@ Pedido "1" *-- "*" DescontoPedido
 DescontoPedido "*" --> "0..1" Cupom
 DescontoPedido "*" --> "0..1" Promocao
 Pedido "1" *-- "1..*" ItemPedido
-ItemPedido "*" --> "1" VarianteProduto
+ItemPedido "*" --> "1" Produto
 Pedido "1" *-- "*" HistoricoStatusPedido
 HistoricoStatusPedido "*" --> "0..1" Usuario : autor (só se MANUAL)
 Pedido "1" *-- "1" Entrega

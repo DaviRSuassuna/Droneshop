@@ -129,13 +129,14 @@ enum StatusProduto {
 enum TipoProduto {
   DRONE = 1
   ACESSORIO = 2
+  KIT = 3
 }
 
 abstract class Produto {
   -status: StatusProduto
   -tipo: TipoProduto
   -nome: String
-  -modelo: String
+  -sku: String
   -descricaoCurta: String
   -descricao: String
   -slug: String
@@ -145,12 +146,44 @@ abstract class Produto {
   -destaque: boolean
   -garantiaMeses: int
   -dataLancamento: LocalDate
+  -preco: BigDecimal
+  -custoAquisicao: BigDecimal
+  -estoqueFisico: Integer
+  -estoqueMinimo: int
+  -pesoEmbalagemKg: BigDecimal
+  -alturaEmbalagemCm: Integer
+  -larguraEmbalagemCm: Integer
+  -comprimentoEmbalagemCm: Integer
+  -rotuloNoGrupo: String
+  -ordemNoGrupo: int
 }
 note right of Produto
+  Produto é a unidade vendável (D40): cada
+  versão tem SKU, preço, custo, estoque e
+  embalagem próprios. Peso e dimensões da
+  EMBALAGEM cotam frete (D16).
   garantiaMeses sobrepõe o padrão de
   ConfiguracaoLoja.prazoGarantiaDias (D15).
   Herança JOINED (D27): tipo é a coluna
   discriminadora de produto
+end note
+note bottom of Produto
+  Reserva, MovimentoEstoque e UnidadeIndividual
+  pendem do produto e estão em aeria-estoque.puml
+end note
+
+class GrupoProduto {
+  -nome: String
+  -slug: String
+  -descricaoCurta: String
+  -ativo: boolean
+}
+note right of GrupoProduto
+  Junta versões parecidas numa página de
+  venda (D40). Na vitrine vira um card só,
+  "a partir de" o menor preço ativo.
+  rotuloNoGrupo ("Pro", "S", "Fly More") é
+  obrigatório e único dentro do grupo
 end note
 
 class Drone {
@@ -176,7 +209,7 @@ class Drone {
 note right of Drone
   Specs como colunas fixas e tipadas (D14).
   pesoGramas é spec de exibição e filtro;
-  o peso que cota frete fica na variante
+  o peso que cota frete é o da embalagem
 end note
 
 class Acessorio {
@@ -189,31 +222,14 @@ note right of Acessorio
   o vínculo aparece nos dois cadastros
 end note
 
-class VarianteProduto {
-  -sku: String
-  -nome: String
-  -preco: BigDecimal
-  -custoAquisicao: BigDecimal
-  -estoqueFisico: Integer
-  -estoqueMinimo: Integer
-  -pesoEmbalagemKg: BigDecimal
-  -alturaEmbalagemCm: int
-  -larguraEmbalagemCm: int
-  -comprimentoEmbalagemCm: int
-  -ehKit: boolean
-  -ativa: boolean
+class Kit {
 }
-note right of VarianteProduto
-  estoqueFisico é nulo quando ehKit=true:
-  disponibilidade do kit é derivada do
-  mínimo entre componentes disponíveis.
-  Peso e dimensões são os da EMBALAGEM,
-  base da cotação de frete (D16); no kit,
-  derivados dos componentes salvo sobrescrita
-end note
-note bottom of VarianteProduto
-  Reserva, MovimentoEstoque e UnidadeIndividual
-  pendem da variante e estão em aeria-estoque.puml
+note right of Kit
+  Kit ou combo (D7, D40): produto sem estoque
+  próprio. estoqueFisico fica nulo e a
+  disponibilidade é o mínimo entre os
+  componentes. Peso e dimensões nulos são
+  derivados dos componentes (D16)
 end note
 
 class ComponenteKit {
@@ -263,7 +279,7 @@ class Promocao {
 }
 note right of Promocao
   Escopo e vigência controlam a aplicação;
-  apenas PRODUTO vincula variantes.
+  apenas PRODUTO vincula produtos.
   Promoções usadas em pedidos não se excluem.
 end note
 
@@ -274,6 +290,7 @@ class TermoBuscado {
 
 Produto <|-- Drone
 Produto <|-- Acessorio
+Produto <|-- Kit
 Subcategoria "*" --> "1" Categoria
 Produto "*" --> "1" Marca
 Produto "*" --> "1" Subcategoria
@@ -282,10 +299,10 @@ Fornecedor "1" *-- "1" Endereco
 Endereco "*" --> "1" Municipio
 Municipio "*" --> "1" Estado
 Acessorio "*" -- "*" Produto : compatível com
-Produto "1" *-- "1..*" VarianteProduto
+GrupoProduto "0..1" o-- "*" Produto : versões
 Produto "1" o-- "*" MidiaProduto
-VarianteProduto "1" *-- "*" ComponenteKit : componentes (se kit)
-ComponenteKit "*" --> "1" VarianteProduto : componente
-Promocao "*" --> "*" VarianteProduto : escopo produto
+Kit "1" *-- "1..*" ComponenteKit : componentes
+ComponenteKit "*" --> "1" Produto : componente (nunca Kit)
+Promocao "*" --> "*" Produto : escopo produto
 
 @enduml

@@ -1,7 +1,7 @@
 # PRD: Aeria Drones
 
 **Produto:** E-commerce de drones e acessórios (storefront + painel administrativo)
-**Versão do documento:** 1.7
+**Versão do documento:** 1.8
 **Status:** rascunho para validação
 **Base:** protótipo de 36 telas + 8 diagramas de classes por contexto delimitado, em `diagramas/`
 
@@ -47,15 +47,17 @@ Um detalhe estrutural: **a conta é única e os perfis são acumuláveis**. `Usu
 
 Produto se divide em **Drone** e **Acessório**, com atributos próprios de cada tipo. As especificações técnicas são **colunas fixas e tipadas** na entidade, não atributo dinâmico (ver D14): em `Drone` são peso, dimensões dobrado/aberto, autonomia, alcance, velocidade máxima, resolução de foto, sensor, resolução de vídeo, estabilização, tipo e capacidade de bateria, tempo de carregamento, GPS, anticolisão, exigência e classe ANAC, registro SISANT. Spec nova é migration, e o preço disso é assumido conscientemente. Todo produto pertence a uma marca, uma subcategoria (que pertence a uma categoria) e um fornecedor. **Tipo e categoria não guardam a mesma informação** (D39): o tipo (Drone ou Acessório) diz o que o produto é e quais campos ele tem; a categoria só organiza a vitrine **dentro** de um tipo ("Profissionais" e "Lazer e criação" são categorias de drone; "Peças e energia" é de acessório). Por isso não existem as categorias "Drones" e "Acessórios": essa separação é o tipo. A compatibilidade entre acessório e produto é **relação N:N**, não texto descritivo (ver D17): é ela que alimenta a lista de acessórios compatíveis na página do drone e a sugestão do carrinho.
 
-A **unidade vendável é a variante**, não o produto: "Padrão", "Fly More", "Enterprise" têm SKU, preço, custo e estoque próprios. Produto sem opções tem uma variante única. Isso existe porque uma configuração pode esgotar enquanto outra continua disponível.
+A **unidade vendável é o produto** (D40): cada versão é um produto próprio, com SKU, preço, custo, estoque e ficha técnica. "Falcon X2 Pro", "Falcon X2 S" e "Falcon X2 Pro Fly More" são três produtos. Isso existe porque uma versão pode esgotar enquanto outra continua disponível, e porque versões diferentes têm specs diferentes (câmera, autonomia, peso), que só cabem no produto.
 
-A variante também guarda **peso e dimensões da embalagem**, que são a base da cotação de frete e mudam por configuração (a caixa do Fly More leva baterias e mochila a mais). Isso é distinto do `pesoGramas` do drone, que é spec de exibição e filtro. Ver D16.
+Produtos parecidos se juntam num **grupo** (`GrupoProduto`), que vira uma página de venda só: a página de qualquer versão mostra o seletor "Versão" com as outras do grupo, e cada versão tem a própria URL. Na vitrine o grupo aparece como um card, "a partir de" o menor preço ativo; a busca devolve as versões. Produto sem grupo tem a própria página, como sempre. O nome curto da versão dentro do grupo fica em `rotuloNoGrupo` ("Pro", "S", "Fly More").
+
+O produto também guarda **peso e dimensões da embalagem**, que são a base da cotação de frete. Isso é distinto do `pesoGramas` do drone, que é spec de exibição e filtro. Ver D16.
 
 O produto tem três estados de publicação (rascunho, ativo, inativo), não um booleano, para permitir o rascunho salvo automaticamente que a tela de cadastro já prevê.
 
 Garantia é definida **por produto** em meses, com o prazo de `ConfiguracaoLoja` servindo apenas de valor padrão no cadastro (D15).
 
-**Kit e combo são uma variante sem estoque próprio.** Uma `VarianteProduto` marcada como kit (`ehKit`) não guarda `estoqueFisico`: em vez disso, ela reúne outras variantes como componentes, cada uma com a quantidade exigida (ex.: kit "Drone X + Bateria Extra" = 1 unidade da variante do drone + 1 da bateria). Vender o kit dá baixa no estoque de cada componente, nunca num contador próprio do kit: do contrário, vender a bateria avulsa e dentro do kit no mesmo dia contaria dois estoques que na verdade são a mesma peça física. A disponibilidade do kit é sempre derivada: o mínimo entre os componentes disponíveis, dividido pela quantidade que cada um exige.
+**Kit e combo são um produto sem estoque próprio** (tipo `KIT`, D7 e D40). O `Kit` não guarda `estoqueFisico`: ele reúne outros produtos como componentes, cada um com a quantidade exigida (ex.: "Falcon X2 Pro Fly More" = 1 Falcon X2 Pro + 2 baterias). Vender o kit dá baixa no estoque de cada componente, nunca num contador próprio do kit: do contrário, vender a bateria avulsa e dentro do kit no mesmo dia contaria dois estoques que na verdade são a mesma peça física. A disponibilidade do kit é sempre derivada: o mínimo entre os componentes disponíveis, dividido pela quantidade que cada um exige. Componente nunca é outro kit.
 
 Preço promocional não é campo do produto: é uma **Promoção com vigência** (início e fim), que pode ter escopo de produto, de carrinho (desconto acima de um valor) ou de frete.
 
@@ -68,7 +70,7 @@ Requisitos:
 
 ### 4.2 Estoque
 
-Estoque físico fica na variante. O disponível para venda é o físico menos as **reservas ativas**.
+Estoque físico fica no produto (no kit, nos componentes). O disponível para venda é o físico menos as **reservas ativas**.
 
 - Ao entrar no checkout, cria-se reserva com prazo de expiração.
 - Pagamento aprovado converte a reserva em saída; expiração devolve o saldo.
@@ -79,7 +81,7 @@ Estoque físico fica na variante. O disponível para venda é o físico menos as
 
 - Carrinho **funciona sem login**, identificado por token de sessão, e é vinculado ao cliente quando ele se autentica.
 - Carrinho tem estado (ativo, abandonado, convertido, expirado) para permitir recuperação por e-mail.
-- Item de carrinho e item de pedido sempre referenciam a **variante** (nunca o produto diretamente): é ela que tem preço e estoque, kit incluso como uma linha só.
+- Item de carrinho e item de pedido referenciam o **produto** (a versão escolhida): é ele que tem preço e estoque, kit incluso como uma linha só.
 - Cupom com validade, valor mínimo, limite total e limite por cliente, restrição por produto/categoria/marca.
 - O cupom aplicado fica guardado no **carrinho** enquanto o cliente não fecha a compra. O **uso só se materializa quando o pedido é criado**: `UsoCupom` aponta para o pedido, de modo que cancelamento ou recusa de pagamento liberam o limite de volta ao cliente (ver D9).
 - Todo desconto aplicado no pedido fica discriminado por origem (cupom ou promoção, com valor de cada um), dando procedência ao total em `Pedido.valorDesconto`.
@@ -144,15 +146,15 @@ Verificação de e-mail, recuperação de senha por token (só se aplica a quem 
 |---|---|---|
 | RF01 | Catálogo | Cadastrar produtos do tipo Drone e Acessório, cada um com atributos técnicos próprios. |
 | RF02 | Catálogo | Todo produto pertence a uma marca, uma subcategoria e um fornecedor. Categoria e subcategoria são entidades separadas: cada subcategoria pertence a uma categoria, sem categoria pai. Toda categoria pertence a um tipo de produto, e o produto só entra em subcategoria de categoria do seu tipo (D39). |
-| RF03 | Catálogo | Produto tem uma ou mais variantes vendáveis, cada uma com SKU, preço de venda, custo, estoque e dimensões de embalagem próprios (D26). |
-| RF04 | Catálogo | Variante pode ser marcada como kit, composta por outras variantes com quantidade definida, sem estoque próprio. |
+| RF03 | Catálogo | Cada produto é uma unidade vendável, com SKU, preço de venda, custo, estoque e dimensões de embalagem próprios. Produtos parecidos se juntam num grupo, que vira uma página de venda com seletor de versão (D40). |
+| RF04 | Catálogo | Kit é um tipo de produto composto por outros produtos com quantidade definida, sem estoque próprio (D40). |
 | RF05 | Catálogo | Cadastrar promoções com vigência (início/fim) e escopo de produto, carrinho ou frete. |
 | RF06 | Catálogo | Buscar e filtrar produtos por marca, categoria, faixa de preço e atributos técnicos. |
 | RF07 | Catálogo | Comparar especificações entre dois ou mais modelos. |
 | RF08 | Catálogo | Produto suporta galeria de imagens, vídeo e manual em PDF. |
 | RF09 | Catálogo | Produto tem URL amigável (slug) e campos de SEO (meta title/description). |
 | RF10 | Catálogo | Registrar termos buscados, sinalizando os que não retornaram resultado. |
-| RF11 | Estoque | Controlar estoque físico e mínimo por variante, não por produto. |
+| RF11 | Estoque | Controlar estoque físico e mínimo por produto; o kit não tem estoque próprio. |
 | RF12 | Estoque | Criar reserva de estoque com prazo de expiração ao iniciar o checkout. |
 | RF13 | Estoque | Pagamento aprovado confirma a reserva como saída definitiva; expiração da reserva devolve o saldo. |
 | RF14 | Estoque | Toda alteração de estoque gera um movimento (entrada, saída, ajuste, devolução, perda), com saldo resultante e origem (manual, sistema ou integração); autor só quando manual. |
@@ -198,7 +200,7 @@ Verificação de e-mail, recuperação de senha por token (só se aplica a quem 
 | RF54 | Pedido/Entrega | Congelar o endereço de entrega no pedido no momento da compra. |
 | RF55 | Catálogo | Produto tem três estados de publicação: rascunho, ativo e inativo. |
 | RF56 | Catálogo | Garantia é definida em meses por produto, herdando o padrão da configuração da loja. |
-| RF57 | Pedido/Entrega | Cotação de frete usa peso e dimensões da embalagem da variante; no kit, derivados dos componentes salvo sobrescrita manual. |
+| RF57 | Pedido/Entrega | Cotação de frete usa peso e dimensões da embalagem do produto; no kit, derivados dos componentes salvo sobrescrita manual. |
 
 ## 6. Regras de negócio
 
@@ -221,7 +223,7 @@ Verificação de e-mail, recuperação de senha por token (só se aplica a quem 
 | RN15 | Endereço de entrega é congelado no pedido; alteração posterior no cadastro do cliente não afeta pedidos existentes. |
 | RN16 | Todo valor em `Pedido.valorDesconto` tem procedência registrada em pelo menos um desconto de origem cupom ou promoção. |
 | RN17 | Produto em rascunho não aparece no storefront nem pode ser adicionado ao carrinho. |
-| RN18 | Variante sem peso e dimensões de embalagem não pode ser publicada, porque inviabiliza a cotação de frete. |
+| RN18 | Produto sem peso e dimensões de embalagem não pode ser publicada, porque inviabiliza a cotação de frete. |
 
 ## 7. Requisitos não-funcionais
 
@@ -232,7 +234,7 @@ Verificação de e-mail, recuperação de senha por token (só se aplica a quem 
 | RNF03 | Privacidade (LGPD) | Consentimento registrado e versionado por tipo; dados pessoais fora de log; exclusão/anonimização de conta sob solicitação. |
 | RNF04 | Desempenho | Listagem de catálogo paginada; busca com índice; sem meta numérica de latência definida neste estágio (projeto de testes, sem carga real a validar). |
 | RNF05 | Disponibilidade | Sem SLA formal (projeto de testes, não operação real); indisponibilidade de uma integração externa (frete, e-mail) não deve travar o restante do fluxo de compra. |
-| RNF06 | Escalabilidade | Fora de escopo deste projeto (ver Não-objetivos); o modelo (estoque por variante, DTO/Repository isolados por módulo) não impede evolução futura, mas não há meta de volume a suportar. |
+| RNF06 | Escalabilidade | Fora de escopo deste projeto (ver Não-objetivos); o modelo (estoque por produto, DTO/Repository isolados por módulo) não impede evolução futura, mas não há meta de volume a suportar. |
 | RNF07 | Usabilidade | Interface responsiva: toda tela (storefront e admin) funciona no navegador do desktop e no navegador de celular (largura de 360 a 480px), ver D20. Navegação e rótulos em português. |
 | RNF08 | Acessibilidade | Boas práticas básicas (contraste, navegação por teclado, texto alternativo em imagem); sem certificação formal WCAG neste projeto. |
 | RNF09 | Compatibilidade | Navegadores modernos (Chrome, Firefox, Edge, Safari) nas duas últimas versões; sem suporte a navegadores legados. |
@@ -261,7 +263,7 @@ O painel administrativo vem primeiro (D19): a loja só tem o que vender e o que 
 
 | Fase | Entrega |
 |---|---|
-| 1 | **Painel administrativo**: login do admin, usuários com papéis e permissões, configuração da loja, catálogo completo (produto, drone, acessório, variante, kit, compatibilidade, mídia), movimento de estoque, promoções, cadastro de cupons, pedidos (listagem, detalhe e mudança de status) e dashboard |
+| 1 | **Painel administrativo**: login do admin, usuários com papéis e permissões, configuração da loja, catálogo completo (produto, drone, acessório, kit, grupo de produtos, compatibilidade, mídia), movimento de estoque, promoções, cadastro de cupons, pedidos (listagem, detalhe e mudança de status) e dashboard |
 | 2 | **Conta do cliente e vitrine**: perfil e endereços do cliente, sessão com perfil ativo, listagem, filtros e página de produto, lista de desejos |
 | 3 | **Compra, pagamento e entrega**: reserva de estoque, carrinho anônimo, aplicação de cupom, checkout, pagamento, cartões salvos, frete, rastreio, notificações transacionais, verificação de e-mail |
 | 4 | **Pós-venda**: devolução, estorno, nota fiscal, número de série, atendimento, avaliações e perguntas |
@@ -277,16 +279,16 @@ O painel administrativo vem primeiro (D19): a loja só tem o que vender e o que 
 | D4 | Frete em modelo **híbrido**: cotação em tempo real via agregador de transportadoras para expressa/padrão; tabela própria (`RegraFrete`) só para retirada no showroom e como fallback se a integração cair. |
 | D5 | E-mail com **envio real** via **Resend** (plano gratuito), diferente de pagamento e NF-e, que ficam simulados. |
 | D6 | **Login social com Google**, além de e-mail/senha local. Conta única (`Usuario`) pode ter várias `ContaSocial` vinculadas. |
-| D7 | **Kits e combos** modelados como `VarianteProduto` sem estoque próprio, composta por `ComponenteKit` (outras variantes + quantidade). Estoque e baixa acontecem sempre no componente. |
+| D7 | **Kits e combos** sem estoque próprio, compostos por `ComponenteKit` (outros produtos + quantidade). Estoque e baixa acontecem sempre no componente. Desde a D40, o kit é o tipo de produto `Kit`, não mais uma variante. |
 | D8 | **Política de devolução**: 7 dias corridos de arrependimento (piso do CDC), frete de volta por conta da Aeria; 90 dias para vício em produto durável, com escolha entre troca/reparo/reembolso; lacre rompido não invalida o arrependimento (produto se testa ligando), desde que completo e sem dano; 5 dias úteis de prazo de análise após o recebimento; reembolso no mesmo método de pagamento usado na compra. Parâmetros em `ConfiguracaoLoja`. |
 | D9 | **Cupom vinculado ao pedido**: `Carrinho` guarda o cupom aplicado; `UsoCupom` aponta para `Pedido`. Uso só conta quando vira pedido, e cancelamento libera o limite. Desconto do pedido discriminado por origem em `DescontoPedido`. |
 | D10 | **Unidade serializada por item**: relação invertida para `UnidadeIndividual → ItemPedido` com cardinalidade `0..*`, permitindo N séries numa linha com quantidade N. |
 | D11 | **Origem de registro**: `MovimentoEstoque`, `HistoricoStatusPedido` e `HistoricoDevolucao` ganham `origem: OrigemRegistro` (`MANUAL`, `SISTEMA`, `INTEGRACAO`) e `autor` passa a `0..1`, preenchido só quando manual. Evita usuário-fantasma na base e distingue ação humana de job e de webhook. |
 | D12 | **Endereço congelado**: `EnderecoPedido` como fotografia no pedido, com referência opcional ao `Endereco` de origem apenas para rastreio de procedência. |
-| D13 | **Variantes na própria tela de cadastro**: tabela editável embutida no formulário do produto, com checkbox "produto sem opções" que colapsa para uma linha. Preço, SKU, custo, estoque e embalagem deixam de ser campos do produto. |
+| D13 | **Substituída pela D40.** Previa a tabela de variantes embutida no cadastro do produto; preço, SKU, custo, estoque e embalagem voltam a ser campos do produto. |
 | D14 | **Specs técnicas como colunas fixas** e tipadas em `Drone`, não atributo dinâmico. Ganha filtro por faixa, validação e comparação diretos; perde a capacidade de o admin criar spec nova sem deploy. Aceito por ser projeto de estudo. |
 | D15 | **Garantia por produto** em meses; `ConfiguracaoLoja.prazoGarantiaDias` vira apenas o valor padrão sugerido no cadastro. |
-| D16 | **Peso e dimensão desdobrados**: `Drone.pesoGramas` e `dimensoesDobrado`/`dimensoesAberto` são spec de exibição e filtro; `VarianteProduto.pesoEmbalagemKg` e as três dimensões da caixa são o que cota frete. No kit, derivados da soma dos componentes com sobrescrita opcional. |
+| D16 | **Peso e dimensão desdobrados**: `Drone.pesoGramas` e `dimensoesDobrado`/`dimensoesAberto` são spec de exibição e filtro; `Produto.pesoEmbalagemKg` e as três dimensões da caixa são o que cota frete. No kit, derivados da soma dos componentes com sobrescrita opcional. |
 | D17 | **Compatibilidade como relação N:N** entre `Acessorio` e `Produto`, substituindo o campo texto `Acessorio.compatibilidade`. Como `Acessorio` herda de `Produto`, o mesmo vínculo cobre acessório-drone (bateria e modelo) e acessório-acessório (carregador e bateria). O vínculo é recíproco: aparece nos dois cadastros e habilita filtro real, em vez de depender de nome digitado sem erro. Fecha a pendência P1. |
 | D18 | **Contato do fornecedor em três colunas**: `Fornecedor.contato` vira `nomeContato`, `emailContato` e `telefoneContato`. Permite busca por e-mail ou telefone e validação de formato, que a string única não permitia. |
 | D19 | **Painel administrativo primeiro.** A fase 1 entrega todas as telas do admin integradas à API antes do storefront. Pedidos entram no admin já na fase 1, alimentados por carga de dados, e passam a ser criados pelo checkout na fase 3. |
@@ -296,9 +298,9 @@ O painel administrativo vem primeiro (D19): a loja só tem o que vender e o que 
 | D23 | **Busca por nome não diferencia maiúsculas** em marca, categoria e fornecedor. Ignorar acentos fica para a busca do catálogo (#43); o filtro de produto já ignora. |
 | D24 | **O que está em uso não se exclui, se inativa.** Excluir marca, subcategoria ou fornecedor com produtos, ou categoria com subcategorias, responde 409 com a contagem e a orientação de inativar. Não há exclusão em cascata. |
 | D25 | **Autenticação nos testes.** A carga de dados (`import.sql`) da #4 cria o administrador `admin@aeria.com.br` (senha `aeria123`, papel `ADMIN`). Os testes chamam a API pelo apoio `testes/Api.java`, que entra com esse usuário e manda o token em toda requisição; enquanto `/auth/login` não existir, manda sem token. Assim a #4 protege as rotas sem quebrar os testes já entregues. |
-| D26 | **Preço de venda na variante.** `VarianteProduto.preco` é o preço cheio de venda (substitui `precoAdicional`). `Produto.preco` continua existindo até a #9, que o remove junto com a criação das variantes; a #7 não mexe no preço. Fecha a pendência P2: margem exibida = (preço - custo) / preço, em %, calculada no backend e devolvida na variante como `margemPercentual`. |
+| D26 | **Preço de venda no item vendável.** Era `VarianteProduto.preco`; desde a D40 é `Produto.preco`, o preço cheio de venda. Fecha a pendência P2: margem exibida = (preço - custo) / preço, em %, calculada no backend e devolvida como `margemPercentual`. |
 | D27 | **Drone e acessório em rotas próprias.** Herança JPA `JOINED`. Cadastro e alteração em `/drones` e `/acessorios`; `/produtos` fica só para listar, consultar, excluir e filtrar todos os tipos, com `tipo: {id, nome}` (`DRONE`, `ACESSORIO`) na resposta. Os testes `base` de produto passam para a etiqueta `issue-8` no PR da #8. |
-| D28 | **Rascunho e exclusão valem para todo cadastro do admin.** D21 (rascunho aceita campos vazios) vale também para produto, drone e acessório: só o tipo é obrigatório. D24 (em uso não se exclui) vale para todo cadastro: produto com pedido, variante com pedido ou reserva, cupom já usado e promoção já aplicada em pedido respondem 409 e devem ser inativados. |
+| D28 | **Rascunho e exclusão valem para todo cadastro do admin.** D21 (rascunho aceita campos vazios) vale também para produto, drone e acessório: só o tipo é obrigatório. D24 (em uso não se exclui) vale para todo cadastro: produto com pedido ou reserva, cupom já usado e promoção já aplicada em pedido respondem 409 e devem ser inativados. |
 | D29 | **Mídia por arquivo, vídeo por link.** Imagem e manual PDF sobem por upload (`multipart/form-data`, até 20 MB), guardados em disco no diretório `aeria.midias.diretorio` e servidos em `/midias/arquivos/{nome}`; vídeo é só a URL. `MidiaProduto.url` guarda o endereço público nos três casos. |
 | D30 | **Conflito de estado responde 409.** Transição de status inválida (pedido, devolução, chamado, moderação) responde 409 no formato Problem (`/errors/conflict`), não 422. A API não usa 422. |
 | D31 | **Todo enum de domínio segue o padrão de status.** Banco guarda o id; a API recebe `idXxx` e devolve `{id, nome}`; os valores ficam numa rota de leitura `/<enum-em-kebab-case>` (ex.: `/tipos-movimento`, `/papeis-administrativos`). Ids começam em 1, na ordem do diagrama. |
@@ -310,6 +312,7 @@ O painel administrativo vem primeiro (D19): a loja só tem o que vender e o que 
 | D37 | **Login com Google por ID token.** O front usa o botão do Google Identity Services e manda o ID token para `POST /auth/google`; o backend valida no endpoint `tokeninfo` do Google e usa o `sub` como identificador (D6). Não há redirecionamento OAuth pelo backend. |
 | D38 | **O protótipo é a referência das telas.** Cada tela do Angular é testada contra a tela correspondente do protótipo publicado (`frontend/e2e`, Playwright): estrutura, tokens e estilo, e ausência de rolagem horizontal no celular. Mudança de design começa por um PR no protótipo; só depois a tela real muda. As telas que já seguem o protótipo ficam em `frontend/e2e/telas-entregues.txt` e bloqueiam o merge. |
 | D39 | **Tipo e categoria têm papéis diferentes.** O tipo (`DRONE`, `ACESSORIO`) é o único que separa drone de acessório: define os campos (D14), a tabela (D27) e as rotas. A categoria organiza a vitrine dentro de um tipo: `Categoria` ganha `tipo` (obrigatório fora do rascunho), drone só entra em subcategoria de categoria de drone e acessório só em de acessório (400 em `idSubcategoria`), e categoria ou subcategoria com produtos não muda de tipo (409). As páginas "Drones" e "Acessórios" da loja filtram por tipo, não por categoria. Evita guardar a mesma informação em dois lugares sem nada que as mantenha iguais. |
+| D40 | **Cada versão é um produto; o grupo junta as versões numa página.** Sai `VarianteProduto`: SKU (no lugar de `modelo`), preço, custo, estoque físico e mínimo e embalagem passam para `Produto`. Entra `GrupoProduto` (nome, slug, descrição curta, ativo), com `Produto.grupo` opcional, `rotuloNoGrupo` (obrigatório com grupo e único dentro dele) e `ordemNoGrupo`. Kit vira o terceiro tipo da herança (`KIT`), com `ComponenteKit` apontando para `Produto`. Carrinho, lista de desejos, pedido, estoque (movimento, reserva, unidade), promoção e cupom passam a apontar para `Produto`. Na loja, o grupo é um card só ("a partir de" o menor preço ativo), a página da versão mostra as outras do grupo no seletor "Versão" e a avaliação é gravada por versão, com a média do grupo na página. Motivo: versões têm specs diferentes, que só cabem no produto, e quase todo produto tinha uma variante única "Padrão". Substitui D13 e ajusta D7, D16 e D26. |
 
 ## 11. Pendências em aberto
 

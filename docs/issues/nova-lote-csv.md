@@ -35,7 +35,7 @@ GET /marcas, /categorias, /subcategorias, /fornecedores: cada item ganha "quanti
 PATCH /produtos/lote { "ids": [10, 11], "acao": "ATIVAR"|"INATIVAR"|"MOVER_SUBCATEGORIA"|"REAJUSTAR_PRECO",
                        "idSubcategoria": 3, "percentual": 5.0 }
 -> 200 { "processados": 2, "falhas": [ { "id": 11, "motivo": "..." } ] }
-   ATIVAR respeita as mesmas validações do cadastro; REAJUSTAR_PRECO vale para todas as variantes
+   ATIVAR respeita as mesmas validações do cadastro; REAJUSTAR_PRECO muda o preço de cada produto selecionado
 
 PATCH /categorias/ordem { "ids": [3, 1, 2] } -> 204   (ordemExibicao = posição)
 

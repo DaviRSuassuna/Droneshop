@@ -51,9 +51,10 @@ As telas citadas são as do [protótipo](design/README.md).
 | GET | `/produtos/slug/{slug}` · `/tipos-produto` (+ `/{id}`) | busca por slug, select de tipo | #7, #8 | pronto |
 | POST · PUT | `/drones` · `/drones/{id}` | Cadastrar drone (specs fixas, D14) | #8 | pronto |
 | POST · PUT | `/acessorios` · `/acessorios/{id}` | Cadastrar acessório | #8 | pronto |
-| (corpo) | `variantes[]` dentro do drone/acessório | tabela de variantes na própria tela (D13) | #9 | pronto |
-| GET · GET PUT | `/variantes?busca=` · `/variantes/{id}` | select de variante (estoque, promoção, kit); preço e margem (D26) | #9 | pronto |
-| (corpo) | `componentes[]` na variante kit; toda variante responde `disponivel`, e o kit `pesoSobrescrito`/`dimensoesSobrescritas` | Kit ou combo (D7, D16) | #10 | pronto |
+| (corpo) | `sku`, `preco`, `custoAquisicao`, `estoqueFisico`, `estoqueMinimo` e embalagem no próprio drone/acessório/kit; resposta com `margemPercentual` e `disponivel` | Preço, estoque e embalagem (D26, D40) | nova-produto-sem-variante | a fazer (substitui a #9) |
+| GET | `/produtos?busca=&vendavel=true` | select de produto (estoque, promoção, cupom, componente de kit) | nova-produto-sem-variante | a fazer; `/variantes` sai (D40) |
+| POST · PUT | `/kits` · `/kits/{id}` com `componentes[]` (`idProduto`, `quantidade`); resposta com `disponivel`, `pesoSobrescrito`/`dimensoesSobrescritas` | Cadastrar kit (D7, D16, D40) | nova-produto-sem-variante | a fazer (substitui o kit da #10) |
+| GET POST · GET PUT DELETE | `/grupos-produto?nome=` · `/grupos-produto/{id}` | Grupos de produto; no produto, `idGrupo`, `rotuloNoGrupo`, `ordemNoGrupo` | nova-produto-sem-variante | a fazer |
 | (corpo) | `idsCompativeis[]` no acessório; resposta com `compativeis[]` e, em todo produto, `acessoriosCompativeis[]` (lado recíproco) | Compatível com (D17) | #11 | pronto |
 | GET · GET POST · PATCH · DELETE | `/tipos-midia` · `/produtos/{id}/midias` (multipart) · `/midias/{id}` · `/produtos/{id}/midias/ordem` · `/midias/arquivos/{nome}` | imagem e manual por upload, vídeo por URL (D29) | #12 | pronto |
 | GET POST · GET PUT DELETE | `/promocoes?situacao=` · `/promocoes/{id}` | Promoções (abas Vigentes/Agendadas/Encerradas), Criar promoção | #14 | pronto |
@@ -64,9 +65,9 @@ As telas citadas são as do [protótipo](design/README.md).
 
 | Método | Rota | Uso | Issue | Situação |
 |---|---|---|---|---|
-| GET | `/estoque?situacao=&busca=` | Estoque: saldo por variante (físico, reservado, disponível, mínimo) | #13 | a fazer |
-| GET POST | `/estoque/movimentos?idVariante=&idTipo=` | aba Movimentos; Novo movimento (origem e autor, D11) | #13 | a fazer |
-| GET | `/estoque/reservas?idVariante=` | aba Reservas ativas | #23 | a fazer |
+| GET | `/estoque?situacao=&busca=` | Estoque: saldo por produto (físico, reservado, disponível, mínimo) | #13 | a fazer |
+| GET POST | `/estoque/movimentos?idProduto=&idTipo=` | aba Movimentos; Novo movimento (origem e autor, D11) | #13 | a fazer |
+| GET | `/estoque/reservas?idProduto=` | aba Reservas ativas | #23 | a fazer |
 | POST | `/admin/rotinas/expirar-reservas` · `/admin/rotinas/carrinhos-abandonados` | rotinas sob demanda (D33) | #23, #24 | a fazer |
 | GET POST | `/unidades?serie=` · `/pedidos/{id}/itens/{idItem}/unidades` | aba Números de série; vincular série na expedição (D10) | #34 | a fazer |
 
@@ -119,13 +120,13 @@ As telas citadas são as do [protótipo](design/README.md).
 | Método | Rota | Uso | Issue | Situação |
 |---|---|---|---|---|
 | GET | `/loja/categorias?tipo=` · `/loja/marcas?destaque=` | menu, home (marcas em destaque) | #21 | a fazer |
-| GET | `/loja/produtos?categoria=&subcategoria=&marca=&precoMin=&precoMax=&alcance=&autonomia=&ordem=&page=` | Drones, Acessórios (só ATIVO, RN17) | #21 | a fazer |
+| GET | `/loja/produtos?categoria=&subcategoria=&marca=&precoMin=&precoMax=&alcance=&autonomia=&ordem=&page=` | Drones, Acessórios (só ATIVO, RN17; um item por grupo, "a partir de", D40) | #21 | a fazer |
 | GET | `/loja/filtros?categoria=` | contagens de cada filtro (facetas) | #21 | a fazer |
-| GET | `/loja/produtos/{slug}` | Produto (variantes, specs, mídias) | #21 | a fazer |
+| GET | `/loja/produtos/{slug}` | Produto (specs, mídias e `grupo` com as versões: `rotulo`, `slug`, `preco`, `disponivel`, D40) | #21 | a fazer |
 | GET | `/loja/produtos/{slug}/compativeis` | Acessórios compatíveis | #21 | a fazer |
 | GET | `/loja/ofertas` | Ofertas e Kits com desconto | #21 | a fazer |
 | GET | `/loja/busca?q=` | busca (registra o termo) | #43 | a fazer |
-| GET | `/loja/comparar?ids=` | comparação de especificações | #44 | a fazer |
+| GET | `/loja/comparar?grupo=&ids=` | comparação de especificações: versões do grupo e mais drones, até 4 (D40) | #44 | a fazer |
 | GET POST | `/loja/produtos/{slug}/avaliacoes` | Avaliações (compra verificada) | #39 | a fazer |
 | GET POST | `/loja/produtos/{slug}/perguntas` | perguntas e respostas | #40 | a fazer |
 
@@ -136,7 +137,7 @@ As telas citadas são as do [protótipo](design/README.md).
 | GET | `/tipos-desconto-cupom` (+ `/{id}`) | tipos percentual e valor fixo | #15 | pronto |
 | GET POST · GET PUT DELETE | `/cupons?situacao=&codigo=` · `/cupons/{id}` | Cadastro e consulta de cupons no admin | #15 | pronto |
 | GET | `/cupons/{id}/usos` | Usos do cupom (pedido, cliente e data) | #15 | pronto |
-| GET POST DELETE | `/conta/desejos` · `/conta/desejos/{idVariante}` | Lista de desejos | #22 | a fazer |
+| GET POST DELETE | `/conta/desejos` · `/conta/desejos/{idProduto}` | Lista de desejos | #22 | a fazer |
 | GET POST · POST · PATCH DELETE | `/carrinho` · `/carrinho/itens` · `/carrinho/itens/{id}` (header `X-Carrinho-Token`) · `/conta/carrinho` | Carrinho anônimo por token | #24 | a fazer |
 | POST | `/carrinho/reservar` | reserva ao entrar no checkout | #23 | a fazer |
 | POST | `/carrinho/vincular` | junta o carrinho anônimo ao do cliente no login | #24 | a fazer |

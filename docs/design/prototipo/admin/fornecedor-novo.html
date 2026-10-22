@@ -1,47 +1,29 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Cadastrar fornecedor · Admin Aeria</title>
-<link rel="stylesheet" href="../assets/site.css">
-<script src="../assets/theme.js"></script>
-</head>
-<body>
-<header class="tb">
-  <div class="tb-l">
-    <a class="tb-brand" href="index.html">ADMIN</a>
-    <nav class="tb-nav">
-      <a href="index.html">Dashboard</a>
-      <a href="produtos.html">Produtos</a>
-      <a href="marcas.html">Marcas</a>
-      <a href="categorias.html">Categorias</a>
-      <a href="fornecedores.html" class="on">Fornecedores</a>
-      <a href="promocoes.html">Promoções</a>
-      <a href="cupons.html">Cupons</a>
-      <a href="estoque.html">Estoque</a>
-      <a href="pedidos.html">Pedidos</a>
-      <a href="usuarios.html">Usuários</a>
-    </nav>
-  </div>
-  <div class="tb-r">
-    <span class="tb-search">Buscar no painel</span>
-    <a href="../index.html">Ver loja ↗</a>
-    <span class="avatar">MR</span>
-  </div>
-</header>
-<div class="pad cols">
-  <div class="main">
-    <div><h1 class="h1 big">Cadastrar fornecedor</h1><div class="crumb">Catálogo · <a href="fornecedores.html">Fornecedores</a> · Novo fornecedor</div></div>
-    <section class="card p"><div class="card-h"><span class="card-t">Dados cadastrais</span><span class="card-n">Entidade Fornecedor · aeria-catalogo.puml</span></div><div class="g2"><div class="f full"><label>Razão social <span class="req">*</span></label><input type="text" placeholder="Ex: Aerion Brasil Importação Ltda."></div><div class="f"><label>CNPJ <span class="req">*</span></label><input type="text" placeholder="00.000.000/0001-00"></div><div class="f"><label>Cidade</label><input type="text" placeholder="Ex: São Paulo"></div><div class="f"><label>UF</label><select><option>Selecione</option><option>SP</option><option>SC</option><option>GO</option><option>TO</option><option>Exterior</option></select></div></div><p class="legend">Campos com <span class="req">*</span> são obrigatórios</p></section>
-    <section class="card p"><div class="card-h"><span class="card-t">Contato comercial</span><span class="card-n">Tres colunas proprias na entidade (D18)</span></div><div class="g2"><div class="f"><label>Nome do contato <span class="req">*</span></label><input type="text" placeholder="Ex: Paulo Serra"></div><div class="f"><label>Telefone do contato</label><input type="text" placeholder="(11) 0000-0000"></div><div class="f full"><label>E-mail do contato <span class="req">*</span></label><input type="email" placeholder="comercial@fornecedor.com.br"></div></div><p class="legend">Os três viram colunas próprias em <span class="chip">Fornecedor</span>: <span class="chip">nomeContato</span>, <span class="chip">emailContato</span> e <span class="chip">telefoneContato</span>. O campo único <span class="chip">contato</span> foi removido do diagrama (D18), o que habilita busca por e-mail e validação de formato.</p></section>
-  </div>
-  <aside class="rail">
-    <section class="card p2"><div class="eyebrow">Situação</div><div class="stack"><div class="f"><label>Status <span class="req">*</span></label><select><option>Ativo</option><option>Inativo</option></select></div></div></section>
-    <section class="card p2"><div class="eyebrow">Por que este cadastro existe</div><p style="margin:0;font-size:12px;line-height:1.7;color:var(--dim)">Fornecedor é <strong>campo obrigatório</strong> na tela de cadastro de produto. Sem pelo menos um fornecedor ativo, nenhum drone ou acessório pode ser publicado.</p></section>
-    <section class="card p2"><div class="eyebrow">Pendências</div><div style="display:flex;flex-direction:column;gap:9px"><span class="warn">3 campos obrigatórios vazios</span><span style="font-size:12px;color:var(--mute)">Razão social · CNPJ · E-mail do contato</span></div></section>
-  </aside>
-</div>
-<div class="actionbar"><span class="sub">Nenhum produto vinculado ainda</span><div class="actions"><a class="btn" href="fornecedores.html">Cancelar</a><button class="btn p">Salvar fornecedor</button></div></div>
-</body>
-</html>
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Aeria Admin Cadastrar fornecedor</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&family=DM+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/admin.css">
+</head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></symbol>
+<symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
+<symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V4h10v5M7 17H5v-6h14v6h-2M7 14h10v6H7z"/></symbol>
+<symbol id="i-up" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></symbol>
+</svg>
+<header class="tb"><div class="in gut">
+  <a class="brand" href="index.html">AERIA <span>ADMIN</span></a>
+  <nav class="tabs" aria-label="Painel"><a href="index.html">Dashboard</a><a href="produtos.html">Produtos</a><a href="marcas.html">Marcas</a><a href="categorias.html">Categorias</a><a href="fornecedores.html" aria-current="page">Fornecedores</a><a href="promocoes.html">Promoções</a><a href="cupons.html">Cupons</a><a href="estoque.html">Estoque</a><a href="pedidos.html">Pedidos</a><a href="usuarios.html">Usuários</a></nav>
+  <div class="r"><div class="search"><svg class="ico"><use href="#i-search"/></svg>Buscar no painel<kbd>/</kbd></div><a class="store" href="../index.html">Ver loja ↗</a><span class="avatar" title="Marina Ribeiro">MR</span></div>
+</div><nav class="mnav" aria-label="Painel (celular)"><a href="index.html">Dashboard</a><a href="produtos.html">Produtos</a><a href="marcas.html">Marcas</a><a href="categorias.html">Categorias</a><a href="fornecedores.html" aria-current="page">Fornecedores</a><a href="promocoes.html">Promoções</a><a href="cupons.html">Cupons</a><a href="estoque.html">Estoque</a><a href="pedidos.html">Pedidos</a><a href="usuarios.html">Usuários</a></nav></header>
+<main class="gut">
+<div class="ph"><div><div class="crumb"><a href="fornecedores.html">← Fornecedores</a><span>·</span><span>Novo fornecedor</span></div><h1>Cadastrar fornecedor</h1></div><div class="acts"><span class="st mute"><span>Rascunho salvo há 1 min</span></span></div></div>
+<div class="form"><div><section class="sec"><div class="sh"><h2>Dados cadastrais</h2><span>Entidade Fornecedor</span></div><div class="fg"><div class="f w6"><label>Razão social <span class="req">*</span></label><input id="fr" type="text" value="" placeholder=""></div><div class="f w3"><label>CNPJ <span class="req">*</span></label><input id="fc" type="text" value="" placeholder="00.000.000/0000-00"></div><div class="f "><label>Cidade</label><input id="fci" type="text" value="Palmas" placeholder=""></div><div class="f w1"><label>UF</label><select id="fu"><option>TO</option><option>SP</option><option>SC</option><option>GO</option><option>Exterior</option></select></div></div></section><section class="sec"><div class="sh"><h2>Contato comercial</h2><span>Três colunas próprias na entidade (D18)</span></div><div class="fg"><div class="f "><label>Nome do contato <span class="req">*</span></label><input id="fn" type="text" value="" placeholder=""></div><div class="f "><label>Telefone do contato</label><input id="ft" type="text" value="" placeholder="(00) 00000-0000"></div><div class="f "><label>E-mail do contato <span class="req">*</span></label><input id="fe" type="email" value="" placeholder=""></div></div><p class="note">Os três viram colunas próprias em <code>Fornecedor</code>: <code>nomeContato</code>, <code>emailContato</code> e <code>telefoneContato</code>. O campo único <code>contato</code> saiu do diagrama (D18), o que habilita busca por e-mail e validação de formato.</p></section></div><aside class="rail"><section class="card "><div class="bd" style="padding-top:18px"><span class="lbl">Publicação</span><div style="margin-top:12px"><div class="f" style="grid-column:auto"><label>Status <span class="req">*</span></label><div class="rad"><label><input type="radio" name="pubst" checked>Ativo</label><label><input type="radio" name="pubst">Inativo</label></div></div></div></div></section><section class="card "><div class="bd" style="padding-top:18px"><span class="lbl">Por que este cadastro existe</span><div style="margin-top:12px"><p class="note" style="margin:0">Fornecedor é <b>campo obrigatório</b> no cadastro de produto. Sem pelo menos um fornecedor ativo, nenhum drone ou acessório pode ser publicado.</p></div></div></section><section class="card pend"><div class="bd" style="padding-top:18px"><div class="t">3 campos obrigatórios vazios</div><p>Razão social · CNPJ · E-mail do contato</p><small>Nenhum produto vinculado ainda</small></div></section></aside></div>
+<div class="actionbar"><div class="in gut"><span class="msg">Faltam <b>3 campos obrigatórios</b>.</span><a class="btn " href="fornecedores.html">Cancelar</a><button class="btn p" type="button">Salvar fornecedor</button></div></div>
+<p class="foot-note">Protótipo acadêmico · dados fictícios · Aeria 2026</p>
+</main>
+
+</body></html>

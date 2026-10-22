@@ -1,48 +1,29 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Criar cupom · Admin Aeria</title>
-<link rel="stylesheet" href="../assets/site.css">
-<script src="../assets/theme.js"></script>
-</head>
-<body>
-<header class="tb">
-  <div class="tb-l">
-    <a class="tb-brand" href="index.html">ADMIN</a>
-    <nav class="tb-nav">
-      <a href="index.html">Dashboard</a>
-      <a href="produtos.html">Produtos</a>
-      <a href="marcas.html">Marcas</a>
-      <a href="categorias.html">Categorias</a>
-      <a href="fornecedores.html">Fornecedores</a>
-      <a href="promocoes.html">Promoções</a>
-      <a href="cupons.html" class="on">Cupons</a>
-      <a href="estoque.html">Estoque</a>
-      <a href="pedidos.html">Pedidos</a>
-      <a href="usuarios.html">Usuários</a>
-    </nav>
-  </div>
-  <div class="tb-r">
-    <span class="tb-search">Buscar no painel</span>
-    <a href="../index.html">Ver loja ↗</a>
-    <span class="avatar">MR</span>
-  </div>
-</header>
-<div class="pad cols">
-  <div class="main">
-    <div><h1 class="h1 big">Criar cupom</h1><div class="crumb">Compra · <a href="cupons.html">Cupons</a> · Novo cupom</div></div>
-    <section class="card p"><div class="card-h"><span class="card-t">Código e desconto</span><span class="card-n">O código é digitado pelo cliente no carrinho</span></div><div class="g2"><div class="f"><label>Código <span class="req">*</span></label><input type="text" placeholder="PILOTO10"></div><div class="f"><label>Tipo de desconto <span class="req">*</span></label><select><option>Percentual</option><option>Valor fixo</option></select></div><div class="f"><label>Valor <span class="req">*</span></label><input type="text" placeholder="10 (%) ou 50,00 (R$)"></div><div class="f"><label>Valor mínimo do pedido (R$)</label><input type="text" placeholder="Ex: 999,00"></div><div class="f full"><label>Descrição interna</label><input type="text" placeholder="Campanha de e-mail da semana do piloto"></div></div><p class="legend">Campos com <span class="req">*</span> são obrigatórios</p></section>
-    <section class="card p"><div class="card-h"><span class="card-t">Vigência e limites</span><span class="card-n">Limites são validados contra UsoCupom</span></div><div class="g2"><div class="f"><label>Início <span class="req">*</span></label><input type="text" placeholder="dd/mm/aaaa"></div><div class="f"><label>Fim</label><input type="text" placeholder="dd/mm/aaaa · vazio = sem prazo"></div><div class="f"><label>Limite total de usos</label><input type="text" placeholder="Ex: 500 · vazio = ilimitado"></div><div class="f"><label>Limite por cliente</label><input type="text" placeholder="Ex: 1"></div><label class="ck full"><input type="checkbox"> Válido apenas para o primeiro pedido do cliente</label><label class="ck full"><input type="checkbox"> Acumula com promoções ativas</label></div></section>
-    <section class="card p"><div class="card-h"><span class="card-t">Restrições de escopo</span><span class="card-n">Vazio significa vale para a loja inteira</span></div><div class="g2"><div class="f"><label>Categorias</label><select><option>Todas as categorias</option><option>Drones profissionais</option><option>Compactos</option><option>Acessórios</option></select></div><div class="f"><label>Marcas</label><select><option>Todas as marcas</option><option>Aerion</option><option>Skyline</option><option>Vortex</option></select></div><div class="f full"><label>Produtos específicos</label><input type="text" placeholder="Busque por nome ou SKU para restringir a variantes"></div></div><p class="legend">As três restrições são relações muitos-para-muitos de <span class="chip">Cupom</span> com <span class="chip">Categoria</span>, <span class="chip">Marca</span> e <span class="chip">VarianteProduto</span>.</p></section>
-  </div>
-  <aside class="rail">
-    <section class="card p2"><div class="eyebrow">Publicação</div><div class="stack"><div class="f"><label>Status <span class="req">*</span></label><select><option>Rascunho</option><option>Ativo</option><option>Pausado</option></select></div><label class="ck full"><input type="checkbox"> Exibir na página Ofertas</label></div></section>
-    <section class="card p2"><div class="eyebrow">Prévia no carrinho</div><div class="stack" style="gap:10px"><div class="kv"><span class="dim">Subtotal</span><span class="ink">R$ 15.228</span></div><div class="kv"><span class="dim">Cupom novo</span><span style="color:var(--ok);font-size:12.5px">− R$ 1.522</span></div><div class="kv" style="border-top:1px solid var(--line);padding-top:10px"><span class="ink">Total</span><span class="ink">R$ 13.706</span></div></div></section>
-    <section class="card p2"><div class="eyebrow">Pendências</div><div style="display:flex;flex-direction:column;gap:9px"><span class="warn">3 campos obrigatórios vazios</span><span style="font-size:12px;color:var(--mute)">Código · Valor · Data de início</span></div></section>
-  </aside>
-</div>
-<div class="actionbar"><span class="sub">Código precisa ser único · a validação roda ao salvar</span><div class="actions"><a class="btn" href="cupons.html">Cancelar</a><button class="btn">Salvar rascunho</button><button class="btn p">Ativar cupom</button></div></div>
-</body>
-</html>
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Aeria Admin Criar cupom</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&family=DM+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/admin.css">
+</head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></symbol>
+<symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
+<symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V4h10v5M7 17H5v-6h14v6h-2M7 14h10v6H7z"/></symbol>
+<symbol id="i-up" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></symbol>
+</svg>
+<header class="tb"><div class="in gut">
+  <a class="brand" href="index.html">AERIA <span>ADMIN</span></a>
+  <nav class="tabs" aria-label="Painel"><a href="index.html">Dashboard</a><a href="produtos.html">Produtos</a><a href="marcas.html">Marcas</a><a href="categorias.html">Categorias</a><a href="fornecedores.html">Fornecedores</a><a href="promocoes.html">Promoções</a><a href="cupons.html" aria-current="page">Cupons</a><a href="estoque.html">Estoque</a><a href="pedidos.html">Pedidos</a><a href="usuarios.html">Usuários</a></nav>
+  <div class="r"><div class="search"><svg class="ico"><use href="#i-search"/></svg>Buscar no painel<kbd>/</kbd></div><a class="store" href="../index.html">Ver loja ↗</a><span class="avatar" title="Marina Ribeiro">MR</span></div>
+</div><nav class="mnav" aria-label="Painel (celular)"><a href="index.html">Dashboard</a><a href="produtos.html">Produtos</a><a href="marcas.html">Marcas</a><a href="categorias.html">Categorias</a><a href="fornecedores.html">Fornecedores</a><a href="promocoes.html">Promoções</a><a href="cupons.html" aria-current="page">Cupons</a><a href="estoque.html">Estoque</a><a href="pedidos.html">Pedidos</a><a href="usuarios.html">Usuários</a></nav></header>
+<main class="gut">
+<div class="ph"><div><div class="crumb"><a href="cupons.html">← Cupons</a><span>·</span><span>Novo cupom</span></div><h1>Criar cupom</h1></div><div class="acts"><span class="st mute"><span>Rascunho salvo há 1 min</span></span></div></div>
+<div class="form"><div><section class="sec"><div class="sh"><h2>Código e desconto</h2><span>O código é digitado pelo cliente no carrinho</span></div><div class="fg"><div class="f w3"><label>Código <span class="req">*</span></label><input id="cc" class="mono" placeholder="EX.: PILOTO10" style="text-transform:uppercase"><span class="hint">Precisa ser único · a validação roda ao salvar</span></div><div class="f w3"><label>Tipo de desconto <span class="req">*</span></label><div class="rad"><label><input type="radio" name="ctp" checked>Percentual</label><label><input type="radio" name="ctp">Valor fixo</label></div></div><div class="f "><label>Valor <span class="req">*</span></label><div class="unit"><input id="cv" value="" inputmode="decimal"><em>%</em></div></div><div class="f "><label>Valor mínimo do pedido</label><div class="unit"><input id="cm" value="" inputmode="decimal"><em>R$</em></div></div><div class="f w6"><label>Descrição interna</label><input id="cd" type="text" value="" placeholder="Só a equipe vê"></div></div></section><section class="sec"><div class="sh"><h2>Vigência e limites</h2><span>Limites são validados contra UsoCupom</span></div><div class="fg"><div class="f "><label>Início <span class="req">*</span></label><input id="ci" type="text" value="" placeholder="dd/mm/aaaa"></div><div class="f "><label>Fim</label><input id="cf" type="text" value="" placeholder="sem data final"></div><div class="f "><label>Limite total de usos</label><input id="clt" type="text" value="500" placeholder=""></div><div class="f "><label>Limite por cliente</label><input id="clc" type="text" value="1" placeholder=""></div><label class="toggle" style="grid-column:span 6"><input type="checkbox">Válido apenas para o primeiro pedido do cliente</label><label class="toggle" style="grid-column:span 6"><input type="checkbox">Acumula com promoções ativas</label></div></section><section class="sec"><div class="sh"><h2>Restrições de escopo</h2><span>Vazio significa vale para a loja inteira</span></div><div class="fg"><div class="f "><label>Categorias</label><select id="crc"><option>Todas as categorias</option><option>Drones profissionais</option><option>Compactos</option><option>Acessórios</option></select></div><div class="f "><label>Marcas</label><select id="crm"><option>Todas as marcas</option><option>Aerion</option><option>Skyline</option><option>Vortex</option></select></div><div class="f "><label>Produtos específicos</label><input id="crp" type="text" value="" placeholder="Buscar por nome ou SKU"></div></div><p class="note">As três restrições são relações muitos-para-muitos de <code>Cupom</code> com <code>Categoria</code>, <code>Marca</code> e <code>Produto</code>.</p></section></div><aside class="rail"><section class="card "><div class="bd" style="padding-top:18px"><span class="lbl">Publicação</span><div style="margin-top:12px"><div class="f" style="grid-column:auto"><label>Status <span class="req">*</span></label><div class="rad"><label><input type="radio" name="pubst" checked>Rascunho</label><label><input type="radio" name="pubst">Ativo</label><label><input type="radio" name="pubst">Pausado</label></div></div><label class="toggle" style="margin-top:8px"><input type=checkbox>Exibir na página Ofertas</label></div></div></section><section class="card "><div class="bd" style="padding-top:18px"><span class="lbl">Prévia no carrinho</span><div style="margin-top:12px"><div class="rl"><div><span>Subtotal</span><b class="num">R$ 15.228</b></div><div><span>Cupom novo · 10%</span><b class="num" style="color:var(--ok)">− R$ 1.522</b></div><div style="padding-top:10px;border-top:1px solid var(--line)"><span>Total</span><b class="num" style="font:300 22px var(--display)">R$ 13.706</b></div></div></div></div></section><section class="card pend"><div class="bd" style="padding-top:18px"><div class="t">3 campos obrigatórios vazios</div><p>Código · Valor · Data de início</p><small>Código precisa ser único</small></div></section></aside></div>
+<div class="actionbar"><div class="in gut"><span class="msg">Faltam <b>3 campos obrigatórios</b>.</span><a class="btn " href="cupons.html">Cancelar</a><button class="btn " type="button">Salvar rascunho</button><button class="btn p" type="button">Ativar cupom</button></div></div>
+<p class="foot-note">Protótipo acadêmico · dados fictícios · Aeria 2026</p>
+</main>
+
+</body></html>

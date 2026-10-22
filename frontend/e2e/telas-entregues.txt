@@ -6,10 +6,13 @@
 #   (docs/design/prototipo) e TIRA a etiqueta daqui; depois o PR que muda a tela real
 #   e devolve a etiqueta.
 #
-issue-4
-issue-5
-issue-13
-issue-15
-issue-16
-issue-14
-issue-18
+#
+# Etiquetas retiradas no PR do protótipo novo (Noite + Campo), seguindo o passo 1 acima.
+# Devolver cada uma no PR que adaptar a tela real ao protótipo novo:
+# issue-4
+# issue-5
+# issue-13
+# issue-15
+# issue-16
+# issue-14
+# issue-18

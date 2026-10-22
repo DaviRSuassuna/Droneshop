@@ -1,47 +1,29 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Novo movimento de estoque · Admin Aeria</title>
-<link rel="stylesheet" href="../assets/site.css">
-<script src="../assets/theme.js"></script>
-</head>
-<body>
-<header class="tb">
-  <div class="tb-l">
-    <a class="tb-brand" href="index.html">ADMIN</a>
-    <nav class="tb-nav">
-      <a href="index.html">Dashboard</a>
-      <a href="produtos.html">Produtos</a>
-      <a href="marcas.html">Marcas</a>
-      <a href="categorias.html">Categorias</a>
-      <a href="fornecedores.html">Fornecedores</a>
-      <a href="promocoes.html">Promoções</a>
-      <a href="cupons.html">Cupons</a>
-      <a href="estoque.html" class="on">Estoque</a>
-      <a href="pedidos.html">Pedidos</a>
-      <a href="usuarios.html">Usuários</a>
-    </nav>
-  </div>
-  <div class="tb-r">
-    <span class="tb-search">Buscar no painel</span>
-    <a href="../index.html">Ver loja ↗</a>
-    <span class="avatar">MR</span>
-  </div>
-</header>
-<div class="pad cols">
-  <div class="main">
-    <div><h1 class="h1 big">Novo movimento de estoque</h1><div class="crumb">Operações · <a href="estoque.html">Estoque</a> · Novo movimento</div></div>
-    <section class="card p"><div class="card-h"><span class="card-t">Movimento</span><span class="card-n">Entidade MovimentoEstoque · aeria-estoque.puml</span></div><div class="g2"><div class="f full"><label>Variante <span class="req">*</span></label><select><option>Selecione a variante pelo SKU</option><option>Falcon X2 Pro · Padrão · DRN-FX2P-STD</option><option>Falcon X2 Standard · Padrão · DRN-FX2S-0041</option><option>Bateria extra Falcon X2 · Única · ACC-BFX2-0111</option></select></div><div class="f"><label>Tipo <span class="req">*</span></label><select><option>Entrada · compra de fornecedor</option><option>Saída · venda ou expedição</option><option>Ajuste · correção de inventário</option><option>Devolução · retorno de cliente</option><option>Perda · avaria, furto ou vencimento</option></select></div><div class="f"><label>Quantidade <span class="req">*</span></label><input type="text" placeholder="Ex: 20"></div><div class="f"><label>Nota fiscal de entrada</label><input type="text" placeholder="Número · opcional"></div><div class="f"><label>Fornecedor</label><select><option>Não se aplica</option><option>Aerion Brasil Importação Ltda.</option><option>Skyline Trading Co.</option></select></div><div class="f full"><label>Observação <span class="req">*</span></label><textarea placeholder="Justificativa do movimento. Obrigatória em ajuste e perda."></textarea></div></div><p class="legend">Movimento é <strong>append-only</strong>: não existe editar nem excluir. Um lançamento errado se corrige com um novo movimento de ajuste em sentido contrário.</p></section>
-    <section class="card p"><div class="card-h"><span class="card-t">Últimos movimentos desta variante</span><span class="card-n">Falcon X2 Pro · Padrão</span></div><div class="tbl"><div class="trow head" style="grid-template-columns:120px 1fr 90px 110px 1.4fr"><span>Data</span><span>Tipo</span><span>Qtd.</span><span>Saldo</span><span>Autor</span></div><div class="trow" style="grid-template-columns:120px 1fr 90px 110px 1.4fr"><span class="dim">22/08 09:10</span><span class="ink">Saída · pedido #PD-2026-00318</span><span class="dim">−1</span><span class="ink">23</span><span class="dim">Sistema</span></div><div class="trow" style="grid-template-columns:120px 1fr 90px 110px 1.4fr"><span class="dim">19/08 15:42</span><span class="ink">Entrada · NF 44.219</span><span class="dim">+20</span><span class="ink">24</span><span class="dim">Diego Salgado</span></div><div class="trow" style="grid-template-columns:120px 1fr 90px 110px 1.4fr"><span class="dim">11/08 11:05</span><span class="ink">Ajuste · inventário mensal</span><span class="dim">−2</span><span class="ink">4</span><span class="dim">Marina Rocha</span></div><div class="trow" style="grid-template-columns:120px 1fr 90px 110px 1.4fr"><span class="dim">02/08 08:30</span><span class="ink">Devolução · RMA 118</span><span class="dim">+1</span><span class="ink">6</span><span class="dim">Sistema</span></div></div></section>
-  </div>
-  <aside class="rail">
-    <section class="card p2"><div class="eyebrow">Saldo da variante</div><div class="stack" style="gap:11px"><div class="kv"><span class="dim">Físico</span><span class="ink">23</span></div><div class="kv"><span class="dim">Reservado no checkout</span><span class="ink">4</span></div><div class="kv"><span class="dim">Disponível para venda</span><span class="ink">19</span></div><div class="kv"><span class="dim">Estoque mínimo</span><span class="ink">5</span></div><div class="kv" style="border-top:1px solid var(--line);padding-top:11px"><span class="ink">Saldo após o movimento</span><span class="ink">—</span></div></div></section>
-    <section class="card p2"><div class="eyebrow">Autoria</div><p style="margin:0;font-size:12px;line-height:1.7;color:var(--dim)">Movimento lançado por aqui grava origem <span class="chip">MANUAL</span> com o seu usuário como autor. Movimento gerado por venda, reserva ou devolução grava <span class="chip">SISTEMA</span> e fica sem autor.</p></section>
-    <section class="card p2"><div class="eyebrow">Pendências</div><div style="display:flex;flex-direction:column;gap:9px"><span class="warn">3 campos obrigatórios vazios</span><span style="font-size:12px;color:var(--mute)">Variante · Quantidade · Observação</span></div></section>
-  </aside>
-</div>
-<div class="actionbar"><span class="sub">Kits não recebem movimento: a baixa acontece sempre no componente</span><div class="actions"><a class="btn" href="estoque.html">Cancelar</a><button class="btn p">Lançar movimento</button></div></div>
-</body>
-</html>
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Aeria Admin Novo movimento de estoque</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&family=DM+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/admin.css">
+</head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></symbol>
+<symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
+<symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V4h10v5M7 17H5v-6h14v6h-2M7 14h10v6H7z"/></symbol>
+<symbol id="i-up" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></symbol>
+</svg>
+<header class="tb"><div class="in gut">
+  <a class="brand" href="index.html">AERIA <span>ADMIN</span></a>
+  <nav class="tabs" aria-label="Painel"><a href="index.html">Dashboard</a><a href="produtos.html">Produtos</a><a href="marcas.html">Marcas</a><a href="categorias.html">Categorias</a><a href="fornecedores.html">Fornecedores</a><a href="promocoes.html">Promoções</a><a href="cupons.html">Cupons</a><a href="estoque.html" aria-current="page">Estoque</a><a href="pedidos.html">Pedidos</a><a href="usuarios.html">Usuários</a></nav>
+  <div class="r"><div class="search"><svg class="ico"><use href="#i-search"/></svg>Buscar no painel<kbd>/</kbd></div><a class="store" href="../index.html">Ver loja ↗</a><span class="avatar" title="Marina Ribeiro">MR</span></div>
+</div><nav class="mnav" aria-label="Painel (celular)"><a href="index.html">Dashboard</a><a href="produtos.html">Produtos</a><a href="marcas.html">Marcas</a><a href="categorias.html">Categorias</a><a href="fornecedores.html">Fornecedores</a><a href="promocoes.html">Promoções</a><a href="cupons.html">Cupons</a><a href="estoque.html" aria-current="page">Estoque</a><a href="pedidos.html">Pedidos</a><a href="usuarios.html">Usuários</a></nav></header>
+<main class="gut">
+<div class="ph"><div><div class="crumb"><a href="estoque.html">← Estoque</a><span>·</span><span>Novo movimento</span></div><h1>Novo movimento de estoque</h1></div><div class="acts"><span class="st mute"><span>Lançado por Marina Rocha</span></span></div></div>
+<div class="form"><div><section class="sec"><div class="sh"><h2>Movimento</h2><span>Entidade MovimentoEstoque</span></div><div class="fg"><div class="f w6"><label>Produto <span class="req">*</span></label><select id="mv"><option>Falcon X2 Pro · DRN-FX2P-0042</option><option>Falcon X2 Standard · DRN-FX2S-0041</option><option>Bateria extra Falcon X2 · ACC-BFX2-0101</option></select><span class="hint">Busque pelo nome ou SKU · kits não aparecem aqui</span></div><div class="f w3"><label>Tipo <span class="req">*</span></label><select id="mt"><option>Entrada · compra de fornecedor</option><option>Saída · venda ou expedição</option><option>Ajuste · correção de inventário</option><option>Devolução · retorno de cliente</option><option>Perda · avaria, furto ou vencimento</option></select></div><div class="f w1"><label>Quantidade <span class="req">*</span></label><div class="unit"><input id="mq" value="" inputmode="decimal"><em>un</em></div></div><div class="f "><label>Nota fiscal de entrada</label><input id="mnf" type="text" value="" placeholder="NF 00.000"></div><div class="f w3"><label>Fornecedor</label><select id="mf"><option>Não se aplica</option><option>Aerion Brasil Importação Ltda.</option><option>Skyline Trading Co.</option></select></div><div class="f w6"><label>Observação <span class="req">*</span></label><textarea id="mo" placeholder="Motivo do movimento"></textarea></div></div><div class="info" style="margin:14px 0 0">Movimento é <b>append-only</b>: não existe editar nem excluir. Um lançamento errado se corrige com um novo ajuste em sentido contrário.</div></section><section class="sec"><div class="sh"><h2>Últimos movimentos deste produto</h2><span>Falcon X2 Pro · DRN-FX2P-0042</span></div><div style="overflow-x:auto"><table class="vt" style="min-width:560px"><thead><tr><th>Data</th><th>Tipo</th><th class="r">Qtd.</th><th class="r">Saldo</th><th>Autor</th></tr></thead><tbody><tr><td data-l="Data" class="mono" style="font-size:12.5px;color:var(--ink2)">19/10 09:10</td><td data-l="Tipo">Saída · pedido #PD-2026-00318</td><td data-l="Qtd." class="r mono neg">−1</td><td data-l="Saldo" class="r mono">23</td><td data-l="Autor" style="color:var(--ink2)">Sistema</td></tr><tr><td data-l="Data" class="mono" style="font-size:12.5px;color:var(--ink2)">16/10 15:42</td><td data-l="Tipo">Entrada · NF 44.219</td><td data-l="Qtd." class="r mono pos">+20</td><td data-l="Saldo" class="r mono">24</td><td data-l="Autor" style="color:var(--ink2)">Diego Salgado</td></tr><tr><td data-l="Data" class="mono" style="font-size:12.5px;color:var(--ink2)">08/10 11:05</td><td data-l="Tipo">Ajuste · inventário mensal</td><td data-l="Qtd." class="r mono neg">−2</td><td data-l="Saldo" class="r mono">4</td><td data-l="Autor" style="color:var(--ink2)">Marina Rocha</td></tr><tr><td data-l="Data" class="mono" style="font-size:12.5px;color:var(--ink2)">02/10 08:30</td><td data-l="Tipo">Devolução · RMA 118</td><td data-l="Qtd." class="r mono pos">+1</td><td data-l="Saldo" class="r mono">6</td><td data-l="Autor" style="color:var(--ink2)">Sistema</td></tr></tbody></table></div></section></div><aside class="rail"><section class="card "><div class="bd" style="padding-top:18px"><span class="lbl">Saldo do produto</span><div style="margin-top:12px"><div class="saldo"><div><span>Físico</span><b class="num">23</b></div><div><span>Reservado no checkout</span><b class="num">4</b></div><div class="hl"><span>Disponível para venda</span><b class="num">19</b></div><div><span>Estoque mínimo</span><b class="num">5</b></div><div><span>Saldo após o movimento</span><b>a calcular</b></div></div></div></div></section><section class="card "><div class="bd" style="padding-top:18px"><span class="lbl">Autoria</span><div style="margin-top:12px"><p class="note" style="margin:0">Movimento lançado aqui grava origem <code>MANUAL</code> com o seu usuário como autor. Venda, reserva ou devolução gravam <code>SISTEMA</code>, sem autor.</p></div></div></section><section class="card pend"><div class="bd" style="padding-top:18px"><div class="t">3 campos obrigatórios vazios</div><p>Produto · Quantidade · Observação</p><small>Kits não recebem movimento: a baixa acontece sempre no componente</small></div></section></aside></div>
+<div class="actionbar"><div class="in gut"><span class="msg">Faltam <b>3 campos obrigatórios</b>.</span><a class="btn " href="estoque.html">Cancelar</a><button class="btn p" type="button">Lançar movimento</button></div></div>
+<p class="foot-note">Protótipo acadêmico · dados fictícios · Aeria 2026</p>
+</main>
+
+</body></html>

@@ -1,89 +1,33 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Pedidos · Admin Aeria</title>
-<link rel="stylesheet" href="../assets/site.css">
-<script src="../assets/theme.js"></script>
-</head>
-<body>
-<header class="tb">
-  <div class="tb-l">
-    <a class="tb-brand" href="index.html">ADMIN</a>
-    <nav class="tb-nav">
-      <a href="index.html">Dashboard</a>
-      <a href="produtos.html">Produtos</a>
-      <a href="marcas.html">Marcas</a>
-      <a href="categorias.html">Categorias</a>
-      <a href="fornecedores.html">Fornecedores</a>
-      <a href="promocoes.html">Promoções</a>
-      <a href="cupons.html">Cupons</a>
-      <a href="estoque.html">Estoque</a>
-      <a href="pedidos.html" class="on">Pedidos</a>
-      <a href="usuarios.html">Usuários</a>
-    </nav>
-  </div>
-  <div class="tb-r">
-    <span class="tb-search">Buscar no painel</span>
-    <a href="../index.html">Ver loja ↗</a>
-    <span class="avatar">MR</span>
-  </div>
-</header>
-<div class="pagebar">
-  <div style="display:flex;align-items:baseline;gap:12px"><h1 class="h1">Pedidos</h1><span class="sub">312 no período · 18 aguardando ação</span></div>
-  <div class="actions"><button class="btn">Exportar</button><button class="btn p">Imprimir etiquetas</button></div>
-</div>
-<div class="pad-t" style="display:flex;flex-direction:column;gap:16px">
-  <nav class="tabs"><a href="pedidos.html" class="on">Todos <em>312</em></a><a href="pedidos.html">Aguardando pagamento <em>18</em></a><a href="pedidos.html">Pagos <em>46</em></a><a href="pedidos.html">Em separação <em>23</em></a><a href="pedidos.html">Enviados <em>109</em></a><a href="pedidos.html">Entregues <em>108</em></a><a href="pedidos.html">Cancelados <em>8</em></a></nav>
-  <div class="filters">
-    <div class="f grow"><input type="text" placeholder="Buscar por nº do pedido, cliente ou código de rastreio"></div>
-    <div class="f" style="width:180px"><select><option>Período: 30 dias</option></select></div><div class="f" style="width:180px"><select><option>Pagamento</option></select></div><div class="f" style="width:180px"><select><option>Canal</option></select></div>
-  </div>
-  <div class="tbl">
-    <div class="trow head" style="grid-template-columns:38px 130px minmax(0,1fr) 108px 66px 116px 130px 130px 44px"><span></span><span>Pedido</span><span>Cliente</span><span>Data</span><span>Itens</span><span>Total</span><span>Pagamento</span><span>Status</span><span></span></div>
-    <a class="trow" style="grid-template-columns:38px 130px minmax(0,1fr) 108px 66px 116px 130px 130px 44px" href="pedido.html">
-      <input type="checkbox" style="appearance:none;width:15px;height:15px;border:1px solid var(--b4);border-radius:3px;background:var(--field)">
-      <span class="chip">#PD-2026-00318</span><span class="ink">Marina Ribeiro</span><span class="dim">21/08</span><span class="dim">3</span><span class="ink">R$ 14.870</span><span class="dim">Cartão 12×</span>
-      <span class="status"><span class="dot" style="background:var(--ok)"></span>Em separação</span><span style="justify-self:end;color:var(--mute)">⋯</span>
-    </a>
-    <a class="trow" style="grid-template-columns:38px 130px minmax(0,1fr) 108px 66px 116px 130px 130px 44px" href="pedido.html">
-      <input type="checkbox" style="appearance:none;width:15px;height:15px;border:1px solid var(--b4);border-radius:3px;background:var(--field)">
-      <span class="chip">#PD-2026-00317</span><span class="ink">Thiago Bastos</span><span class="dim">21/08</span><span class="dim">1</span><span class="ink">R$ 4.290</span><span class="dim">Pix</span>
-      <span class="status"><span class="dot" style="background:var(--ok)"></span>Pago</span><span style="justify-self:end;color:var(--mute)">⋯</span>
-    </a>
-    <a class="trow" style="grid-template-columns:38px 130px minmax(0,1fr) 108px 66px 116px 130px 130px 44px" href="pedido.html">
-      <input type="checkbox" style="appearance:none;width:15px;height:15px;border:1px solid var(--b4);border-radius:3px;background:var(--field)">
-      <span class="chip">#PD-2026-00316</span><span class="ink">AgroSul Ltda.</span><span class="dim">20/08</span><span class="dim">2</span><span class="ink">R$ 93.800</span><span class="dim">Boleto</span>
-      <span class="status"><span class="dot" style="background:var(--dim2)"></span>Aguardando pagamento</span><span style="justify-self:end;color:var(--mute)">⋯</span>
-    </a>
-    <a class="trow" style="grid-template-columns:38px 130px minmax(0,1fr) 108px 66px 116px 130px 130px 44px" href="pedido.html">
-      <input type="checkbox" style="appearance:none;width:15px;height:15px;border:1px solid var(--b4);border-radius:3px;background:var(--field)">
-      <span class="chip">#PD-2026-00315</span><span class="ink">Camila Duarte</span><span class="dim">20/08</span><span class="dim">1</span><span class="ink">R$ 690</span><span class="dim">Pix</span>
-      <span class="status"><span class="dot" style="background:var(--ok)"></span>Enviado</span><span style="justify-self:end;color:var(--mute)">⋯</span>
-    </a>
-    <a class="trow" style="grid-template-columns:38px 130px minmax(0,1fr) 108px 66px 116px 130px 130px 44px" href="pedido.html">
-      <input type="checkbox" style="appearance:none;width:15px;height:15px;border:1px solid var(--b4);border-radius:3px;background:var(--field)">
-      <span class="chip">#PD-2026-00314</span><span class="ink">Renan Oliveira</span><span class="dim">19/08</span><span class="dim">4</span><span class="ink">R$ 21.150</span><span class="dim">Cartão 6×</span>
-      <span class="status"><span class="dot" style="background:var(--ok)"></span>Enviado</span><span style="justify-self:end;color:var(--mute)">⋯</span>
-    </a>
-    <a class="trow" style="grid-template-columns:38px 130px minmax(0,1fr) 108px 66px 116px 130px 130px 44px" href="pedido.html">
-      <input type="checkbox" style="appearance:none;width:15px;height:15px;border:1px solid var(--b4);border-radius:3px;background:var(--field)">
-      <span class="chip">#PD-2026-00313</span><span class="ink">Studio Aéreo MG</span><span class="dim">19/08</span><span class="dim">2</span><span class="ink">R$ 28.400</span><span class="dim">Cartão 10×</span>
-      <span class="status"><span class="dot" style="background:var(--ok)"></span>Entregue</span><span style="justify-self:end;color:var(--mute)">⋯</span>
-    </a>
-    <a class="trow" style="grid-template-columns:38px 130px minmax(0,1fr) 108px 66px 116px 130px 130px 44px" href="pedido.html">
-      <input type="checkbox" style="appearance:none;width:15px;height:15px;border:1px solid var(--b4);border-radius:3px;background:var(--field)">
-      <span class="chip">#PD-2026-00312</span><span class="ink">Paulo Menezes</span><span class="dim">18/08</span><span class="dim">1</span><span class="ink">R$ 3.150</span><span class="dim">Pix</span>
-      <span class="status"><span class="dot" style="background:var(--warn)"></span>Cancelado</span><span style="justify-self:end;color:var(--mute)">⋯</span>
-    </a>
-    <a class="trow" style="grid-template-columns:38px 130px minmax(0,1fr) 108px 66px 116px 130px 130px 44px" href="pedido.html">
-      <input type="checkbox" style="appearance:none;width:15px;height:15px;border:1px solid var(--b4);border-radius:3px;background:var(--field)">
-      <span class="chip">#PD-2026-00311</span><span class="ink">Lívia Prado</span><span class="dim">18/08</span><span class="dim">2</span><span class="ink">R$ 9.680</span><span class="dim">Cartão 12×</span>
-      <span class="status"><span class="dot" style="background:var(--ok)"></span>Entregue</span><span style="justify-self:end;color:var(--mute)">⋯</span>
-    </a>
-    <div class="pager"><span>Exibindo 1–8 de 312</span><div class="pages"><a href="#">‹</a><a class="on" href="#">1</a><a href="#">2</a><a href="#">3</a><a href="#">39</a><a href="#">›</a></div></div>
-  </div>
-</div>
-</body>
-</html>
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Aeria Admin Pedidos</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&family=DM+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/admin.css">
+</head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></symbol>
+<symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
+<symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V4h10v5M7 17H5v-6h14v6h-2M7 14h10v6H7z"/></symbol>
+<symbol id="i-up" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></symbol>
+</svg>
+<header class="tb"><div class="in gut">
+  <a class="brand" href="index.html">AERIA <span>ADMIN</span></a>
+  <nav class="tabs" aria-label="Painel"><a href="index.html">Dashboard</a><a href="produtos.html">Produtos</a><a href="marcas.html">Marcas</a><a href="categorias.html">Categorias</a><a href="fornecedores.html">Fornecedores</a><a href="promocoes.html">Promoções</a><a href="cupons.html">Cupons</a><a href="estoque.html">Estoque</a><a href="pedidos.html" aria-current="page">Pedidos</a><a href="usuarios.html">Usuários</a></nav>
+  <div class="r"><div class="search"><svg class="ico"><use href="#i-search"/></svg>Buscar no painel<kbd>/</kbd></div><a class="store" href="../index.html">Ver loja ↗</a><span class="avatar" title="Marina Ribeiro">MR</span></div>
+</div><nav class="mnav" aria-label="Painel (celular)"><a href="index.html">Dashboard</a><a href="produtos.html">Produtos</a><a href="marcas.html">Marcas</a><a href="categorias.html">Categorias</a><a href="fornecedores.html">Fornecedores</a><a href="promocoes.html">Promoções</a><a href="cupons.html">Cupons</a><a href="estoque.html">Estoque</a><a href="pedidos.html" aria-current="page">Pedidos</a><a href="usuarios.html">Usuários</a></nav></header>
+<main class="gut">
+<div class="ph"><div><span class="lbl">Vendas</span><h1>Pedidos</h1><div class="sub">312 no período · 18 aguardando ação</div></div>
+<div class="acts"><button class="btn"><svg class="ico"><use href="#i-down"/></svg>Exportar</button><button class="btn p"><svg class="ico"><use href="#i-print"/></svg>Imprimir etiquetas</button></div></div>
+<section class="kpis" aria-label="Resumo" style="margin-bottom:22px"><div class="kpi"><span class="lbl">A separar</span><strong class="num">23</strong><div class="delta"><span>pedidos pagos</span></div></div><div class="kpi"><span class="lbl">Aguardando pagamento</span><strong class="num">18</strong><div class="delta"><span>R$ 142 mil em aberto</span></div></div><div class="kpi"><span class="lbl">Em trânsito</span><strong class="num">41</strong><div class="delta"><span>prazo médio 4,2 dias</span></div></div><div class="kpi"><span class="lbl">Devoluções abertas</span><strong class="num">3</strong><div class="delta"><span>dentro de 30 dias</span></div></div></section>
+<nav class="stabs" aria-label="Status"><a href="#" aria-current="page">Todos<b>312</b></a><a href="#">Aguardando pagamento<b>18</b></a><a href="#">Pagos<b>46</b></a><a href="#">Em separação<b>23</b></a><a href="#">Enviados<b>109</b></a><a href="#">Entregues<b>108</b></a><a href="#">Cancelados<b>8</b></a></nav>
+<div class="toolbar"><label class="field-s grow"><svg class="ico"><use href="#i-search"/></svg><input placeholder="Buscar por número, cliente ou CPF/CNPJ"></label><select class="sel"><option>Período: 30 dias</option></select><select class="sel"><option>Pagamento</option><option>Pix</option><option>Cartão</option><option>Boleto</option></select><select class="sel"><option>Canal</option></select></div>
+<div class="tw"><table><thead><tr><th>Pedido</th><th>Cliente</th><th>Data</th><th class="r">Itens</th><th class="r">Total</th><th>Pagamento</th><th>Status</th><th></th></tr></thead><tbody><tr><td data-l="Pedido" class="mono" style="font-size:13px">#PD-2026-00321</td><td data-l="Cliente"><b style="font-weight:500">Thiago Bastos</b></td><td data-l="Data" class="num" style="color:var(--ink2)">19/10</td><td data-l="Itens" class="r num mono">1</td><td data-l="Total" class="r num" style="font-family:var(--display);font-weight:300;font-size:15px">R$ 4.290</td><td data-l="Pagamento" style="color:var(--ink2)">Pix</td><td data-l="Status"><span class="st ok"><span>Pago</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr><td data-l="Pedido" class="mono" style="font-size:13px">#PD-2026-00320</td><td data-l="Cliente"><b style="font-weight:500">Studio Aéreo MG</b></td><td data-l="Data" class="num" style="color:var(--ink2)">19/10</td><td data-l="Itens" class="r num mono">2</td><td data-l="Total" class="r num" style="font-family:var(--display);font-weight:300;font-size:15px">R$ 28.400</td><td data-l="Pagamento" style="color:var(--ink2)">Cartão 10×</td><td data-l="Status"><span class="st ok"><span>Pago</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr><td data-l="Pedido" class="mono" style="font-size:13px">#PD-2026-00318</td><td data-l="Cliente"><b style="font-weight:500">Marina Ribeiro</b></td><td data-l="Data" class="num" style="color:var(--ink2)">18/10</td><td data-l="Itens" class="r num mono">3</td><td data-l="Total" class="r num" style="font-family:var(--display);font-weight:300;font-size:15px">R$ 14.870</td><td data-l="Pagamento" style="color:var(--ink2)">Cartão 12×</td><td data-l="Status"><span class="st info"><span>Em separação</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr><td data-l="Pedido" class="mono" style="font-size:13px">#PD-2026-00316</td><td data-l="Cliente"><b style="font-weight:500">AgroSul Ltda.</b></td><td data-l="Data" class="num" style="color:var(--ink2)">17/10</td><td data-l="Itens" class="r num mono">2</td><td data-l="Total" class="r num" style="font-family:var(--display);font-weight:300;font-size:15px">R$ 93.800</td><td data-l="Pagamento" style="color:var(--ink2)">Boleto</td><td data-l="Status"><span class="st amber"><span>Aguardando pagamento</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr><td data-l="Pedido" class="mono" style="font-size:13px">#PD-2026-00315</td><td data-l="Cliente"><b style="font-weight:500">Camila Duarte</b></td><td data-l="Data" class="num" style="color:var(--ink2)">17/10</td><td data-l="Itens" class="r num mono">1</td><td data-l="Total" class="r num" style="font-family:var(--display);font-weight:300;font-size:15px">R$ 690</td><td data-l="Pagamento" style="color:var(--ink2)">Pix</td><td data-l="Status"><span class="st info"><span>Enviado</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr><td data-l="Pedido" class="mono" style="font-size:13px">#PD-2026-00314</td><td data-l="Cliente"><b style="font-weight:500">Renan Oliveira</b></td><td data-l="Data" class="num" style="color:var(--ink2)">16/10</td><td data-l="Itens" class="r num mono">4</td><td data-l="Total" class="r num" style="font-family:var(--display);font-weight:300;font-size:15px">R$ 21.150</td><td data-l="Pagamento" style="color:var(--ink2)">Cartão 6×</td><td data-l="Status"><span class="st info"><span>Enviado</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr><td data-l="Pedido" class="mono" style="font-size:13px">#PD-2026-00313</td><td data-l="Cliente"><b style="font-weight:500">Studio Aéreo MG</b></td><td data-l="Data" class="num" style="color:var(--ink2)">16/10</td><td data-l="Itens" class="r num mono">2</td><td data-l="Total" class="r num" style="font-family:var(--display);font-weight:300;font-size:15px">R$ 28.400</td><td data-l="Pagamento" style="color:var(--ink2)">Cartão 10×</td><td data-l="Status"><span class="st ok"><span>Entregue</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr><td data-l="Pedido" class="mono" style="font-size:13px">#PD-2026-00312</td><td data-l="Cliente"><b style="font-weight:500">Paulo Menezes</b></td><td data-l="Data" class="num" style="color:var(--ink2)">15/10</td><td data-l="Itens" class="r num mono">1</td><td data-l="Total" class="r num" style="font-family:var(--display);font-weight:300;font-size:15px">R$ 3.150</td><td data-l="Pagamento" style="color:var(--ink2)">Pix</td><td data-l="Status"><span class="st warn"><span>Cancelado</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr></tbody></table></div>
+<div class="pager"><span>Exibindo 1 a 8 de 312</span><div class="pages"><a href="#">‹</a><a href="#" aria-current="page">1</a><a href="#">2</a><a href="#">3</a><a href="#">39</a><a href="#">›</a></div></div>
+<p class="foot-note">Protótipo acadêmico · dados fictícios · Aeria 2026</p>
+</main>
+<script>document.querySelectorAll("tbody tr").forEach(r=>r.onclick=e=>{if(!e.target.closest("button"))location.href="pedido.html"});document.querySelectorAll(".stabs a").forEach(a=>a.onclick=e=>{e.preventDefault();document.querySelectorAll(".stabs a").forEach(x=>x.removeAttribute("aria-current"));a.setAttribute("aria-current","page")})</script>
+</body></html>

@@ -1,55 +1,75 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Pedido confirmado · Aeria</title>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/site.css">
-<script src="assets/theme.js"></script>
-</head>
-<body class="sf">
-<header class="snav">
-  <div class="snav-l">
-    <a class="brand" href="index.html">AERIA</a>
-    <nav class="snav-nav"><a href="drones.html">Drones</a><a href="acessorios.html">Acessórios</a><a href="empresas.html">Empresas</a><a href="suporte.html">Suporte</a><a href="ofertas.html">Ofertas</a></nav>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&family=DM+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css"><style>.okhead{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:22px;align-items:center;padding-block:40px 34px;border-bottom:1px solid var(--line);margin-bottom:26px}
+.okmark{width:64px;height:64px;border-radius:50%;border:1.5px solid var(--ok);display:grid;place-items:center;color:var(--ok);box-shadow:0 0 0 8px rgba(124,196,154,.08)}
+.okmark .ico{width:28px;height:28px;stroke-width:2}
+.okhead h1{margin:0;font:200 clamp(36px,4vw,52px)/1 var(--display)}
+.okhead p{margin:10px 0 0;color:var(--ink2);max-width:60ch}
+.ordno{text-align:right}.ordno b{display:block;font:400 18px var(--mono);margin-top:6px}.ordno span{font-size:13px;color:var(--mute)}
+@media (max-width:800px){.okhead{grid-template-columns:minmax(0,1fr);gap:16px;padding-block:28px 24px}.okmark{width:52px;height:52px}.ordno{text-align:left}}</style>
+</head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></symbol>
+<symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l-1 13H6L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></symbol>
+<symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></symbol>
+<symbol id="i-truck" viewBox="0 0 24 24"><path d="M3 6h11v10H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></symbol>
+<symbol id="i-pix" viewBox="0 0 24 24"><path d="m12 3 9 9-9 9-9-9z"/><path d="m8 12 4-4 4 4-4 4z"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+<symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-3 2a11 11 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></symbol>
+<symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+<symbol id="i-share" viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.2 11 7.6-4M8.2 13l7.6 4"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+</svg>
+<div class="navwrap wrap">
+  <div class="nav">
+    <button class="iconbtn menu" id="menuBtn" aria-expanded="false" aria-controls="links" aria-label="Menu"><svg class="ico"><use href="#i-menu"/></svg></button>
+    <a class="mark" href="index.html">AERIA</a>
+    <nav class="links" id="links" aria-label="Principal"><a href="drones.html">Drones</a><a href="acessorios.html">Acessórios</a><a href="empresas.html">Empresas</a><a href="suporte.html">Suporte</a><a href="ofertas.html" class="hot">Ofertas</a></nav>
+    <div class="right">
+      <label class="search"><svg class="ico"><use href="#i-search"/></svg><input type="search" placeholder="Buscar drones e acessórios" aria-label="Buscar drones e acessórios"><kbd>/</kbd></label>
+      <button class="iconbtn sbtn" id="searchBtn" type="button" aria-expanded="false" aria-controls="msearch" aria-label="Buscar"><svg class="ico"><use href="#i-search"/></svg></button>
+      <a class="iconbtn" href="conta-favoritos.html" aria-label="Favoritos, 6 itens"><svg class="ico"><use href="#i-heart"/></svg><span class="navcount">6</span></a>
+      <a class="iconbtn" href="carrinho.html" aria-label="Carrinho, 0 itens"><svg class="ico"><use href="#i-bag"/></svg><span class="navcount">0</span></a>
+      <a class="iconbtn acct" href="conta-perfil.html" aria-label="Minha conta"><svg class="ico"><use href="#i-user"/></svg><span class="acct-t">Conta</span></a>
+    </div>
+    <form class="msearch" id="msearch" role="search"><svg class="ico"><use href="#i-search"/></svg><input type="search" placeholder="Buscar na loja" aria-label="Buscar drones e acessórios"><button class="btn sm p" type="submit">Buscar</button></form>
   </div>
-  <div class="snav-r">
-    <span class="snav-search">Buscar drones e acessórios</span>
-    <a href="conta-perfil.html">Conta</a>
-    <a class="cart" href="carrinho.html">Carrinho <em>0</em></a>
+</div>
+<main>
+<div class="wrap"><div class="okhead"><span class="okmark"><svg class="ico"><use href="#i-check"/></svg></span><div><span class="lbl">Pedido confirmado</span><h1>Tudo certo, Marina.</h1><p>Pagamento aprovado no Pix. Enviamos os detalhes para marina.ribeiro@email.com e você acompanha cada etapa pela sua conta.</p></div>
+<div class="ordno"><span class="lbl">Número do pedido</span><b>#PD-2026-00322</b><span>19/10/2026 · 4 itens</span></div></div></div>
+<div class="wrap two"><div><div class="panel"><div class="ph2"><h2>Próximos passos</h2><a class="tlink arrow" href="conta-pedidos.html">Acompanhar pedido</a></div><ol class="tl"><li class="done"><span class="dot"></span><div><b>Pagamento aprovado</b><span>Pix confirmado em 19/10 às 22:41</span></div></li>
+<li class="now"><span class="dot"></span><div><b>Separação e conferência</b><span>CD Palmas · até 1 dia útil</span></div></li>
+<li class="todo"><span class="dot"></span><div><b>Envio com código de rastreio</b><span>Você recebe o código por e-mail e WhatsApp</span></div></li>
+<li class="todo"><span class="dot"></span><div><b>Registro ANAC (opcional)</b><span>Nossa equipe orienta o cadastro SISANT do seu drone</span></div></li></ol></div>
+<div class="panel"><div class="ph2"><h2>Itens do pedido</h2></div><div class="items"><div class="item sm"><a class="stage" href="produto.html"><img src="assets/img/falcon.webp" alt="" loading="lazy"></a><div><h3>Falcon X2 Pro</h3><div class="meta">DRN-FX2P-0042 · 43 min · 4K 60 · 1 un</div></div><div class="price num">R$ 12.499</div></div><div class="item sm"><a class="stage" href="produto.html"><svg class="pic-art" viewBox="0 0 160 100" role="img" aria-label=""><rect x="40" y="26" width="80" height="48" rx="7"/><path class="s" d="M50 26v48M110 26v48"/><rect x="120" y="40" width="8" height="20" rx="2"/><rect class="af" x="62" y="64" width="6" height="3" rx="1"/><rect class="af" x="72" y="64" width="6" height="3" rx="1"/><rect class="af" x="82" y="64" width="6" height="3" rx="1"/><rect class="s" x="92" y="64" width="6" height="3" rx="1"/><path class="s" d="M58 38h44M58 46h30"/><text x="58" y="56">5.000 mAh</text></svg></a><div><h3>Bateria extra Falcon X2</h3><div class="meta">LiPo 4S · 5.000 mAh · 2 un</div></div><div class="price num">R$ 2.380</div></div><div class="item sm"><a class="stage" href="produto.html"><svg class="pic-art" viewBox="0 0 160 100" role="img" aria-label=""><circle cx="34" cy="46" r="13"/><circle class="s" cx="34" cy="46" r="8"/><text x="34" y="74" text-anchor="middle">ND8</text><circle cx="65" cy="46" r="13"/><circle class="s" cx="65" cy="46" r="8"/><text x="65" y="74" text-anchor="middle">ND16</text><circle cx="96" cy="46" r="13"/><circle class="s" cx="96" cy="46" r="8"/><text x="96" y="74" text-anchor="middle">ND32</text><circle cx="127" cy="46" r="13"/><circle class="a" cx="127" cy="46" r="8"/><text x="127" y="74" text-anchor="middle">ND64</text></svg></a><div><h3>Filtros ND (kit 4)</h3><div class="meta">ND8 · ND16 · ND32 · ND64 · 1 un</div></div><div class="price num">R$ 349</div></div></div></div></div>
+<aside class="sticky"><div class="panel"><div class="ph2"><h2>Pagamento e entrega</h2></div><div class="sum"><div><span>Forma de pagamento</span><span>Pix · à vista</span></div><div><span>Subtotal</span><span class="num">R$ 15.228</span></div><div class="neg"><span>Cupom PILOTO10</span><span class="num">− R$ 139</span></div><div><span>Frete expresso</span><span class="num">R$ 92</span></div><div class="neg"><span>Desconto Pix</span><span class="num">− R$ 759</span></div><div class="tot"><span>Total pago</span><b class="num">R$ 14.422</b></div></div>
+<div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-size:14px;color:var(--ink2)"><span class="lbl">Entrega em</span><p style="margin:8px 0 0">Marina Ribeiro<br>Quadra 104 Norte, Rua NE 5, 12, apto 302<br>Plano Diretor Norte · Palmas / TO · 77006-022</p><p style="margin:10px 0 0;color:var(--ink)">Previsão: 22 a 24 de outubro</p></div>
+<div style="display:grid;gap:8px;margin-top:18px"><a class="btn p" href="conta-pedidos.html">Acompanhar pedido</a><a class="btn" href="index.html">Continuar comprando</a></div></div></aside></div>
+</main>
+<footer>
+  <div class="wrap">
+    <div><div class="mark">AERIA</div><p>Tecnologia para novos pontos de vista.</p></div>
+    <div><span class="lbl">Explore</span><ul><li><a href="drones.html">Drones</a></li><li><a href="acessorios.html">Acessórios</a></li><li><a href="ofertas.html">Ofertas</a></li></ul></div>
+    <div><span class="lbl">Suporte</span><ul><li><a href="suporte.html">Garantia e trocas</a></li><li><a href="suporte.html">Registro SISANT/ANAC</a></li><li><a href="conta-pedidos.html">Meus pedidos</a></li></ul></div>
+    <div><span class="lbl">Aeria</span><ul><li><a href="empresas.html">Para empresas</a></li><li><a href="login.html">Entrar ou criar conta</a></li><li><a href="suporte.html">Contato</a></li></ul></div>
+    <div class="legal"><span>© 2026 Aeria · projeto acadêmico, dados fictícios</span><span><a href="admin/index.html" style="text-decoration:underline">Painel administrativo</a> · Privacidade · Termos</span></div>
   </div>
-</header>
-<section style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:64px 34px 40px;background:linear-gradient(180deg,var(--bg2) 0%,var(--bg) 100%)">
-  <span style="display:flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;border:1px solid var(--acc-b);background:var(--acc-t);font-size:20px;color:var(--acc)">✓</span>
-  <h1 class="disp" style="font-size:40px;color:var(--pure);text-align:center">Pedido confirmado</h1>
-  <p class="lead" style="margin:0;text-align:center;max-width:520px;font-size:13.5px">Pagamento aprovado no Pix. Enviamos os detalhes para marina.ribeiro@email.com e você pode acompanhar cada etapa pelo painel da sua conta.</p>
-  <div style="display:flex;align-items:center;gap:10px;margin-top:8px"><span class="chip" style="font-size:13px;color:var(--ink);padding:7px 13px">#PD-2026-00322</span><span style="font-size:12px;color:var(--mute)">22/08/2026 · 3 itens</span></div>
-  <div style="display:flex;gap:12px;margin-top:16px"><a class="sbtn p" href="conta-pedidos.html">Acompanhar pedido</a><a class="sbtn" href="index.html">Voltar para a home</a></div>
-</section>
-<div class="swrap two" style="padding-top:44px">
-  <div style="display:flex;flex-direction:column;gap:24px">
-    <section class="scard">
-      <div style="padding:20px 22px 12px" class="scard-t">Itens do pedido</div>
-      <div class="trow" style="grid-template-columns:72px minmax(0,1fr) 90px 110px;gap:18px;padding:16px 22px;border-top:1px solid var(--line-s);border-bottom:none"><span class="ph" style="height:62px">foto</span><span style="display:flex;flex-direction:column;gap:5px;min-width:0"><span style="font:300 13.5px/1.2 'Sora',sans-serif;color:var(--ink)">Falcon X2 Pro</span><span style="font-size:11px;color:var(--mute)">Versão Padrão · 43 min · 4K 60fps</span></span><span class="dim">1 un</span><span style="justify-self:end;font-size:13px;color:var(--ink)">R$ 12.499</span></div><div class="trow" style="grid-template-columns:72px minmax(0,1fr) 90px 110px;gap:18px;padding:16px 22px;border-top:1px solid var(--line-s);border-bottom:none"><span class="ph" style="height:62px">foto</span><span style="display:flex;flex-direction:column;gap:5px;min-width:0"><span style="font:300 13.5px/1.2 'Sora',sans-serif;color:var(--ink)">Bateria extra Falcon X2</span><span style="font-size:11px;color:var(--mute)">LiPo 4S · 5.000 mAh</span></span><span class="dim">2 un</span><span style="justify-self:end;font-size:13px;color:var(--ink)">R$ 2.380</span></div><div class="trow" style="grid-template-columns:72px minmax(0,1fr) 90px 110px;gap:18px;padding:16px 22px;border-top:1px solid var(--line-s);border-bottom:none"><span class="ph" style="height:62px">foto</span><span style="display:flex;flex-direction:column;gap:5px;min-width:0"><span style="font:300 13.5px/1.2 'Sora',sans-serif;color:var(--ink)">Filtros ND (kit 4)</span><span style="font-size:11px;color:var(--mute)">ND8 / ND16 / ND32 / ND64</span></span><span class="dim">1 un</span><span style="justify-self:end;font-size:13px;color:var(--ink)">R$ 349</span></div>
-    </section>
-    <section class="scard p">
-      <span class="scard-t">Próximos passos</span>
-      <div class="tl"><div class="tl-i"><span class="dot" style="background:var(--acc)"></span><div><b style="color:var(--ink)">Pagamento aprovado</b><small>Pix confirmado em 22/08 às 10:12</small></div></div><div class="tl-i"><span class="dot" style="background:var(--b5)"></span><div><b style="color:var(--ink2)">Separação e conferência</b><small>CD São Paulo · até 1 dia útil</small></div></div><div class="tl-i"><span class="dot" style="background:var(--b3)"></span><div><b style="color:var(--dim2)">Envio com código de rastreio</b><small>Você recebe o código por e-mail e WhatsApp</small></div></div><div class="tl-i"><span class="dot" style="background:var(--b3)"></span><div><b style="color:var(--dim2)">Registro ANAC (opcional)</b><small>Nossa equipe orienta o cadastro SISANT do seu drone</small></div></div></div>
-    </section>
-  </div>
-  <aside style="display:flex;flex-direction:column;gap:16px">
-    <div class="scard p"><div class="eyebrow">Pagamento e entrega</div><div style="display:flex;flex-direction:column;gap:11px"><div class="kv" style="color:var(--dim)"><span>Forma de pagamento</span><span style="text-align:right">Pix · à vista</span></div><div class="kv" style="color:var(--dim)"><span>Subtotal</span><span style="text-align:right">R$ 15.228</span></div><div class="kv" style="color:var(--acc)"><span>Cupom PILOTO10</span><span style="text-align:right">− R$ 139</span></div><div class="kv" style="color:var(--dim)"><span>Frete expresso</span><span style="text-align:right">R$ 92</span></div><div class="kv" style="color:var(--ink)"><span>Total pago</span><span style="text-align:right">R$ 14.422</span></div></div></div>
-    <div class="scard p"><div class="eyebrow">Entrega em</div><span style="font-size:12.5px;line-height:1.7;color:var(--ink2)">Marina Ribeiro<br>Rua das Acácias, 412 — apto 71<br>Pinheiros · São Paulo / SP<br>05422-030</span><div style="margin-top:14px;font-size:11.5px;color:var(--acc)">Previsão: 26 a 28 de agosto</div></div>
-    <a class="sbtn sm" href="drones.html" style="height:44px">Continuar comprando</a>
-  </aside>
-</div><footer class="sfoot">
-  <div class="sfoot-g">
-    <div class="sfoot-c"><span class="brand" style="font-size:16px">AERIA</span><span style="font-size:12px;line-height:1.6;color:var(--mute2);max-width:230px">Drones profissionais, compactos e agrícolas. Envio para todo o Brasil.</span></div>
-    <div class="sfoot-c"><b>Loja</b><a href="drones.html">Drones</a><a href="acessorios.html">Acessórios</a><a href="ofertas.html">Ofertas</a><a href="index.html">Lançamentos</a></div><div class="sfoot-c"><b>Conta</b><a href="login.html">Entrar</a><a href="login.html">Criar conta</a><a href="conta-pedidos.html">Meus pedidos</a><a href="conta-favoritos.html">Lista de desejos</a></div><div class="sfoot-c"><b>Suporte</b><a href="suporte.html">Central de ajuda</a><a href="suporte.html">Trocas e devoluções</a><a href="suporte.html">Garantia</a><a href="suporte.html">Regras ANAC</a></div><div class="sfoot-c"><b>Empresa</b><a href="empresas.html">Sobre a Aeria</a><a href="empresas.html">Vendas corporativas</a><a href="empresas.html">Seja revendedor</a><a href="admin/index.html">Painel admin</a></div>
-  </div>
-  <div class="sfoot-b"><span>© 2026 Aeria Drones · CNPJ 00.000.000/0001-00</span><span>Pix · Boleto · Cartão em até 12×</span></div>
 </footer>
-</body>
-</html>
+<script src="assets/site.js"></script>
+</body></html>

@@ -4,7 +4,7 @@ Referência visual da Aeria. O protótipo é a fonte da verdade das telas: quem 
 
 | Arquivo | Conteúdo |
 |---|---|
-| [`prototipo/`](prototipo/) | Protótipo navegável em HTML puro: 16 telas do storefront e 20 do admin |
+| [`prototipo/`](prototipo/) | Protótipo navegável em HTML puro: 16 telas do storefront e 23 do admin |
 | [`DESIGN.md`](DESIGN.md) | Tokens, tipografia, layout e componentes. Os tokens são os mesmos do `frontend/src/styles.scss` |
 | [`PRODUCT.md`](PRODUCT.md) | Usuários, propósito, contexto e princípios do produto |
 
@@ -24,7 +24,7 @@ npm run prototipo              # http://localhost:4300 (admin em /admin/)
 npm run prototipo:verificar    # confere páginas, links, viewport e alt (também roda no CI)
 ```
 
-Para conferir no celular (D20), use o modo responsivo do navegador entre 360 e 480px. Hoje o `site.css` só tem regras até 1100px: a checagem avisa que falta o layout das telas estreitas.
+Para conferir no celular (D20), use o modo responsivo do navegador entre 360 e 480px. Todas as telas têm layout para celular: em 390px nenhuma rola para o lado.
 
 ## Versão publicada
 
@@ -65,6 +65,9 @@ Use estes links na seção "Protótipo" das issues. Eles sempre abrem a versão 
 | Produtos | [`admin/produtos.html`](https://davirsuassuna.github.io/droneshop/prototipo/admin/produtos.html) |
 | Cadastrar drone | [`admin/produto-novo.html`](https://davirsuassuna.github.io/droneshop/prototipo/admin/produto-novo.html) |
 | Cadastrar acessório | [`admin/acessorio-novo.html`](https://davirsuassuna.github.io/droneshop/prototipo/admin/acessorio-novo.html) |
+| Cadastrar kit | [`admin/kit-novo.html`](https://davirsuassuna.github.io/droneshop/prototipo/admin/kit-novo.html) |
+| Grupos de produto | [`admin/grupos.html`](https://davirsuassuna.github.io/droneshop/prototipo/admin/grupos.html) |
+| Editar grupo | [`admin/grupo-novo.html`](https://davirsuassuna.github.io/droneshop/prototipo/admin/grupo-novo.html) |
 | Marcas | [`admin/marcas.html`](https://davirsuassuna.github.io/droneshop/prototipo/admin/marcas.html) |
 | Cadastrar marca | [`admin/marca-nova.html`](https://davirsuassuna.github.io/droneshop/prototipo/admin/marca-nova.html) |
 | Categorias | [`admin/categorias.html`](https://davirsuassuna.github.io/droneshop/prototipo/admin/categorias.html) |
@@ -87,12 +90,11 @@ Use estes links na seção "Protótipo" das issues. Eles sempre abrem a versão 
 | Falta | Situação |
 |---|---|
 | Listagem e cadastro de subcategoria | já implementados no admin; a tela segue o padrão de Categorias |
-| Versões de celular (360 a 480px) | exigidas pela D20; até existirem, a tela empilha as colunas com os mesmos tokens |
 
 ## Como alterar o protótipo
 
 1. Crie a branch pela issue e edite os arquivos desta pasta.
-2. Teste localmente (abaixo), nos dois temas.
+2. Teste localmente (abaixo), no desktop e em 390px.
 3. Se mudar cor, fonte, espaçamento ou componente, atualize também o `DESIGN.md` e o `frontend/src/styles.scss`.
 4. Abra o PR para a `develop`. Depois do merge, a versão publicada é atualizada.
 
@@ -100,7 +102,19 @@ Uma tela que já está em implementação segue a versão da `develop` do moment
 
 ## Como testar localmente
 
-Abra `prototipo/index.html` (storefront) ou `prototipo/admin/index.html` (admin) no navegador. Só a fonte Sora vem da internet; sem conexão, cai para Helvetica.
+Abra `prototipo/index.html` (storefront) ou `prototipo/admin/index.html` (admin) no navegador. As fontes (Sora, DM Sans e IBM Plex Mono) vêm do Google Fonts; sem conexão, caem para a fonte do sistema.
+
+### Arquivos
+
+| Arquivo | Uso |
+|---|---|
+| `assets/site.css` | tokens e componentes do storefront (a home tem o CSS dela no próprio `index.html`) |
+| `assets/admin.css` | tokens e componentes do painel |
+| `assets/site.js` | interações do storefront: menu, quantidade, abas, galeria, formas de pagamento |
+| `assets/desenhos.js` | desenhos de linha da seção "O que você vai voar?" e dos setores de Empresas |
+| `assets/img/*.webp` | renders fictícios dos drones Falcon, Nimbus e Heron, com fundo transparente |
+
+Produtos sem foto (acessórios, FPV, agrícola, infantil) usam desenho de linha em SVG no mesmo traço, nunca foto de produto real.
 
 ## Cuidados
 
