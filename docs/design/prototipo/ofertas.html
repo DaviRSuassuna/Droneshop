@@ -1,93 +1,93 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Ofertas · Aeria</title>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/site.css">
-<script src="assets/theme.js"></script>
-</head>
-<body class="sf">
-<header class="snav">
-  <div class="snav-l">
-    <a class="brand" href="index.html">AERIA</a>
-    <nav class="snav-nav"><a href="drones.html">Drones</a><a href="acessorios.html">Acessórios</a><a href="empresas.html">Empresas</a><a href="suporte.html">Suporte</a><a href="ofertas.html" class="on">Ofertas</a></nav>
-  </div>
-  <div class="snav-r">
-    <span class="snav-search">Buscar drones e acessórios</span>
-    <a href="conta-perfil.html">Conta</a>
-    <a class="cart" href="carrinho.html">Carrinho <em>2</em></a>
-  </div>
-</header>
-<section class="hero" style="padding-bottom:44px">
-  <div style="display:flex;flex-direction:column;gap:22px">
-    <span class="pill">Semana do piloto · até 31/08</span>
-    <h1 class="disp-xl" style="font-size:52px">Até 22% off em drones e acessórios.</h1>
-    <p class="lead" style="margin:0">Descontos válidos enquanto durar o estoque, com frete grátis acima de R$ 999 e parcelamento em até 12× sem juros.</p>
-    <div style="display:flex;gap:14px;margin-top:6px"><a class="sbtn p" href="#drones-oferta">Ver ofertas</a><a class="sbtn" href="empresas.html">Condições para empresas</a></div>
-    <div class="metrics"><div><b>22%</b><small>desconto máximo</small></div><div><b>48</b><small>produtos em oferta</small></div><div><b>7 dias</b><small>de campanha</small></div></div>
-  </div>
-  <div class="ph" style="height:380px;border-radius:12px">banner da campanha · 16:9</div>
-</section>
-<section class="swrap" style="padding-bottom:0">
-  <div class="sec-h"><h2 class="sec-t">Destaque da semana</h2><span class="sec-l">Encerra em 6 dias</span></div>
-  <div class="scard p" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:center">
-    <div class="ph" style="height:300px;border-radius:10px">foto do produto em oferta</div>
-    <div style="display:flex;flex-direction:column;gap:14px">
-      <span style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc)">Oferta relâmpago · −10%</span>
-      <h3 class="disp" style="font-size:32px;color:var(--pure)">Nimbus Mini 3</h3>
-      <span style="font-size:13px;line-height:1.6;color:var(--dim);max-width:420px">34 minutos de voo, 10 km de transmissão e câmera 4K — o compacto mais vendido da loja.</span>
-      <div style="display:flex;align-items:baseline;gap:12px"><span style="font:200 34px/1 'Sora',sans-serif;color:var(--pure)">R$ 4.290</span><s style="font-size:14px;color:var(--faint)">R$ 4.790</s></div>
-      <span style="font-size:12.5px;color:var(--mute2)">12× de R$ 357 sem juros · R$ 4.075 no Pix</span>
-      <div style="display:flex;gap:12px;margin-top:4px"><a class="sbtn p" href="produto.html">Comprar agora</a><a class="sbtn" href="produto.html">Ver detalhes</a></div>
-      <span style="font-size:11.5px;color:var(--faint)">Restam 12 unidades neste preço</span>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&family=DM+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css"><style>.ohero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.ohero .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:30px;align-items:center;padding-block:40px 50px}
+.ohero h1{font:200 clamp(44px,6vw,84px)/.98 var(--display);letter-spacing:-.025em;margin:16px 0 0}
+.ohero h1 em{font-style:normal;color:var(--amber)}
+.ohero p{color:var(--ink2);max-width:46ch;margin:18px 0 0}
+.ohero .acts{display:flex;gap:10px;margin-top:26px;flex-wrap:wrap}
+.count{display:flex;gap:10px;margin-top:30px}
+.count div{border:1px solid var(--line2);border-radius:10px;padding:10px 14px;min-width:74px;text-align:center}
+.count b{display:block;font:200 30px/1 var(--display);font-variant-numeric:tabular-nums}
+.count span{font:400 10px var(--mono);letter-spacing:.14em;color:var(--mute)}
+.deal{position:relative;border:1px solid var(--line);border-radius:18px;background:radial-gradient(90% 90% at 50% 30%,#22262B,#121417);padding:24px;display:grid;gap:8px}
+.deal .stage{background:none;aspect-ratio:16/9}
+.deal h2{margin:0;font:300 30px var(--display)}
+.deal .pr{font:300 34px var(--display);color:var(--amber)}
+.deal .pr s{font:400 15px var(--body);color:var(--mute);margin-left:8px}
+.deal .bar{height:4px;background:var(--surf2);border-radius:2px;overflow:hidden;margin-top:6px}
+.deal .bar i{display:block;height:100%;width:72%;background:var(--amber)}
+.deal .row{display:flex;justify-content:space-between;font-size:13px;color:var(--mute)}
+.ostats{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--line)}
+.ostats div{padding:20px 0 22px 26px;border-left:1px solid var(--line)}
+.ostats div:first-child{border-left:0;padding-left:0}
+.ostats b{display:block;font:200 40px/1 var(--display);margin-top:6px}
+@media (max-width:900px){.ohero .wrap{grid-template-columns:minmax(0,1fr)}.ostats div{padding:16px 0 18px 14px}.ostats div:first-child{padding-left:0}.ostats b{font-size:28px}.ostats .lbl{display:block;min-height:2.7em}}</style>
+</head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></symbol>
+<symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l-1 13H6L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></symbol>
+<symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></symbol>
+<symbol id="i-truck" viewBox="0 0 24 24"><path d="M3 6h11v10H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></symbol>
+<symbol id="i-pix" viewBox="0 0 24 24"><path d="m12 3 9 9-9 9-9-9z"/><path d="m8 12 4-4 4 4-4 4z"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+<symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-3 2a11 11 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></symbol>
+<symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+<symbol id="i-share" viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.2 11 7.6-4M8.2 13l7.6 4"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+</svg>
+<div class="navwrap wrap">
+  <div class="nav">
+    <button class="iconbtn menu" id="menuBtn" aria-expanded="false" aria-controls="links" aria-label="Menu"><svg class="ico"><use href="#i-menu"/></svg></button>
+    <a class="mark" href="index.html">AERIA</a>
+    <nav class="links" id="links" aria-label="Principal"><a href="drones.html">Drones</a><a href="acessorios.html">Acessórios</a><a href="empresas.html">Empresas</a><a href="suporte.html">Suporte</a><a href="ofertas.html" class="hot" aria-current="page">Ofertas</a></nav>
+    <div class="right">
+      <label class="search"><svg class="ico"><use href="#i-search"/></svg><input type="search" placeholder="Buscar drones e acessórios" aria-label="Buscar drones e acessórios"><kbd>/</kbd></label>
+      <button class="iconbtn sbtn" id="searchBtn" type="button" aria-expanded="false" aria-controls="msearch" aria-label="Buscar"><svg class="ico"><use href="#i-search"/></svg></button>
+      <a class="iconbtn" href="conta-favoritos.html" aria-label="Favoritos, 6 itens"><svg class="ico"><use href="#i-heart"/></svg><span class="navcount">6</span></a>
+      <a class="iconbtn" href="carrinho.html" aria-label="Carrinho, 2 itens"><svg class="ico"><use href="#i-bag"/></svg><span class="navcount">2</span></a>
+      <a class="iconbtn acct" href="conta-perfil.html" aria-label="Minha conta"><svg class="ico"><use href="#i-user"/></svg><span class="acct-t">Conta</span></a>
     </div>
+    <form class="msearch" id="msearch" role="search"><svg class="ico"><use href="#i-search"/></svg><input type="search" placeholder="Buscar na loja" aria-label="Buscar drones e acessórios"><button class="btn sm p" type="submit">Buscar</button></form>
   </div>
-</section>
-<section class="swrap" id="drones-oferta" style="padding-bottom:0">
-  <div class="sec-h"><h2 class="sec-t">Todos os produtos em oferta</h2><a class="sec-l" href="drones.html">Ver catálogo completo →</a></div>
-  <div class="chips" style="margin-bottom:18px"><span class="tag">Drones ×</span><span class="tag">Acessórios ×</span><span class="tag">Até R$ 5.000 ×</span></div>
-  <div class="g3" style="gap:18px"><a class="pcard" href="produto.html">
-  <div class="media ph">foto do produto · fundo estúdio<span class="badge">−10%</span></div>
-  <div class="body"><span class="nm">Nimbus Mini 3</span><span class="tg">34 min · 10 km · 4K 30fps</span><span class="pr"><b>R$ 4.290</b><s>R$ 4.790</s></span><span class="inst">12× de R$ 357</span></div>
-</a><a class="pcard" href="produto.html">
-  <div class="media ph">foto do produto · fundo estúdio<span class="badge">−22%</span></div>
-  <div class="body"><span class="nm">Sparrow Kids</span><span class="tg">18 min · 2 km · 2.7K</span><span class="pr"><b>R$ 690</b><s>R$ 890</s></span><span class="inst">6× de R$ 115</span></div>
-</a><a class="pcard" href="produto.html">
-  <div class="media ph">foto do produto · fundo estúdio<span class="badge">−15%</span></div>
-  <div class="body"><span class="nm">Mochila de campo 25 L</span><span class="tg">Compartimento para tablet</span><span class="pr"><b>R$ 549</b><s>R$ 649</s></span><span class="inst">6× de R$ 91</span></div>
-</a><a class="pcard" href="produto.html">
-  <div class="media ph">foto do produto · fundo estúdio<span class="badge">−10%</span></div>
-  <div class="body"><span class="nm">Carregador 3 baterias</span><span class="tg">100 W · 80 min por ciclo</span><span class="pr"><b>R$ 890</b><s>R$ 990</s></span><span class="inst">6× de R$ 148</span></div>
-</a><a class="pcard" href="produto.html">
-  <div class="media ph">foto do produto · fundo estúdio<span class="badge">−5%</span></div>
-  <div class="body"><span class="nm">Vortex FPV Racer</span><span class="tg">12 min · 4 km · 120 km/h</span><span class="pr"><b>R$ 2.990</b><s>R$ 3.150</s></span><span class="inst">10× de R$ 299</span></div>
-</a><a class="pcard" href="produto.html">
-  <div class="media ph">foto do produto · fundo estúdio<span class="badge">−20%</span></div>
-  <div class="body"><span class="nm">Filtros ND (kit 4)</span><span class="tg">ND8 / ND16 / ND32 / ND64</span><span class="pr"><b>R$ 279</b><s>R$ 349</s></span><span class="inst">3× de R$ 93</span></div>
-</a><a class="pcard" href="produto.html">
-  <div class="media ph">foto do produto · fundo estúdio<span class="badge">−8%</span></div>
-  <div class="body"><span class="nm">Nimbus Mini 3 Combo</span><span class="tg">34 min · 3 baterias · maleta</span><span class="pr"><b>R$ 5.290</b><s>R$ 5.780</s></span><span class="inst">12× de R$ 441</span></div>
-</a><a class="pcard" href="produto.html">
-  <div class="media ph">foto do produto · fundo estúdio<span class="badge">−21%</span></div>
-  <div class="body"><span class="nm">Hélices de reposição</span><span class="tg">Par de baixo ruído</span><span class="pr"><b>R$ 149</b><s>R$ 189</s></span><span class="inst">à vista no Pix</span></div>
-</a><a class="pcard" href="produto.html">
-  <div class="media ph">foto do produto · fundo estúdio<span class="badge">−8%</span></div>
-  <div class="body"><span class="nm">Falcon X2 Standard</span><span class="tg">38 min · 12 km · 4K 30fps</span><span class="pr"><b>R$ 8.290</b><s>R$ 8.990</s></span><span class="inst">12× de R$ 691</span></div>
-</a></div>
-  <div style="display:flex;justify-content:center;padding-top:20px"><a class="sbtn" href="ofertas.html">Carregar mais 9 ofertas</a></div>
-</section>
-<section class="swrap">
-  <div class="sec-h"><h2 class="sec-t">Kits com desconto</h2><a class="sec-l" href="acessorios.html">Montar meu kit →</a></div>
-  <div class="g3" style="gap:18px"><a class="scard p" href="produto.html" style="display:flex;flex-direction:column;gap:12px"><span class="ph" style="height:130px">foto do kit</span><span style="font:300 17px/1.2 'Sora',sans-serif;color:var(--pure)">Kit Piloto Falcon X2</span><span style="font-size:12.5px;line-height:1.6;color:var(--dim)">Drone + 2 baterias extra + maleta rígida</span><span style="font:300 18px/1 'Sora',sans-serif;color:var(--pure)">R$ 14.690</span><span style="font-size:11.5px;color:var(--acc)">Economize R$ 1.088</span></a><a class="scard p" href="produto.html" style="display:flex;flex-direction:column;gap:12px"><span class="ph" style="height:130px">foto do kit</span><span style="font:300 17px/1.2 'Sora',sans-serif;color:var(--pure)">Kit Criador Nimbus</span><span style="font-size:12.5px;line-height:1.6;color:var(--dim)">Nimbus Mini 3 + filtros ND + mochila</span><span style="font:300 18px/1 'Sora',sans-serif;color:var(--pure)">R$ 5.190</span><span style="font-size:11.5px;color:var(--acc)">Economize R$ 648</span></a><a class="scard p" href="produto.html" style="display:flex;flex-direction:column;gap:12px"><span class="ph" style="height:130px">foto do kit</span><span style="font:300 17px/1.2 'Sora',sans-serif;color:var(--pure)">Kit Frota Enterprise</span><span style="font-size:12.5px;line-height:1.6;color:var(--dim)">3× Falcon X2 Enterprise + treinamento</span><span style="font:300 18px/1 'Sora',sans-serif;color:var(--pure)">Sob consulta</span><span style="font-size:11.5px;color:var(--acc)">Condição PJ 30/60/90</span></a></div>
-</section><footer class="sfoot">
-  <div class="sfoot-g">
-    <div class="sfoot-c"><span class="brand" style="font-size:16px">AERIA</span><span style="font-size:12px;line-height:1.6;color:var(--mute2);max-width:230px">Drones profissionais, compactos e agrícolas. Envio para todo o Brasil.</span></div>
-    <div class="sfoot-c"><b>Loja</b><a href="drones.html">Drones</a><a href="acessorios.html">Acessórios</a><a href="ofertas.html">Ofertas</a><a href="index.html">Lançamentos</a></div><div class="sfoot-c"><b>Conta</b><a href="login.html">Entrar</a><a href="login.html">Criar conta</a><a href="conta-pedidos.html">Meus pedidos</a><a href="conta-favoritos.html">Lista de desejos</a></div><div class="sfoot-c"><b>Suporte</b><a href="suporte.html">Central de ajuda</a><a href="suporte.html">Trocas e devoluções</a><a href="suporte.html">Garantia</a><a href="suporte.html">Regras ANAC</a></div><div class="sfoot-c"><b>Empresa</b><a href="empresas.html">Sobre a Aeria</a><a href="empresas.html">Vendas corporativas</a><a href="empresas.html">Seja revendedor</a><a href="admin/index.html">Painel admin</a></div>
+</div>
+<main>
+<section class="ohero"><div class="wrap">
+<div><span class="chip">SEMANA DO PILOTO · ATÉ 26/10</span><h1>Até <em>22% off</em> em drones e acessórios.</h1><p>Descontos válidos enquanto durar o estoque, com frete grátis acima de R$ 999 e parcelamento em até 12× sem juros.</p>
+<div class="acts"><a class="btn p" href="#todas">Ver ofertas</a><a class="btn" href="empresas.html">Condições para empresas</a></div>
+<div class="count" aria-label="Tempo restante"><div><b>06</b><span>DIAS</span></div><div><b>14</b><span>HORAS</span></div><div><b>32</b><span>MIN</span></div></div></div>
+<article class="deal"><div class="row"><span class="lbl">Oferta relâmpago</span><span class="chip">−10%</span></div><div class="stage"><img src="assets/img/nimbus.webp" alt="Nimbus Mini 3"></div><h2>Nimbus Mini 3</h2><div style="color:var(--mute);font-size:14px">34 min de voo, 10 km de transmissão e câmera 4K. O compacto mais vendido da loja.</div>
+<div class="pr">R$ 4.290<s>R$ 4.790</s></div><div style="color:var(--mute);font-size:13px">12× R$ 357 sem juros · R$ 4.075 no Pix</div>
+<div class="bar"><i></i></div><div class="row"><span>72% vendido</span><span>Restam 12 unidades neste preço</span></div>
+<div style="display:flex;gap:8px;margin-top:10px"><a class="btn p" style="flex:1" href="carrinho.html">Comprar agora</a><a class="btn" href="produto.html">Ver detalhes</a></div></article>
+</div></section>
+<div class="wrap"><div class="ostats"><div><span class="lbl">Desconto máximo</span><b>22%</b></div><div><span class="lbl">Produtos em oferta</span><b>48</b></div><div><span class="lbl">Duração da campanha</span><b>7 dias</b></div></div></div>
+<section class="wrap sec" id="todas" style="padding-bottom:40px"><div class="shead"><div><span class="lbl">Todos os produtos em oferta</span><h2>Preço baixo, ficha completa.</h2></div><div class="tags"><span class="tag">Drones <button aria-label="Remover">×</button></span><span class="tag">Acessórios <button aria-label="Remover">×</button></span><span class="tag">Até R$ 5.000 <button aria-label="Remover">×</button></span></div></div>
+<div class="pgrid"><article class="pcard"><div class="top"><span class="lbl">Skyline</span><span class="chip">−10%</span></div><a class="stage" href="produto.html"><img src="assets/img/nimbus.webp" alt="Nimbus Mini 3" loading="lazy"></a><h3><a href="produto.html">Nimbus Mini 3</a></h3><div class="specs">249 g · 34 min · 4K 30</div><div class="pr sale">R$ 4.290<s>R$ 4.790</s><small>12× R$ 357 sem juros</small></div><div class="row2"><a class="btn" href="produto.html">Ver detalhes</a><a class="btn sq" href="carrinho.html" aria-label="Adicionar ao carrinho"><svg class="ico"><use href="#i-bag"/></svg></a></div></article><article class="pcard"><div class="top"><span class="lbl">Sparrow</span><span class="chip">−22%</span></div><a class="stage" href="produto.html"><svg class="pic-art" viewBox="0 0 160 100" role="img" aria-label="Sparrow Kids"><rect x="66" y="40" width="28" height="20" rx="8"/><circle class="s" cx="46" cy="30" r="14"/><path d="M37 30h18"/><circle class="s" cx="114" cy="30" r="14"/><path d="M105 30h18"/><circle class="s" cx="46" cy="70" r="14"/><path d="M37 70h18"/><circle class="s" cx="114" cy="70" r="14"/><path d="M105 70h18"/><path d="M66 44 56 36M94 44l10-8M66 56l-10 8M94 56l10 8"/><circle class="a" cx="80" cy="50" r="3"/></svg></a><h3><a href="produto.html">Sparrow Kids</a></h3><div class="specs">18 min · 2 km · 2.7K</div><div class="pr sale">R$ 690<s>R$ 890</s><small>6× R$ 115 sem juros</small></div><div class="row2"><a class="btn" href="produto.html">Ver detalhes</a><a class="btn sq" href="carrinho.html" aria-label="Adicionar ao carrinho"><svg class="ico"><use href="#i-bag"/></svg></a></div></article><article class="pcard"><div class="top"><span class="lbl">Aeria</span><span class="chip">−15%</span></div><a class="stage" href="produto.html"><svg class="pic-art" viewBox="0 0 160 100" role="img" aria-label="Mochila de campo 25 L"><path d="M54 30c0-10 52-10 52 0v52a6 6 0 0 1-6 6H60a6 6 0 0 1-6-6Z"/><path d="M68 20c0-8 24-8 24 0"/><rect class="s" x="62" y="52" width="36" height="26" rx="5"/><path class="s" d="M62 60h36"/><path class="a" d="M80 36v10"/><path class="s" d="M48 40c-6 10-6 30 0 42M112 40c6 10 6 30 0 42"/></svg></a><h3><a href="produto.html">Mochila de campo 25 L</a></h3><div class="specs">Compartimento para tablet</div><div class="pr sale">R$ 549<s>R$ 649</s><small>6× R$ 91</small></div><div class="row2"><a class="btn" href="produto.html">Ver detalhes</a><a class="btn sq" href="carrinho.html" aria-label="Adicionar ao carrinho"><svg class="ico"><use href="#i-bag"/></svg></a></div></article><article class="pcard"><div class="top"><span class="lbl">Aerion</span><span class="chip">−10%</span></div><a class="stage" href="produto.html"><svg class="pic-art" viewBox="0 0 160 100" role="img" aria-label="Carregador 3 baterias"><rect x="28" y="34" width="104" height="40" rx="7"/><rect class="s" x="38" y="24" width="20" height="30" rx="3"/><circle class="af" cx="48" cy="64" r="2.2"/><rect class="s" x="70" y="24" width="20" height="30" rx="3"/><circle class="af" cx="80" cy="64" r="2.2"/><rect class="s" x="102" y="24" width="20" height="30" rx="3"/><circle class="s" cx="112" cy="64" r="2.2"/><path d="M132 54h10c4 0 6 3 6 7v14"/><text x="38" y="88">100 W · 3 baterias</text></svg></a><h3><a href="produto.html">Carregador 3 baterias</a></h3><div class="specs">100 W · 80 min por ciclo</div><div class="pr sale">R$ 890<s>R$ 990</s><small>6× R$ 148</small></div><div class="row2"><a class="btn" href="produto.html">Ver detalhes</a><a class="btn sq" href="carrinho.html" aria-label="Adicionar ao carrinho"><svg class="ico"><use href="#i-bag"/></svg></a></div></article><article class="pcard"><div class="top"><span class="lbl">Vortex</span><span class="chip">−5%</span></div><a class="stage" href="produto.html"><svg class="pic-art" viewBox="0 0 160 100" role="img" aria-label="Vortex FPV Racer"><path d="M48 30l64 40M112 30 48 70"/><ellipse class="s" cx="48" cy="30" rx="13" ry="4.9"/><circle cx="48" cy="30" r="2.2"/><ellipse class="s" cx="112" cy="30" rx="13" ry="4.9"/><circle cx="112" cy="30" r="2.2"/><ellipse class="s" cx="48" cy="70" rx="13" ry="4.9"/><circle cx="48" cy="70" r="2.2"/><ellipse class="s" cx="112" cy="70" rx="13" ry="4.9"/><circle cx="112" cy="70" r="2.2"/><rect x="66" y="40" width="28" height="20" rx="4"/><rect x="72" y="34" width="16" height="8" rx="2"/><circle class="a" cx="80" cy="37.5" r="2.4"/><path class="s" d="M70 60v6M90 60v6"/></svg></a><h3><a href="produto.html">Vortex FPV Racer</a></h3><div class="specs">12 min · 4 km · 120 km/h</div><div class="pr sale">R$ 2.990<s>R$ 3.150</s><small>10× R$ 299</small></div><div class="row2"><a class="btn" href="produto.html">Ver detalhes</a><a class="btn sq" href="carrinho.html" aria-label="Adicionar ao carrinho"><svg class="ico"><use href="#i-bag"/></svg></a></div></article><article class="pcard"><div class="top"><span class="lbl">Aeria</span><span class="chip">−20%</span></div><a class="stage" href="produto.html"><svg class="pic-art" viewBox="0 0 160 100" role="img" aria-label="Filtros ND (kit 4)"><circle cx="34" cy="46" r="13"/><circle class="s" cx="34" cy="46" r="8"/><text x="34" y="74" text-anchor="middle">ND8</text><circle cx="65" cy="46" r="13"/><circle class="s" cx="65" cy="46" r="8"/><text x="65" y="74" text-anchor="middle">ND16</text><circle cx="96" cy="46" r="13"/><circle class="s" cx="96" cy="46" r="8"/><text x="96" y="74" text-anchor="middle">ND32</text><circle cx="127" cy="46" r="13"/><circle class="a" cx="127" cy="46" r="8"/><text x="127" y="74" text-anchor="middle">ND64</text></svg></a><h3><a href="produto.html">Filtros ND (kit 4)</a></h3><div class="specs">ND8 · ND16 · ND32 · ND64</div><div class="pr sale">R$ 279<s>R$ 349</s><small>3× R$ 93</small></div><div class="row2"><a class="btn" href="produto.html">Ver detalhes</a><a class="btn sq" href="carrinho.html" aria-label="Adicionar ao carrinho"><svg class="ico"><use href="#i-bag"/></svg></a></div></article></div></section>
+</main>
+<footer>
+  <div class="wrap">
+    <div><div class="mark">AERIA</div><p>Tecnologia para novos pontos de vista.</p></div>
+    <div><span class="lbl">Explore</span><ul><li><a href="drones.html">Drones</a></li><li><a href="acessorios.html">Acessórios</a></li><li><a href="ofertas.html">Ofertas</a></li></ul></div>
+    <div><span class="lbl">Suporte</span><ul><li><a href="suporte.html">Garantia e trocas</a></li><li><a href="suporte.html">Registro SISANT/ANAC</a></li><li><a href="conta-pedidos.html">Meus pedidos</a></li></ul></div>
+    <div><span class="lbl">Aeria</span><ul><li><a href="empresas.html">Para empresas</a></li><li><a href="login.html">Entrar ou criar conta</a></li><li><a href="suporte.html">Contato</a></li></ul></div>
+    <div class="legal"><span>© 2026 Aeria · projeto acadêmico, dados fictícios</span><span><a href="admin/index.html" style="text-decoration:underline">Painel administrativo</a> · Privacidade · Termos</span></div>
   </div>
-  <div class="sfoot-b"><span>© 2026 Aeria Drones · CNPJ 00.000.000/0001-00</span><span>Pix · Boleto · Cartão em até 12×</span></div>
 </footer>
-</body>
-</html>
+<script src="assets/site.js"></script>
+</body></html>

@@ -1,115 +1,46 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Produtos · Admin Aeria</title>
-<link rel="stylesheet" href="../assets/site.css">
-<script src="../assets/theme.js"></script>
-</head>
-<body>
-<header class="tb">
-  <div class="tb-l">
-    <a class="tb-brand" href="index.html">ADMIN</a>
-    <nav class="tb-nav">
-      <a href="index.html">Dashboard</a>
-      <a href="produtos.html" class="on">Produtos</a>
-      <a href="marcas.html">Marcas</a>
-      <a href="categorias.html">Categorias</a>
-      <a href="fornecedores.html">Fornecedores</a>
-      <a href="promocoes.html">Promoções</a>
-      <a href="cupons.html">Cupons</a>
-      <a href="estoque.html">Estoque</a>
-      <a href="pedidos.html">Pedidos</a>
-      <a href="usuarios.html">Usuários</a>
-    </nav>
-  </div>
-  <div class="tb-r">
-    <span class="tb-search">Buscar no painel</span>
-    <a href="../index.html">Ver loja ↗</a>
-    <span class="avatar">MR</span>
-  </div>
-</header>
-<div class="pagebar">
-  <div style="display:flex;align-items:baseline;gap:12px"><h1 class="h1">Produtos</h1><span class="sub">148 itens · 12 rascunhos</span></div>
-  <div class="actions"><button class="btn">Exportar CSV</button><a class="btn" href="acessorio-novo.html">Novo acessório</a><a class="btn p" href="produto-novo.html">Novo drone</a></div>
-</div>
-<div class="pad-t" style="display:flex;flex-direction:column;gap:16px">
-  <div class="filters">
-    <div class="f grow"><input type="text" placeholder="Buscar por nome, SKU ou modelo"></div>
-    <div class="f"><select><option>Tipo</option><option>Drone</option><option>Acessório</option></select></div><div class="f"><select><option>Marca</option></select></div><div class="f"><select><option>Categoria</option></select></div><div class="f"><select><option>Status</option></select></div><div class="f"><select><option>Estoque</option></select></div>
-    <button class="btn">Mais filtros</button>
-  </div>
-  <div class="chips">Filtros ativos:<span class="tag">Marca: Aerion ×</span><span class="tag">Status: Ativo ×</span><a href="produtos.html" style="text-decoration:underline">Limpar</a></div>
-  <div class="bulk"><span>3 produtos selecionados</span><div class="actions"><button class="btn sm">Ativar</button><button class="btn sm">Desativar</button><button class="btn sm">Alterar preço</button><button class="btn sm">Mover categoria</button><button class="btn sm d">Excluir</button></div></div>
-  <div class="tbl">
-    <div class="trow head" style="grid-template-columns:38px 54px minmax(0,1fr) 128px 150px 108px 96px 118px 44px"><span></span><span></span><span>Produto</span><span>Marca</span><span>Categoria</span><span>Preço</span><span>Estoque</span><span>Status</span><span></span></div>
-    <a class="trow" style="grid-template-columns:38px 54px minmax(0,1fr) 128px 150px 108px 96px 118px 44px" href="produto-novo.html">
-      <input class="ck" type="checkbox" style="appearance:none;width:15px;height:15px;border:1px solid var(--b4);border-radius:3px;background:var(--field)">
-      <span class="ph thumb"></span>
-      <span class="cell-name"><b>Falcon X2 Pro</b><span class="chip">DRN-FX2P-0042</span></span>
-      <span class="dim" style="color:var(--ink2)">Aerion</span><span class="dim">Profissionais</span><span class="ink">R$ 12.499</span>
-      <span class="dim">23</span>
-      <span class="status"><span class="dot" style="background:var(--ok)"></span>Ativo</span><span style="justify-self:end;color:var(--mute)">⋯</span>
-    </a>
-    <a class="trow" style="grid-template-columns:38px 54px minmax(0,1fr) 128px 150px 108px 96px 118px 44px" href="produto-novo.html">
-      <input class="ck" type="checkbox" style="appearance:none;width:15px;height:15px;border:1px solid var(--b4);border-radius:3px;background:var(--field)">
-      <span class="ph thumb"></span>
-      <span class="cell-name"><b>Falcon X2 Standard</b><span class="chip">DRN-FX2S-0041</span></span>
-      <span class="dim" style="color:var(--ink2)">Aerion</span><span class="dim">Profissionais</span><span class="ink">R$ 8.990</span>
-      <span class="warn">4</span>
-      <span class="status"><span class="dot" style="background:var(--ok)"></span>Ativo</span><span style="justify-self:end;color:var(--mute)">⋯</span>
-    </a>
-    <a class="trow" style="grid-template-columns:38px 54px minmax(0,1fr) 128px 150px 108px 96px 118px 44px" href="produto-novo.html">
-      <input class="ck" type="checkbox" style="appearance:none;width:15px;height:15px;border:1px solid var(--b4);border-radius:3px;background:var(--field)">
-      <span class="ph thumb"></span>
-      <span class="cell-name"><b>Nimbus Mini 3</b><span class="chip">DRN-NM3-0038</span></span>
-      <span class="dim" style="color:var(--ink2)">Skyline</span><span class="dim">Compactos</span><span class="ink">R$ 4.290</span>
-      <span class="dim">61</span>
-      <span class="status"><span class="dot" style="background:var(--ok)"></span>Ativo</span><span style="justify-self:end;color:var(--mute)">⋯</span>
-    </a>
-    <a class="trow" style="grid-template-columns:38px 54px minmax(0,1fr) 128px 150px 108px 96px 118px 44px" href="produto-novo.html">
-      <input class="ck" type="checkbox" style="appearance:none;width:15px;height:15px;border:1px solid var(--b4);border-radius:3px;background:var(--field)">
-      <span class="ph thumb"></span>
-      <span class="cell-name"><b>Nimbus Mini 3 Combo</b><span class="chip">DRN-NM3C-0039</span></span>
-      <span class="dim" style="color:var(--ink2)">Skyline</span><span class="dim">Compactos</span><span class="ink">R$ 5.780</span>
-      <span class="dim">12</span>
-      <span class="status"><span class="dot" style="background:var(--dim2)"></span>Rascunho</span><span style="justify-self:end;color:var(--mute)">⋯</span>
-    </a>
-    <a class="trow" style="grid-template-columns:38px 54px minmax(0,1fr) 128px 150px 108px 96px 118px 44px" href="produto-novo.html">
-      <input class="ck" type="checkbox" style="appearance:none;width:15px;height:15px;border:1px solid var(--b4);border-radius:3px;background:var(--field)">
-      <span class="ph thumb"></span>
-      <span class="cell-name"><b>Vortex FPV Racer</b><span class="chip">DRN-VFR-0027</span></span>
-      <span class="dim" style="color:var(--ink2)">Vortex</span><span class="dim">FPV / Corrida</span><span class="ink">R$ 3.150</span>
-      <span class="warn">0</span>
-      <span class="status"><span class="dot" style="background:var(--warn)"></span>Inativo</span><span style="justify-self:end;color:var(--mute)">⋯</span>
-    </a>
-    <a class="trow" style="grid-template-columns:38px 54px minmax(0,1fr) 128px 150px 108px 96px 118px 44px" href="produto-novo.html">
-      <input class="ck" type="checkbox" style="appearance:none;width:15px;height:15px;border:1px solid var(--b4);border-radius:3px;background:var(--field)">
-      <span class="ph thumb"></span>
-      <span class="cell-name"><b>Atlas Agro 10L</b><span class="chip">DRN-AT10-0019</span></span>
-      <span class="dim" style="color:var(--ink2)">Atlas</span><span class="dim">Agrícolas</span><span class="ink">R$ 46.900</span>
-      <span class="warn">3</span>
-      <span class="status"><span class="dot" style="background:var(--ok)"></span>Ativo</span><span style="justify-self:end;color:var(--mute)">⋯</span>
-    </a>
-    <a class="trow" style="grid-template-columns:38px 54px minmax(0,1fr) 128px 150px 108px 96px 118px 44px" href="produto-novo.html">
-      <input class="ck" type="checkbox" style="appearance:none;width:15px;height:15px;border:1px solid var(--b4);border-radius:3px;background:var(--field)">
-      <span class="ph thumb"></span>
-      <span class="cell-name"><b>Heron Survey Pro</b><span class="chip">DRN-HSP-0015</span></span>
-      <span class="dim" style="color:var(--ink2)">Heron</span><span class="dim">Mapeamento</span><span class="ink">R$ 28.400</span>
-      <span class="dim">9</span>
-      <span class="status"><span class="dot" style="background:var(--ok)"></span>Ativo</span><span style="justify-self:end;color:var(--mute)">⋯</span>
-    </a>
-    <a class="trow" style="grid-template-columns:38px 54px minmax(0,1fr) 128px 150px 108px 96px 118px 44px" href="produto-novo.html">
-      <input class="ck" type="checkbox" style="appearance:none;width:15px;height:15px;border:1px solid var(--b4);border-radius:3px;background:var(--field)">
-      <span class="ph thumb"></span>
-      <span class="cell-name"><b>Sparrow Kids Drone</b><span class="chip">DRN-SKD-0009</span></span>
-      <span class="dim" style="color:var(--ink2)">Sparrow</span><span class="dim">Iniciantes</span><span class="ink">R$ 690</span>
-      <span class="dim">134</span>
-      <span class="status"><span class="dot" style="background:var(--dim2)"></span>Rascunho</span><span style="justify-self:end;color:var(--mute)">⋯</span>
-    </a>
-    <div class="pager"><span>Exibindo 1–8 de 148</span><div class="pages"><a href="#">‹</a><a class="on" href="#">1</a><a href="#">2</a><a href="#">3</a><a href="#">19</a><a href="#">›</a></div></div>
-  </div>
-</div>
-</body>
-</html>
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Aeria Admin Produtos</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&family=DM+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/admin.css">
+</head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></symbol>
+<symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
+<symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V4h10v5M7 17H5v-6h14v6h-2M7 14h10v6H7z"/></symbol>
+<symbol id="i-up" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></symbol>
+</svg>
+<header class="tb"><div class="in gut">
+  <a class="brand" href="index.html">AERIA <span>ADMIN</span></a>
+  <nav class="tabs" aria-label="Painel"><a href="index.html">Dashboard</a><a href="produtos.html" aria-current="page">Produtos</a><a href="marcas.html">Marcas</a><a href="categorias.html">Categorias</a><a href="fornecedores.html">Fornecedores</a><a href="promocoes.html">Promoções</a><a href="cupons.html">Cupons</a><a href="estoque.html">Estoque</a><a href="pedidos.html">Pedidos</a><a href="usuarios.html">Usuários</a></nav>
+  <div class="r"><div class="search"><svg class="ico"><use href="#i-search"/></svg>Buscar no painel<kbd>/</kbd></div><a class="store" href="../index.html">Ver loja ↗</a><span class="avatar" title="Marina Ribeiro">MR</span></div>
+</div><nav class="mnav" aria-label="Painel (celular)"><a href="index.html">Dashboard</a><a href="produtos.html" aria-current="page">Produtos</a><a href="marcas.html">Marcas</a><a href="categorias.html">Categorias</a><a href="fornecedores.html">Fornecedores</a><a href="promocoes.html">Promoções</a><a href="cupons.html">Cupons</a><a href="estoque.html">Estoque</a><a href="pedidos.html">Pedidos</a><a href="usuarios.html">Usuários</a></nav></header>
+<main class="gut">
+<div class="ph"><div><span class="lbl">Catálogo</span><h1>Produtos</h1><div class="sub">148 itens · 12 rascunhos</div></div>
+<div class="acts"><button class="btn"><svg class="ico"><use href="#i-down"/></svg>Exportar CSV</button><a class="btn" href="kit-novo.html"><svg class="ico"><use href="#i-plus"/></svg>Novo kit</a><a class="btn" href="acessorio-novo.html"><svg class="ico"><use href="#i-plus"/></svg>Novo acessório</a><a class="btn p" href="produto-novo.html"><svg class="ico"><use href="#i-plus"/></svg>Novo drone</a></div></div>
+<nav class="stabs" aria-label="Catálogo"><a href="produtos.html" aria-current="page">Produtos<b>148</b></a><a href="grupos.html">Grupos de produto<b>12</b></a></nav>
+<div class="toolbar"><label class="field-s grow"><svg class="ico"><use href="#i-search"/></svg><input id="q" placeholder="Buscar por nome ou SKU"></label>
+<select class="sel" aria-label="Tipo"><option>Tipo</option><option>Drone</option><option>Acessório</option><option>Kit</option></select>
+<select class="sel" aria-label="Grupo"><option>Grupo</option><option>Falcon X2</option><option>Nimbus Mini 3</option><option>Sem grupo</option></select>
+<select class="sel" aria-label="Marca"><option>Marca</option><option>Aerion</option><option>Skyline</option></select>
+<select class="sel" aria-label="Status"><option>Status</option><option>Ativo</option><option>Rascunho</option><option>Inativo</option></select>
+<select class="sel" aria-label="Estoque"><option>Estoque</option><option>Baixo (menos de 10)</option><option>Zerado</option></select></div>
+<div class="tags">Filtros ativos: <span class="tag">Marca: Aerion <button aria-label="Remover">×</button></span><span class="tag">Status: Ativo <button aria-label="Remover">×</button></span><a href="#" style="text-decoration:underline">Limpar</a></div>
+<div class="bulk" id="bulk"><b id="bn">3 produtos selecionados</b><button class="btn sm">Ativar</button><button class="btn sm">Desativar</button><button class="btn sm">Alterar preço</button><button class="btn sm">Mover categoria</button><button class="btn sm d">Excluir</button></div>
+<div class="tw"><table><thead><tr><th><input class="ck" type="checkbox" aria-label="Selecionar todos" id="all"></th><th>Produto</th><th>Tipo</th><th>Grupo · versão</th><th>Marca</th><th class="r">Preço</th><th class="r">Estoque</th><th>Status</th><th></th></tr></thead><tbody><tr class="picked" data-href="produto-novo.html"><td style="width:40px"><input class="ck" type="checkbox" aria-label="Selecionar Falcon X2 Pro" checked></td><td><div class="pc"><span class="thumb"><img src="../assets/img/falcon.webp" alt=""></span><div><b>Falcon X2 Pro</b><span class="chip">DRN-FX2P-0042</span></div></div></td><td data-l="Tipo">Drone</td><td data-l="Grupo · versão"><span class="sub2">Falcon X2 · Pro</span></td><td data-l="Marca">Aerion</td><td data-l="Preço" class="r num" style="font-family:var(--display);font-weight:300;font-size:15px">R$ 12.499</td><td data-l="Estoque" class="r"><span class="stock num ">23</span></td><td data-l="Status"><span class="st ok"><span>Ativo</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr class="picked" data-href="produto-novo.html"><td style="width:40px"><input class="ck" type="checkbox" aria-label="Selecionar Falcon X2 Standard" checked></td><td><div class="pc"><span class="thumb"><img src="../assets/img/falcon.webp" alt=""></span><div><b>Falcon X2 Standard</b><span class="chip">DRN-FX2S-0041</span></div></div></td><td data-l="Tipo">Drone</td><td data-l="Grupo · versão"><span class="sub2">Falcon X2 · Standard</span></td><td data-l="Marca">Aerion</td><td data-l="Preço" class="r num" style="font-family:var(--display);font-weight:300;font-size:15px">R$ 8.990</td><td data-l="Estoque" class="r"><span class="stock num low">4</span></td><td data-l="Status"><span class="st ok"><span>Ativo</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr class="" data-href="kit-novo.html"><td style="width:40px"><input class="ck" type="checkbox" aria-label="Selecionar Falcon X2 Pro Fly More"></td><td><div class="pc"><span class="thumb"><img src="../assets/img/falcon.webp" alt=""></span><div><b>Falcon X2 Pro Fly More</b><span class="chip">DRN-FX2P-0042-FLY</span></div></div></td><td data-l="Tipo">Kit</td><td data-l="Grupo · versão"><span class="sub2">Falcon X2 · Pro Fly More</span></td><td data-l="Marca">Aerion</td><td data-l="Preço" class="r num" style="font-family:var(--display);font-weight:300;font-size:15px">R$ 13.999</td><td data-l="Estoque" class="r"><span class="kits">derivado</span></td><td data-l="Status"><span class="st ok"><span>Ativo</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr class="" data-href="produto-novo.html"><td style="width:40px"><input class="ck" type="checkbox" aria-label="Selecionar Nimbus Mini 3"></td><td><div class="pc"><span class="thumb"><img src="../assets/img/nimbus.webp" alt=""></span><div><b>Nimbus Mini 3</b><span class="chip">DRN-NM3-0038</span></div></div></td><td data-l="Tipo">Drone</td><td data-l="Grupo · versão"><span class="sub2">Nimbus Mini 3 · Padrão</span></td><td data-l="Marca">Skyline</td><td data-l="Preço" class="r num" style="font-family:var(--display);font-weight:300;font-size:15px">R$ 4.290</td><td data-l="Estoque" class="r"><span class="stock num ">61</span></td><td data-l="Status"><span class="st ok"><span>Ativo</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr class="" data-href="produto-novo.html"><td style="width:40px"><input class="ck" type="checkbox" aria-label="Selecionar Nimbus Mini 3 Combo"></td><td><div class="pc"><span class="thumb"><img src="../assets/img/nimbus.webp" alt=""></span><div><b>Nimbus Mini 3 Combo</b><span class="chip">DRN-NM3C-0039</span></div></div></td><td data-l="Tipo">Drone</td><td data-l="Grupo · versão"><span class="sub2">Nimbus Mini 3 · Combo</span></td><td data-l="Marca">Skyline</td><td data-l="Preço" class="r num" style="font-family:var(--display);font-weight:300;font-size:15px">R$ 5.780</td><td data-l="Estoque" class="r"><span class="stock num ">12</span></td><td data-l="Status"><span class="st mute"><span>Rascunho</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr class="picked" data-href="produto-novo.html"><td style="width:40px"><input class="ck" type="checkbox" aria-label="Selecionar Vortex FPV Racer" checked></td><td><div class="pc"><span class="thumb ph"></span><div><b>Vortex FPV Racer</b><span class="chip">DRN-VFR-0027</span></div></div></td><td data-l="Tipo">Drone</td><td data-l="Grupo · versão"><span class="sub2" style="color:var(--faint)">sem grupo</span></td><td data-l="Marca">Vortex</td><td data-l="Preço" class="r num" style="font-family:var(--display);font-weight:300;font-size:15px">R$ 3.150</td><td data-l="Estoque" class="r"><span class="stock num low">0</span></td><td data-l="Status"><span class="st warn"><span>Inativo</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr class="" data-href="produto-novo.html"><td style="width:40px"><input class="ck" type="checkbox" aria-label="Selecionar Heron Survey Pro"></td><td><div class="pc"><span class="thumb"><img src="../assets/img/heron.webp" alt=""></span><div><b>Heron Survey Pro</b><span class="chip">DRN-HSP-0015</span></div></div></td><td data-l="Tipo">Drone</td><td data-l="Grupo · versão"><span class="sub2" style="color:var(--faint)">sem grupo</span></td><td data-l="Marca">Heron</td><td data-l="Preço" class="r num" style="font-family:var(--display);font-weight:300;font-size:15px">R$ 28.400</td><td data-l="Estoque" class="r"><span class="stock num low">9</span></td><td data-l="Status"><span class="st ok"><span>Ativo</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr class="" data-href="acessorio-novo.html"><td style="width:40px"><input class="ck" type="checkbox" aria-label="Selecionar Bateria extra Falcon X2"></td><td><div class="pc"><span class="thumb ph"></span><div><b>Bateria extra Falcon X2</b><span class="chip">ACC-BFX2-0101</span></div></div></td><td data-l="Tipo">Acessório</td><td data-l="Grupo · versão"><span class="sub2" style="color:var(--faint)">sem grupo</span></td><td data-l="Marca">Aerion</td><td data-l="Preço" class="r num" style="font-family:var(--display);font-weight:300;font-size:15px">R$ 1.190</td><td data-l="Estoque" class="r"><span class="stock num low">6</span></td><td data-l="Status"><span class="st ok"><span>Ativo</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr></tbody></table></div>
+<div class="pager"><span>Exibindo 1 a 8 de 148</span><div class="pages"><a href="#">‹</a><a href="#" aria-current="page">1</a><a href="#">2</a><a href="#">3</a><a href="#">19</a><a href="#">›</a></div></div>
+<p class="foot-note">Protótipo acadêmico · dados fictícios · Aeria 2026</p>
+</main>
+<script>
+const cks=[...document.querySelectorAll('tbody .ck')],bulk=document.getElementById('bulk'),bn=document.getElementById('bn');
+function up(){const n=cks.filter(c=>c.checked).length;bulk.hidden=!n;bn.textContent=n+(n==1?' produto selecionado':' produtos selecionados');cks.forEach(c=>c.closest('tr').classList.toggle('picked',c.checked))}
+cks.forEach(c=>{c.addEventListener('click',e=>e.stopPropagation());c.addEventListener('change',up)});
+document.getElementById('all').addEventListener('change',e=>{cks.forEach(c=>c.checked=e.target.checked);up()});
+document.querySelectorAll('tbody tr').forEach(r=>r.addEventListener('click',e=>{if(!e.target.closest('button,input'))location.href=r.dataset.href}));
+up();
+</script>
+</body></html>

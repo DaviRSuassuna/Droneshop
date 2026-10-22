@@ -1,93 +1,238 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Falcon X2 Pro · Aeria</title>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/site.css">
-<script src="assets/theme.js"></script>
-</head>
-<body class="sf">
-<header class="snav">
-  <div class="snav-l">
-    <a class="brand" href="index.html">AERIA</a>
-    <nav class="snav-nav"><a href="drones.html" class="on">Drones</a><a href="acessorios.html">Acessórios</a><a href="empresas.html">Empresas</a><a href="suporte.html">Suporte</a><a href="ofertas.html">Ofertas</a></nav>
-  </div>
-  <div class="snav-r">
-    <span class="snav-search">Buscar drones e acessórios</span>
-    <a href="conta-perfil.html">Conta</a>
-    <a class="cart" href="carrinho.html">Carrinho <em>2</em></a>
-  </div>
-</header>
-<div style="padding:26px 34px 0;font-size:11.5px;color:var(--mute2)"><a href="index.html" style="color:var(--mute2)">Home</a> · <a href="drones.html" style="color:var(--mute2)">Drones</a> · Falcon X2 Pro</div>
-<div style="display:grid;grid-template-columns:minmax(0,1.25fr) 420px;gap:40px;padding:22px 34px 50px">
-  <div style="display:flex;flex-direction:column;gap:14px">
-    <div class="ph" style="height:460px;border-radius:12px;position:relative">foto principal · fundo estúdio
-      <span style="position:absolute;bottom:16px;left:16px;padding:7px 13px;border-radius:20px;background:var(--veil-s);border:1px solid var(--b2);font:300 11.5px/1 'Helvetica Neue',sans-serif;color:var(--ink)">▶ Vídeo do produto · 45 s</span>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&family=DM+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css"><style>.pd{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:40px;align-items:start;padding-bottom:40px}
+.gal{display:grid;gap:10px}
+.gmain{position:relative;aspect-ratio:4/3;border:1px solid var(--line);border-radius:18px}
+.gmain img{width:90%}
+.gmain .pic-art{width:60%}
+.gmain .hud{position:absolute;inset:0;pointer-events:none}
+.gmain .hud i{position:absolute;width:18px;height:18px;opacity:.5}
+.gmain .hud i::before,.gmain .hud i::after{content:"";position:absolute;background:var(--ink2)}
+.gmain .hud i::before{left:8.5px;width:1px;height:18px}.gmain .hud i::after{top:8.5px;height:1px;width:18px}
+.vid{position:absolute;left:16px;bottom:16px;display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;background:rgba(14,15,17,.7);border:1px solid var(--line2);font-size:13px}
+.vid .ico{width:13px;height:13px;fill:currentColor}
+.thumbs{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.thumbs button{border:1px solid var(--line);border-radius:12px;padding:0;background:none;cursor:pointer;overflow:hidden;display:grid}
+.thumbs button[aria-pressed="true"]{border-color:var(--amber)}
+.thumbs .stage{aspect-ratio:1}
+.thumbs .stage img{width:92%}.thumbs .stage .pic-art{width:84%}
+.thumbs small{font:400 10px var(--mono);letter-spacing:.1em;color:var(--mute);padding:6px 0;text-transform:uppercase;border-top:1px solid var(--line)}
+.tsrc{display:contents}
+.buybox{position:sticky;top:96px;display:grid;gap:16px}
+.buybox h1{margin:0;font:200 clamp(40px,4vw,56px)/1 var(--display);letter-spacing:-.02em}
+.rate{display:flex;gap:10px;align-items:center;font-size:13.5px;color:var(--mute)}
+.stars{color:var(--amber);letter-spacing:2px}
+.price{padding-top:16px;border-top:1px solid var(--line)}
+.price b{font:300 38px var(--display)}
+.price div{color:var(--mute);font-size:13.5px;margin-top:2px}
+.vers{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.vers a{border:1px solid var(--line2);border-radius:11px;padding:12px;display:grid;gap:2px;transition:border-color .2s;min-height:44px}
+.vers a:hover{border-color:var(--ink2)}
+.vers a[aria-current]{border-color:var(--amber);background:rgba(232,168,107,.06)}
+.vnote{font-size:12.5px;color:var(--mute);margin-top:8px}
+.kitinc{border:1px solid var(--line);border-radius:11px;padding:12px 14px;font-size:13.5px;color:var(--ink2)}
+.kitinc b{font-weight:500;color:var(--ink)}
+.rfilt{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.rfilt button{height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);background:none;color:var(--ink2);font:inherit;font-size:13.5px;cursor:pointer}
+.rfilt button[aria-pressed=true]{border-color:var(--amber);color:var(--ink);background:rgba(232,168,107,.06)}
+.rcard .vtag{font:400 10.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--mute);border:1px solid var(--line2);border-radius:999px;padding:2px 8px;margin-left:6px}
+.vers b{font-weight:500}.vers span{font-size:12.5px;color:var(--mute)}
+.buyrow{display:flex;flex-wrap:wrap;gap:10px}
+.buyrow .btn.p{flex:1 1 200px;min-width:0}
+.buyrow .btn.p{flex:1}
+.perks{display:grid;gap:10px;font-size:13.5px;color:var(--ink2);padding-top:16px;border-top:1px solid var(--line)}
+.perks div{display:flex;gap:10px;align-items:flex-start}
+.perks .ico{width:17px;height:17px;color:var(--mute);margin-top:2px}
+.specs2{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.sg{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.sg .lbl{display:block;margin-bottom:10px}
+.sg div{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid var(--line);font-size:14px;color:var(--ink2)}
+.sg div:first-of-type{border-top:0}
+.sg b{font:400 13.5px var(--mono);color:var(--ink);text-align:right}
+.rev{display:grid;grid-template-columns:300px minmax(0,1fr);gap:28px;align-items:start}
+.score b{font:200 64px/1 var(--display)}
+.bars{display:grid;gap:6px;margin-top:16px;font:400 12px var(--mono);color:var(--mute)}
+.bars div{display:grid;grid-template-columns:24px 1fr 28px;gap:10px;align-items:center}
+.bars i{height:3px;background:var(--surf2);border-radius:2px;overflow:hidden}
+.bars i::after{content:"";display:block;height:100%;width:var(--w);background:var(--ink2)}
+.bars div:first-child i::after{background:var(--amber)}
+.rlist{display:grid;gap:12px}
+.rcard{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.rcard .h{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--mute);margin-bottom:8px}
+.rcard .h b{color:var(--ink);font-weight:500}
+.rcard p{margin:6px 0 0;color:var(--ink2)}
+#avaliar{scroll-margin-top:96px}
+.rate-in{display:inline-flex;flex-direction:row-reverse;justify-content:flex-end;align-self:flex-start;gap:4px}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.upl{height:46px;border:1px dashed var(--line2);border-radius:9px;display:grid;place-items:center;font-size:13.5px;color:var(--ink2);cursor:pointer}.upl:hover{border-color:var(--ink2)}.upl input{position:absolute;width:1px;height:1px;opacity:0}
+.rate-in input{position:absolute;opacity:0;pointer-events:none}
+.rate-in label{font-size:30px;line-height:1;color:var(--faint);cursor:pointer;transition:color .15s}
+.rate-in input:checked~label,.rate-in label:hover,.rate-in label:hover~label{color:var(--amber)}
+.rate-in input:focus-visible+label{outline:2px solid var(--amber);outline-offset:2px;border-radius:4px}
+.cmpw{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:var(--bg2)}
+.cmp{width:100%;border-collapse:collapse;min-width:640px;table-layout:fixed}
+.cmp th,.cmp td{padding:14px 16px;border-top:1px solid var(--line);text-align:left;vertical-align:top;font-size:14px}
+.cmp thead th{border-top:0;vertical-align:bottom}
+.cmp tr>:first-child{width:190px;position:sticky;left:0;background:var(--bg2);z-index:1;font:400 10.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.cmp td{color:var(--ink2)}
+.cmp .cur{background:rgba(232,168,107,.05)}
+.cmp thead .cur{box-shadow:inset 0 2px 0 var(--amber)}
+.cmp .pic{height:96px;display:grid;place-items:center;margin-bottom:10px;position:relative}
+.cmp .pic img,.cmp .pic svg{max-height:92px;max-width:100%}
+.cmp .nm{display:block;padding:8px 0;margin:-8px 0;font:300 18px var(--display);color:var(--ink)}
+.cmp .nm:hover{text-decoration:underline}
+.cmp .tg{display:inline-block;margin-top:6px;font:400 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--amber)}
+.cmp .rm{position:absolute;top:0;right:0;width:36px;height:36px;border-radius:50%;border:1px solid var(--line2);background:var(--bg);color:var(--mute);cursor:pointer;display:grid;place-items:center}
+.cmp .rm:hover{color:var(--ink)}
+.cmp .pr{font:300 20px var(--display);color:var(--ink)}
+.cmp .rs{color:var(--amber)}
+.cmp .ok{color:var(--ok)}
+.cmp .no{color:var(--faint)}
+.cmp .best{color:var(--ink)}
+.cmp .best::after,.best-k::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--amber);margin-left:8px;vertical-align:middle}
+.best-k::before{margin:0 2px 0 0}
+.cmpq{display:flex;align-items:center;gap:10px;height:46px;padding:0 14px;border:1px solid var(--line2);border-radius:10px;background:var(--field)}
+.cmpq input{flex:1;border:0;background:none;color:var(--ink);font:inherit;outline:0}
+.cmpl{display:grid;margin-top:12px;max-height:52vh;overflow-y:auto}
+.cmpl button{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 4px;border:0;border-top:1px solid var(--line);background:none;color:var(--ink);text-align:left;font:inherit;cursor:pointer;min-height:64px}
+.cmpl button:first-child{border-top:0}
+.cmpl button:hover:not(:disabled){background:var(--surf)}
+.cmpl button:disabled{opacity:.45;cursor:default}
+.cmpl .th{width:52px;height:40px;display:grid;place-items:center}.cmpl .th img,.cmpl .th svg{max-width:52px;max-height:40px}
+.cmpl small{display:block;color:var(--mute);font-size:12.5px}
+.cmpl em{font:normal 400 12px var(--mono);color:var(--mute)}
+@media (max-width:640px){.cmp{min-width:0;width:auto}.cmp tr>:first-child{width:112px;min-width:112px;padding:12px 10px}.cmp th,.cmp td{padding:12px 10px;min-width:150px;font-size:13.5px}.cmp .nm{font-size:16px}.cmp .pic{height:72px}}
+@media (max-width:1000px){.pd{grid-template-columns:minmax(0,1fr)}.buybox{position:static}.specs2{grid-template-columns:1fr 1fr}.rev{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:640px){.specs2{grid-template-columns:1fr}.vers{grid-template-columns:1fr}.thumbs{grid-template-columns:repeat(3,1fr)}.thumbs button:nth-child(n+4){display:none}}</style>
+</head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></symbol>
+<symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l-1 13H6L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></symbol>
+<symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></symbol>
+<symbol id="i-truck" viewBox="0 0 24 24"><path d="M3 6h11v10H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></symbol>
+<symbol id="i-pix" viewBox="0 0 24 24"><path d="m12 3 9 9-9 9-9-9z"/><path d="m8 12 4-4 4 4-4 4z"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+<symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-3 2a11 11 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></symbol>
+<symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+<symbol id="i-share" viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.2 11 7.6-4M8.2 13l7.6 4"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+</svg>
+<div class="navwrap wrap">
+  <div class="nav">
+    <button class="iconbtn menu" id="menuBtn" aria-expanded="false" aria-controls="links" aria-label="Menu"><svg class="ico"><use href="#i-menu"/></svg></button>
+    <a class="mark" href="index.html">AERIA</a>
+    <nav class="links" id="links" aria-label="Principal"><a href="drones.html" aria-current="page">Drones</a><a href="acessorios.html">Acessórios</a><a href="empresas.html">Empresas</a><a href="suporte.html">Suporte</a><a href="ofertas.html" class="hot">Ofertas</a></nav>
+    <div class="right">
+      <label class="search"><svg class="ico"><use href="#i-search"/></svg><input type="search" placeholder="Buscar drones e acessórios" aria-label="Buscar drones e acessórios"><kbd>/</kbd></label>
+      <button class="iconbtn sbtn" id="searchBtn" type="button" aria-expanded="false" aria-controls="msearch" aria-label="Buscar"><svg class="ico"><use href="#i-search"/></svg></button>
+      <a class="iconbtn" href="conta-favoritos.html" aria-label="Favoritos, 6 itens"><svg class="ico"><use href="#i-heart"/></svg><span class="navcount">6</span></a>
+      <a class="iconbtn" href="carrinho.html" aria-label="Carrinho, 2 itens"><svg class="ico"><use href="#i-bag"/></svg><span class="navcount">2</span></a>
+      <a class="iconbtn acct" href="conta-perfil.html" aria-label="Minha conta"><svg class="ico"><use href="#i-user"/></svg><span class="acct-t">Conta</span></a>
     </div>
-    <div class="g5" style="gap:12px"><span class="ph" style="height:84px;border:1px solid var(--b5)">frente</span><span class="ph" style="height:84px;border:1px solid var(--line)">dobrado</span><span class="ph" style="height:84px;border:1px solid var(--line)">gimbal</span><span class="ph" style="height:84px;border:1px solid var(--line)">controle</span><span class="ph" style="height:84px;border:1px solid var(--line)">em voo</span></div>
-  </div>
-  <div style="display:flex;flex-direction:column;gap:18px">
-    <span style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc)">Aerion · profissional</span>
-    <h1 class="disp" style="font-size:38px;color:var(--pure)">Falcon X2 Pro</h1>
-    <div style="display:flex;align-items:center;gap:10px"><span style="font-size:12.5px;color:var(--ink)">★★★★☆</span><span style="font-size:12px;color:var(--dim2)">4,6 · 128 avaliações</span></div>
-    <div style="display:flex;flex-direction:column;gap:7px;padding:18px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
-      <span style="font:200 32px/1 'Sora',sans-serif;color:var(--pure)">R$ 12.499</span>
-      <span style="font-size:12.5px;color:var(--dim2)">12× de R$ 1.041 sem juros · R$ 11.874 no Pix</span>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:11px"><span class="eyebrow" style="margin:0">Versão</span>
-      <div style="display:flex;gap:10px"><label class="opt on" style="flex:1;flex-direction:column;align-items:flex-start;gap:5px;padding:12px"><span style="font-size:12.5px;color:var(--ink)">Padrão</span><span style="font-size:11px;color:var(--mute)">R$ 12.499</span></label><label class="opt" style="flex:1;flex-direction:column;align-items:flex-start;gap:5px;padding:12px"><span style="font-size:12.5px;color:var(--ink)">Fly More</span><span style="font-size:11px;color:var(--mute)">R$ 15.290</span></label><label class="opt" style="flex:1;flex-direction:column;align-items:flex-start;gap:5px;padding:12px"><span style="font-size:12.5px;color:var(--ink)">Enterprise</span><span style="font-size:11px;color:var(--mute)">R$ 19.900</span></label></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:12px">
-      <div style="display:flex;align-items:center;gap:16px;height:46px;padding:0 14px;border:1px solid var(--b3);border-radius:6px"><span style="color:var(--dim)">−</span><span style="font-size:13px">1</span><span style="color:var(--dim)">+</span></div>
-      <a class="sbtn p" href="carrinho.html" style="flex:1">Adicionar ao carrinho</a>
-    </div>
-    <a class="sbtn sm" href="conta-favoritos.html" style="height:44px">♡ Salvar na lista de desejos</a>
-    <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;font-size:11.5px;line-height:1.5;color:var(--dim2)">
-      <span>Entrega em até 5 dias úteis para São Paulo · frete grátis acima de R$ 999</span>
-      <span>Garantia de 12 meses + 30 dias para troca sem custo</span>
-      <span>Registro SISANT/ANAC orientado pela nossa equipe</span>
-    </div>
+    <form class="msearch" id="msearch" role="search"><svg class="ico"><use href="#i-search"/></svg><input type="search" placeholder="Buscar na loja" aria-label="Buscar drones e acessórios"><button class="btn sm p" type="submit">Buscar</button></form>
   </div>
 </div>
-<section style="padding:0 34px 50px">
-  <div class="sec-h"><h2 class="sec-t">Especificações técnicas</h2><a class="sec-l" href="drones.html">Comparar com outros modelos →</a></div>
-  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 46px"><div class="spec-row"><span>Peso</span><b>895 g</b></div><div class="spec-row"><span>Dimensões (dobrado)</span><b>214 × 110 × 89 mm</b></div><div class="spec-row"><span>Autonomia de voo</span><b>43 min</b></div><div class="spec-row"><span>Alcance de transmissão</span><b>15 km</b></div><div class="spec-row"><span>Velocidade máxima</span><b>72 km/h</b></div><div class="spec-row"><span>Sensor da câmera</span><b>1/1.3" CMOS · 48 MP</b></div><div class="spec-row"><span>Resolução de vídeo</span><b>4K 60 fps · D-Log M</b></div><div class="spec-row"><span>Estabilização</span><b>Gimbal mecânico de 3 eixos</b></div><div class="spec-row"><span>Bateria</span><b>LiPo 4S · 5.000 mAh</b></div><div class="spec-row"><span>Tempo de carregamento</span><b>80 min</b></div><div class="spec-row"><span>Navegação</span><b>GPS + GLONASS</b></div><div class="spec-row"><span>Sensores</span><b>Anticolisão omnidirecional</b></div></div>
-</section>
-<section style="display:grid;grid-template-columns:320px minmax(0,1fr);gap:40px;padding:0 34px 50px">
-  <div style="display:flex;flex-direction:column;gap:14px">
-    <h2 class="sec-t">Avaliações</h2>
-    <span style="font:200 44px/1 'Sora',sans-serif;color:var(--pure)">4,6</span>
-    <span style="font-size:12px;color:var(--dim2)">128 avaliações verificadas</span>
-    <div style="display:flex;flex-direction:column;gap:7px;margin-top:6px"><span style="display:flex;align-items:center;gap:10px"><span style="width:14px;font-size:11px;color:var(--mute)">5★</span><span style="position:relative;flex:1;height:4px;border-radius:2px;background:var(--line)"><span style="position:absolute;left:0;top:0;bottom:0;width:72%;border-radius:2px;background:var(--bar)"></span></span><span class="mono" style="width:30px;text-align:right;font-size:10px;color:var(--faint)">92</span></span><span style="display:flex;align-items:center;gap:10px"><span style="width:14px;font-size:11px;color:var(--mute)">4★</span><span style="position:relative;flex:1;height:4px;border-radius:2px;background:var(--line)"><span style="position:absolute;left:0;top:0;bottom:0;width:18%;border-radius:2px;background:var(--bar)"></span></span><span class="mono" style="width:30px;text-align:right;font-size:10px;color:var(--faint)">23</span></span><span style="display:flex;align-items:center;gap:10px"><span style="width:14px;font-size:11px;color:var(--mute)">3★</span><span style="position:relative;flex:1;height:4px;border-radius:2px;background:var(--line)"><span style="position:absolute;left:0;top:0;bottom:0;width:6%;border-radius:2px;background:var(--bar)"></span></span><span class="mono" style="width:30px;text-align:right;font-size:10px;color:var(--faint)">8</span></span><span style="display:flex;align-items:center;gap:10px"><span style="width:14px;font-size:11px;color:var(--mute)">2★</span><span style="position:relative;flex:1;height:4px;border-radius:2px;background:var(--line)"><span style="position:absolute;left:0;top:0;bottom:0;width:3%;border-radius:2px;background:var(--bar)"></span></span><span class="mono" style="width:30px;text-align:right;font-size:10px;color:var(--faint)">4</span></span><span style="display:flex;align-items:center;gap:10px"><span style="width:14px;font-size:11px;color:var(--mute)">1★</span><span style="position:relative;flex:1;height:4px;border-radius:2px;background:var(--line)"><span style="position:absolute;left:0;top:0;bottom:0;width:1%;border-radius:2px;background:var(--bar)"></span></span><span class="mono" style="width:30px;text-align:right;font-size:10px;color:var(--faint)">1</span></span></div>
+<main>
+<div class="wrap pagehead" style="padding-bottom:18px"><div class="crumb"><a href="index.html">Home</a><span><a href="drones.html">Drones</a></span><span id="pcrumb">Falcon X2 Pro</span></div></div>
+<div class="wrap pd">
+<div class="gal"><div class="stage gmain" id="gmain"><img src="assets/img/falcon.webp" alt="Falcon X2 Pro, vista frontal"></div>
+  <div class="thumbs"><button type="button" data-thumb aria-pressed="true"><span class="stage"><img src="assets/img/falcon.webp" alt="Falcon X2 Pro, vista frontal"></span><small>Frente</small><template class="tsrc"><img src="assets/img/falcon.webp" alt="Falcon X2 Pro, vista frontal"></template></button><button type="button" data-thumb aria-pressed="false"><span class="stage"><svg class="pic-art" viewBox="0 0 160 100" role="img" aria-label="Falcon X2 Pro dobrado"><rect x="52" y="30" width="56" height="40" rx="10"/><path d="M52 40 36 34v32l16-6M108 40l16-6v32l-16-6"/><circle class="s" cx="80" cy="50" r="10"/><circle class="a" cx="80" cy="50" r="3"/><text x="54" y="88">214 × 110 × 89 mm</text></svg></span><small>Dobrado</small><template class="tsrc"><svg class="pic-art" viewBox="0 0 160 100" role="img" aria-label="Falcon X2 Pro dobrado"><rect x="52" y="30" width="56" height="40" rx="10"/><path d="M52 40 36 34v32l16-6M108 40l16-6v32l-16-6"/><circle class="s" cx="80" cy="50" r="10"/><circle class="a" cx="80" cy="50" r="3"/><text x="54" y="88">214 × 110 × 89 mm</text></svg></template></button><button type="button" data-thumb aria-pressed="false"><span class="stage"><svg class="pic-art" viewBox="0 0 160 100" role="img" aria-label="Gimbal de 3 eixos"><path d="M80 14v14"/><rect x="66" y="28" width="28" height="12" rx="3"/><path d="M70 40v10h20V40"/><circle cx="80" cy="64" r="16"/><circle class="s" cx="80" cy="64" r="9"/><circle class="a" cx="80" cy="64" r="3.5"/><path class="s" d="M50 64a30 30 0 0 1 60 0M54 76a28 28 0 0 0 52 0"/><text x="114" y="40">3 eixos</text></svg></span><small>Gimbal</small><template class="tsrc"><svg class="pic-art" viewBox="0 0 160 100" role="img" aria-label="Gimbal de 3 eixos"><path d="M80 14v14"/><rect x="66" y="28" width="28" height="12" rx="3"/><path d="M70 40v10h20V40"/><circle cx="80" cy="64" r="16"/><circle class="s" cx="80" cy="64" r="9"/><circle class="a" cx="80" cy="64" r="3.5"/><path class="s" d="M50 64a30 30 0 0 1 60 0M54 76a28 28 0 0 0 52 0"/><text x="114" y="40">3 eixos</text></svg></template></button><button type="button" data-thumb aria-pressed="false"><span class="stage"><svg class="pic-art" viewBox="0 0 160 100" role="img" aria-label="Controle remoto"><path d="M38 40c0-8 6-12 14-12h56c8 0 14 4 14 12l6 30c2 8-4 12-10 8l-14-10H62L48 78c-6 4-12 0-10-8Z"/><circle class="s" cx="60" cy="52" r="8"/><circle cx="60" cy="52" r="2.5"/><circle class="s" cx="100" cy="52" r="8"/><circle cx="100" cy="52" r="2.5"/><rect x="66" y="10" width="28" height="18" rx="2"/><path class="a" d="M70 22l6-5 5 3 8-6"/></svg></span><small>Controle</small><template class="tsrc"><svg class="pic-art" viewBox="0 0 160 100" role="img" aria-label="Controle remoto"><path d="M38 40c0-8 6-12 14-12h56c8 0 14 4 14 12l6 30c2 8-4 12-10 8l-14-10H62L48 78c-6 4-12 0-10-8Z"/><circle class="s" cx="60" cy="52" r="8"/><circle cx="60" cy="52" r="2.5"/><circle class="s" cx="100" cy="52" r="8"/><circle cx="100" cy="52" r="2.5"/><rect x="66" y="10" width="28" height="18" rx="2"/><path class="a" d="M70 22l6-5 5 3 8-6"/></svg></template></button><button type="button" data-thumb aria-pressed="false"><span class="stage"><img src="assets/img/falcon.webp" alt="Falcon X2 Pro em voo" style="transform:rotate(-6deg) scale(.9)"></span><small>Em voo</small><template class="tsrc"><img src="assets/img/falcon.webp" alt="Falcon X2 Pro em voo" style="transform:rotate(-6deg) scale(.9)"></template></button></div></div>
+<div class="buybox">
+  <div style="display:flex;gap:12px;align-items:center"><span class="lbl">Aerion · Profissional</span><span class="chip">LANÇAMENTO 2026</span></div>
+  <h1 id="pname">Falcon X2 Pro</h1>
+  <div class="rate"><span class="stars" aria-label="4,6 de 5">★★★★☆</span>4,6 · <a class="tlink" href="#avaliacoes">128 avaliações do Falcon X2</a></div>
+  <div class="price"><b class="num" id="pprice">R$ 12.499</b><div id="pinst">12× R$ 1.041 sem juros · R$ 11.874 no Pix</div></div>
+  <div><span class="lbl">Versão</span><div class="vers" style="margin-top:10px"><a href="produto.html?v=pro" data-v="pro" aria-current="page"><b>Pro</b><span>R$ 12.499</span></a><a href="produto.html?v=standard" data-v="standard"><b>Standard</b><span>R$ 8.990</span></a><a href="produto.html?v=fly" data-v="fly"><b>Pro Fly More</b><span>R$ 13.999</span></a></div><p class="vnote">Cada versão tem ficha, estoque e endereço próprios.</p></div>
+  <div class="kitinc" id="kitinc" hidden><b>Kit com:</b> 1 Falcon X2 Pro, 2 baterias extras, carregador para 3 baterias e mochila de campo 25 L.</div>
+  <div class="buyrow"><div class="qty"><button type="button" aria-label="Diminuir">−</button><output>1</output><button type="button" aria-label="Aumentar">+</button></div><a class="btn p" href="carrinho.html">Adicionar ao carrinho</a><a class="btn sq" href="conta-favoritos.html" aria-label="Salvar nos favoritos"><svg class="ico"><use href="#i-heart"/></svg></a></div>
+  <div class="perks"><div><svg class="ico"><use href="#i-truck"/></svg>Entrega em até 5 dias úteis para Palmas · frete grátis acima de R$ 999</div><div><svg class="ico"><use href="#i-shield"/></svg>Garantia de 12 meses + 30 dias para troca sem custo</div><div><svg class="ico"><use href="#i-doc"/></svg>Registro SISANT/ANAC orientado pela nossa equipe</div></div>
+</div></div>
+<section class="tele" aria-label="Ficha rápida"><div class="wrap">
+<div class="read"><span class="lbl">Autonomia de voo</span><strong id="t1">43<span>min</span></strong></div><div class="read"><span class="lbl">Alcance de transmissão</span><strong id="t2">15<span>km</span></strong></div><div class="read"><span class="lbl">Vídeo</span><strong id="t3">4K<span>60 fps</span></strong></div><div class="read"><span class="lbl">Peso de decolagem</span><strong>895<span>g</span></strong></div></div></section>
+<section class="wrap sec"><div class="shead"><div><span class="lbl">Ficha técnica</span><h2>Especificações técnicas</h2></div></div><div class="specs2"><div class="sg"><span class="lbl">Estrutura e voo</span><div>Peso<b>895 g</b></div><div>Dobrado<b>214 × 110 × 89 mm</b></div><div>Autonomia<b>43 min</b></div><div>Velocidade máx.<b>72 km/h</b></div></div><div class="sg"><span class="lbl">Câmera</span><div>Sensor<b>1/1.3" CMOS · 48 MP</b></div><div>Vídeo<b>4K 60 fps · D-Log M</b></div><div>Estabilização<b>Gimbal 3 eixos</b></div></div><div class="sg"><span class="lbl">Bateria e navegação</span><div>Bateria<b>LiPo 4S · 5.000 mAh</b></div><div>Carregamento<b>80 min</b></div><div>Navegação<b>GPS + GLONASS</b></div><div>Sensores<b>Anticolisão 360°</b></div></div></div></section>
+<section class="wrap sec" id="comparar"><div class="shead"><div><span class="lbl">Comparar</span><h2>Compare as versões do Falcon X2</h2></div><button class="btn" type="button" data-dialog="dlgCmp" id="cmpAdd" aria-haspopup="dialog"><svg class="ico"><use href="#i-plus"/></svg>Comparar com outro drone</button></div>
+<div class="cmpw" tabindex="0" role="region" aria-label="Tabela de comparação"><table class="cmp" id="cmp"></table></div>
+<p class="formnote" style="margin-top:12px"><span class="best-k"></span> melhor valor da linha · até 4 drones lado a lado</p></section>
+<dialog class="dlg" id="dlgCmp" aria-labelledby="dlgCmpT"><div class="dlgbox">
+<div class="dlghead"><div><span class="lbl">Comparar</span><h2 id="dlgCmpT">Escolha um drone</h2></div><button class="iconbtn" type="button" data-close aria-label="Fechar"><svg class="ico"><use href="#i-x"/></svg></button></div>
+<label class="cmpq"><svg class="ico"><use href="#i-search"/></svg><input id="cmpQ" placeholder="Buscar no catálogo" aria-label="Buscar drone"></label>
+<div class="cmpl" id="cmpL"></div><p class="formnote" id="cmpMsg" style="margin:10px 0 0"></p></div></dialog>
+<section class="wrap sec" id="avaliacoes"><div class="shead"><div><span class="lbl">Avaliações</span><h2>Quem já voa com ele.</h2></div><button class="btn" type="button" data-dialog="dlgAval" aria-haspopup="dialog"><svg class="ico"><use href="#i-plus"/></svg>Avaliar este drone</button></div><dialog class="dlg wide" id="dlgAval" aria-labelledby="dlgAvalT"><form class="dlgbox" method="dialog" data-dlgform data-ok="Avaliação enviada. Ela aparece aqui depois da moderação.">
+<div class="dlghead"><div><span class="lbl">Só quem comprou pode avaliar</span><h2 id="dlgAvalT">Avaliar o <span class="avname">Falcon X2 Pro</span></h2></div><button class="iconbtn" type="button" data-close aria-label="Fechar"><svg class="ico"><use href="#i-x"/></svg></button></div>
+<div class="fg"><div class="f w6"><label>Sua nota <span class="req">*</span></label><div class="rate-in" role="radiogroup" aria-label="Nota de 1 a 5"><input type="radio" name="nota" id="n5" value="5" checked><label for="n5" title="5 de 5">★</label><input type="radio" name="nota" id="n4" value="4"><label for="n4" title="4 de 5">★</label><input type="radio" name="nota" id="n3" value="3"><label for="n3" title="3 de 5">★</label><input type="radio" name="nota" id="n2" value="2"><label for="n2" title="2 de 5">★</label><input type="radio" name="nota" id="n1" value="1"><label for="n1" title="1 de 5">★</label></div></div>
+<div class="f w6"><label for="rt">Título <span class="req">*</span></label><input id="rt" placeholder="Resuma sua experiência em uma frase"></div>
+<div class="f w6"><label for="rc">Comentário <span class="req">*</span></label><textarea id="rc" placeholder="Autonomia real, estabilidade com vento, qualidade da imagem, o que faltou"></textarea></div>
+<div class="f w3"><label for="ru">Uso principal</label><select id="ru"><option>Filmagem e viagem</option><option>Trabalho profissional</option><option>Inspeção</option><option>Mapeamento</option></select></div>
+<div class="f w3"><label for="rf">Fotos ou vídeo</label><label class="upl"><input id="rf" type="file" accept="image/*,video/*" multiple>Adicionar arquivos</label></div></div>
+<p class="formnote" style="margin:14px 0 0">Sua avaliação aparece com o selo <b style="color:var(--ink2);font-weight:500">compra verificada</b> depois da moderação, em até 24 h.</p><p class="pwmsg" role="status"></p>
+<div class="dlgfoot"><button class="btn" type="button" data-close>Cancelar</button><button class="btn p" type="submit">Publicar avaliação</button></div></form></dialog>
+<div class="rfilt" role="group" aria-label="Filtrar avaliações"><button type="button" aria-pressed="true">Todas as versões · 128</button><button type="button" aria-pressed="false" id="rthis">Só Falcon X2 Pro · 74</button></div>
+<div class="rev"><div class="score"><b>4,6</b><div class="stars" style="margin-top:6px">★★★★☆</div><div style="color:var(--mute);font-size:13.5px;margin-top:4px">128 avaliações verificadas</div>
+<div class="bars"><div>5★<i style="--w:100%"></i><span>92</span></div><div>4★<i style="--w:25%"></i><span>23</span></div><div>3★<i style="--w:9%"></i><span>8</span></div><div>2★<i style="--w:4%"></i><span>4</span></div><div>1★<i style="--w:1%"></i><span>1</span></div></div></div>
+<div class="rlist"><div class="rcard"><div class="h"><span><b>Rafael M.</b><span class="vtag">Pro</span> · compra verificada</span><span>há 3 semanas</span></div><div class="stars">★★★★★</div><p>Autonomia real ficou perto dos 40 minutos em voo com vento moderado. O gimbal segura bem o horizonte em rajadas.</p></div>
+<div class="rcard"><div class="h"><span><b>Juliana P.</b><span class="vtag">Standard</span> · compra verificada</span><span>há 1 mês</span></div><div class="stars">★★★★☆</div><p>Imagem excelente e transmissão estável a 8 km. Senti falta de uma maleta rígida no kit padrão.</p></div></div></div></section>
+<section class="wrap sec" style="padding-bottom:40px"><div class="shead"><div><span class="lbl">Feito para o Falcon X2</span><h2>Acessórios compatíveis</h2></div><a class="tlink arrow" href="acessorios.html">Ver todos</a></div>
+<div class="pgrid c4"><article class="pcard"><div class="top"><span class="lbl">Aerion</span><span class="chip">MAIS VENDIDO</span></div><a class="stage" href="produto.html"><svg class="pic-art" viewBox="0 0 160 100" role="img" aria-label="Bateria extra Falcon X2"><rect x="40" y="26" width="80" height="48" rx="7"/><path class="s" d="M50 26v48M110 26v48"/><rect x="120" y="40" width="8" height="20" rx="2"/><rect class="af" x="62" y="64" width="6" height="3" rx="1"/><rect class="af" x="72" y="64" width="6" height="3" rx="1"/><rect class="af" x="82" y="64" width="6" height="3" rx="1"/><rect class="s" x="92" y="64" width="6" height="3" rx="1"/><path class="s" d="M58 38h44M58 46h30"/><text x="58" y="56">5.000 mAh</text></svg></a><h3><a href="produto.html">Bateria extra Falcon X2</a></h3><div class="specs">5.000 mAh · 43 min</div><div class="pr">R$ 1.190<small>6× R$ 198</small></div><div class="row2"><a class="btn" href="produto.html">Ver detalhes</a><a class="btn sq" href="carrinho.html" aria-label="Adicionar ao carrinho"><svg class="ico"><use href="#i-bag"/></svg></a></div></article><article class="pcard"><div class="top"><span class="lbl">Aerion</span></div><a class="stage" href="produto.html"><svg class="pic-art" viewBox="0 0 160 100" role="img" aria-label="Maleta rígida Falcon"><rect x="30" y="28" width="100" height="56" rx="8"/><path d="M66 28v-8h28v8"/><path class="s" d="M30 46h100"/><rect class="s" x="40" y="54" width="34" height="22" rx="4"/><rect class="s" x="80" y="54" width="18" height="22" rx="3"/><rect class="s" x="102" y="54" width="18" height="22" rx="3"/><rect class="a" x="56" y="42" width="8" height="8" rx="1.5"/><rect class="a" x="96" y="42" width="8" height="8" rx="1.5"/></svg></a><h3><a href="produto.html">Maleta rígida Falcon</a></h3><div class="specs">EVA · comporta 3 baterias</div><div class="pr">R$ 690<small>6× R$ 115</small></div><div class="row2"><a class="btn" href="produto.html">Ver detalhes</a><a class="btn sq" href="carrinho.html" aria-label="Adicionar ao carrinho"><svg class="ico"><use href="#i-bag"/></svg></a></div></article><article class="pcard"><div class="top"><span class="lbl">Aeria</span></div><a class="stage" href="produto.html"><svg class="pic-art" viewBox="0 0 160 100" role="img" aria-label="Filtros ND (kit 4)"><circle cx="34" cy="46" r="13"/><circle class="s" cx="34" cy="46" r="8"/><text x="34" y="74" text-anchor="middle">ND8</text><circle cx="65" cy="46" r="13"/><circle class="s" cx="65" cy="46" r="8"/><text x="65" y="74" text-anchor="middle">ND16</text><circle cx="96" cy="46" r="13"/><circle class="s" cx="96" cy="46" r="8"/><text x="96" y="74" text-anchor="middle">ND32</text><circle cx="127" cy="46" r="13"/><circle class="a" cx="127" cy="46" r="8"/><text x="127" y="74" text-anchor="middle">ND64</text></svg></a><h3><a href="produto.html">Filtros ND (kit 4)</a></h3><div class="specs">ND8 · ND16 · ND32 · ND64</div><div class="pr">R$ 349<small>3× R$ 116</small></div><div class="row2"><a class="btn" href="produto.html">Ver detalhes</a><a class="btn sq" href="carrinho.html" aria-label="Adicionar ao carrinho"><svg class="ico"><use href="#i-bag"/></svg></a></div></article><article class="pcard"><div class="top"><span class="lbl">Aerion</span></div><a class="stage" href="produto.html"><svg class="pic-art" viewBox="0 0 160 100" role="img" aria-label="Carregador 3 baterias"><rect x="28" y="34" width="104" height="40" rx="7"/><rect class="s" x="38" y="24" width="20" height="30" rx="3"/><circle class="af" cx="48" cy="64" r="2.2"/><rect class="s" x="70" y="24" width="20" height="30" rx="3"/><circle class="af" cx="80" cy="64" r="2.2"/><rect class="s" x="102" y="24" width="20" height="30" rx="3"/><circle class="s" cx="112" cy="64" r="2.2"/><path d="M132 54h10c4 0 6 3 6 7v14"/><text x="38" y="88">100 W · 3 baterias</text></svg></a><h3><a href="produto.html">Carregador 3 baterias</a></h3><div class="specs">100 W · 80 min por ciclo</div><div class="pr">R$ 890<small>6× R$ 148</small></div><div class="row2"><a class="btn" href="produto.html">Ver detalhes</a><a class="btn sq" href="carrinho.html" aria-label="Adicionar ao carrinho"><svg class="ico"><use href="#i-bag"/></svg></a></div></article></div></section>
+<script>
+(()=>{const V={pro:["Falcon X2 Pro","R$ 12.499","12× R$ 1.041 sem juros · R$ 11.874 no Pix",["43","min"],["15","km"],["4K","60 fps"],74],
+standard:["Falcon X2 Standard","R$ 8.990","12× R$ 749 sem juros · R$ 8.540 no Pix",["38","min"],["12","km"],["4K","30 fps"],41],
+fly:["Falcon X2 Pro Fly More","R$ 13.999","12× R$ 1.166 sem juros · R$ 13.299 no Pix",["43","min"],["15","km"],["4K","60 fps"],13]};
+const k=new URLSearchParams(location.search).get("v"),v=V[k]; if(!v) return;
+const $=s=>document.querySelector(s),set=(id,a)=>{$(id).innerHTML=a[0]+"<span>"+a[1]+"</span>"};
+$("#pname").textContent=v[0];document.querySelectorAll(".avname").forEach(e=>e.textContent=v[0]);$("#pcrumb").textContent=v[0];$("#pprice").textContent=v[1];$("#pinst").textContent=v[2];
+set("#t1",v[3]);set("#t2",v[4]);set("#t3",v[5]);$("#rthis").textContent="Só "+v[0]+" · "+v[6];$("#kitinc").hidden=k!=="fly";
+document.title=v[0]+" · Aeria";document.querySelectorAll(".vers a").forEach(a=>a.toggleAttribute("aria-current",a.dataset.v===k));
+document.querySelectorAll(".vers a[aria-current]").forEach(a=>a.setAttribute("aria-current","page"));})();
+document.querySelectorAll(".rfilt button").forEach(b=>b.addEventListener("click",()=>document.querySelectorAll(".rfilt button").forEach(x=>x.setAttribute("aria-pressed",x===b))));
+</script>
+<script>
+(()=>{const D={"pro": {"n": "Falcon X2 Pro", "href": "produto.html?v=pro", "g": 1, "pr": "R$ 12.499", "rate": ["4,7", 74], "aut": 43, "alc": 15, "vel": 72, "vid": "4K 60 fps", "sensor": "1/1.3\" CMOS · 48 MP", "peso": "895 g", "bat": 1, "anti": true, "kit": "", "anac": true, "vis": "<img src=\"assets/img/falcon.webp\" alt=\"\">"}, "standard": {"n": "Falcon X2 Standard", "href": "produto.html?v=standard", "g": 1, "pr": "R$ 8.990", "rate": ["4,4", 41], "aut": 38, "alc": 12, "vel": 65, "vid": "4K 30 fps", "sensor": "1/2\" CMOS · 12 MP", "peso": "870 g", "bat": 1, "anti": false, "kit": "", "anac": true, "vis": "<img src=\"assets/img/falcon.webp\" alt=\"\">"}, "fly": {"n": "Falcon X2 Pro Fly More", "href": "produto.html?v=fly", "g": 1, "pr": "R$ 13.999", "rate": ["4,8", 13], "aut": 43, "alc": 15, "vel": 72, "vid": "4K 60 fps", "sensor": "1/1.3\" CMOS · 48 MP", "peso": "895 g", "bat": 3, "anti": true, "kit": "Carregador e mochila", "anac": true, "vis": "<img src=\"assets/img/falcon.webp\" alt=\"\">"}, "nimbus": {"n": "Nimbus Mini 3", "href": "produto.html", "g": 0, "pr": "R$ 4.290", "rate": ["4,7", 212], "aut": 34, "alc": 10, "vel": 57, "vid": "4K 30 fps", "sensor": "1/1.3\" CMOS · 48 MP", "peso": "249 g", "bat": 1, "anti": false, "kit": "", "anac": false, "vis": "<img src=\"assets/img/nimbus.webp\" alt=\"\">"}, "heron": {"n": "Heron Survey Pro", "href": "produto.html", "g": 0, "pr": "R$ 28.400", "rate": ["4,8", 31], "aut": 38, "alc": 12, "vel": 72, "vid": "5.1K 30 fps", "sensor": "1\" CMOS · 20 MP", "peso": "1.390 g", "bat": 1, "anti": true, "kit": "Módulo RTK", "anac": true, "vis": "<img src=\"assets/img/heron.webp\" alt=\"\">"}, "fpv": {"n": "Vortex FPV Racer", "href": "produto.html", "g": 0, "pr": "R$ 3.150", "rate": ["4,4", 57], "aut": 12, "alc": 4, "vel": 120, "vid": "4K 60 fps", "sensor": "1/2\" CMOS · 12 MP", "peso": "410 g", "bat": 1, "anti": false, "kit": "", "anac": true, "vis": "<svg class=\"pic-art\" viewBox=\"0 0 160 100\" role=\"img\" aria-label=\"\"><path d=\"M48 30l64 40M112 30 48 70\"/><ellipse class=\"s\" cx=\"48\" cy=\"30\" rx=\"13\" ry=\"4.9\"/><circle cx=\"48\" cy=\"30\" r=\"2.2\"/><ellipse class=\"s\" cx=\"112\" cy=\"30\" rx=\"13\" ry=\"4.9\"/><circle cx=\"112\" cy=\"30\" r=\"2.2\"/><ellipse class=\"s\" cx=\"48\" cy=\"70\" rx=\"13\" ry=\"4.9\"/><circle cx=\"48\" cy=\"70\" r=\"2.2\"/><ellipse class=\"s\" cx=\"112\" cy=\"70\" rx=\"13\" ry=\"4.9\"/><circle cx=\"112\" cy=\"70\" r=\"2.2\"/><rect x=\"66\" y=\"40\" width=\"28\" height=\"20\" rx=\"4\"/><rect x=\"72\" y=\"34\" width=\"16\" height=\"8\" rx=\"2\"/><circle class=\"a\" cx=\"80\" cy=\"37.5\" r=\"2.4\"/><path class=\"s\" d=\"M70 60v6M90 60v6\"/></svg>"}, "agro": {"n": "Atlas Agro 10L", "href": "produto.html", "g": 0, "pr": "R$ 46.900", "rate": ["4,6", 9], "aut": 22, "alc": 3, "vel": 36, "vid": "1080p 30 fps", "sensor": "Câmera FPV", "peso": "24 kg", "bat": 2, "anti": true, "kit": "Tanque 10 L", "anac": true, "vis": "<svg class=\"pic-art\" viewBox=\"0 0 160 100\" role=\"img\" aria-label=\"\"><path d=\"M80 50 40 28M80 50l40-22M80 50 40 72M80 50l40 22M28 50h104\"/><ellipse class=\"s\" cx=\"40\" cy=\"28\" rx=\"12\" ry=\"4.6\"/><circle cx=\"40\" cy=\"28\" r=\"2.2\"/><ellipse class=\"s\" cx=\"120\" cy=\"28\" rx=\"12\" ry=\"4.6\"/><circle cx=\"120\" cy=\"28\" r=\"2.2\"/><ellipse class=\"s\" cx=\"40\" cy=\"72\" rx=\"12\" ry=\"4.6\"/><circle cx=\"40\" cy=\"72\" r=\"2.2\"/><ellipse class=\"s\" cx=\"120\" cy=\"72\" rx=\"12\" ry=\"4.6\"/><circle cx=\"120\" cy=\"72\" r=\"2.2\"/><ellipse class=\"s\" cx=\"28\" cy=\"50\" rx=\"12\" ry=\"4.6\"/><circle cx=\"28\" cy=\"50\" r=\"2.2\"/><ellipse class=\"s\" cx=\"132\" cy=\"50\" rx=\"12\" ry=\"4.6\"/><circle cx=\"132\" cy=\"50\" r=\"2.2\"/><rect x=\"68\" y=\"38\" width=\"24\" height=\"24\" rx=\"6\"/><path class=\"a\" d=\"M70 66v8M80 66v10M90 66v8\"/><path class=\"s\" d=\"M66 80h28\" stroke-dasharray=\"2 3\"/></svg>"}, "kids": {"n": "Sparrow Kids", "href": "produto.html", "g": 0, "pr": "R$ 690", "rate": ["4,3", 88], "aut": 18, "alc": 2, "vel": 36, "vid": "2.7K 30 fps", "sensor": "1/3\" CMOS · 8 MP", "peso": "199 g", "bat": 1, "anti": false, "kit": "", "anac": false, "vis": "<svg class=\"pic-art\" viewBox=\"0 0 160 100\" role=\"img\" aria-label=\"\"><rect x=\"66\" y=\"40\" width=\"28\" height=\"20\" rx=\"8\"/><circle class=\"s\" cx=\"46\" cy=\"30\" r=\"14\"/><path d=\"M37 30h18\"/><circle class=\"s\" cx=\"114\" cy=\"30\" r=\"14\"/><path d=\"M105 30h18\"/><circle class=\"s\" cx=\"46\" cy=\"70\" r=\"14\"/><path d=\"M37 70h18\"/><circle class=\"s\" cx=\"114\" cy=\"70\" r=\"14\"/><path d=\"M105 70h18\"/><path d=\"M66 44 56 36M94 44l10-8M66 56l-10 8M94 56l10 8\"/><circle class=\"a\" cx=\"80\" cy=\"50\" r=\"3\"/></svg>"}},$=i=>document.getElementById(i);
+let cur=new URLSearchParams(location.search).get("v");if(!D[cur])cur="pro";let cols=["pro","standard","fly"];
+const ROWS=[["Preço","pr","p"],["Avaliações","rate","r"],["Autonomia","aut","n","min"],["Alcance","alc","n","km"],["Velocidade máx.","vel","n","km/h"],["Vídeo","vid","t"],["Câmera","sensor","t"],["Peso","peso","t"],["Baterias na caixa","bat","n",""],["Anticolisão 360°","anti","b"],["Itens extras","kit","t"],["Exige registro ANAC","anac","b"]];
+function cell(p,f,ty,u,best){const v=p[f];
+ if(ty==="b")return v?'<span class="ok">✓ sim</span>':'<span class="no">não</span>';
+ if(ty==="r")return '<span class="rs">★</span> '+v[0]+' <span style="color:var(--mute)">('+v[1]+')</span>';
+ if(ty==="n")return '<span class="'+(v===best?"best":"")+'">'+v+(u?" "+u:"")+'</span>';
+ if(ty==="p")return '<span class="pr">'+v+'</span>';
+ return v||'<span class="no">não</span>'}
+function render(){let h='<thead><tr><th scope="col"><span class="vh">Modelo</span></th>';
+ cols.forEach(k=>{const p=D[k],c=k===cur;h+='<th scope="col" class="'+(c?"cur":"")+'"><div class="pic">'+p.vis+(c?"":'<button class="rm" type="button" data-rm="'+k+'" aria-label="Tirar '+p.n+' da comparação">✕</button>')+'</div><a class="nm" href="'+p.href+'">'+p.n+'</a>'+(c?'<span class="tg">Você está vendo</span>':p.g?'<span class="tg" style="color:var(--mute)">Versão do grupo</span>':'<span class="tg" style="color:var(--mute)">Outro drone</span>')+'</th>'});
+ h+='</tr></thead><tbody>';
+ ROWS.forEach(([l,f,ty,u])=>{let best=null;if(ty==="n"&&cols.length>1){const v=cols.map(k=>D[k][f]),m=Math.max(...v);if(v.some(x=>x!==m))best=m}
+  h+='<tr><th scope="row">'+l+'</th>'+cols.map(k=>'<td class="'+(k===cur?"cur":"")+'">'+cell(D[k],f,ty,u,best)+'</td>').join("")+'</tr>'});
+ $("cmp").innerHTML=h+'</tbody>';
+ $("cmp").querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{cols=cols.filter(x=>x!==b.dataset.rm);render();list()});}
+function list(){const q=$("cmpQ").value.trim().toLowerCase(),full=cols.length>=4;
+ const ks=Object.keys(D).filter(k=>D[k].n.toLowerCase().includes(q));
+ $("cmpL").innerHTML=ks.map(k=>{const p=D[k],on=cols.includes(k);return '<button type="button" data-add="'+k+'"'+(on||full?" disabled":"")+'><span class="th">'+p.vis+'</span><span>'+p.n+'<small>'+p.aut+' min · '+p.alc+' km · '+p.vid+'</small></span><em>'+(on?"na tabela":p.pr)+'</em></button>'}).join("")||'<p class="formnote">Nenhum drone encontrado.</p>';
+ $("cmpMsg").textContent=full?"A tabela já tem 4 drones. Tire um para adicionar outro.":"Até 4 drones lado a lado.";
+ $("cmpL").querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>{cols.push(b.dataset.add);render();list();$("dlgCmp").close();$("comparar").scrollIntoView({behavior:"smooth",block:"start"})});}
+$("cmpQ").addEventListener("input",list);$("dlgCmp").addEventListener("close",()=>{$("cmpQ").value="";list()});render();list();})();
+</script>
+</main>
+<footer>
+  <div class="wrap">
+    <div><div class="mark">AERIA</div><p>Tecnologia para novos pontos de vista.</p></div>
+    <div><span class="lbl">Explore</span><ul><li><a href="drones.html">Drones</a></li><li><a href="acessorios.html">Acessórios</a></li><li><a href="ofertas.html">Ofertas</a></li></ul></div>
+    <div><span class="lbl">Suporte</span><ul><li><a href="suporte.html">Garantia e trocas</a></li><li><a href="suporte.html">Registro SISANT/ANAC</a></li><li><a href="conta-pedidos.html">Meus pedidos</a></li></ul></div>
+    <div><span class="lbl">Aeria</span><ul><li><a href="empresas.html">Para empresas</a></li><li><a href="login.html">Entrar ou criar conta</a></li><li><a href="suporte.html">Contato</a></li></ul></div>
+    <div class="legal"><span>© 2026 Aeria · projeto acadêmico, dados fictícios</span><span><a href="admin/index.html" style="text-decoration:underline">Painel administrativo</a> · Privacidade · Termos</span></div>
   </div>
-  <div style="display:flex;flex-direction:column;gap:14px">
-    <div class="scard" style="padding:18px 20px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between"><span style="font-size:12.5px;color:var(--ink)">Rafael M. · compra verificada</span><span style="font-size:11px;color:var(--mute2)">há 3 semanas</span></div><span style="font-size:12px;color:var(--ink2)">★★★★★</span><span style="font-size:12.5px;line-height:1.6;color:var(--dim);text-wrap:pretty">Autonomia real ficou perto dos 40 minutos em voo com vento moderado. O gimbal segura bem o horizonte em rajadas.</span></div><div class="scard" style="padding:18px 20px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between"><span style="font-size:12.5px;color:var(--ink)">Juliana P. · compra verificada</span><span style="font-size:11px;color:var(--mute2)">há 1 mês</span></div><span style="font-size:12px;color:var(--ink2)">★★★★☆</span><span style="font-size:12.5px;line-height:1.6;color:var(--dim);text-wrap:pretty">Imagem excelente e transmissão estável a 8 km. Senti falta de uma maleta rígida no kit padrão.</span></div>
-  </div>
-</section>
-<section style="padding:0 34px 56px">
-  <div class="sec-h"><h2 class="sec-t">Acessórios compatíveis</h2><a class="sec-l" href="drones.html">Ver todos →</a></div>
-  <div class="g4"><a class="pcard" href="produto.html">
-  <div class="media ph">foto do produto · fundo estúdio</div>
-  <div class="body"><span class="nm">Bateria extra Falcon X2</span><span class="tg">5.000 mAh · 43 min</span><span class="pr"><b>R$ 1.190</b></span><span class="inst">6× de R$ 198</span></div>
-</a><a class="pcard" href="produto.html">
-  <div class="media ph">foto do produto · fundo estúdio</div>
-  <div class="body"><span class="nm">Maleta rígida Falcon</span><span class="tg">EVA · comporta 3 baterias</span><span class="pr"><b>R$ 690</b></span><span class="inst">6× de R$ 115</span></div>
-</a><a class="pcard" href="produto.html">
-  <div class="media ph">foto do produto · fundo estúdio</div>
-  <div class="body"><span class="nm">Filtros ND (kit 4)</span><span class="tg">ND8 / ND16 / ND32 / ND64</span><span class="pr"><b>R$ 349</b></span><span class="inst">3× de R$ 116</span></div>
-</a><a class="pcard" href="produto.html">
-  <div class="media ph">foto do produto · fundo estúdio</div>
-  <div class="body"><span class="nm">Hélices de reposição</span><span class="tg">Par de baixo ruído</span><span class="pr"><b>R$ 189</b></span><span class="inst">à vista no Pix</span></div>
-</a></div>
-</section><footer class="sfoot">
-  <div class="sfoot-g">
-    <div class="sfoot-c"><span class="brand" style="font-size:16px">AERIA</span><span style="font-size:12px;line-height:1.6;color:var(--mute2);max-width:230px">Drones profissionais, compactos e agrícolas. Envio para todo o Brasil.</span></div>
-    <div class="sfoot-c"><b>Loja</b><a href="drones.html">Drones</a><a href="acessorios.html">Acessórios</a><a href="ofertas.html">Ofertas</a><a href="index.html">Lançamentos</a></div><div class="sfoot-c"><b>Conta</b><a href="login.html">Entrar</a><a href="login.html">Criar conta</a><a href="conta-pedidos.html">Meus pedidos</a><a href="conta-favoritos.html">Lista de desejos</a></div><div class="sfoot-c"><b>Suporte</b><a href="suporte.html">Central de ajuda</a><a href="suporte.html">Trocas e devoluções</a><a href="suporte.html">Garantia</a><a href="suporte.html">Regras ANAC</a></div><div class="sfoot-c"><b>Empresa</b><a href="empresas.html">Sobre a Aeria</a><a href="empresas.html">Vendas corporativas</a><a href="empresas.html">Seja revendedor</a><a href="admin/index.html">Painel admin</a></div>
-  </div>
-  <div class="sfoot-b"><span>© 2026 Aeria Drones · CNPJ 00.000.000/0001-00</span><span>Pix · Boleto · Cartão em até 12×</span></div>
 </footer>
-</body>
-</html>
+<script src="assets/site.js"></script>
+</body></html>

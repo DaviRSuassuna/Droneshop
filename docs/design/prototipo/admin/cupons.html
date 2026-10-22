@@ -1,55 +1,31 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Cupons · Admin Aeria</title>
-<link rel="stylesheet" href="../assets/site.css">
-<script src="../assets/theme.js"></script>
-</head>
-<body>
-<header class="tb">
-  <div class="tb-l">
-    <a class="tb-brand" href="index.html">ADMIN</a>
-    <nav class="tb-nav">
-      <a href="index.html">Dashboard</a>
-      <a href="produtos.html">Produtos</a>
-      <a href="marcas.html">Marcas</a>
-      <a href="categorias.html">Categorias</a>
-      <a href="fornecedores.html">Fornecedores</a>
-      <a href="promocoes.html">Promoções</a>
-      <a href="cupons.html" class="on">Cupons</a>
-      <a href="estoque.html">Estoque</a>
-      <a href="pedidos.html">Pedidos</a>
-      <a href="usuarios.html">Usuários</a>
-    </nav>
-  </div>
-  <div class="tb-r">
-    <span class="tb-search">Buscar no painel</span>
-    <a href="../index.html">Ver loja ↗</a>
-    <span class="avatar">MR</span>
-  </div>
-</header>
-<div class="pagebar">
-  <div style="display:flex;align-items:baseline;gap:12px"><h1 class="h1">Cupons</h1><span class="sub">3 ativos · 1 agendado · 1.670 usos no ano</span></div>
-  <div class="actions"><button class="btn">Exportar usos</button><a class="btn p" href="cupom-novo.html">Novo cupom</a></div>
-</div>
-<div class="pad-t" style="display:flex;flex-direction:column;gap:16px">
-  <div class="filters">
-    <div class="f grow"><input type="text" placeholder="Buscar por código"></div>
-    <div class="f"><select><option>Tipo de desconto</option><option>Percentual</option><option>Valor fixo</option></select></div>
-    <div class="f"><select><option>Status</option><option>Ativo</option><option>Agendado</option><option>Esgotado</option></select></div>
-  </div>
-  <p class="legend" style="margin:0">Cada resgate grava um <span class="chip">UsoCupom</span> (cliente + pedido), que é o que sustenta o limite por cliente e o campo de desconto do <a href="pedido.html" style="text-decoration:underline">pedido</a>.</p>
-  <div class="tbl">
-    <div class="trow head" style="grid-template-columns:minmax(0,1fr) 130px 200px 170px 118px 44px"><span>Cupom</span><span>Valor</span><span>Vigência</span><span>Usos</span><span>Status</span><span></span></div>
-    <a class="trow" style="grid-template-columns:minmax(0,1fr) 130px 200px 170px 118px 44px" href="cupom-novo.html"><span class="cell-name"><b>PILOTO10</b><span class="chip">Percentual</span></span><span class="ink">10%</span><span class="dim">01/08 a 30/09/2026</span><span class="dim">184 / 500</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativo</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
-    <a class="trow" style="grid-template-columns:minmax(0,1fr) 130px 200px 170px 118px 44px" href="cupom-novo.html"><span class="cell-name"><b>PIX10</b><span class="chip">Percentual</span></span><span class="ink">10%</span><span class="dim">sem data final</span><span class="dim">1.209 / ilimitado</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativo</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
-    <a class="trow" style="grid-template-columns:minmax(0,1fr) 130px 200px 170px 118px 44px" href="cupom-novo.html"><span class="cell-name"><b>BEMVINDO50</b><span class="chip">Valor fixo</span></span><span class="ink">R$ 50</span><span class="dim">01/01 a 31/12/2026</span><span class="dim">77 / 1.000</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativo</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
-    <a class="trow" style="grid-template-columns:minmax(0,1fr) 130px 200px 170px 118px 44px" href="cupom-novo.html"><span class="cell-name"><b>AGRO2026</b><span class="chip">Percentual</span></span><span class="ink">8%</span><span class="dim">01/09 a 31/10/2026</span><span class="dim">0 / 200</span><span class="status"><span class="dot" style="background:var(--acc)"></span>Agendado</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
-    <a class="trow" style="grid-template-columns:minmax(0,1fr) 130px 200px 170px 118px 44px" href="cupom-novo.html"><span class="cell-name"><b>VOLTA200</b><span class="chip">Valor fixo</span></span><span class="ink">R$ 200</span><span class="dim">01/05 a 31/05/2026</span><span class="dim">200 / 200</span><span class="status"><span class="dot" style="background:var(--dim2)"></span>Esgotado</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
-    <div class="pager"><span>Exibindo 1–5 de 5</span><span>Página 1 de 1</span></div>
-  </div>
-</div>
-</body>
-</html>
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Aeria Admin Cupons</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&family=DM+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/admin.css">
+</head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></symbol>
+<symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
+<symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V4h10v5M7 17H5v-6h14v6h-2M7 14h10v6H7z"/></symbol>
+<symbol id="i-up" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></symbol>
+</svg>
+<header class="tb"><div class="in gut">
+  <a class="brand" href="index.html">AERIA <span>ADMIN</span></a>
+  <nav class="tabs" aria-label="Painel"><a href="index.html">Dashboard</a><a href="produtos.html">Produtos</a><a href="marcas.html">Marcas</a><a href="categorias.html">Categorias</a><a href="fornecedores.html">Fornecedores</a><a href="promocoes.html">Promoções</a><a href="cupons.html" aria-current="page">Cupons</a><a href="estoque.html">Estoque</a><a href="pedidos.html">Pedidos</a><a href="usuarios.html">Usuários</a></nav>
+  <div class="r"><div class="search"><svg class="ico"><use href="#i-search"/></svg>Buscar no painel<kbd>/</kbd></div><a class="store" href="../index.html">Ver loja ↗</a><span class="avatar" title="Marina Ribeiro">MR</span></div>
+</div><nav class="mnav" aria-label="Painel (celular)"><a href="index.html">Dashboard</a><a href="produtos.html">Produtos</a><a href="marcas.html">Marcas</a><a href="categorias.html">Categorias</a><a href="fornecedores.html">Fornecedores</a><a href="promocoes.html">Promoções</a><a href="cupons.html" aria-current="page">Cupons</a><a href="estoque.html">Estoque</a><a href="pedidos.html">Pedidos</a><a href="usuarios.html">Usuários</a></nav></header>
+<main class="gut">
+<div class="ph"><div><span class="lbl">Compra</span><h1>Cupons</h1><div class="sub">3 ativos · 1 agendado · 1.670 usos no ano</div></div><div class="acts"><button class="btn"><svg class="ico"><use href="#i-down"/></svg>Exportar usos</button><a class="btn p" href="cupom-novo.html"><svg class="ico"><use href="#i-plus"/></svg>Novo cupom</a></div></div>
+<div class="toolbar"><label class="field-s grow"><svg class="ico"><use href="#i-search"/></svg><input placeholder="Buscar por código" aria-label="Buscar"></label><select class="sel" aria-label="Tipo de desconto"><option>Tipo de desconto</option><option>Percentual</option><option>Valor fixo</option></select><select class="sel" aria-label="Status"><option>Status</option><option>Ativo</option><option>Agendado</option><option>Esgotado</option></select></div>
+<div class="info">Cada resgate grava um <code>UsoCupom</code> (cliente + pedido). É ele que sustenta o limite por cliente e o campo de desconto do pedido.</div>
+<div class="tw"><table><thead><tr><th class="">Cupom</th><th class="">Valor</th><th class="">Vigência</th><th class="">Usos</th><th class="">Status</th><th></th></tr></thead><tbody><tr><td data-l="Cupom"><span class="chip" style="font-size:12.5px;color:var(--ink)">PILOTO10</span><span class="sub2" style="margin-top:4px">Percentual</span></td><td data-l="Valor" style="font-family:var(--display);font-weight:300;font-size:16px">10%</td><td data-l="Vigência" class="mono" style="font-size:12.5px;color:var(--ink2)">01/10 a 30/11/2026</td><td data-l="Usos"><span class="mono num">184 / 500</span><div style="height:3px;width:110px;background:var(--surf2);border-radius:2px;margin-top:6px"><div style="height:100%;width:37%;background:var(--amber);border-radius:2px"></div></div></td><td data-l="Status"><span class="st ok"><span>Ativo</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr><td data-l="Cupom"><span class="chip" style="font-size:12.5px;color:var(--ink)">PIX10</span><span class="sub2" style="margin-top:4px">Percentual</span></td><td data-l="Valor" style="font-family:var(--display);font-weight:300;font-size:16px">10%</td><td data-l="Vigência" class="mono" style="font-size:12.5px;color:var(--ink2)">sem data final</td><td data-l="Usos"><span class="mono num">1.209</span><span class="sub2">ilimitado</span></td><td data-l="Status"><span class="st ok"><span>Ativo</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr><td data-l="Cupom"><span class="chip" style="font-size:12.5px;color:var(--ink)">BEMVINDO50</span><span class="sub2" style="margin-top:4px">Valor fixo</span></td><td data-l="Valor" style="font-family:var(--display);font-weight:300;font-size:16px">R$ 50</td><td data-l="Vigência" class="mono" style="font-size:12.5px;color:var(--ink2)">01/01 a 31/12/2026</td><td data-l="Usos"><span class="mono num">77 / 1.000</span><div style="height:3px;width:110px;background:var(--surf2);border-radius:2px;margin-top:6px"><div style="height:100%;width:8%;background:var(--ink2);border-radius:2px"></div></div></td><td data-l="Status"><span class="st ok"><span>Ativo</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr><td data-l="Cupom"><span class="chip" style="font-size:12.5px;color:var(--ink)">AGRO2026</span><span class="sub2" style="margin-top:4px">Percentual</span></td><td data-l="Valor" style="font-family:var(--display);font-weight:300;font-size:16px">8%</td><td data-l="Vigência" class="mono" style="font-size:12.5px;color:var(--ink2)">01/11 a 31/12/2026</td><td data-l="Usos"><span class="mono num">0 / 200</span><div style="height:3px;width:110px;background:var(--surf2);border-radius:2px;margin-top:6px"><div style="height:100%;width:0%;background:var(--ink2);border-radius:2px"></div></div></td><td data-l="Status"><span class="st info"><span>Agendado</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr><td data-l="Cupom"><span class="chip" style="font-size:12.5px;color:var(--ink)">VOLTA200</span><span class="sub2" style="margin-top:4px">Valor fixo</span></td><td data-l="Valor" style="font-family:var(--display);font-weight:300;font-size:16px">R$ 200</td><td data-l="Vigência" class="mono" style="font-size:12.5px;color:var(--ink2)">01/05 a 31/05/2026</td><td data-l="Usos"><span class="mono num">200 / 200</span><div style="height:3px;width:110px;background:var(--surf2);border-radius:2px;margin-top:6px"><div style="height:100%;width:100%;background:var(--warn);border-radius:2px"></div></div></td><td data-l="Status"><span class="st warn"><span>Esgotado</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr></tbody></table></div>
+<div class="pager"><span>Exibindo 1 a 5 de 5</span><div class="pages"><a href="#">‹</a><a href="#" aria-current="page">1</a><a href="#">›</a></div></div>
+<p class="foot-note">Protótipo acadêmico · dados fictícios · Aeria 2026</p>
+</main>
+<script>document.querySelectorAll("tbody tr").forEach(r=>r.addEventListener("click",e=>{if(!e.target.closest("button,input"))location.href="cupom-novo.html"}));document.querySelectorAll(".stabs a[href=\"#\"]").forEach(a=>a.onclick=e=>{e.preventDefault();document.querySelectorAll(".stabs a").forEach(x=>x.removeAttribute("aria-current"));a.setAttribute("aria-current","page")})</script>
+</body></html>

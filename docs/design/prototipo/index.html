@@ -1,72 +1,515 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Aeria Drones · drones profissionais e compactos</title>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/site.css">
-<script src="assets/theme.js"></script>
-</head>
-<body class="sf">
-<header class="snav">
-  <div class="snav-l">
-    <a class="brand" href="index.html">AERIA</a>
-    <nav class="snav-nav"><a href="drones.html">Drones</a><a href="acessorios.html">Acessórios</a><a href="empresas.html">Empresas</a><a href="suporte.html">Suporte</a><a href="drones.html" class="on">Ofertas</a></nav>
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Aeria Drones</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&family=DM+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Home Aeria · Noite + Campo: grafite, HUD de piloto, régua de telemetria, menu flutuante */
+:root{
+  --bg:#0E0F11; --bg2:#141619; --surf:#1A1C20; --ink:#F1F2F4; --ink2:#C3C7CD; --mute:#8A9099; --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.16);
+  --amber:#E8A86B;
+  --display:'Sora',system-ui,sans-serif; --body:'DM Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;height:auto;display:block}
+.wrap{max-width:1320px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:4px}
+.lbl{font:500 10.5px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
+
+/* menu flutuante */
+.navwrap{position:sticky;top:calc(10px + env(safe-area-inset-top,0px));z-index:20;padding-top:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+.nav{display:flex;align-items:center;gap:30px;height:56px;padding:0 10px 0 22px;background:rgba(26,28,32,.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:14px}
+.mark{font:500 17px var(--display);letter-spacing:.32em}
+.links{display:flex;gap:24px;font-size:14px;color:var(--ink2)}
+.links a:hover{color:var(--ink)}
+.links .hot{color:var(--amber)}
+.right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.search{display:flex;align-items:center;gap:8px;height:36px;width:240px;padding:0 12px;border-radius:9px;background:rgba(255,255,255,.05);color:var(--mute);font-size:13px}
+.search kbd{margin-left:auto;font:400 11px var(--mono);border:1px solid var(--line2);border-radius:4px;padding:0 5px}
+.ico{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.6}
+.iconbtn{display:inline-flex;align-items:center;gap:6px;color:var(--ink2);background:none;border:0;padding:8px;cursor:pointer;font:inherit;font-size:13px}
+.buy{background:var(--ink);color:var(--bg);border-radius:9px;padding:9px 16px;font-size:14px;font-weight:500}
+.menu{display:none}
+
+/* hero */
+.hero{position:relative;overflow:hidden;margin-top:-66px;padding-top:66px}
+.grid-bg{position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:88px 88px;mask-image:radial-gradient(70% 80% at 65% 45%,#000 30%,transparent 80%);-webkit-mask-image:radial-gradient(70% 80% at 65% 45%,#000 30%,transparent 80%)}
+.glow{position:absolute;right:-10%;top:-20%;width:70%;height:120%;background:radial-gradient(closest-side,rgba(232,168,107,.10),transparent)}
+.hero .wrap{position:relative;display:grid;grid-template-columns:5fr 7fr;align-items:center;min-height:620px;gap:24px}
+.kick{display:flex;gap:14px;align-items:center}
+.chip{font:500 10.5px var(--mono);letter-spacing:.12em;color:var(--amber);border:1px solid rgba(232,168,107,.35);border-radius:999px;padding:3px 10px}
+.hero h1{font:200 clamp(52px,6.4vw,92px)/1 var(--display);letter-spacing:-.02em;margin:22px 0 0}
+.hero h1 span{color:var(--mute)}
+.lead{color:var(--ink2);max-width:36ch;margin-top:18px;font-size:16px}
+.price{margin-top:26px;font:300 28px var(--display)}
+.price small{display:block;font:400 13px var(--body);color:var(--mute);margin-top:2px}
+.actions{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+.btn{height:46px;padding:0 22px;border-radius:9px;display:inline-flex;align-items:center;font-weight:500;font-size:14.5px;border:1px solid var(--line2)}
+.btn.p{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.art{position:relative}
+.art img{width:118%;max-width:none;margin-left:-6%;animation:float 7s ease-in-out infinite;filter:drop-shadow(0 40px 40px rgba(0,0,0,.55))}
+@keyframes float{50%{transform:translateY(-12px)}}
+.tagx{position:absolute;font:400 11px var(--mono);color:var(--ink2);display:flex;align-items:center;gap:8px;white-space:nowrap}
+.tagx::before{content:"";width:36px;height:1px;background:var(--line2)}
+.tagx b{color:var(--amber);font-weight:500}
+.t1{left:4%;top:16%}.t2{right:0;top:30%;flex-direction:row-reverse}.t2::before{margin-left:0}.t3{left:16%;bottom:12%}
+.cross{position:absolute;width:20px;height:20px;opacity:.5}
+.cross::before,.cross::after{content:"";position:absolute;background:var(--ink2)}
+.cross::before{left:9.5px;width:1px;height:20px}.cross::after{top:9.5px;height:1px;width:20px}
+.c1{left:2%;top:6%}.c2{right:2%;bottom:6%}
+
+/* telemetria */
+.tele{border-block:1px solid var(--line)}
+.tele .wrap{display:grid;grid-template-columns:repeat(4,1fr)}
+.read{padding:24px 0 26px 28px;border-left:1px solid var(--line)}
+.read:first-child{border-left:0;padding-left:0}
+.read strong{display:block;margin-top:6px;font:200 48px/1 var(--display);font-variant-numeric:tabular-nums}
+.read strong span{font:400 14px var(--mono);color:var(--mute);margin-left:6px}
+.bar{margin-top:14px;height:2px;width:56px;background:var(--line2)}
+.bar i{display:block;height:100%;background:var(--ink2)}
+.read:first-child .bar i{background:var(--amber)}
+
+section.block{padding-block:88px 0}
+.head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:28px;flex-wrap:wrap}
+.head h2{font:300 clamp(30px,3.4vw,44px)/1.1 var(--display);margin:10px 0 0;letter-spacing:-.01em}
+.more{color:var(--ink2);font-size:14px}
+.more::after{content:" \2197"}
+
+/* bento */
+.bento{display:grid;grid-template-columns:1.25fr 1fr 1fr;grid-template-rows:260px 260px;gap:12px}
+.tile{position:relative;overflow:hidden;border-radius:12px;background:linear-gradient(160deg,#1C1F23,#121417);border:1px solid var(--line);padding:22px}
+.tile:hover{border-color:var(--line2)}
+.tile.big{grid-row:span 2}
+.tile h3{font:300 24px var(--display);margin:0}
+.tile .n{font:400 12px var(--mono);color:var(--mute)}
+.tile img{position:absolute;right:-8%;bottom:-6%;width:84%;transition:transform .6s cubic-bezier(.2,.7,.2,1);filter:drop-shadow(0 20px 22px rgba(0,0,0,.5))}
+.tile.big img{width:112%;right:-14%;bottom:8%}
+.tile:hover img{transform:translate(-6px,-6px)}
+.tile .ph{position:absolute;inset:auto 22px 22px auto;width:46%;aspect-ratio:16/10;border:1px dashed var(--line2);border-radius:8px;display:grid;place-items:center;font:400 10px var(--mono);letter-spacing:.1em;color:var(--mute)}
+.tile .go{position:absolute;left:22px;bottom:20px;font:500 10.5px var(--mono);letter-spacing:.14em;color:var(--ink2)}
+
+/* comparação */
+.cmp{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line)}
+.col{padding:26px 28px 30px;border-left:1px solid var(--line)}
+.col:first-child{border-left:0;padding-left:0}
+.col:last-child{padding-right:0}
+.col .top{display:flex;justify-content:space-between}
+.col img{height:190px;width:100%;object-fit:contain;margin:14px 0 6px}
+.col h3{font:300 24px var(--display);margin:0}
+.col .pr{font:300 22px var(--display);margin-top:4px}
+.col .pr s{font:400 13px var(--body);color:var(--mute);margin-left:8px}
+.col .pr.sale{color:var(--amber)}
+.spec{display:grid;gap:14px;margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:baseline;font-size:13.5px;color:var(--ink2)}
+.row b{font:400 18px var(--mono);color:var(--ink);font-variant-numeric:tabular-nums}
+.row b small{font-size:11px;color:var(--mute);margin-left:4px}
+.track{grid-column:1/-1;height:2px;background:var(--line)}
+.track i{display:block;height:100%;background:var(--ink2)}
+.colact{display:flex;gap:8px;margin-top:22px}
+.colact .btn{flex:1;justify-content:center;height:42px}
+.colact .sq{flex:0 0 42px;padding:0;justify-content:center}
+
+/* confiança + empresas */
+.trust{margin-top:88px;border-block:1px solid var(--line)}
+.trust .wrap{display:grid;grid-template-columns:repeat(4,1fr)}
+.tr{display:flex;gap:12px;align-items:flex-start;padding:24px 20px;border-left:1px solid var(--line);font-size:13.5px}
+.tr:first-child{border-left:0;padding-left:0}
+.tr b{display:block;font-weight:500}
+.tr span{color:var(--mute)}
+.tr .ico{color:var(--ink2);flex:none;margin-top:2px}
+.biz{position:relative;overflow:hidden;background:var(--bg2)}
+.biz .wrap{position:relative;display:grid;grid-template-columns:1fr 1fr;align-items:center;min-height:360px;gap:24px}
+.biz h2{font:300 clamp(32px,3.6vw,48px)/1.05 var(--display);margin:10px 0 12px}
+.biz p{color:var(--ink2);max-width:40ch}
+.biz img{width:120%;max-width:none;filter:drop-shadow(0 30px 30px rgba(0,0,0,.6))}
+.topo{position:absolute;inset:0;opacity:.35}
+
+footer{font-size:13.5px;color:var(--ink2)}
+footer .wrap{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:24px;padding-block:56px 28px}
+footer ul{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:8px}
+.legal{grid-column:1/-1;border-top:1px solid var(--line);padding-top:18px;display:flex;justify-content:space-between;color:var(--mute);flex-wrap:wrap;gap:8px}
+
+
+
+/* D: hero com drone sangrando a borda */
+.hero.bleed .wrap{grid-template-columns:1fr;min-height:640px}
+.hero.bleed h1{font-size:clamp(60px,8.4vw,128px);font-weight:200}
+.hero.bleed .copy{position:relative;z-index:2;max-width:560px}
+.hero.bleed .art{position:absolute;right:-14%;top:58%;transform:translateY(-44%);width:min(1120px,76vw);z-index:1}
+.hero.bleed .art img{width:100%;margin:0}
+.hero.bleed .t1{left:8%;top:12%}.hero.bleed .t2{right:22%;top:22%}.hero.bleed .t3{left:26%;bottom:10%}
+/* D: vitrine */
+.rail{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 36px)/4);gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.card{scroll-snap-align:start;background:linear-gradient(170deg,#1C1F23,#131518);border:1px solid var(--line);border-radius:14px;padding:18px 18px 20px;display:flex;flex-direction:column;transition:border-color .3s}
+.card:hover{border-color:var(--line2)}
+.card .top{display:flex;justify-content:space-between;align-items:center}
+.card .imgbox{aspect-ratio:16/11;display:grid;place-items:center}
+.card img{width:96%;filter:drop-shadow(0 18px 18px rgba(0,0,0,.5));transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.card:hover img{transform:translateY(-6px)}
+.card h3{font:300 21px var(--display);margin:6px 0 2px}
+.card .specs{font:400 12px var(--mono);color:var(--mute)}
+.card .pr{font:300 20px var(--display);margin-top:14px}
+.card .pr s{font:400 12.5px var(--body);color:var(--mute);margin-left:6px}
+.card .pr.sale{color:var(--amber)}
+.card .pr small{display:block;font:400 12px var(--body);color:var(--mute)}
+.card .row2{display:flex;gap:8px;margin-top:16px}
+.card .row2 .btn{flex:1;justify-content:center;height:40px;font-size:13.5px}
+.card .row2 .sq{flex:0 0 40px;padding:0}
+.card .ph2{width:70%;aspect-ratio:16/9;border:1px dashed var(--line2);border-radius:8px;display:grid;place-items:center;font:400 10px var(--mono);letter-spacing:.1em;color:var(--mute)}
+.arrows{display:flex;gap:8px}
+.arrows button{width:40px;height:40px;border-radius:50%;border:1px solid var(--line2);background:none;color:var(--ink);cursor:pointer;font-size:18px}
+@media (max-width:1000px){
+  .hero.bleed .wrap{min-height:0;padding-block:40px 0}
+  .hero.bleed{display:flex;flex-direction:column}
+  .hero.bleed .grid-bg,.hero.bleed .glow{order:0}
+  .hero.bleed .wrap{order:1;padding-block:28px 0}
+  .hero.bleed .art{order:2;position:relative;right:auto;top:auto;transform:none;width:124%;margin:-6px -12% -10px}
+  .hero.bleed h1{font-size:clamp(52px,15vw,72px)}
+  .rail{grid-auto-columns:78%}
+}
+@media (max-width:1000px){
+  .links,.search{display:none}
+  .menu{display:inline-flex}
+  .links.open{display:grid;position:absolute;top:62px;left:0;right:0;background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:16px 20px;gap:14px;font-size:16px}
+  .nav{position:relative}
+  .hero .wrap{grid-template-columns:1fr;min-height:0;padding-block:40px 30px}
+  .art img{width:100%;margin:0}
+  .tagx{display:none}
+  .tele .wrap{grid-template-columns:1fr 1fr}
+  .read:nth-child(3){border-left:0;padding-left:0}
+  .read:nth-child(n+3){border-top:1px solid var(--line)}
+  .bento{grid-template-columns:1fr 1fr;grid-template-rows:auto}
+  .tile{min-height:220px}.tile.big{grid-column:1/-1;grid-row:auto;min-height:320px}
+  .tile.big img{width:80%;right:-4%;bottom:-4%}
+  .cmp{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:0}
+  .col{flex:0 0 82%;scroll-snap-align:start;padding:22px 18px!important;border-left:1px solid var(--line)!important}
+  .trust .wrap{grid-template-columns:1fr 1fr}
+  .tr{border-left:0!important;padding-left:0!important}
+  .biz .wrap{grid-template-columns:1fr;padding-block:48px}
+  .biz img{width:100%}
+  footer .wrap{grid-template-columns:1fr 1fr}
+  .right .hide-s{display:none}
+}
+@media (max-width:480px){.bento{grid-template-columns:1fr}.read strong{font-size:38px}}
+@media (max-width:600px){.opts a{padding:6px 9px;font-size:11px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* Seção "O que você vai voar?": 5 versões no tema escuro */
+.vblk[hidden]{display:none!important}
+.vsw{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:-6px 0 26px;padding:8px;border:1px dashed var(--line2);border-radius:12px}
+.vsw .lbl{margin:0 8px 0 6px}
+.vsw button{border:1px solid var(--line2);background:none;border-radius:999px;padding:7px 14px;font:500 13px var(--body);cursor:pointer;color:var(--ink2)}
+.vsw button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.pic{width:44px;height:44px;fill:none;stroke:currentColor;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
+.arrow::after{content:" \2192";display:inline-block;transition:transform .3s}
+a:hover .arrow::after{transform:translateX(4px)}
+/* 1 índice */
+.idx{border-top:1px solid var(--line2)}
+.irow{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.4fr) minmax(0,1fr) auto;gap:28px;align-items:center;padding-block:28px;border-bottom:1px solid var(--line);transition:background .3s,padding .3s}
+.irow:hover{background:var(--surf);padding-inline:18px}
+.irow h3{margin:0;font:200 clamp(30px,3.6vw,50px)/1 var(--display);letter-spacing:-.02em}
+.irow p{margin:0;color:var(--ink2)}
+.irow .kpi{font:200 30px/1 var(--display);font-variant-numeric:tabular-nums}
+.irow .kpi small{display:block;font:400 10.5px var(--mono);letter-spacing:.14em;color:var(--mute);margin-top:8px;text-transform:uppercase}
+.irow .go{font-weight:500;white-space:nowrap;color:var(--ink2)}
+.irow:hover h3{color:var(--amber)}
+/* 2 catálogo */
+.cat{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.ccard{display:flex;flex-direction:column;gap:18px;background:linear-gradient(170deg,#1C1F23,#131518);border:1px solid var(--line);border-radius:14px;padding:24px 22px 22px;transition:border-color .3s,transform .3s}
+.ccard:hover{border-color:var(--line2);transform:translateY(-3px)}
+.ccard .pic{width:48px;height:48px;color:var(--ink)}
+.ccard h3{margin:0;font:300 22px/1.15 var(--display)}
+.ccard p{margin:4px 0 0;color:var(--mute);font-size:14px}
+.ccard ul{list-style:none;margin:0;padding:14px 0 0;border-top:1px solid var(--line);display:grid;gap:8px;font-size:13.5px;color:var(--ink2)}
+.ccard li{display:flex;justify-content:space-between;gap:10px}
+.ccard li b{font:400 13px var(--mono);color:var(--ink)}
+.ccard .foot{margin-top:auto;display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;color:var(--ink2)}
+.ccard .foot b{font-weight:500;color:var(--ink)}
+/* 3 painel */
+.panel{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--bg2)}
+.tabs{display:flex;flex-direction:column;padding:10px;border-right:1px solid var(--line)}
+.tabs button{display:flex;align-items:center;gap:14px;text-align:left;background:none;border:0;border-radius:10px;padding:16px;cursor:pointer;font:400 17px var(--display);color:var(--mute);transition:background .25s,color .25s}
+.tabs button .pic{width:28px;height:28px;flex:none}
+.tabs button small{display:block;font:400 11.5px var(--mono);color:var(--mute);margin-top:2px}
+.tabs button[aria-selected="true"]{background:var(--surf);color:var(--ink)}
+.tabs button[aria-selected="true"] .pic{color:var(--amber)}
+.pane{padding:32px 34px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:34px}
+.pane h3{margin:0;font:200 36px/1.05 var(--display)}
+.pane .lead{color:var(--ink2);margin:12px 0 22px;max-width:44ch}
+.need{display:grid;gap:14px}
+.need div{display:grid;grid-template-columns:1fr auto;gap:6px;font-size:14px;color:var(--ink2)}
+.need b{font:400 13px var(--mono);color:var(--ink)}
+.need i{grid-column:1/-1;height:2px;background:var(--line2);overflow:hidden}
+.need i::after{content:"";display:block;height:100%;width:var(--w);background:var(--ink2)}
+.need div:first-child i::after{background:var(--amber)}
+.picks{display:grid;gap:10px;align-content:start}
+.pick{display:flex;justify-content:space-between;align-items:center;gap:12px;border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--surf);transition:border-color .25s}
+.pick:hover{border-color:var(--line2)}
+.pick b{display:block;font-weight:500}
+.pick span{font:400 12px var(--mono);color:var(--mute)}
+.pick em{font-style:normal;font:300 17px var(--display);white-space:nowrap}
+.pane .cta{display:inline-flex;margin-top:24px;height:44px;align-items:center;padding:0 20px;border-radius:9px;background:var(--ink);color:var(--bg);font-weight:500;font-size:14px}
+/* 4 números */
+.bigg{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line2);border-bottom:1px solid var(--line)}
+.bt{padding:26px 24px 26px;display:flex;flex-direction:column;min-height:380px;border-left:1px solid var(--line);transition:background .3s}
+.bt:first-child{border-left:0;padding-left:0}
+.bt:hover{background:var(--bg2)}
+.bt .n{font:200 clamp(52px,5.6vw,84px)/.95 var(--display);letter-spacing:-.03em;margin-top:56px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.bt .unit{font:400 11px var(--mono);letter-spacing:.12em;color:var(--mute);margin-top:10px;text-transform:uppercase}
+.bt h3{margin:26px 0 4px;font:300 21px var(--display)}
+.bt p{margin:0;color:var(--mute);font-size:14px}
+.bt .go{margin-top:auto;padding-top:18px;font-weight:500;font-size:14px;color:var(--ink2)}
+.bt .tick{display:flex;gap:4px;margin-top:22px}
+.bt .tick i{height:2px;flex:1;background:var(--line2)}
+.bt .tick i.on{background:var(--amber)}
+/* 5 desenho */
+.pat{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.pcard{display:flex;flex-direction:column;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--bg2);min-height:420px;transition:border-color .3s}
+.pcard:hover{border-color:var(--line2)}
+.pcard svg.art{width:100%;height:220px;display:block;background:radial-gradient(80% 90% at 50% 40%,#1D2024,#121417);border-bottom:1px solid var(--line)}
+.pcard svg.art *{fill:none;stroke:#C9CDD3;stroke-width:1}
+.pcard svg.art .soft{stroke:#454B53}
+.pcard svg.art .hot{stroke:var(--amber);stroke-width:1.6}
+.pcard svg.art .hot.draw{stroke-dasharray:6 4;transition:stroke-dashoffset 1.2s ease}
+.pcard:hover svg.art .hot.draw{stroke-dashoffset:-60}
+.pcard svg.art .dot{fill:var(--amber);stroke:none}
+.pcard svg.art text{fill:var(--mute);stroke:none;font:500 9px var(--mono);letter-spacing:.08em}
+.pcard .body{padding:20px 22px 22px;display:flex;flex-direction:column;gap:8px;flex:1}
+.pcard h3{margin:0;font:300 22px var(--display)}
+.pcard p{margin:0;color:var(--mute);font-size:14px}
+.pcard .meta{margin-top:auto;padding-top:14px;display:flex;justify-content:space-between;font-size:13.5px;border-top:1px solid var(--line);color:var(--ink2)}
+.pcard .meta b{font-weight:500;color:var(--ink)}
+@media (max-width:1000px){
+  .irow{grid-template-columns:1fr auto;gap:10px 18px}.irow p{grid-column:1/-1;order:3}.irow .kpi{order:2}.irow .go{display:none}
+  .cat,.pat,.bigg{grid-template-columns:1fr 1fr}
+  .bt:nth-child(3){border-left:0;padding-left:0}.bt:nth-child(n+3){border-top:1px solid var(--line)}
+  .panel{grid-template-columns:1fr}.tabs{flex-direction:row;overflow-x:auto;scrollbar-width:none;border-right:0;border-bottom:1px solid var(--line)}.tabs button{flex:0 0 auto}.tabs button small{display:none}
+  .pane{grid-template-columns:1fr;padding:24px 20px}
+  .bt{min-height:300px}
+}
+@media (max-width:560px){.cat,.pat,.bigg{grid-template-columns:1fr}.bt{border-left:0!important;padding-left:0!important;border-top:1px solid var(--line);min-height:250px}}
+
+/* busca: uma linha no desktop, ícone que abre a busca no celular */
+.search{width:clamp(210px,21vw,300px);white-space:nowrap;cursor:text}
+.search input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--ink);font:inherit;font-size:13.5px;text-overflow:ellipsis}
+.search input::placeholder{color:var(--mute)}
+.search input::-webkit-search-cancel-button{display:none}
+.search:focus-within{background:rgba(255,255,255,.08);box-shadow:0 0 0 1px var(--line2)}
+.sbtn{display:none}
+.msearch{display:none}
+.navcount{font:400 12px var(--mono)}
+@media (max-width:1100px){
+  .sbtn{display:inline-flex}
+  .msearch.open{display:flex;align-items:center;gap:10px;position:absolute;top:62px;left:0;right:0;z-index:5;background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:10px 10px 10px 16px}
+  .msearch input{flex:1;min-width:0;height:40px;background:none;border:0;outline:0;color:var(--ink);font:inherit;font-size:16px}
+  .msearch input::placeholder{color:var(--mute)}
+  .links.open~.msearch.open{display:none}
+}
+
+@media (max-width:640px){
+  .mark{padding:12px 0}
+  .iconbtn{min-height:44px;min-width:40px;justify-content:center}
+  .more,.arrow{display:inline-flex;align-items:center;min-height:44px}
+  .read .lbl{display:block;min-height:2.7em;letter-spacing:.12em}
+  .read strong{font-size:38px}
+  .hero .actions .btn{flex:1}
+}
+
+/* topo: ordem busca, favoritos, carrinho, conta; menu à esquerda do logo no celular */
+.right .acct{margin-left:4px;padding-left:14px;border-left:1px solid var(--line)}
+@media (max-width:1100px){
+  .nav{gap:6px;padding:0 6px 0 4px;background:rgba(22,24,27,.94)}
+  .menu{order:-1}
+  .right{gap:2px}
+}
+@media (max-width:640px){
+  .acct-t{display:none}
+  .right .acct{padding-left:10px;margin-left:2px}
+  .mark{font-size:15px;letter-spacing:.28em}
+}
+
+/* home no celular: drone primeiro, como vitrine; texto compacto embaixo */
+@media (max-width:640px){
+  .hero.bleed{display:flex;flex-direction:column;margin-top:-76px;padding-top:76px}
+  .hero.bleed .grid-bg{mask-image:radial-gradient(80% 45% at 50% 22%,#000 20%,transparent 75%);-webkit-mask-image:radial-gradient(80% 45% at 50% 22%,#000 20%,transparent 75%);background-size:56px 56px}
+  .hero.bleed .glow{right:-30%;top:0;width:160%;height:60%;background:radial-gradient(closest-side,rgba(232,168,107,.12),transparent)}
+  .hero.bleed .art{order:1;position:relative;right:auto;top:auto;transform:none;width:auto;margin:30px 0 0;padding:0 16px;aspect-ratio:16/9;display:grid;place-items:center}
+  .hero.bleed .art img{width:108%;max-width:none;margin:0 -4%;filter:drop-shadow(0 26px 22px rgba(0,0,0,.6))}
+  .hero.bleed .art::after{content:"";position:absolute;left:18%;right:18%;bottom:4%;height:18px;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.55),transparent)}
+  .hero.bleed .tagx{display:none}
+  .hero.bleed .c1{display:block;left:16px;top:0}.hero.bleed .c2{display:block;right:16px;bottom:0}
+  .hero.bleed .wrap{order:2;padding-block:8px 30px;min-height:0}
+  .hero.bleed .copy{max-width:none;text-align:center;display:grid;justify-items:center}
+  .hero.bleed .kick{justify-content:center;gap:10px}
+  .hero.bleed h1{font-size:clamp(38px,11.5vw,48px);line-height:1.05;margin-top:12px;white-space:nowrap}
+  .hero.bleed h1 br{display:none}
+  .hero.bleed .lead{font-size:15px;margin-top:10px;max-width:32ch}
+  .hero.bleed .price{margin-top:16px;font-size:26px}
+  .hero.bleed .price small{font-size:12.5px}
+  .hero.bleed .actions{width:100%;margin-top:18px;flex-wrap:nowrap}
+  .hero.bleed .actions .btn{flex:1;justify-content:center;padding:0 12px}
+}
+</style>
+</head><body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l-1 13H6L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><path d="M3 6h11v10H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></symbol>
+  <symbol id="i-pix" viewBox="0 0 24 24"><path d="m12 3 9 9-9 9-9-9z"/><path d="m8 12 4-4 4 4-4 4z"/></symbol>
+</svg>
+
+<svg id="psyms" width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="p-film" viewBox="0 0 48 48"><rect x="6" y="12" width="28" height="24" rx="3"/><path d="m34 20 8-5v18l-8-5"/><circle cx="20" cy="24" r="6"/><circle cx="20" cy="24" r="2"/></symbol>
+  <symbol id="p-insp" viewBox="0 0 48 48"><path d="M24 4 14 44M24 4l10 40M17 30h14M15.5 37h17M19.5 20h9"/><circle cx="36" cy="12" r="6"/><path d="M36 9v3l2 2"/></symbol>
+  <symbol id="p-map" viewBox="0 0 48 48"><path d="M6 10 18 6l12 4 12-4v32l-12 4-12-4-12 4z"/><path d="M18 6v32M30 10v32"/><path d="M10 30l8-8 6 4 10-10" stroke-dasharray="2 2.5"/></symbol>
+  <symbol id="p-agro" viewBox="0 0 48 48"><path d="M24 42V18"/><path d="M24 26c-8 0-12-5-12-12 8 0 12 5 12 12zM24 22c0-7 4-12 12-12 0 7-4 12-12 12z"/><path d="M6 42h36M10 46h28"/></symbol>
+</svg>
+<div class="navwrap wrap">
+  <div class="nav">
+    <button class="iconbtn menu" id="menuBtn" aria-expanded="false" aria-controls="links" aria-label="Menu"><svg class="ico"><use href="#i-menu"/></svg></button>
+    <a class="mark" href="index.html">AERIA</a>
+    <nav class="links" id="links" aria-label="Principal"><a href="drones.html">Drones</a><a href="acessorios.html">Acessórios</a><a href="empresas.html">Empresas</a><a href="suporte.html">Suporte</a><a class="hot" href="ofertas.html">Ofertas</a></nav>
+    <div class="right">
+      <label class="search"><svg class="ico"><use href="#i-search"/></svg><input type="search" placeholder="Buscar drones e acessórios" aria-label="Buscar drones e acessórios"><kbd>/</kbd></label>
+      <button class="iconbtn sbtn" id="searchBtn" type="button" aria-expanded="false" aria-controls="msearch" aria-label="Buscar"><svg class="ico"><use href="#i-search"/></svg></button>
+      <a class="iconbtn" href="conta-favoritos.html" aria-label="Favoritos, 6 itens"><svg class="ico"><use href="#i-heart"/></svg><span class="navcount">6</span></a>
+      <a class="iconbtn" href="carrinho.html" aria-label="Carrinho, 2 itens"><svg class="ico"><use href="#i-bag"/></svg><span class="navcount">2</span></a>
+      <a class="iconbtn acct" href="conta-perfil.html" aria-label="Minha conta"><svg class="ico"><use href="#i-user"/></svg><span class="acct-t">Conta</span></a>
+    </div>
+    <form class="msearch" id="msearch" role="search"><svg class="ico"><use href="#i-search"/></svg><input type="search" placeholder="Buscar na loja" aria-label="Buscar drones e acessórios"><button class="btn sm p" type="submit">Buscar</button></form>
   </div>
-  <div class="snav-r">
-    <span class="snav-search">Buscar drones e acessórios</span>
-    <a href="conta-perfil.html">Conta</a>
-    <a class="cart" href="carrinho.html">Carrinho <em>2</em></a>
+</div>
+
+<main>
+<section class="hero bleed">
+  <div class="grid-bg"></div><div class="glow"></div>
+  <div class="art">
+    <span class="cross c1"></span><span class="cross c2"></span>
+    <img src="assets/img/falcon.webp" alt="Drone Falcon X2 Pro, quadricóptero grafite com câmera em gimbal" width="1400" height="687">
+    <span class="tagx t1">Hélices dobráveis</span>
+    <span class="tagx t2"><b>4K 60</b> gimbal 3 eixos</span>
+    <span class="tagx t3">Sensores de obstáculo 360°</span>
   </div>
-</header>
-<section class="hero">
-  <div style="display:flex;flex-direction:column;gap:22px">
-    <span class="pill">Lançamento 2026</span>
-    <h1 class="disp-xl">Falcon X2 Pro</h1>
-    <p class="lead" style="margin:0">43 minutos de voo, transmissão de 15 km e câmera 4K 60 fps com gimbal de três eixos.</p>
-    <div style="display:flex;gap:14px;margin-top:6px"><a class="sbtn p" href="produto.html">Comprar · R$ 12.499</a><a class="sbtn" href="produto.html">Ver especificações</a></div>
-    <div class="metrics"><div><b>43 min</b><small>autonomia</small></div><div><b>15 km</b><small>transmissão</small></div><div><b>4K 60</b><small>vídeo</small></div></div>
+
+  <div class="wrap">
+    <div class="copy">
+      <div class="kick"><span class="lbl">Aerion</span><span class="chip">LANÇAMENTO 2026</span></div>
+      <h1>Falcon <br>X2 <span>Pro</span></h1>
+      <p class="lead">Câmera 4K a 60 fps em gimbal de 3 eixos, 43 minutos no ar e transmissão até 15 km.</p>
+      <div class="price">R$ 12.499<small>ou 12× R$ 1.041 sem juros · R$ 11.874 no Pix</small></div>
+      <div class="actions"><a class="btn p" href="produto.html">Comprar</a><a class="btn" href="produto.html">Ver ficha técnica</a></div>
+    </div>
   </div>
-  <div class="ph" style="height:430px;border-radius:12px">vídeo/foto do drone em voo · 16:9</div>
 </section>
-<section class="swrap" style="padding-bottom:0">
-  <div class="sec-h"><h2 class="sec-t">Categorias</h2><a class="sec-l" href="drones.html">Ver tudo →</a></div>
-  <div class="g5"><a class="cat" href="drones.html"><span class="ph">imagem</span><span style="font-size:13px;color:var(--ink)">Profissionais</span><span style="font-size:11px;color:var(--mute2)">24 modelos</span></a><a class="cat" href="drones.html"><span class="ph">imagem</span><span style="font-size:13px;color:var(--ink)">Compactos</span><span style="font-size:11px;color:var(--mute2)">31 modelos</span></a><a class="cat" href="drones.html"><span class="ph">imagem</span><span style="font-size:13px;color:var(--ink)">FPV / Corrida</span><span style="font-size:11px;color:var(--mute2)">18 modelos</span></a><a class="cat" href="drones.html"><span class="ph">imagem</span><span style="font-size:13px;color:var(--ink)">Agrícolas</span><span style="font-size:11px;color:var(--mute2)">9 modelos</span></a><a class="cat" href="drones.html"><span class="ph">imagem</span><span style="font-size:13px;color:var(--ink)">Acessórios</span><span style="font-size:11px;color:var(--mute2)">142 itens</span></a></div>
-</section>
-<section class="swrap" style="padding-bottom:0">
-  <div class="sec-h"><h2 class="sec-t">Lançamentos e ofertas</h2><a class="sec-l" href="drones.html">Ver todos os drones →</a></div>
-  <div class="g4">
-    <a class="pcard" href="produto.html">
-  <div class="media ph">foto do produto · fundo estúdio<span class="badge">Oferta</span></div>
-  <div class="body"><span class="nm">Nimbus Mini 3</span><span class="tg">34 min · 10 km · 4K 30fps</span><span class="pr"><b>R$ 4.290</b><s>R$ 4.790</s></span><span class="inst">12× de R$ 357 sem juros</span></div>
-</a>
-    <a class="pcard" href="produto.html">
-  <div class="media ph">foto do produto · fundo estúdio<span class="badge">Novo</span></div>
-  <div class="body"><span class="nm">Falcon X2 Pro</span><span class="tg">43 min · 15 km · 4K 60fps</span><span class="pr"><b>R$ 12.499</b></span><span class="inst">12× de R$ 1.041 sem juros</span></div>
-</a>
-    <a class="pcard" href="produto.html">
-  <div class="media ph">foto do produto · fundo estúdio</div>
-  <div class="body"><span class="nm">Heron Survey Pro</span><span class="tg">38 min · 12 km · RTK</span><span class="pr"><b>R$ 28.400</b></span><span class="inst">12× de R$ 2.366 sem juros</span></div>
-</a>
-    <a class="pcard" href="produto.html">
-  <div class="media ph">foto do produto · fundo estúdio<span class="badge">Oferta</span></div>
-  <div class="body"><span class="nm">Sparrow Kids</span><span class="tg">18 min · 2 km · 2.7K</span><span class="pr"><b>R$ 690</b><s>R$ 890</s></span><span class="inst">6× de R$ 115 sem juros</span></div>
-</a>
+
+<section class="tele" aria-label="Ficha rápida">
+  <div class="wrap">
+    <div class="read"><span class="lbl">Autonomia de voo</span><strong>43<span>min</span></strong><div class="bar"><i style="width:100%"></i></div></div>
+    <div class="read"><span class="lbl">Alcance de transmissão</span><strong>15<span>km</span></strong><div class="bar"><i style="width:75%"></i></div></div>
+    <div class="read"><span class="lbl">Vídeo</span><strong>4K<span>60 fps</span></strong><div class="bar"><i style="width:60%"></i></div></div>
+    <div class="read"><span class="lbl">Peso de decolagem</span><strong>895<span>g</span></strong><div class="bar"><i style="width:45%"></i></div></div>
   </div>
 </section>
-<section class="swrap">
-  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px">
-    <a class="banner" href="drones.html"><span class="eb">Semana do piloto</span><b>Até 20% em kits com bateria extra</b><small>Válido até 31/08 ou enquanto durar o estoque</small></a>
-    <a class="banner" href="drones.html"><span class="eb">Aeria para empresas</span><b>Frota, treinamento e nota fiscal PJ</b><small>Consultoria dedicada para mapeamento e agro</small></a>
+
+<section class="block wrap" aria-labelledby="vitT">
+  <div class="head"><div><span class="lbl">Mais vendidos</span><h2 id="vitT">Drones em destaque.</h2></div><div class="arrows"><button type="button" id="prev" aria-label="Anterior">‹</button><button type="button" id="next" aria-label="Próximo">›</button></div></div>
+  <div class="rail" id="rail">
+    <article class="card"><div class="top"><span class="lbl">Aerion</span><span class="chip">NOVO</span></div><div class="imgbox"><img src="assets/img/falcon.webp" alt="Falcon X2 Pro" loading="lazy"></div><h3>Falcon X2 Pro</h3><div class="specs">43 min · 15 km · 4K 60</div><div class="pr">R$ 12.499<small>12× R$ 1.041 sem juros</small></div><div class="row2"><a class="btn" href="produto.html">Ver detalhes</a><a class="btn sq" href="carrinho.html" aria-label="Adicionar ao carrinho"><svg class="ico"><use href="#i-bag"/></svg></a></div></article>
+    <article class="card"><div class="top"><span class="lbl">Skyline</span><span class="chip">OFERTA</span></div><div class="imgbox"><img src="assets/img/nimbus.webp" alt="Nimbus Mini 3" loading="lazy"></div><h3>Nimbus Mini 3</h3><div class="specs">249 g · 34 min · 4K 30</div><div class="pr sale">R$ 4.290<s>R$ 4.790</s><small>12× R$ 357 sem juros</small></div><div class="row2"><a class="btn" href="produto.html">Ver detalhes</a><a class="btn sq" href="carrinho.html" aria-label="Adicionar ao carrinho"><svg class="ico"><use href="#i-bag"/></svg></a></div></article>
+    <article class="card"><div class="top"><span class="lbl">Heron</span><span class="lbl">RTK</span></div><div class="imgbox"><img src="assets/img/heron.webp" alt="Heron Survey Pro" loading="lazy"></div><h3>Heron Survey Pro</h3><div class="specs">38 min · 12 km · RTK 1 cm</div><div class="pr">R$ 28.400<small>condições para frotas</small></div><div class="row2"><a class="btn" href="produto.html">Ver detalhes</a><a class="btn sq" href="carrinho.html" aria-label="Adicionar ao carrinho"><svg class="ico"><use href="#i-bag"/></svg></a></div></article>
+    <article class="card"><div class="top"><span class="lbl">Vortex</span><span class="lbl">FPV</span></div><div class="imgbox"><div class="ph2">FOTO EM BREVE</div></div><h3>Vortex FPV Racer</h3><div class="specs">12 min · 4 km · 120 km/h</div><div class="pr">R$ 3.150<small>12× R$ 262 sem juros</small></div><div class="row2"><a class="btn" href="produto.html">Ver detalhes</a><a class="btn sq" href="carrinho.html" aria-label="Adicionar ao carrinho"><svg class="ico"><use href="#i-bag"/></svg></a></div></article>
   </div>
-</section><footer class="sfoot">
-  <div class="sfoot-g">
-    <div class="sfoot-c"><span class="brand" style="font-size:16px">AERIA</span><span style="font-size:12px;line-height:1.6;color:var(--mute2);max-width:230px">Drones profissionais, compactos e agrícolas. Envio para todo o Brasil.</span></div>
-    <div class="sfoot-c"><b>Loja</b><a href="drones.html">Drones</a><a href="acessorios.html">Acessórios</a><a href="ofertas.html">Ofertas</a><a href="index.html">Lançamentos</a></div><div class="sfoot-c"><b>Conta</b><a href="login.html">Entrar</a><a href="login.html">Criar conta</a><a href="conta-pedidos.html">Meus pedidos</a><a href="conta-favoritos.html">Lista de desejos</a></div><div class="sfoot-c"><b>Suporte</b><a href="suporte.html">Central de ajuda</a><a href="suporte.html">Trocas e devoluções</a><a href="suporte.html">Garantia</a><a href="suporte.html">Regras ANAC</a></div><div class="sfoot-c"><b>Empresa</b><a href="empresas.html">Sobre a Aeria</a><a href="empresas.html">Vendas corporativas</a><a href="empresas.html">Seja revendedor</a><a href="admin/index.html">Painel admin</a></div>
+</section>
+
+<section class="block wrap" aria-labelledby="cmpT">
+  <div class="head"><div><span class="lbl">Decida com precisão</span><h2 id="cmpT">Compare em segundos.</h2></div><a class="more" href="drones.html">Comparativo completo</a></div>
+  <div class="cmp">
+    <article class="col"><div class="top"><span class="lbl">Aerion</span><span class="lbl">Profissional</span></div>
+      <img src="assets/img/falcon.webp" alt="Falcon X2 Pro" loading="lazy"><h3>Falcon X2 Pro</h3><div class="pr">R$ 12.499</div>
+      <div class="spec">
+        <div class="row">Autonomia<b>43<small>min</small></b><div class="track"><i style="width:100%"></i></div></div>
+        <div class="row">Transmissão<b>15<small>km</small></b><div class="track"><i style="width:100%"></i></div></div>
+        <div class="row">Câmera<b>4K<small>60 fps</small></b></div>
+      </div>
+      <div class="colact"><a class="btn" href="produto.html">Ver detalhes</a><a class="btn sq" href="carrinho.html" aria-label="Adicionar ao carrinho"><svg class="ico"><use href="#i-bag"/></svg></a></div>
+    </article>
+    <article class="col"><div class="top"><span class="lbl">Skyline</span><span class="chip">OFERTA</span></div>
+      <img src="assets/img/nimbus.webp" alt="Nimbus Mini 3" loading="lazy"><h3>Nimbus Mini 3</h3><div class="pr sale">R$ 4.290<s>R$ 4.790</s></div>
+      <div class="spec">
+        <div class="row">Autonomia<b>34<small>min</small></b><div class="track"><i style="width:79%"></i></div></div>
+        <div class="row">Transmissão<b>10<small>km</small></b><div class="track"><i style="width:67%"></i></div></div>
+        <div class="row">Câmera<b>4K<small>30 fps</small></b></div>
+      </div>
+      <div class="colact"><a class="btn" href="produto.html">Ver detalhes</a><a class="btn sq" href="carrinho.html" aria-label="Adicionar ao carrinho"><svg class="ico"><use href="#i-bag"/></svg></a></div>
+    </article>
+    <article class="col"><div class="top"><span class="lbl">Heron</span><span class="lbl">RTK</span></div>
+      <img src="assets/img/heron.webp" alt="Heron Survey Pro" loading="lazy"><h3>Heron Survey Pro</h3><div class="pr">R$ 28.400</div>
+      <div class="spec">
+        <div class="row">Autonomia<b>38<small>min</small></b><div class="track"><i style="width:88%"></i></div></div>
+        <div class="row">Transmissão<b>12<small>km</small></b><div class="track"><i style="width:80%"></i></div></div>
+        <div class="row">Posicionamento<b>RTK<small>1 cm</small></b></div>
+      </div>
+      <div class="colact"><a class="btn" href="produto.html">Ver detalhes</a><a class="btn sq" href="carrinho.html" aria-label="Adicionar ao carrinho"><svg class="ico"><use href="#i-bag"/></svg></a></div>
+    </article>
   </div>
-  <div class="sfoot-b"><span>© 2026 Aeria Drones · CNPJ 00.000.000/0001-00</span><span>Pix · Boleto · Cartão em até 12×</span></div>
+</section>
+
+<section class="block wrap" aria-labelledby="usoT">
+  <div class="head"><div><span class="lbl">Por aplicação</span><h2 id="usoT">O que você vai voar?</h2></div><a class="more" href="drones.html">Todos os drones</a></div>
+  <div data-desenhos="A"></div>
+</section>
+
+<section class="trust" aria-label="Por que comprar na Aeria">
+  <div class="wrap">
+    <div class="tr"><svg class="ico"><use href="#i-shield"/></svg><div><b>Garantia de 12 meses</b><span>+ 30 dias para troca</span></div></div>
+    <div class="tr"><svg class="ico"><use href="#i-doc"/></svg><div><b>Registro SISANT/ANAC</b><span>orientado pela equipe</span></div></div>
+    <div class="tr"><svg class="ico"><use href="#i-truck"/></svg><div><b>Frete grátis</b><span>acima de R$ 999</span></div></div>
+    <div class="tr"><svg class="ico"><use href="#i-pix"/></svg><div><b>Pix com 5% off</b><span>aprovação na hora</span></div></div>
+  </div>
+</section>
+
+<section class="biz" aria-labelledby="bizT">
+  <svg class="topo" viewBox="0 0 800 400" preserveAspectRatio="xMaxYMid slice" aria-hidden="true"><g fill="none" stroke="#5A6068" stroke-width="1">
+    <path d="M300 400C380 300 420 240 520 230S700 280 800 200"/><path d="M340 400C410 310 450 260 540 255S710 300 800 235"/><path d="M380 400C440 320 480 280 560 280S720 320 800 270"/><path d="M420 400C470 335 510 300 580 305S730 340 800 305"/><path d="M460 400C500 350 540 325 600 330S740 360 800 340"/><path d="M260 400C350 290 390 220 500 205S690 260 800 165"/><path d="M220 400C320 280 360 200 480 180S680 240 800 130"/></g></svg>
+  <div class="wrap">
+    <div><span class="lbl">Soluções profissionais</span><h2 id="bizT">Para empresas.</h2><p>Agro, mapeamento e inspeção. Frota, treinamento e suporte técnico com quem entende de operação.</p><div class="actions"><a class="btn p" href="empresas.html#contato">Solicitar cotação</a><a class="btn" href="empresas.html#contato">Falar com consultor</a></div></div>
+    <img src="assets/img/heron.webp" alt="Drone Heron Survey Pro" loading="lazy">
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><div class="mark">AERIA</div><p>Tecnologia para novos pontos de vista.</p></div>
+    <div><span class="lbl">Explore</span><ul><li><a href="drones.html">Drones</a></li><li><a href="acessorios.html">Acessórios</a></li><li><a href="ofertas.html">Ofertas</a></li></ul></div>
+    <div><span class="lbl">Suporte</span><ul><li><a href="suporte.html">Garantia e trocas</a></li><li><a href="suporte.html">Registro SISANT/ANAC</a></li><li><a href="conta-pedidos.html">Meus pedidos</a></li></ul></div>
+    <div><span class="lbl">Aeria</span><ul><li><a href="empresas.html">Para empresas</a></li><li><a href="empresas.html">Sobre</a></li><li><a href="suporte.html">Contato</a></li></ul></div>
+    <div class="legal"><span>© 2026 Aeria · projeto acadêmico, dados fictícios</span><span><a href="admin/index.html" style="text-decoration:underline">Painel administrativo</a> · Privacidade · Termos</span></div>
+  </div>
 </footer>
-</body>
-</html>
+
+<script>
+(function(){var b=document.getElementById('searchBtn'),m=document.getElementById('msearch');
+ if(b&&m)b.addEventListener('click',function(){var o=m.classList.toggle('open');b.setAttribute('aria-expanded',o);var l=document.getElementById('links');if(o&&l){l.classList.remove('open')}if(o)m.querySelector('input').focus()});
+ document.addEventListener('keydown',function(e){if(e.key==='/'&&!/input|textarea|select/i.test(document.activeElement.tagName)){var i=document.querySelector('.search input');if(i&&i.offsetParent){e.preventDefault();i.focus()}}});
+ document.querySelectorAll('form.msearch,.search').forEach(function(f){f.addEventListener('submit',function(e){e.preventDefault();location.href='drones.html'})});
+})();
+
+document.getElementById('menuBtn').addEventListener('click',e=>{const o=document.getElementById('links').classList.toggle('open');e.currentTarget.setAttribute('aria-expanded',o)});
+</script>
+
+<script src="assets/desenhos.js"></script>
+</body></html>

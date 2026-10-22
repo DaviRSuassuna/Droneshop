@@ -1,58 +1,31 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Categorias · Admin Aeria</title>
-<link rel="stylesheet" href="../assets/site.css">
-<script src="../assets/theme.js"></script>
-</head>
-<body>
-<header class="tb">
-  <div class="tb-l">
-    <a class="tb-brand" href="index.html">ADMIN</a>
-    <nav class="tb-nav">
-      <a href="index.html">Dashboard</a>
-      <a href="produtos.html">Produtos</a>
-      <a href="marcas.html">Marcas</a>
-      <a href="categorias.html" class="on">Categorias</a>
-      <a href="fornecedores.html">Fornecedores</a>
-      <a href="promocoes.html">Promoções</a>
-      <a href="cupons.html">Cupons</a>
-      <a href="estoque.html">Estoque</a>
-      <a href="pedidos.html">Pedidos</a>
-      <a href="usuarios.html">Usuários</a>
-    </nav>
-  </div>
-  <div class="tb-r">
-    <span class="tb-search">Buscar no painel</span>
-    <a href="../index.html">Ver loja ↗</a>
-    <span class="avatar">MR</span>
-  </div>
-</header>
-<div class="pagebar">
-  <div style="display:flex;align-items:baseline;gap:12px"><h1 class="h1">Categorias</h1><span class="sub">8 categorias · 2 raízes</span></div>
-  <div class="actions"><button class="btn">Reordenar</button><a class="btn p" href="categoria-nova.html">Nova categoria</a></div>
-</div>
-<div class="pad-t" style="display:flex;flex-direction:column;gap:16px">
-  <div class="filters">
-    <div class="f grow"><input type="text" placeholder="Buscar por nome ou slug"></div>
-    <div class="f"><select><option>Categoria</option><option>Drones</option><option>Acessórios</option></select></div>
-    <div class="f"><select><option>Status</option><option>Ativa</option><option>Inativa</option></select></div>
-  </div>
-  <p class="legend" style="margin:0">Cada <span class="chip">Subcategoria</span> aparece abaixo da <span class="chip">Categoria</span> a que pertence (RF02). Categoria com subcategorias ou subcategoria com produtos não se exclui: inative (D24).</p>
-  <div class="tbl">
-    <div class="trow head" style="grid-template-columns:minmax(0,1fr) 170px 110px 120px 118px 44px"><span>Categoria</span><span>Pertence a</span><span>Ordem</span><span>Produtos</span><span>Status</span><span></span></div>
-    <a class="trow" style="grid-template-columns:minmax(0,1fr) 170px 110px 120px 118px 44px" href="categoria-nova.html"><span class="cell-name" style="padding-left:0px"><b>Drones</b><span class="chip">drones</span></span><span class="dim">Categoria</span><span class="dim">1</span><span class="ink">82</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativa</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
-    <a class="trow" style="grid-template-columns:minmax(0,1fr) 170px 110px 120px 118px 44px" href="categoria-nova.html"><span class="cell-name" style="padding-left:18px"><b>└ Profissionais</b><span class="chip">drones-profissionais</span></span><span class="dim">Drones</span><span class="dim">1</span><span class="ink">24</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativa</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
-    <a class="trow" style="grid-template-columns:minmax(0,1fr) 170px 110px 120px 118px 44px" href="categoria-nova.html"><span class="cell-name" style="padding-left:18px"><b>└ Compactos</b><span class="chip">drones-compactos</span></span><span class="dim">Drones</span><span class="dim">2</span><span class="ink">31</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativa</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
-    <a class="trow" style="grid-template-columns:minmax(0,1fr) 170px 110px 120px 118px 44px" href="categoria-nova.html"><span class="cell-name" style="padding-left:18px"><b>└ FPV / Corrida</b><span class="chip">fpv-corrida</span></span><span class="dim">Drones</span><span class="dim">3</span><span class="ink">18</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativa</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
-    <a class="trow" style="grid-template-columns:minmax(0,1fr) 170px 110px 120px 118px 44px" href="categoria-nova.html"><span class="cell-name" style="padding-left:18px"><b>└ Agrícolas</b><span class="chip">agricolas</span></span><span class="dim">Drones</span><span class="dim">4</span><span class="ink">9</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativa</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
-    <a class="trow" style="grid-template-columns:minmax(0,1fr) 170px 110px 120px 118px 44px" href="categoria-nova.html"><span class="cell-name" style="padding-left:18px"><b>└ Mapeamento</b><span class="chip">mapeamento</span></span><span class="dim">Drones</span><span class="dim">5</span><span class="ink">12</span><span class="status"><span class="dot" style="background:var(--dim2)"></span>Inativa</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
-    <a class="trow" style="grid-template-columns:minmax(0,1fr) 170px 110px 120px 118px 44px" href="categoria-nova.html"><span class="cell-name" style="padding-left:0px"><b>Acessórios</b><span class="chip">acessorios</span></span><span class="dim">Categoria</span><span class="dim">2</span><span class="ink">142</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativa</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
-    <a class="trow" style="grid-template-columns:minmax(0,1fr) 170px 110px 120px 118px 44px" href="categoria-nova.html"><span class="cell-name" style="padding-left:18px"><b>└ Baterias</b><span class="chip">baterias</span></span><span class="dim">Acessórios</span><span class="dim">1</span><span class="ink">38</span><span class="status"><span class="dot" style="background:var(--ok)"></span>Ativa</span><span style="justify-self:end;color:var(--mute)">⋯</span></a>
-    <div class="pager"><span>Exibindo 1–8 de 8</span><span>Página 1 de 1</span></div>
-  </div>
-</div>
-</body>
-</html>
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Aeria Admin Categorias</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&family=DM+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/admin.css">
+</head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></symbol>
+<symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
+<symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V4h10v5M7 17H5v-6h14v6h-2M7 14h10v6H7z"/></symbol>
+<symbol id="i-up" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></symbol>
+</svg>
+<header class="tb"><div class="in gut">
+  <a class="brand" href="index.html">AERIA <span>ADMIN</span></a>
+  <nav class="tabs" aria-label="Painel"><a href="index.html">Dashboard</a><a href="produtos.html">Produtos</a><a href="marcas.html">Marcas</a><a href="categorias.html" aria-current="page">Categorias</a><a href="fornecedores.html">Fornecedores</a><a href="promocoes.html">Promoções</a><a href="cupons.html">Cupons</a><a href="estoque.html">Estoque</a><a href="pedidos.html">Pedidos</a><a href="usuarios.html">Usuários</a></nav>
+  <div class="r"><div class="search"><svg class="ico"><use href="#i-search"/></svg>Buscar no painel<kbd>/</kbd></div><a class="store" href="../index.html">Ver loja ↗</a><span class="avatar" title="Marina Ribeiro">MR</span></div>
+</div><nav class="mnav" aria-label="Painel (celular)"><a href="index.html">Dashboard</a><a href="produtos.html">Produtos</a><a href="marcas.html">Marcas</a><a href="categorias.html" aria-current="page">Categorias</a><a href="fornecedores.html">Fornecedores</a><a href="promocoes.html">Promoções</a><a href="cupons.html">Cupons</a><a href="estoque.html">Estoque</a><a href="pedidos.html">Pedidos</a><a href="usuarios.html">Usuários</a></nav></header>
+<main class="gut">
+<div class="ph"><div><span class="lbl">Catálogo</span><h1>Categorias</h1><div class="sub">8 categorias · 2 raízes</div></div><div class="acts"><button class="btn " type="button"><svg class="ico"><use href="#i-filter"/></svg>Reordenar</button><a class="btn p" href="categoria-nova.html"><svg class="ico"><use href="#i-plus"/></svg>Nova categoria</a></div></div>
+<div class="toolbar"><label class="field-s grow"><svg class="ico"><use href="#i-search"/></svg><input placeholder="Buscar por nome" aria-label="Buscar"></label><select class="sel" aria-label="Categoria"><option>Categoria</option><option>Drones</option><option>Acessórios</option></select><select class="sel" aria-label="Status"><option>Status</option><option>Ativa</option><option>Inativa</option></select></div>
+<div class="info">Cada subcategoria aparece abaixo da categoria a que pertence (RF02). Categoria com subcategorias, ou subcategoria com produtos, não se exclui: <b>inative</b> (D24).</div>
+<div class="tw"><table><thead><tr><th class=""></th><th class="">Categoria</th><th class="">Pertence a</th><th class="r">Ordem</th><th class="r">Produtos</th><th class="">Status</th><th></th></tr></thead><tbody><tr class=""><td class="mono" style="color:var(--faint);width:30px">⋮⋮</td><td data-l="Categoria"><b style="font-weight:500">Drones</b><span class="slug" style="display:block">/drones</span></td><td data-l="Pertence a" style="color:var(--ink2)"><span class="chip">Raiz</span></td><td data-l="Ordem" class="r num mono">1</td><td data-l="Produtos" class="r num mono">82</td><td data-l="Status"><span class="st ok"><span>Ativa</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr class="child"><td class="mono" style="color:var(--faint);width:30px">⋮⋮</td><td data-l="Categoria"><b style="font-weight:400">Profissionais</b><span class="slug" style="display:block">/drones-profissionais</span></td><td data-l="Pertence a" style="color:var(--ink2)">Drones</td><td data-l="Ordem" class="r num mono">1</td><td data-l="Produtos" class="r num mono">24</td><td data-l="Status"><span class="st ok"><span>Ativa</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr class="child"><td class="mono" style="color:var(--faint);width:30px">⋮⋮</td><td data-l="Categoria"><b style="font-weight:400">Compactos</b><span class="slug" style="display:block">/drones-compactos</span></td><td data-l="Pertence a" style="color:var(--ink2)">Drones</td><td data-l="Ordem" class="r num mono">2</td><td data-l="Produtos" class="r num mono">31</td><td data-l="Status"><span class="st ok"><span>Ativa</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr class="child"><td class="mono" style="color:var(--faint);width:30px">⋮⋮</td><td data-l="Categoria"><b style="font-weight:400">FPV / Corrida</b><span class="slug" style="display:block">/fpv-corrida</span></td><td data-l="Pertence a" style="color:var(--ink2)">Drones</td><td data-l="Ordem" class="r num mono">3</td><td data-l="Produtos" class="r num mono">18</td><td data-l="Status"><span class="st ok"><span>Ativa</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr class="child"><td class="mono" style="color:var(--faint);width:30px">⋮⋮</td><td data-l="Categoria"><b style="font-weight:400">Agrícolas</b><span class="slug" style="display:block">/agricolas</span></td><td data-l="Pertence a" style="color:var(--ink2)">Drones</td><td data-l="Ordem" class="r num mono">4</td><td data-l="Produtos" class="r num mono">9</td><td data-l="Status"><span class="st ok"><span>Ativa</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr class="child"><td class="mono" style="color:var(--faint);width:30px">⋮⋮</td><td data-l="Categoria"><b style="font-weight:400">Mapeamento</b><span class="slug" style="display:block">/mapeamento</span></td><td data-l="Pertence a" style="color:var(--ink2)">Drones</td><td data-l="Ordem" class="r num mono">5</td><td data-l="Produtos" class="r num mono">12</td><td data-l="Status"><span class="st mute"><span>Inativa</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr class=""><td class="mono" style="color:var(--faint);width:30px">⋮⋮</td><td data-l="Categoria"><b style="font-weight:500">Acessórios</b><span class="slug" style="display:block">/acessorios</span></td><td data-l="Pertence a" style="color:var(--ink2)"><span class="chip">Raiz</span></td><td data-l="Ordem" class="r num mono">2</td><td data-l="Produtos" class="r num mono">142</td><td data-l="Status"><span class="st ok"><span>Ativa</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr><tr class="child"><td class="mono" style="color:var(--faint);width:30px">⋮⋮</td><td data-l="Categoria"><b style="font-weight:400">Baterias</b><span class="slug" style="display:block">/baterias</span></td><td data-l="Pertence a" style="color:var(--ink2)">Acessórios</td><td data-l="Ordem" class="r num mono">1</td><td data-l="Produtos" class="r num mono">38</td><td data-l="Status"><span class="st ok"><span>Ativa</span></span></td><td class="r"><button class="more" aria-label="Ações">⋯</button></td></tr></tbody></table></div>
+<div class="pager"><span>Exibindo 1 a 8 de 8</span><div class="pages"><a href="#">‹</a><a href="#" aria-current="page">1</a><a href="#">›</a></div></div>
+<p class="foot-note">Protótipo acadêmico · dados fictícios · Aeria 2026</p>
+</main>
+<script>document.querySelectorAll("tbody tr").forEach(r=>r.addEventListener("click",e=>{if(!e.target.closest("button,input"))location.href="categoria-nova.html"}));document.querySelectorAll(".stabs a[href=\"#\"]").forEach(a=>a.onclick=e=>{e.preventDefault();document.querySelectorAll(".stabs a").forEach(x=>x.removeAttribute("aria-current"));a.setAttribute("aria-current","page")})</script>
+</body></html>

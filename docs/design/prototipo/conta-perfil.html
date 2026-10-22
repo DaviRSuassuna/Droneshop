@@ -1,57 +1,74 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Perfil e dados · Aeria</title>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&display=swap" rel="stylesheet">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&family=DM+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="assets/site.css">
-<script src="assets/theme.js"></script>
-</head>
-<body class="sf">
-<header class="snav">
-  <div class="snav-l">
-    <a class="brand" href="index.html">AERIA</a>
-    <nav class="snav-nav"><a href="drones.html">Drones</a><a href="acessorios.html">Acessórios</a><a href="empresas.html">Empresas</a><a href="suporte.html">Suporte</a><a href="ofertas.html">Ofertas</a></nav>
+</head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></symbol>
+<symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l-1 13H6L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></symbol>
+<symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></symbol>
+<symbol id="i-truck" viewBox="0 0 24 24"><path d="M3 6h11v10H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></symbol>
+<symbol id="i-pix" viewBox="0 0 24 24"><path d="m12 3 9 9-9 9-9-9z"/><path d="m8 12 4-4 4 4-4 4z"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+<symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-3 2a11 11 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></symbol>
+<symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+<symbol id="i-share" viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.2 11 7.6-4M8.2 13l7.6 4"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+</svg>
+<div class="navwrap wrap">
+  <div class="nav">
+    <button class="iconbtn menu" id="menuBtn" aria-expanded="false" aria-controls="links" aria-label="Menu"><svg class="ico"><use href="#i-menu"/></svg></button>
+    <a class="mark" href="index.html">AERIA</a>
+    <nav class="links" id="links" aria-label="Principal"><a href="drones.html">Drones</a><a href="acessorios.html">Acessórios</a><a href="empresas.html">Empresas</a><a href="suporte.html">Suporte</a><a href="ofertas.html" class="hot">Ofertas</a></nav>
+    <div class="right">
+      <label class="search"><svg class="ico"><use href="#i-search"/></svg><input type="search" placeholder="Buscar drones e acessórios" aria-label="Buscar drones e acessórios"><kbd>/</kbd></label>
+      <button class="iconbtn sbtn" id="searchBtn" type="button" aria-expanded="false" aria-controls="msearch" aria-label="Buscar"><svg class="ico"><use href="#i-search"/></svg></button>
+      <a class="iconbtn" href="conta-favoritos.html" aria-label="Favoritos, 6 itens"><svg class="ico"><use href="#i-heart"/></svg><span class="navcount">6</span></a>
+      <a class="iconbtn" href="carrinho.html" aria-label="Carrinho, 2 itens"><svg class="ico"><use href="#i-bag"/></svg><span class="navcount">2</span></a>
+      <a class="iconbtn acct" href="conta-perfil.html" aria-label="Minha conta"><svg class="ico"><use href="#i-user"/></svg><span class="acct-t">Conta</span></a>
+    </div>
+    <form class="msearch" id="msearch" role="search"><svg class="ico"><use href="#i-search"/></svg><input type="search" placeholder="Buscar na loja" aria-label="Buscar drones e acessórios"><button class="btn sm p" type="submit">Buscar</button></form>
   </div>
-  <div class="snav-r">
-    <span class="snav-search">Buscar drones e acessórios</span>
-    <a href="conta-perfil.html">Conta</a>
-    <a class="cart" href="carrinho.html">Carrinho <em>2</em></a>
+</div>
+<main>
+<div class="wrap account"><nav class="side" aria-label="Minha conta"><div class="me"><span class="av">MR</span><div><b>Marina Ribeiro</b><span>Cliente desde 2024</span></div></div><a href="conta-pedidos.html">Meus pedidos<em>12</em></a><a href="conta-perfil.html" aria-current="page">Perfil e dados</a><a href="conta-favoritos.html">Favoritos<em>6</em></a><a href="conta-enderecos.html">Endereços<em>2</em></a><a href="conta-pagamentos.html">Meios de pagamento<em>2</em></a><a class="out" href="login.html">Sair da conta</a></nav><section><div class="crumb"><a href="index.html">Home</a><span>Minha conta</span><span>Perfil e dados</span></div>
+<div class="ahead"><div><h1>Perfil e dados</h1><div class="sub">Seus dados, senha e drones registrados</div></div><div style="display:flex;gap:8px;flex-wrap:wrap"></div></div><form class="panel"><div class="ph2"><h2>Dados pessoais</h2><span class="formnote"><span class="req">*</span> obrigatório</span></div><div class="fg">
+<div class="f w4"><label>Nome completo <span class="req">*</span></label><input id="pn" type="text" value="Marina Ribeiro" placeholder=""></div><div class="f w2"><label>Data de nascimento</label><input id="pdn" type="text" value="14/03/1992" placeholder=""></div><div class="f "><label>E-mail <span class="req">*</span></label><input id="pe" type="email" value="marina.ribeiro@email.com" placeholder=""></div><div class="f "><label>Telefone / WhatsApp <span class="req">*</span></label><input id="pt" type="text" value="(63) 98812-4477" placeholder=""></div><div class="f w2"><label>CPF <span class="req">*</span></label><input id="pc" type="text" value="•••.482.913-••" placeholder=""><span class="hint">Para alterar, fale com o suporte</span></div></div>
+<div style="margin-top:22px"><span class="lbl">Perfil de piloto</span><div class="choices c3" style="margin-top:10px"><label class="choice"><input type="radio" name="pp" checked><div><b>Profissional</b><span>Registro SISANT ativo</span></div></label><label class="choice"><input type="radio" name="pp"><div><b>Recreativo</b><span>Lazer e viagens</span></div></label><label class="choice"><input type="radio" name="pp"><div><b>Corporativo</b><span>Compra por CNPJ</span></div></label></div></div>
+<label class="check" style="margin-top:18px"><input class="ck" type="checkbox" checked>Quero receber novidades, ofertas e conteúdos sobre voo</label>
+<div style="display:flex;justify-content:flex-end;margin-top:18px"><button class="btn p" type="submit">Salvar alterações</button></div></form>
+<div class="panel"><div class="ph2"><h2>Segurança</h2></div><div class="secrow"><span class="secic"><svg class="ico"><use href="#i-lock"/></svg></span><div><b>Senha</b><span>Alterada há 3 meses</span></div><button class="btn sm" type="button" data-dialog="dlgSenha">Trocar senha</button></div></div>
+<dialog class="dlg" id="dlgSenha" aria-labelledby="dlgSenhaT"><form class="dlgbox" method="dialog" data-pwform>
+<div class="dlghead"><div><span class="lbl">Segurança</span><h2 id="dlgSenhaT">Trocar senha</h2></div><button class="iconbtn" type="button" data-close aria-label="Fechar"><svg class="ico"><use href="#i-x"/></svg></button></div>
+<div class="fg"><div class="f w6"><label for="s1">Senha atual <span class="req">*</span></label><div class="pw"><input id="s1" type="password" autocomplete="current-password"><button class="eye" type="button" data-eye aria-label="Mostrar senha"><svg class="ico"><use href="#i-eye"/></svg></button></div></div><div class="f w6"><label for="s2">Nova senha <span class="req">*</span></label><div class="pw"><input id="s2" type="password" autocomplete="new-password"><button class="eye" type="button" data-eye aria-label="Mostrar senha"><svg class="ico"><use href="#i-eye"/></svg></button></div></div><ul class="rules" id="pwRules"><li data-r="len">Mínimo de 8 caracteres</li><li data-r="let">Pelo menos uma letra</li><li data-r="num">Pelo menos um número</li></ul><div class="f w6"><label for="s3">Confirmar nova senha <span class="req">*</span></label><div class="pw"><input id="s3" type="password" autocomplete="new-password"><button class="eye" type="button" data-eye aria-label="Mostrar senha"><svg class="ico"><use href="#i-eye"/></svg></button></div></div><p class="pwmsg" id="pwMsg" role="status"></p></div>
+<div class="dlgfoot"><button class="btn" type="button" data-close>Cancelar</button><button class="btn p" type="submit" value="ok">Atualizar senha</button></div>
+</form></dialog>
+<div class="panel"><div class="ph2"><h2>Drones registrados</h2><span class="tlink">Usado para garantia e SISANT</span></div><div class="items">
+<div class="item sm"><span class="stage"><img src="assets/img/nimbus.webp" alt=""></span><div><h3>Nimbus Mini 3</h3><div class="meta mono">Série SKL-NM3-88214 · comprado em 02/07/2026</div></div><span class="st ok"><span>Garantia até 07/2027</span></span></div>
+<div class="item sm"><span class="stage"><img src="assets/img/falcon.webp" alt=""></span><div><h3>Falcon X2 Pro</h3><div class="meta mono">Série AER-FX2-10473 · SISANT PR-20481927</div></div><span class="st amber"><span>Aguardando entrega</span></span></div></div></div></section></div>
+</main>
+<footer>
+  <div class="wrap">
+    <div><div class="mark">AERIA</div><p>Tecnologia para novos pontos de vista.</p></div>
+    <div><span class="lbl">Explore</span><ul><li><a href="drones.html">Drones</a></li><li><a href="acessorios.html">Acessórios</a></li><li><a href="ofertas.html">Ofertas</a></li></ul></div>
+    <div><span class="lbl">Suporte</span><ul><li><a href="suporte.html">Garantia e trocas</a></li><li><a href="suporte.html">Registro SISANT/ANAC</a></li><li><a href="conta-pedidos.html">Meus pedidos</a></li></ul></div>
+    <div><span class="lbl">Aeria</span><ul><li><a href="empresas.html">Para empresas</a></li><li><a href="login.html">Entrar ou criar conta</a></li><li><a href="suporte.html">Contato</a></li></ul></div>
+    <div class="legal"><span>© 2026 Aeria · projeto acadêmico, dados fictícios</span><span><a href="admin/index.html" style="text-decoration:underline">Painel administrativo</a> · Privacidade · Termos</span></div>
   </div>
-</header>
-<div class="swrap two-a">
-  <aside class="srail"><div class="acct">
-  <div class="acct-u"><span class="avatar">MR</span><span class="acct-n" style="gap:4px"><span style="font-size:13px;color:var(--ink)">Marina Ribeiro</span><span style="font-size:11px;color:var(--mute2)">Cliente desde 2024</span></span></div>
-  <nav class="acct-n"><a href="conta-pedidos.html">Meus pedidos<em>12</em></a><a href="conta-perfil.html" class="on">Perfil e dados<em></em></a><a href="conta-favoritos.html">Lista de desejos<em>6</em></a><a href="conta-enderecos.html">Endereços<em>2</em></a><a href="conta-pagamentos.html">Meios de pagamento<em>2</em></a></nav>
-  <a href="login.html" style="padding:10px 12px;font-size:12px;color:var(--mute2);border-top:1px solid var(--line)">Sair da conta</a>
-</div></aside>
-  <div style="display:flex;flex-direction:column;gap:24px">
-    <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:11.5px;color:var(--mute2)"><a href="index.html" style="color:var(--mute2)">Home</a> · Minha conta</span><h1 class="disp" style="font-size:32px;color:var(--pure)">Perfil e dados</h1></div>
-    <section class="scard p"><span class="scard-t">Dados pessoais</span>
-      <div class="g2" style="gap:14px 18px"><div class="f"><label>Nome completo <span class="req">*</span></label><input type="text" placeholder="Marina Ribeiro"></div><div class="f"><label>E-mail <span class="req">*</span></label><input type="text" placeholder="marina.ribeiro@email.com"></div><div class="f"><label>CPF <span class="req">*</span></label><input type="text" placeholder="000.000.000-00"></div><div class="f"><label>Telefone / WhatsApp <span class="req">*</span></label><input type="text" placeholder="(11) 98812-4477"></div><div class="f"><label>Data de nascimento</label><input type="text" placeholder="dd/mm/aaaa"></div><div class="f"><label>Perfil de piloto</label><select><option>Profissional · registro SISANT ativo</option><option>Recreativo</option><option>Corporativo</option></select></div><label class="ck full"><input type="checkbox" checked> Quero receber novidades, ofertas e conteúdos sobre voo</label></div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:20px"><span class="legend" style="margin:0">Campos com <span class="req">*</span> são obrigatórios</span><button class="btn p" style="height:40px">Salvar alterações</button></div>
-    </section>
-    <section class="scard p"><span class="scard-t">Trocar senha</span>
-      <div class="g3"><div class="f"><label>Senha atual <span class="req">*</span></label><input type="password" placeholder="••••••••"></div><div class="f"><label>Nova senha <span class="req">*</span></label><input type="password" placeholder="Mínimo 8 caracteres"></div><div class="f"><label>Confirmar nova senha <span class="req">*</span></label><input type="password" placeholder="Repita a nova senha"></div></div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:20px"><span style="font-size:11.5px;color:var(--mute2)">Mínimo 8 caracteres, com letras e números</span><button class="btn" style="height:40px">Atualizar senha</button></div>
-    </section>
-    <section class="scard p">
-      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px"><span class="scard-t" style="margin:0">Endereços salvos</span><a href="conta-enderecos.html" style="font-size:11.5px;color:var(--acc)">+ Novo endereço</a></div>
-      <div class="g2" style="gap:16px"><div style="display:flex;flex-direction:column;gap:9px;padding:18px;border:1px solid var(--line);border-radius:8px"><div style="display:flex;align-items:center;gap:9px"><span style="font-size:12.5px;color:var(--ink)">Casa</span><span style="padding:3px 8px;border-radius:20px;background:var(--acc-t);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--acc)">Padrão</span></div><span style="font-size:11.5px;line-height:1.6;color:var(--dim2)">Rua das Acácias, 412 — apto 71<br>Pinheiros · São Paulo / SP · 05422-030</span><div style="display:flex;gap:14px;margin-top:4px;font-size:11px"><a href="conta-perfil.html" style="color:var(--dim);text-decoration:underline">Editar</a><a href="conta-perfil.html" style="color:var(--mute2);text-decoration:underline">Remover</a></div></div><div style="display:flex;flex-direction:column;gap:9px;padding:18px;border:1px solid var(--line);border-radius:8px"><div style="display:flex;align-items:center;gap:9px"><span style="font-size:12.5px;color:var(--ink)">Estúdio</span></div><span style="font-size:11.5px;line-height:1.6;color:var(--dim2)">Av. Paulista, 1.578 — conj. 902<br>Bela Vista · São Paulo / SP · 01310-200</span><div style="display:flex;gap:14px;margin-top:4px;font-size:11px"><a href="conta-perfil.html" style="color:var(--dim);text-decoration:underline">Editar</a><a href="conta-perfil.html" style="color:var(--mute2);text-decoration:underline">Remover</a></div></div></div>
-    </section>
-    <section class="scard p">
-      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px"><span class="scard-t" style="margin:0">Meios de pagamento salvos</span><a href="conta-perfil.html" style="font-size:11.5px;color:var(--acc)">+ Novo cartão</a></div>
-      <div style="display:flex;flex-direction:column;gap:12px"><div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 18px;border:1px solid var(--line);border-radius:8px"><div style="display:flex;align-items:center;gap:14px"><span class="ph" style="width:46px;height:30px;border-radius:5px">logo</span><div style="display:flex;flex-direction:column;gap:4px"><span class="mono" style="font-size:12px;color:var(--ink)">•••• •••• •••• 4417</span><span style="font-size:11px;color:var(--mute)">MARINA R RIBEIRO · validade 09/29</span></div></div><div style="display:flex;align-items:center;gap:14px"><span style="padding:3px 8px;border-radius:20px;background:var(--acc-t);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--acc)">Padrão</span><a href="conta-perfil.html" style="font-size:11px;color:var(--mute2);text-decoration:underline">Remover</a></div></div><div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 18px;border:1px solid var(--line);border-radius:8px"><div style="display:flex;align-items:center;gap:14px"><span class="ph" style="width:46px;height:30px;border-radius:5px">logo</span><div style="display:flex;flex-direction:column;gap:4px"><span class="mono" style="font-size:12px;color:var(--ink)">•••• •••• •••• 8032</span><span style="font-size:11px;color:var(--mute)">MARINA R RIBEIRO · validade 03/28</span></div></div><div style="display:flex;align-items:center;gap:14px"><a href="conta-perfil.html" style="font-size:11px;color:var(--mute2);text-decoration:underline">Remover</a></div></div></div>
-    </section>
-  </div>
-</div><footer class="sfoot">
-  <div class="sfoot-g">
-    <div class="sfoot-c"><span class="brand" style="font-size:16px">AERIA</span><span style="font-size:12px;line-height:1.6;color:var(--mute2);max-width:230px">Drones profissionais, compactos e agrícolas. Envio para todo o Brasil.</span></div>
-    <div class="sfoot-c"><b>Loja</b><a href="drones.html">Drones</a><a href="acessorios.html">Acessórios</a><a href="ofertas.html">Ofertas</a><a href="index.html">Lançamentos</a></div><div class="sfoot-c"><b>Conta</b><a href="login.html">Entrar</a><a href="login.html">Criar conta</a><a href="conta-pedidos.html">Meus pedidos</a><a href="conta-favoritos.html">Lista de desejos</a></div><div class="sfoot-c"><b>Suporte</b><a href="suporte.html">Central de ajuda</a><a href="suporte.html">Trocas e devoluções</a><a href="suporte.html">Garantia</a><a href="suporte.html">Regras ANAC</a></div><div class="sfoot-c"><b>Empresa</b><a href="empresas.html">Sobre a Aeria</a><a href="empresas.html">Vendas corporativas</a><a href="empresas.html">Seja revendedor</a><a href="admin/index.html">Painel admin</a></div>
-  </div>
-  <div class="sfoot-b"><span>© 2026 Aeria Drones · CNPJ 00.000.000/0001-00</span><span>Pix · Boleto · Cartão em até 12×</span></div>
 </footer>
-</body>
-</html>
+<script src="assets/site.js"></script>
+</body></html>
