@@ -1,31 +1,42 @@
+import { STATUS_PRODUTO } from '../../../core/models/status.model';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
-import { VarianteListagem } from '../../../core/models/produto.model';
+import { Produto } from '../../../core/models/produto.model';
 import {
   ESCOPO_PROMOCAO,
   Promocao,
   PromocaoDTO,
 } from '../../../core/models/promocao.model';
 import { PromocaoService } from '../../../core/services/promocao.service';
-import { VarianteService } from '../../../core/services/variante.service';
-import { AdminNav } from '../../../layout/admin/admin-nav/admin-nav';
+import { ProdutoService } from '../../../core/services/produto.service';
 
 type StatusFormulario = 'RASCUNHO' | 'AGENDADA' | 'ATIVA' | 'ENCERRADA';
 
+/** Produto da tabela "Produtos em promoção": o que a tela mostra (o salvo pode ter saído do select). */
+interface ProdutoEmPromocao {
+  id: number;
+  nome: string | null;
+  sku: string | null;
+  preco: number | null;
+}
+
+/**
+ * Cadastro de promoção (#14). O select de produto lista só ATIVOS (D40), kits inclusive.
+ * Prioridade, chamada, teto, "encerrar sem estoque" e os destaques de vitrine do protótipo
+ * ainda não têm API e ficam de fora (ver e2e/conformidade/telas.ts).
+ */
 @Component({
   selector: 'app-promocao-cadastro',
-  standalone: true,
-  imports: [AdminNav, ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './promocao-cadastro.html',
-  styleUrl: './promocao-cadastro.scss',
 })
 export class PromocaoCadastro implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly promocaoService = inject(PromocaoService);
-  private readonly varianteService = inject(VarianteService);
+  private readonly produtoService = inject(ProdutoService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
@@ -33,17 +44,25 @@ export class PromocaoCadastro implements OnInit {
   readonly carregando = signal(false);
   readonly salvando = signal(false);
   readonly erro = signal<string | null>(null);
-  readonly variantesDisponiveis = signal<VarianteListagem[]>([]);
-  readonly idsVariantes = signal<number[]>([]);
-  readonly varianteParaAdicionar = signal('');
+  readonly produtosDisponiveis = signal<Produto[]>([]);
+  // os já salvos na promoção, para a tabela mostrar mesmo um produto que saiu do select
+  private readonly produtosSalvos = signal<ProdutoEmPromocao[]>([]);
+  readonly idsProdutos = signal<number[]>([]);
+  readonly escolhendoProduto = signal(false);
   readonly modoEdicao = computed(() => this.promocaoId() !== null);
-  readonly variantesSelecionadas = computed(() =>
-    this.idsVariantes().map(
+  readonly produtosSelecionados = computed<ProdutoEmPromocao[]>(() =>
+    this.idsProdutos().map(
       (id) =>
-        this.variantesDisponiveis().find((variante) => variante.id === id) ??
-        this.varianteFallback(id),
+        this.produtosDisponiveis().find((p) => p.id === id) ??
+        this.produtosSalvos().find((p) => p.id === id) ?? { id, nome: 'Produto indisponível', sku: null, preco: null },
     ),
   );
+  readonly opcoesLivres = computed(() => {
+    const escolhidos = new Set(this.idsProdutos());
+    return this.produtosDisponiveis().filter((p) => !escolhidos.has(p.id));
+  });
+
+  readonly ESCOPO = ESCOPO_PROMOCAO;
 
   readonly escopos = [
     { id: ESCOPO_PROMOCAO.PRODUTO, nome: 'Produto · desconta itens selecionados' },
@@ -54,19 +73,12 @@ export class PromocaoCadastro implements OnInit {
   readonly form = this.fb.nonNullable.group({
     nome: ['', Validators.required],
     idEscopo: [ESCOPO_PROMOCAO.PRODUTO as number, Validators.required],
-    prioridade: [''],
-    chamada: [''],
     percentualDesconto: [''],
     valorDesconto: [''],
     valorMinimoCarrinho: [''],
-    tetoDesconto: [''],
     dataInicio: ['', Validators.required],
     dataFim: ['', Validators.required],
-    encerrarSemEstoque: [false],
     status: ['RASCUNHO' as StatusFormulario],
-    exibirOfertas: [true],
-    exibirSelo: [true],
-    destacarBanner: [false],
   });
 
   ngOnInit(): void {
@@ -76,13 +88,13 @@ export class PromocaoCadastro implements OnInit {
       this.carregando.set(true);
     }
 
-    this.varianteService.listar({ ativa: true }, 0, 1000).subscribe({
+    this.produtoService.listar({ idStatus: STATUS_PRODUTO.ATIVO }, 0, 1000).subscribe({
       next: (pagina) => {
-        this.variantesDisponiveis.set(pagina.items ?? []);
+        this.produtosDisponiveis.set(pagina.items ?? []);
         if (this.promocaoId() !== null) this.carregarPromocao(this.promocaoId()!);
       },
       error: () => {
-        this.erro.set('Não foi possível carregar as variantes disponíveis.');
+        this.erro.set('Não foi possível carregar os produtos disponíveis.');
         this.carregando.set(false);
       },
     });
@@ -96,9 +108,9 @@ export class PromocaoCadastro implements OnInit {
     if (!v.dataFim) faltando.push('Data de fim');
     if (
       Number(v.idEscopo) === ESCOPO_PROMOCAO.PRODUTO &&
-      this.idsVariantes().length === 0
+      this.idsProdutos().length === 0
     ) {
-      faltando.push('Variantes em promoção');
+      faltando.push('Produtos em promoção');
     }
     return faltando;
   }
@@ -107,27 +119,17 @@ export class PromocaoCadastro implements OnInit {
     this.form.controls.idEscopo.setValue(Number(valor));
   }
 
-  aoMudarStatus(valor: string): void {
-    this.form.controls.status.setValue(valor as StatusFormulario);
+  adicionarProduto(evento: Event): void {
+    const select = evento.target as HTMLSelectElement;
+    const id = Number(select.value);
+    select.value = '';
+    if (!id || this.idsProdutos().includes(id)) return;
+    this.idsProdutos.update((ids) => [...ids, id]);
+    this.escolhendoProduto.set(false);
   }
 
-  aoSelecionarVariante(valor: string): void {
-    this.varianteParaAdicionar.set(valor);
-  }
-
-  adicionarVariante(): void {
-    const id = Number(this.varianteParaAdicionar());
-    if (!id || this.idsVariantes().includes(id)) return;
-    this.idsVariantes.update((ids) => [...ids, id]);
-    this.varianteParaAdicionar.set('');
-  }
-
-  removerVariante(id: number): void {
-    this.idsVariantes.update((ids) => ids.filter((item) => item !== id));
-  }
-
-  nomeVariante(variante: VarianteListagem): string {
-    return `${variante.produto?.nome ?? 'Produto'} · ${variante.nome ?? 'Padrão'}`;
+  removerProduto(id: number): void {
+    this.idsProdutos.update((ids) => ids.filter((item) => item !== id));
   }
 
   moeda(valor: number | null): string {
@@ -135,11 +137,10 @@ export class PromocaoCadastro implements OnInit {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
   }
 
-  precoPromocional(variante?: VarianteListagem): number | null {
-    if (!variante) return null;
+  precoPromocional(produto: ProdutoEmPromocao): number | null {
     const valor = this.form.controls.valorDesconto.value.trim();
     const percentual = this.form.controls.percentualDesconto.value.trim();
-    const preco = variante.preco;
+    const preco = produto.preco;
     if (preco == null) return null;
     if (percentual) return Math.max(0, preco * (1 - Number(percentual) / 100));
     if (valor) return Math.max(0, preco - Number(valor));
@@ -169,8 +170,8 @@ export class PromocaoCadastro implements OnInit {
       this.erro.set('A data de fim deve ser posterior à data de início.');
       return;
     }
-    if (Number(v.idEscopo) === ESCOPO_PROMOCAO.PRODUTO && this.idsVariantes().length === 0) {
-      this.erro.set('Adicione ao menos uma variante para promoções com escopo Produto.');
+    if (Number(v.idEscopo) === ESCOPO_PROMOCAO.PRODUTO && this.idsProdutos().length === 0) {
+      this.erro.set('Adicione ao menos um produto para promoções com escopo Produto.');
       return;
     }
 
@@ -183,7 +184,7 @@ export class PromocaoCadastro implements OnInit {
       valorDesconto: valor,
       valorMinimoCarrinho: this.numeroOpcional(v.valorMinimoCarrinho),
       ativa: publicar || v.status === 'ATIVA' || v.status === 'AGENDADA',
-      idsVariantes: this.idsVariantes(),
+      idsProdutos: Number(v.idEscopo) === ESCOPO_PROMOCAO.PRODUTO ? this.idsProdutos() : [],
     };
 
     this.salvando.set(true);
@@ -216,7 +217,8 @@ export class PromocaoCadastro implements OnInit {
           dataFim: this.dataParaInput(promocao.dataFim),
           status: this.statusFormulario(promocao),
         });
-        this.idsVariantes.set((promocao.variantes ?? []).map((variante) => variante.id));
+        this.produtosSalvos.set((promocao.produtos ?? []).map((p) => ({ ...p, preco: null })));
+        this.idsProdutos.set((promocao.produtos ?? []).map((p) => p.id));
         this.carregando.set(false);
       },
       error: () => {
@@ -242,18 +244,5 @@ export class PromocaoCadastro implements OnInit {
     if (!normalizado) return null;
     const numero = Number(normalizado);
     return Number.isFinite(numero) ? numero : null;
-  }
-
-  private varianteFallback(id: number): VarianteListagem {
-    return {
-      id,
-      sku: null,
-      nome: 'Variante',
-      preco: null,
-      estoqueFisico: null,
-      disponivel: 0,
-      ehKit: false,
-      produto: { id: 0, nome: 'Variante não disponível', tipo: { id: 0, nome: '' } },
-    };
   }
 }

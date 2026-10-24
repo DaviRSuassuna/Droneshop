@@ -1,143 +1,187 @@
-<app-admin-nav />
+<main class="gut">
+  <div class="ph">
+    <div>
+      <div class="crumb">
+        <a routerLink="/admin/cupons">← Cupons</a><span>·</span><span>{{ modoEdicao() ? 'Editar cupom' : 'Novo cupom' }}</span>
+      </div>
+      <h1>{{ modoEdicao() ? 'Editar cupom' : 'Criar cupom' }}</h1>
+    </div>
+    <div class="acts">
+      <span class="st" [class.ok]="form.controls.status.value === 'ATIVO'" [class.mute]="form.controls.status.value !== 'ATIVO'"
+        ><span>{{ form.controls.status.value === 'ATIVO' ? 'Ativo' : form.controls.status.value === 'PAUSADO' ? 'Pausado' : 'Rascunho' }}</span></span
+      >
+    </div>
+  </div>
 
-@if (carregando()) {
-  <div class="pad"><span class="sub">Carregando cupom…</span></div>
-} @else {
-  <div class="pad cols coupon-form">
-    <div class="main">
+  @if (erro(); as mensagem) {
+    <div class="alerta" role="alert">{{ mensagem }}</div>
+  }
+
+  @if (carregando()) {
+    <p class="note">Carregando cupom…</p>
+  } @else {
+    <div class="form" [formGroup]="form">
       <div>
-        <h1 class="h1 big">{{ modoEdicao() ? 'Editar cupom' : 'Criar cupom' }}</h1>
-        <div class="crumb">Compra · <a routerLink="/admin/cupons">Cupons</a> · {{ modoEdicao() ? 'Editar cupom' : 'Novo cupom' }}</div>
+        <section class="sec">
+          <div class="sh"><h2>Código e desconto</h2><span>O código é digitado pelo cliente no carrinho</span></div>
+          <div class="fg">
+            <div class="f w3">
+              <label for="codigo">Código <span class="req">*</span></label>
+              <input id="codigo" class="mono" maxlength="40" placeholder="EX.: PILOTO10" style="text-transform: uppercase" formControlName="codigo" />
+              <span class="hint">Precisa ser único · a validação roda ao salvar</span>
+            </div>
+            <div class="f w3">
+              <label>Tipo de desconto <span class="req">*</span></label>
+              <div class="rad" role="radiogroup" aria-label="Tipo de desconto">
+                <label><input type="radio" formControlName="idTipoDesconto" [value]="TIPO.PERCENTUAL" />Percentual</label>
+                <label><input type="radio" formControlName="idTipoDesconto" [value]="TIPO.VALOR_FIXO" />Valor fixo</label>
+              </div>
+            </div>
+            <div class="f">
+              <label for="valor">Valor <span class="req">*</span></label>
+              <div class="unit"><input id="valor" type="text" inputmode="decimal" formControlName="valor" /><em>{{ form.controls.idTipoDesconto.value === TIPO.PERCENTUAL ? '%' : 'R$' }}</em></div>
+            </div>
+            <div class="f">
+              <label for="minimo">Valor mínimo do pedido</label>
+              <div class="unit"><input id="minimo" type="text" inputmode="decimal" formControlName="valorMinimo" /><em>R$</em></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="sec">
+          <div class="sh"><h2>Vigência e limites</h2><span>Limites são validados contra UsoCupom</span></div>
+          <div class="fg">
+            <div class="f">
+              <label for="inicio">Início <span class="req">*</span></label>
+              <input id="inicio" type="datetime-local" formControlName="dataInicio" />
+            </div>
+            <div class="f">
+              <label for="fim">Fim</label>
+              <input id="fim" type="datetime-local" formControlName="dataFim" />
+              <span class="hint">Vazio: sem data final</span>
+            </div>
+            <div class="f">
+              <label for="limiteTotal">Limite total de usos</label>
+              <input id="limiteTotal" type="text" inputmode="numeric" formControlName="limiteTotalUso" />
+            </div>
+            <div class="f">
+              <label for="limiteCliente">Limite por cliente</label>
+              <input id="limiteCliente" type="text" inputmode="numeric" formControlName="limitePorCliente" />
+            </div>
+          </div>
+        </section>
+
+        <section class="sec">
+          <div class="sh"><h2>Restrições de escopo</h2><span>Vazio significa vale para a loja inteira</span></div>
+          <div class="fg">
+            <div class="f">
+              <label for="categorias">Categorias</label>
+              <select id="categorias" (change)="adicionar($event, 'categorias')">
+                <option value="">Todas as categorias</option>
+                @for (c of categorias(); track c.id) {
+                  @if (!idsCategorias().includes(c.id)) {<option [value]="c.id">{{ c.nome }}</option>}
+                }
+              </select>
+            </div>
+            <div class="f">
+              <label for="marcas">Marcas</label>
+              <select id="marcas" (change)="adicionar($event, 'marcas')">
+                <option value="">Todas as marcas</option>
+                @for (m of marcas(); track m.id) {
+                  @if (!idsMarcas().includes(m.id)) {<option [value]="m.id">{{ m.nome }}</option>}
+                }
+              </select>
+            </div>
+            <div class="f">
+              <label for="produtos">Produtos específicos</label>
+              <input id="produtos" type="search" autocomplete="off" placeholder="Buscar por nome ou SKU" [value]="buscaProduto()" (input)="buscaProduto.set($any($event.target).value)" />
+            </div>
+          </div>
+          @if (resultadosProduto().length) {
+            <div class="list" style="margin-top: 8px" aria-label="Produtos encontrados">
+              @for (p of resultadosProduto(); track p.id) {
+                <button type="button" class="li" style="width: 100%; border-left: 0; border-right: 0; border-bottom: 0; background: none; text-align: left; cursor: pointer" (click)="adicionarProduto(p.id)">
+                  <span class="thumb ph"></span>
+                  <span><span class="t" style="display: block">{{ p.nome || 'Sem nome' }}</span><span class="s mono">{{ p.sku || 'sem SKU' }}</span></span>
+                  <span class="s">Adicionar</span>
+                </button>
+              }
+            </div>
+          }
+          @if (categoriasEscolhidas().length || marcasEscolhidas().length || produtosEscolhidos().length) {
+            <div class="tags" style="margin: 14px 0 0">
+              @for (c of categoriasEscolhidas(); track c.id) {
+                <span class="tag">Categoria: {{ c.nome }} <button type="button" [attr.aria-label]="'Remover ' + c.nome" (click)="remover('categorias', c.id)">×</button></span>
+              }
+              @for (m of marcasEscolhidas(); track m.id) {
+                <span class="tag">Marca: {{ m.nome }} <button type="button" [attr.aria-label]="'Remover ' + m.nome" (click)="remover('marcas', m.id)">×</button></span>
+              }
+              @for (p of produtosEscolhidos(); track p.id) {
+                <span class="tag">{{ p.nome }}@if (p.sku) { · {{ p.sku }}} <button type="button" [attr.aria-label]="'Remover ' + p.nome" (click)="remover('produtos', p.id)">×</button></span>
+              }
+            </div>
+          }
+          <p class="note">
+            As três restrições são relações muitos-para-muitos de <code>Cupom</code> com <code>Categoria</code>, <code>Marca</code> e
+            <code>Produto</code>. Só produtos ativos aparecem na busca.
+          </p>
+        </section>
       </div>
 
-      @if (erro()) {
-        <div class="card p form-error"><span class="warn">{{ erro() }}</span></div>
-      }
-
-      <section class="card p" [formGroup]="form">
-        <div class="card-h"><span class="card-t">Código e desconto</span><span class="card-n">O código é digitado pelo cliente no carrinho</span></div>
-        <div class="g2">
-          <div class="f">
-            <label>Código <span class="req">*</span></label>
-            <input type="text" placeholder="PILOTO10" formControlName="codigo" />
+      <aside class="rail">
+        <section class="card">
+          <div class="bd" style="padding-top: 18px">
+            <span class="lbl">Publicação</span>
+            <div style="margin-top: 12px">
+              <div class="f" style="grid-column: auto">
+                <label>Status <span class="req">*</span></label>
+                <div class="rad" role="radiogroup" aria-label="Status">
+                  <label><input type="radio" formControlName="status" value="RASCUNHO" />Rascunho</label>
+                  <label><input type="radio" formControlName="status" value="ATIVO" />Ativo</label>
+                  <label><input type="radio" formControlName="status" value="PAUSADO" />Pausado</label>
+                </div>
+                <span class="hint">Rascunho e Pausado ficam fora do carrinho</span>
+              </div>
+            </div>
           </div>
-          <div class="f">
-            <label>Tipo de desconto <span class="req">*</span></label>
-            <select formControlName="idTipoDesconto">
-              <option [value]="1">Percentual</option>
-              <option [value]="2">Valor fixo</option>
-            </select>
+        </section>
+        <section class="card">
+          <div class="bd" style="padding-top: 18px">
+            <span class="lbl">Prévia no carrinho</span>
+            <div style="margin-top: 12px">
+              <div class="rl">
+                <div><span>Subtotal de exemplo</span><b class="num">{{ moeda(15228) }}</b></div>
+                <div><span>Cupom {{ form.controls.codigo.value || 'novo' }}</span><b class="num" style="color: var(--ok)">{{ previewDesconto() }}</b></div>
+                <div style="padding-top: 10px; border-top: 1px solid var(--line)"><span>Total</span><b class="num" style="font: 300 22px var(--display)">{{ previewTotal() }}</b></div>
+              </div>
+            </div>
           </div>
-          <div class="f">
-            <label>Valor <span class="req">*</span></label>
-            <input type="number" min="0.01" step="0.01" placeholder="10 (%) ou 50,00 (R$)" formControlName="valor" />
-          </div>
-          <div class="f">
-            <label>Valor mínimo do pedido (R$)</label>
-            <input type="number" min="0" step="0.01" placeholder="Ex: 999,00" formControlName="valorMinimo" />
-          </div>
-          <div class="f full">
-            <label>Descrição interna</label>
-            <input type="text" placeholder="Campanha de e-mail da semana do piloto" formControlName="descricao" />
-          </div>
-        </div>
-        <p class="legend">Campos com <span class="req">*</span> são obrigatórios</p>
-      </section>
-
-      <section class="card p" [formGroup]="form">
-        <div class="card-h"><span class="card-t">Vigência e limites</span><span class="card-n">Limites são validados contra UsoCupom</span></div>
-        <div class="g2">
-          <div class="f">
-            <label>Início <span class="req">*</span></label>
-            <input type="datetime-local" formControlName="dataInicio" />
-          </div>
-          <div class="f">
-            <label>Fim</label>
-            <input type="datetime-local" formControlName="dataFim" />
-            <small class="dim">Vazio = sem prazo</small>
-          </div>
-          <div class="f">
-            <label>Limite total de usos</label>
-            <input type="number" min="1" step="1" placeholder="Ex: 500 · vazio = ilimitado" formControlName="limiteTotalUso" />
-          </div>
-          <div class="f">
-            <label>Limite por cliente</label>
-            <input type="number" min="1" step="1" placeholder="Ex: 1" formControlName="limitePorCliente" />
-          </div>
-          <label class="ck full"><input type="checkbox" formControlName="primeiroPedido" /> Válido apenas para o primeiro pedido do cliente</label>
-          <label class="ck full"><input type="checkbox" formControlName="acumulaPromocoes" /> Acumula com promoções ativas</label>
-        </div>
-      </section>
-
-      <section class="card p">
-        <div class="card-h"><span class="card-t">Restrições de escopo</span><span class="card-n">Vazio significa vale para a loja inteira</span></div>
-        <div class="g2">
-          <div class="f">
-            <label>Categorias</label>
-            <select multiple aria-label="Categorias" [value]="idsParaSelect(idsCategorias())" (change)="aoSelecionar($event, 'categorias')">
-              @for (categoria of categorias(); track categoria.id) {
-                <option [value]="categoria.id">{{ categoria.nome }}</option>
-              }
-            </select>
-          </div>
-          <div class="f">
-            <label>Marcas</label>
-            <select multiple aria-label="Marcas" [value]="idsParaSelect(idsMarcas())" (change)="aoSelecionar($event, 'marcas')">
-              @for (marca of marcas(); track marca.id) {
-                <option [value]="marca.id">{{ marca.nome }}</option>
-              }
-            </select>
-          </div>
-          <div class="f full">
-            <label>Produtos específicos</label>
-            <select multiple aria-label="Produtos específicos" [value]="idsParaSelect(idsVariantes())" (change)="aoSelecionar($event, 'variantes')">
-              @for (variante of variantes(); track variante.id) {
-                <option [value]="variante.id">{{ variante.produto.nome }} · {{ variante.nome }} · {{ variante.sku }}</option>
-              }
-            </select>
-            <small class="dim">Busque pelo nome ou SKU; mantenha Ctrl/Cmd para selecionar várias variantes.</small>
-          </div>
-        </div>
-        <p class="legend">As três restrições são relações muitos-para-muitos de <span class="chip">Cupom</span> com <span class="chip">Categoria</span>, <span class="chip">Marca</span> e <span class="chip">VarianteProduto</span>.</p>
-      </section>
-    </div>
-
-    <aside class="rail" [formGroup]="form">
-      <section class="card p2">
-        <div class="eyebrow">Publicação</div>
-        <div class="stack">
-          <div class="f">
-            <label>Status <span class="req">*</span></label>
-            <select formControlName="ativo"><option [ngValue]="true">Ativo</option><option [ngValue]="false">Pausado</option></select>
-          </div>
-          <label class="ck full"><input type="checkbox" formControlName="exibirOfertas" /> Exibir na página Ofertas</label>
-        </div>
-      </section>
-      <section class="card p2">
-        <div class="eyebrow">Prévia no carrinho</div>
-        <div class="stack preview">
-          <div class="kv"><span class="dim">Subtotal</span><span class="ink">R$ 15.228</span></div>
-          <div class="kv"><span class="dim">{{ form.controls.codigo.value || 'Cupom novo' }}</span><span class="discount">{{ previewDesconto() }}</span></div>
-          <div class="kv total"><span class="ink">Total</span><span class="ink">{{ previewTotal() }}</span></div>
-        </div>
-      </section>
-      <section class="card p2">
-        <div class="eyebrow">Pendências</div>
+        </section>
         @if (pendencias().length) {
-          <div class="stack"><span class="warn">{{ pendencias().length }} campos obrigatórios vazios</span><span class="pending-list">{{ pendencias().join(' · ') }}</span></div>
-        } @else {
-          <div class="stack"><span class="discount">Campos obrigatórios preenchidos</span></div>
+          <section class="card pend">
+            <div class="bd" style="padding-top: 18px">
+              <div class="t">{{ pendencias().length }} {{ pendencias().length === 1 ? 'campo obrigatório vazio' : 'campos obrigatórios vazios' }}</div>
+              <p>{{ pendencias().join(' · ') }}</p>
+              <small>Código precisa ser único</small>
+            </div>
+          </section>
         }
-      </section>
-    </aside>
-  </div>
+      </aside>
+    </div>
+  }
 
   <div class="actionbar">
-    <span class="sub">Código precisa ser único · a validação roda ao salvar</span>
-    <div class="actions">
+    <div class="in gut">
+      <span class="msg">
+        @if (pendencias().length) {
+          {{ pendencias().length === 1 ? 'Falta' : 'Faltam' }} <b>{{ pendencias().length }} {{ pendencias().length === 1 ? 'campo obrigatório' : 'campos obrigatórios' }}</b>.
+        } @else {
+          Todos os campos obrigatórios preenchidos.
+        }
+      </span>
       <a class="btn" routerLink="/admin/cupons">Cancelar</a>
-      <button class="btn" type="button" [disabled]="salvando()" (click)="salvar(false)">Salvar rascunho</button>
-      <button class="btn p" type="button" [disabled]="salvando()" (click)="salvar(true)">Ativar cupom</button>
+      <button class="btn" type="button" (click)="form.controls.status.setValue('RASCUNHO'); salvar()" [disabled]="salvando()">Salvar rascunho</button>
+      <button class="btn p" type="button" (click)="salvar(true)" [disabled]="salvando()">{{ salvando() ? 'Salvando…' : 'Ativar cupom' }}</button>
     </div>
   </div>
-}
+</main>

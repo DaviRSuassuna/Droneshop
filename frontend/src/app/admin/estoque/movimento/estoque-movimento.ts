@@ -1,3 +1,4 @@
+import { STATUS_PRODUTO } from '../../../core/models/status.model';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
@@ -10,8 +11,9 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { AdminNav } from '../../../layout/admin/admin-nav/admin-nav';
 import { EstoqueService } from '../../../core/services/estoque.service';
+import { ProdutoService } from '../../../core/services/produto.service';
+import { Produto } from '../../../core/models/produto.model';
 import { FornecedorService } from '../../../core/services/fornecedor.service';
 import {
   EXIBICAO_TIPO_MOVIMENTO,
@@ -22,22 +24,25 @@ import {
 import { Fornecedor } from '../../../core/models/fornecedor.model';
 import { ProblemDetail } from '../../../core/models/problem.model';
 
-/** Variantes do select: todas de uma vez. */
-const LIMITE_VARIANTES = 1000;
+/** Produtos do select: todos de uma vez. */
+const LIMITE_PRODUTOS = 1000;
 const ULTIMOS_MOVIMENTOS = 5;
 const MAX_OBSERVACAO = 500;
 
+/**
+ * Novo movimento de estoque (#13). O select lista só produtos ATIVOS e sem kit (D40, D7):
+ * kit não recebe movimento, a baixa acontece sempre no componente.
+ */
 @Component({
   selector: 'app-estoque-movimento',
-  standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, AdminNav, DatePipe],
+  imports: [ReactiveFormsModule, RouterLink, DatePipe],
   templateUrl: './estoque-movimento.html',
-  styleUrl: './estoque-movimento.scss',
 })
 export class EstoqueMovimento implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
   private readonly estoqueService = inject(EstoqueService);
+  private readonly produtoService = inject(ProdutoService);
   private readonly fornecedorService = inject(FornecedorService);
 
   readonly tipos = Object.values(TIPO_MOVIMENTO).map((id) => ({
@@ -45,7 +50,7 @@ export class EstoqueMovimento implements OnInit {
     rotulo: `${EXIBICAO_TIPO_MOVIMENTO[id].rotulo} · ${EXIBICAO_TIPO_MOVIMENTO[id].descricao}`,
   }));
 
-  readonly variantes = signal<ItemEstoque[]>([]);
+  readonly produtos = signal<ItemEstoque[]>([]);
   readonly fornecedores = signal<Fornecedor[]>([]);
   readonly ultimos = signal<MovimentoEstoque[]>([]);
   readonly carregandoUltimos = signal(false);
@@ -56,7 +61,7 @@ export class EstoqueMovimento implements OnInit {
   // mensagens no mapa fieldMessages e erros do back aplicados no próprio controle como "api"
   readonly form = this.fb.group(
     {
-      idVariante: this.fb.control<number | null>(null, Validators.required),
+      idProduto: this.fb.control<number | null>(null, Validators.required),
       idTipo: this.fb.nonNullable.control<number>(TIPO_MOVIMENTO.ENTRADA, Validators.required),
       quantidade: ['', [Validators.required, Validators.pattern(/^\d+$/)]],
       notaFiscal: ['', Validators.maxLength(30)],
@@ -67,7 +72,7 @@ export class EstoqueMovimento implements OnInit {
   );
 
   private readonly fieldMessages: Record<string, Record<string, string>> = {
-    idVariante: { required: 'Selecione a variante.' },
+    idProduto: { required: 'Selecione o produto.' },
     idTipo: { required: 'Selecione o tipo do movimento.' },
     quantidade: {
       required: 'Informe a quantidade.',
@@ -87,9 +92,9 @@ export class EstoqueMovimento implements OnInit {
     initialValue: this.form.getRawValue(),
   });
 
-  readonly varianteSelecionada = computed(() => {
-    const id = this.valores().idVariante;
-    return this.variantes().find((v) => v.variante.id === id) ?? null;
+  readonly produtoSelecionado = computed(() => {
+    const id = Number(this.valores().idProduto);
+    return this.produtos().find((p) => p.produto.id === id) ?? null;
   });
   readonly tipoAtual = computed(() => Number(this.valores().idTipo));
   readonly ehAjuste = computed(() => this.tipoAtual() === TIPO_MOVIMENTO.AJUSTE);
@@ -97,7 +102,7 @@ export class EstoqueMovimento implements OnInit {
     () => this.tipoAtual() === TIPO_MOVIMENTO.AJUSTE || this.tipoAtual() === TIPO_MOVIMENTO.PERDA,
   );
   readonly saldoApos = computed(() => {
-    const v = this.varianteSelecionada();
+    const v = this.produtoSelecionado();
     const texto = String(this.valores().quantidade ?? '').trim();
     if (!v || !/^\d+$/.test(texto)) return null;
     return this.calcularSaldo(v.estoqueFisico ?? 0, this.tipoAtual(), Number(texto));
@@ -105,7 +110,7 @@ export class EstoqueMovimento implements OnInit {
   readonly pendencias = computed(() => {
     const v = this.valores();
     const faltando: string[] = [];
-    if (!v.idVariante) faltando.push('Variante');
+    if (!v.idProduto) faltando.push('Produto');
     if (!String(v.quantidade ?? '').trim()) faltando.push('Quantidade');
     if (this.observacaoObrigatoria() && !String(v.observacao ?? '').trim())
       faltando.push('Observação');
@@ -113,9 +118,9 @@ export class EstoqueMovimento implements OnInit {
   });
 
   constructor() {
-    this.form.controls.idVariante.valueChanges
+    this.form.controls.idProduto.valueChanges
       .pipe(takeUntilDestroyed())
-      .subscribe((id) => this.carregarUltimos(id));
+      .subscribe((id) => this.carregarUltimos(id ? Number(id) : null));
     // nota fiscal e fornecedor só fazem sentido na entrada de mercadoria
     this.form.controls.idTipo.valueChanges.pipe(takeUntilDestroyed()).subscribe((tipo) => {
       if (Number(tipo) === TIPO_MOVIMENTO.ENTRADA) {
@@ -132,7 +137,7 @@ export class EstoqueMovimento implements OnInit {
   }
 
   ngOnInit(): void {
-    this.carregarVariantes(Number(this.route.snapshot.queryParamMap.get('idVariante')));
+    this.carregarProdutos(Number(this.route.snapshot.queryParamMap.get('idProduto')));
     // fornecedor é do módulo de catálogo: sem permissão nele, o select fica só com "Não se aplica"
     this.fornecedorService.listar(0, 100).subscribe({
       next: (res) => this.fornecedores.set(res.items),
@@ -140,14 +145,8 @@ export class EstoqueMovimento implements OnInit {
     });
   }
 
-  rotuloVariante(v: ItemEstoque): string {
-    return [
-      v.produto.nome ?? 'Produto sem nome',
-      v.variante.nome ?? 'Variante sem nome',
-      v.variante.sku ?? '',
-    ]
-      .filter((p) => p)
-      .join(' · ');
+  rotuloProduto(p: ItemEstoque): string {
+    return [p.produto.nome ?? 'Produto sem nome', p.produto.sku ?? ''].filter((x) => x).join(' · ');
   }
 
   rotuloTipo(m: MovimentoEstoque): string {
@@ -194,7 +193,7 @@ export class EstoqueMovimento implements OnInit {
     this.salvando.set(true);
     this.estoqueService
       .registrarMovimento({
-        idVariante: v.idVariante as number,
+        idProduto: Number(v.idProduto),
         idTipo: Number(v.idTipo),
         quantidade: Number(v.quantidade),
         observacao: this.montarObservacao(),
@@ -208,17 +207,17 @@ export class EstoqueMovimento implements OnInit {
   private aposLancar(m: MovimentoEstoque): void {
     this.salvando.set(false);
     // o saldo novo vale para o painel e para a próxima conta de "saldo após"
-    this.variantes.update((lista) =>
+    this.produtos.update((lista) =>
       lista.map((i) =>
-        i.variante.id === m.variante.id
+        i.produto.id === m.produto.id
           ? { ...i, estoqueFisico: m.saldoResultante, disponivel: m.saldoResultante - i.reservado }
           : i,
       ),
     );
     this.form.patchValue({ quantidade: '', notaFiscal: '', idFornecedor: null, observacao: '' });
     this.form.markAsUntouched();
-    this.carregarUltimos(m.variante.id);
-    this.sucesso.set(`Movimento lançado. Saldo da variante: ${m.saldoResultante}.`);
+    this.carregarUltimos(m.produto.id);
+    this.sucesso.set(`Movimento lançado. Saldo do produto: ${m.saldoResultante}.`);
   }
 
   /** NF e fornecedor não têm campo próprio no movimento: vão no início da observação. */
@@ -233,24 +232,24 @@ export class EstoqueMovimento implements OnInit {
     return partes.length ? partes.join(' · ') : null;
   }
 
-  /** Kits ficam de fora: não recebem movimento (D7). idInicial vem da linha clicada no estoque. */
-  private carregarVariantes(idInicial?: number): void {
-    this.estoqueService.listar({}, 0, LIMITE_VARIANTES).subscribe({
+  /** Só ATIVOS e sem kit (kit=false): kit não recebe movimento (D7). idInicial vem da linha do estoque. */
+  private carregarProdutos(idInicial?: number): void {
+    this.produtoService.listar({ idStatus: STATUS_PRODUTO.ATIVO, kit: false }, 0, LIMITE_PRODUTOS).subscribe({
       next: (res) => {
-        this.variantes.set(res.items.filter((i) => !i.variante.ehKit));
-        if (idInicial && this.variantes().some((v) => v.variante.id === idInicial)) {
-          this.form.controls.idVariante.setValue(idInicial);
+        this.produtos.set(res.items.map(saldoDoProduto));
+        if (idInicial && this.produtos().some((p) => p.produto.id === idInicial)) {
+          this.form.controls.idProduto.setValue(idInicial);
         }
       },
-      error: () => this.erroGeral.set('Não foi possível carregar as variantes.'),
+      error: () => this.erroGeral.set('Não foi possível carregar os produtos.'),
     });
   }
 
-  private carregarUltimos(idVariante: number | null): void {
+  private carregarUltimos(idProduto: number | null): void {
     this.ultimos.set([]);
-    if (!idVariante) return;
+    if (!idProduto) return;
     this.carregandoUltimos.set(true);
-    this.estoqueService.listarMovimentos({ idVariante }, 0, ULTIMOS_MOVIMENTOS).subscribe({
+    this.estoqueService.listarMovimentos({ idProduto }, 0, ULTIMOS_MOVIMENTOS).subscribe({
       next: (res) => {
         this.ultimos.set(res.items);
         this.carregandoUltimos.set(false);
@@ -279,7 +278,7 @@ export class EstoqueMovimento implements OnInit {
     if (/^\d+$/.test(texto)) {
       const q = Number(texto);
       this.trocarErro(quantidade, 'min', tipo !== TIPO_MOVIMENTO.AJUSTE && q < 1);
-      const item = this.variantes().find((v) => v.variante.id === g.get('idVariante')?.value);
+      const item = this.produtos().find((p) => p.produto.id === Number(g.get('idProduto')?.value));
       if (item && q >= 1)
         this.trocarErro(
           quantidade,
@@ -315,8 +314,8 @@ export class EstoqueMovimento implements OnInit {
     } else if (err.status === 409) {
       // saldo insuficiente: o saldo da tela estava velho; recarrega e aponta a quantidade
       this.aplicarErroApi('quantidade', problem?.detail ?? 'Saldo insuficiente.');
-      this.carregarVariantes();
-      this.carregarUltimos(this.form.controls.idVariante.value);
+      this.carregarProdutos();
+      this.carregarUltimos(this.form.controls.idProduto.value);
       this.erroGeral.set('Verifique os campos destacados.');
     } else {
       this.erroGeral.set(
@@ -335,4 +334,18 @@ export class EstoqueMovimento implements OnInit {
     control.markAsTouched();
     control.markAsPristine();
   }
+}
+
+/** Saldo do produto no formato do painel lateral; reservado é o que o disponível desconta (#23). */
+function saldoDoProduto(p: Produto): ItemEstoque {
+  const fisico = p.estoqueFisico ?? 0;
+  const minimo = p.estoqueMinimo ?? 0;
+  return {
+    produto: { id: p.id, sku: p.sku, nome: p.nome, tipo: p.tipo, status: p.status },
+    estoqueFisico: p.estoqueFisico,
+    reservado: Math.max(0, fisico - p.disponivel),
+    disponivel: p.disponivel,
+    estoqueMinimo: minimo,
+    abaixoDoMinimo: p.disponivel < minimo,
+  };
 }

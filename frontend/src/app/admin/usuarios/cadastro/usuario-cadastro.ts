@@ -1,9 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Observable, forkJoin } from 'rxjs';
-import { AdminNav } from '../../../layout/admin/admin-nav/admin-nav';
+import { Observable, forkJoin, map } from 'rxjs';
 import {
   ModuloSistema,
   PapelAdministrativo,
@@ -15,8 +15,7 @@ import { UsuarioService } from '../../../core/services/usuario.service';
 
 @Component({
   selector: 'app-usuario-cadastro',
-  standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, AdminNav],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './usuario-cadastro.html',
   styleUrl: './usuario-cadastro.scss',
 })
@@ -45,11 +44,17 @@ export class UsuarioCadastro implements OnInit {
     ativo: [true],
   });
 
+  private readonly valores = toSignal(
+    this.form.valueChanges.pipe(map(() => this.form.getRawValue())),
+    { initialValue: this.form.getRawValue() },
+  );
+
   readonly camposObrigatoriosPendentes = computed(() => {
-    const valor = this.form.getRawValue();
+    const valor = this.valores();
     const pendencias: string[] = [];
     if (!valor.nome.trim()) pendencias.push('Nome completo');
-    if (!valor.email.trim() || this.form.controls.email.invalid) pendencias.push('E-mail corporativo');
+    if (!valor.email.trim() || this.form.controls.email.invalid)
+      pendencias.push('E-mail corporativo');
     if (!this.modoEdicao() && valor.senha.length < 8) pendencias.push('Senha provisória');
     if (!valor.idPapel) pendencias.push('Papel / permissão');
     return pendencias;
@@ -103,7 +108,9 @@ export class UsuarioCadastro implements OnInit {
       },
       error: (err: HttpErrorResponse) => {
         this.erroGeral.set(
-          err.status === 404 ? 'Este usuário não foi encontrado.' : 'Não foi possível carregar o usuário.',
+          err.status === 404
+            ? 'Este usuário não foi encontrado.'
+            : 'Não foi possível carregar o usuário.',
         );
         this.carregando.set(false);
       },
@@ -119,7 +126,8 @@ export class UsuarioCadastro implements OnInit {
 
     this.usuarioService.permissoesPadrao(id).subscribe({
       next: (padroes) => this.permissoes.set(padroes),
-      error: () => this.erroGeral.set('Não foi possível carregar as permissões padrão deste papel.'),
+      error: () =>
+        this.erroGeral.set('Não foi possível carregar as permissões padrão deste papel.'),
     });
   }
 
@@ -177,6 +185,7 @@ export class UsuarioCadastro implements OnInit {
   }
 
   salvar(): void {
+    if (this.salvando() || this.carregando()) return;
     this.erroGeral.set(null);
     this.errosCampo.set({});
     this.form.markAllAsTouched();
@@ -189,10 +198,16 @@ export class UsuarioCadastro implements OnInit {
       this.errosCampo.update((erros) => ({ ...erros, email: 'Informe um e-mail válido.' }));
     }
     if (!this.modoEdicao() && valor.senha.length < 8) {
-      this.errosCampo.update((erros) => ({ ...erros, senha: 'A senha deve ter no mínimo 8 caracteres.' }));
+      this.errosCampo.update((erros) => ({
+        ...erros,
+        senha: 'A senha deve ter no mínimo 8 caracteres.',
+      }));
     }
     if (!valor.idPapel) {
-      this.errosCampo.update((erros) => ({ ...erros, idPapel: 'Selecione um papel administrativo.' }));
+      this.errosCampo.update((erros) => ({
+        ...erros,
+        idPapel: 'Selecione um papel administrativo.',
+      }));
     }
     if (Object.keys(this.errosCampo()).length > 0) return;
 
@@ -239,7 +254,9 @@ export class UsuarioCadastro implements OnInit {
     this.salvando.set(false);
     const problem = err.error as ProblemDetail | undefined;
     if (problem?.errors?.length) {
-      this.errosCampo.set(Object.fromEntries(problem.errors.map((erro) => [erro.field, erro.message])));
+      this.errosCampo.set(
+        Object.fromEntries(problem.errors.map((erro) => [erro.field, erro.message])),
+      );
     }
     this.erroGeral.set(problem?.detail ?? 'Não foi possível salvar o usuário. Tente novamente.');
   }

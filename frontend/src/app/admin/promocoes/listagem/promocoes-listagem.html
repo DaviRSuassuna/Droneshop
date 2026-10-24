@@ -1,104 +1,145 @@
-<app-admin-nav />
-
-<div class="pagebar">
-  <div class="page-title">
-    <h1 class="h1">Promoções</h1>
-    @if (!carregando()) {
-      <span class="sub">
-        {{ quantidadeAtivas() }} ativas · {{ quantidadeAgendadas() }} agendada(s) ·
-        {{ variantesEmOferta() }} produtos em oferta
-      </span>
-    }
+<main class="gut">
+  <div class="ph">
+    <div>
+      <span class="lbl">Catálogo</span>
+      <h1>Promoções</h1>
+      @if (!carregando()) {
+        <div class="sub">
+          {{ quantidadeAtivas() }} ativas · {{ quantidadeAgendadas() }} agendada(s) ·
+          {{ produtosEmOferta() }} produtos em oferta
+        </div>
+      }
+    </div>
+    <div class="acts">
+      <a class="btn" routerLink="/ofertas">Ver na loja ↗</a
+      ><a class="btn p" routerLink="/admin/promocoes/nova"
+        ><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg
+        >Nova promoção</a
+      >
+    </div>
   </div>
-  <div class="actions">
-    <a class="btn" routerLink="/ofertas">Ver na loja ↗</a>
-    <a class="btn p" routerLink="/admin/promocoes/nova">Nova promoção</a>
-  </div>
-</div>
-
-<div class="pad-t promo-list">
-  <nav class="tabs" aria-label="Situação das promoções">
-    <a href="#" [class.on]="aba() === 'TODAS'" (click)="selecionarAba($event, 'TODAS')"
-      >Todas <em>{{ promocoes().length }}</em></a
+  <nav class="stabs" aria-label="Situação das promoções">
+    <a
+      href="#"
+      [attr.aria-current]="aba() === 'TODAS' ? 'page' : null"
+      (click)="selecionarAba($event, 'TODAS')"
+      >Todas<b>{{ promocoes().length }}</b></a
     >
-    <a href="#" [class.on]="aba() === 'VIGENTE'" (click)="selecionarAba($event, 'VIGENTE')"
-      >Ativas <em>{{ quantidadeAtivas() }}</em></a
+    <a
+      href="#"
+      [attr.aria-current]="aba() === 'VIGENTE' ? 'page' : null"
+      (click)="selecionarAba($event, 'VIGENTE')"
+      >Ativas<b>{{ quantidadeAtivas() }}</b></a
     >
-    <a href="#" [class.on]="aba() === 'AGENDADA'" (click)="selecionarAba($event, 'AGENDADA')"
-      >Agendadas <em>{{ quantidadeAgendadas() }}</em></a
+    <a
+      href="#"
+      [attr.aria-current]="aba() === 'AGENDADA' ? 'page' : null"
+      (click)="selecionarAba($event, 'AGENDADA')"
+      >Agendadas<b>{{ quantidadeAgendadas() }}</b></a
     >
-    <a href="#" [class.on]="aba() === 'ENCERRADA'" (click)="selecionarAba($event, 'ENCERRADA')"
-      >Encerradas <em>{{ quantidadeEncerradas() }}</em></a
+    <a
+      href="#"
+      [attr.aria-current]="aba() === 'ENCERRADA' ? 'page' : null"
+      (click)="selecionarAba($event, 'ENCERRADA')"
+      >Encerradas<b>{{ quantidadeEncerradas() }}</b></a
     >
   </nav>
-
-  <div class="filters">
-    <div class="f grow">
-      <input
-        type="text"
-        placeholder="Buscar por nome da promoção"
+  <div class="toolbar">
+    <label class="field-s grow"
+      ><svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" />
+        <path d="m20 20-3.5-3.5" /></svg
+      ><input
+        type="search"
+        placeholder="Buscar por nome"
+        aria-label="Buscar por nome"
         [value]="termoBusca()"
         (input)="termoBusca.set($any($event.target).value)"
-      />
-    </div>
-    <div class="f">
-      <select [value]="filtroEscopo() ?? ''" (change)="aoMudarEscopo($any($event.target).value)">
-        <option value="">Escopo</option>
-        @for (escopo of escopos; track escopo.id) {
-          <option [value]="escopo.id">{{ escopo.nome }}</option>
-        }
-      </select>
-    </div>
-    <div class="f">
-      <select [value]="filtroVigencia()" (change)="filtroVigencia.set($any($event.target).value)">
-        <option value="">Vigência</option>
-        <option value="HOJE">Vigentes hoje</option>
-        <option value="FUTURAS">Futuras</option>
-      </select>
-    </div>
+    /></label>
+    <select
+      class="sel"
+      aria-label="Escopo"
+      [value]="filtroEscopo() ?? ''"
+      (change)="aoMudarEscopo($any($event.target).value)"
+    >
+      <option value="">Escopo</option>
+      @for (escopo of escopos; track escopo.id) {
+        <option [value]="escopo.id">{{ escopo.nome }}</option>
+      }
+    </select>
+    <select
+      class="sel"
+      aria-label="Vigência"
+      [value]="filtroVigencia()"
+      (change)="filtroVigencia.set($any($event.target).value)"
+    >
+      <option value="">Vigência</option>
+      <option value="HOJE">Vigentes hoje</option>
+      <option value="FUTURAS">Futuras</option>
+    </select>
   </div>
-
-  <p class="legend" style="margin: 0">
-    Desconto nunca é campo do produto: quem alimenta o selo <span class="chip">Oferta</span>, o preço
-    riscado da vitrine e a página <a routerLink="/ofertas" class="underlined">Ofertas</a> é a entidade
-    <span class="chip">Promocao</span>, com vigência e escopo.
-  </p>
-
+  <div class="info">
+    Desconto nunca é campo do produto. Quem alimenta o selo <b>Oferta</b>, o preço riscado da
+    vitrine e a página <a routerLink="/ofertas">Ofertas</a> é a entidade <code>Promocao</code>, com
+    vigência e escopo.
+  </div>
   @if (carregando()) {
-    <div class="tbl">
-      <div class="pager"><span>Carregando promoções…</span></div>
-    </div>
+    <p role="status">Carregando promoções…</p>
   } @else if (erro()) {
-    <div class="tbl">
-      <div class="pager">
-        <span class="warn">{{ erro() }}</span>
-        <button class="btn sm" type="button" (click)="carregar()">Tentar novamente</button>
-      </div>
+    <div class="alerta" role="alert">
+      {{ erro() }}
+      <button class="btn sm" type="button" (click)="carregar()">Tentar novamente</button>
     </div>
   } @else {
-    <div class="tbl">
-      <div class="trow head promo-row">
-        <span>Promoção</span><span>Desconto</span><span>Vigência</span><span>Status</span><span></span>
-      </div>
-      @for (promocao of filtradas(); track promocao.id) {
-        <a class="trow promo-row" [routerLink]="['/admin/promocoes', promocao.id, 'editar']">
-          <span class="cell-name">
-            <b>{{ promocao.nome }}</b>
-            <span class="chip">escopo: {{ rotuloEscopo(promocao.escopo.id) }}</span>
-          </span>
-          <span class="ink">{{ descontoRotulo(promocao) }}</span>
-          <span class="dim">{{ vigencia(promocao) }}</span>
-          <span class="status"><span class="dot" [style.background]="statusCor(promocao)"></span>{{ statusRotulo(promocao) }}</span>
-          <span class="row-menu" aria-hidden="true">⋯</span>
-        </a>
-      } @empty {
-        @if (!carregando()) {
-          <div class="pager empty">
-            <span>Nenhuma promoção encontrada com os filtros atuais.</span>
-          </div>
-        }
-      }
-      <div class="pager"><span>Exibindo {{ filtradas().length }} de {{ promocoes().length }}</span><span>Página 1 de 1</span></div>
+    <div class="tw">
+      <table>
+        <thead>
+          <tr>
+            <th>Promoção</th>
+            <th>Desconto</th>
+            <th>Vigência</th>
+            <th>Status</th>
+            <th aria-label="Ações"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (promocao of filtradas(); track promocao.id) {
+            <tr>
+              <td class="identificacao">
+                <a [routerLink]="['/admin/promocoes', promocao.id, 'editar']"
+                  ><b>{{ promocao.nome }}</b
+                  ><span class="sub2">escopo: {{ rotuloEscopo(promocao.escopo.id) }}</span></a
+                >
+              </td>
+              <td data-l="Desconto" class="desconto">{{ descontoRotulo(promocao) }}</td>
+              <td data-l="Vigência" class="mono vigencia">
+                <span>{{ vigencia(promocao) }}</span>
+              </td>
+              <td data-l="Status">
+                <span class="st" [style.color]="statusCor(promocao)"
+                  ><span>{{ statusRotulo(promocao) }}</span></span
+                >
+              </td>
+              <td class="r">
+                <a
+                  class="more"
+                  [routerLink]="['/admin/promocoes', promocao.id, 'editar']"
+                  [attr.aria-label]="'Editar ' + promocao.nome"
+                  >⋯</a
+                >
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5">Nenhuma promoção encontrada com os filtros atuais.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="pager">
+      <span>Exibindo {{ filtradas().length }} de {{ promocoes().length }}</span
+      ><span>Página 1 de 1</span>
     </div>
   }
-</div>
+</main>

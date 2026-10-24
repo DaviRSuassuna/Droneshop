@@ -1,9 +1,12 @@
+import { baixarArquivo } from '../../../shared/arquivo';
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
-import { AdminNav } from '../../../layout/admin/admin-nav/admin-nav';
 import { EstoqueService } from '../../../core/services/estoque.service';
+import { MarcaService } from '../../../core/services/marca.service';
+import { Marca } from '../../../core/models/marca.model';
+import { TIPO_PRODUTO } from '../../../core/models/produto.model';
 import {
   EXIBICAO_TIPO_MOVIMENTO,
   ItemEstoque,
@@ -16,15 +19,18 @@ const TAMANHO_PAGINA = 10;
 
 type Aba = 'saldo' | 'movimentos';
 
+/**
+ * Estoque (#13, D40): saldo por produto e movimentos. Reservas (#23) e números de série (#34)
+ * ainda não têm API e ficam de fora (ver e2e/conformidade/telas.ts).
+ */
 @Component({
   selector: 'app-estoque-listagem',
-  standalone: true,
-  imports: [RouterLink, AdminNav, DatePipe],
+  imports: [RouterLink, DatePipe],
   templateUrl: './estoque-listagem.html',
-  styleUrl: './estoque-listagem.scss',
 })
 export class EstoqueListagem implements OnInit, OnDestroy {
   private readonly estoqueService = inject(EstoqueService);
+  private readonly marcaService = inject(MarcaService);
 
   readonly situacoes: { rotulo: string; valor: SituacaoEstoque }[] = [
     { rotulo: 'Situação', valor: 'TODOS' },
@@ -44,13 +50,15 @@ export class EstoqueListagem implements OnInit, OnDestroy {
   readonly movimentos = signal<MovimentoEstoque[]>([]);
   readonly termoBusca = signal('');
   readonly situacao = signal<SituacaoEstoque>('TODOS');
+  readonly idMarca = signal<number | null>(null);
+  readonly marcas = signal<Marca[]>([]);
   readonly idTipo = signal<number | null>(null);
   readonly pagina = signal(0);
   readonly totalItens = signal(0);
   readonly totalPaginasApi = signal(0);
 
   // contagens do cabeçalho e das abas, sem os filtros da tela
-  readonly totalVariantes = signal(0);
+  readonly totalProdutos = signal(0);
   readonly totalAbaixo = signal(0);
   readonly totalZerado = signal(0);
   readonly totalMovimentos = signal(0);
@@ -66,6 +74,7 @@ export class EstoqueListagem implements OnInit, OnDestroy {
   private buscaTimeout: ReturnType<typeof setTimeout> | undefined;
 
   ngOnInit(): void {
+    this.marcaService.listar(0, 1000).subscribe((p) => this.marcas.set(p.items.filter((x) => x.nome)));
     this.carregarResumo();
     this.carregar();
   }
@@ -82,7 +91,7 @@ export class EstoqueListagem implements OnInit, OnDestroy {
       movimentos: this.estoqueService.listarMovimentos({}, 0, 1),
     }).subscribe({
       next: (r) => {
-        this.totalVariantes.set(r.todos.totalItems);
+        this.totalProdutos.set(r.todos.totalItems);
         this.totalAbaixo.set(r.abaixo.totalItems);
         this.totalZerado.set(r.zerado.totalItems);
         this.totalMovimentos.set(r.movimentos.totalItems);
@@ -109,7 +118,7 @@ export class EstoqueListagem implements OnInit, OnDestroy {
     if (this.aba() === 'saldo') {
       this.estoqueService
         .listar(
-          { situacao: this.situacao(), busca: this.termoBusca() },
+          { situacao: this.situacao(), busca: this.termoBusca(), idMarca: this.idMarca() },
           this.pagina(),
           TAMANHO_PAGINA,
         )
@@ -141,11 +150,6 @@ export class EstoqueListagem implements OnInit, OnDestroy {
     this.carregar();
   }
 
-  /** Reservas (#23) e números de série (#34) ainda não existem na API. */
-  abaIndisponivel(evento: Event): void {
-    evento.preventDefault();
-  }
-
   aoDigitarBusca(valor: string): void {
     this.termoBusca.set(valor);
     this.pagina.set(0);
@@ -155,6 +159,12 @@ export class EstoqueListagem implements OnInit, OnDestroy {
 
   aoMudarSituacao(valor: string): void {
     this.situacao.set(valor as SituacaoEstoque);
+    this.pagina.set(0);
+    this.carregar();
+  }
+
+  aoMudarMarca(valor: string): void {
+    this.idMarca.set(valor ? Number(valor) : null);
     this.pagina.set(0);
     this.carregar();
   }
@@ -171,18 +181,29 @@ export class EstoqueListagem implements OnInit, OnDestroy {
     this.carregar();
   }
 
-  nomeVariante(item: ItemEstoque): string {
-    return [
-      item.produto.nome ?? 'Produto sem nome',
-      item.variante.nome ?? 'Variante sem nome',
-    ].join(' · ');
+  ehKit(item: ItemEstoque): boolean {
+    return item.produto.tipo.id === TIPO_PRODUTO.KIT;
   }
 
-  situacaoDoItem(item: ItemEstoque): { rotulo: string; cor: string } {
-    if (item.variante.ehKit) return { rotulo: 'Kit', cor: 'var(--acc)' };
-    if (item.disponivel <= 0) return { rotulo: 'Sem estoque', cor: 'var(--warn)' };
-    if (item.abaixoDoMinimo) return { rotulo: 'Abaixo do mínimo', cor: 'var(--warn)' };
-    return { rotulo: 'Saudável', cor: 'var(--ok)' };
+  nomeProduto(item: ItemEstoque): string {
+    const nome = item.produto.nome ?? 'Produto sem nome';
+    return this.ehKit(item) ? `${nome} · Kit` : nome;
+  }
+
+  /** Status com ponto e texto (DESIGN.md): kit em info, sem estoque em warn, abaixo do mínimo em âmbar. */
+  situacaoDoItem(item: ItemEstoque): { rotulo: string; classe: string } {
+    if (this.ehKit(item)) return { rotulo: 'Kit', classe: 'st info' };
+    if (item.disponivel <= 0) return { rotulo: 'Sem estoque', classe: 'st warn' };
+    if (item.abaixoDoMinimo) return { rotulo: 'Abaixo do mínimo', classe: 'st amber' };
+    return { rotulo: 'Saudável', classe: 'st ok' };
+  }
+
+  /** Exporta o saldo filtrado inteiro (todos os produtos), não só a página. */
+  exportarCsv(): void {
+    this.estoqueService.exportar({ situacao: this.situacao(), busca: this.termoBusca(), idMarca: this.idMarca() }).subscribe({
+      next: (blob) => baixarArquivo('estoque.csv', blob),
+      error: () => this.erro.set('Não foi possível exportar o CSV.'),
+    });
   }
 
   rotuloTipo(m: MovimentoEstoque): string {

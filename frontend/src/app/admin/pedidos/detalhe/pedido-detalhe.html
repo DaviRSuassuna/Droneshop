@@ -1,152 +1,184 @@
-<app-admin-nav />
-
-@if (carregando()) {
-  <div class="pad"><p class="sub">Carregando pedido…</p></div>
-} @else if (erro() || !pedido()) {
-  <div class="pad">
-    <div class="empty">
-      <b>{{ erro() }}</b>
-      <a class="btn" routerLink="/admin/pedidos">Voltar para pedidos</a>
+<main class="gut">
+  @if (carregando()) {
+    <p role="status">Carregando pedido…</p>
+  } @else if (erro() || !pedido()) {
+    <div class="ph"><h1>Pedido</h1></div>
+    <div class="alerta" role="alert">
+      {{ erro() }} <a class="btn" routerLink="/admin/pedidos">Voltar para pedidos</a>
     </div>
-  </div>
-} @else {
-  @let p = pedido()!;
-  <div class="pad cols">
-    <div class="main">
+  } @else {
+    @let p = pedido()!;
+    <div class="ph">
       <div>
-        <div class="cabecalho">
-          <h1 class="h1 big">Pedido</h1>
-          <span class="chip numero">#{{ p.numero }}</span>
-          <span class="status selo"
-            ><span class="dot" [style.background]="corStatus(p.status.id)"></span
-            >{{ rotuloStatus(p.status.id) }}</span
-          >
-        </div>
         <div class="crumb">
-          <a routerLink="/admin/pedidos">← Voltar para pedidos</a>
+          <a routerLink="/admin/pedidos">← Pedidos</a>
           @if (p.dataCadastro) {
-            · criado em {{ p.dataCadastro | date: "dd/MM/yyyy 'às' HH:mm" }}
+            <span>· criado em {{ p.dataCadastro | date: "dd/MM/yyyy 'às' HH:mm" }}</span>
           }
         </div>
-      </div>
-
-      <section class="card">
-        <div style="padding: 20px 22px 14px" class="card-t">Itens do pedido</div>
-        @for (i of p.itens; track i.id) {
-          <div class="trow item">
-            <span class="ph" style="width: 44px; height: 44px"></span>
-            <span class="cell-name"
-              ><b>{{ i.produto.nome }}</b
-              ><span class="chip">{{ i.variante.sku }}</span></span
-            >
-            <span class="dim unit">{{ moeda(i.precoUnitarioCongelado) }}</span>
-            <span class="dim">{{ i.quantidade }} un</span>
-            <span class="ink" style="justify-self: end">{{ moeda(i.subtotal) }}</span>
-          </div>
-        }
-      </section>
-
-      <section class="card p">
-        <div class="card-h"><span class="card-t">Rastreio</span></div>
-        @if (erroHistorico()) {
-          <p class="sub vazio">Não foi possível carregar o histórico do pedido.</p>
-        } @else if (historico().length === 0) {
-          <p class="sub vazio">Nenhuma mudança de status registrada.</p>
-        } @else {
-          <div class="tl">
-            @for (h of historico(); track $index; let ultimo = $last) {
-              <div class="tl-i">
-                <span class="dot" [style.background]="ultimo ? 'var(--pure)' : 'var(--ok)'"></span>
-                <div>
-                  <b [style.color]="ultimo ? 'var(--ink)' : 'var(--ink2)'">{{ tituloEvento(h) }}</b>
-                  <small
-                    >{{ h.dataCadastro | date: 'dd/MM/yyyy · HH:mm' }} · {{ responsavel(h) }}</small
-                  >
-                  @if (h.observacao) {
-                    <small class="obs">{{ h.observacao }}</small>
-                  }
-                </div>
-              </div>
-            }
-            @for (s of proximasEtapas(); track s) {
-              <div class="tl-i">
-                <span class="dot" style="background: var(--b3)"></span>
-                <div>
-                  <b style="color: var(--mute2)">{{ rotuloStatus(s) }}</b>
-                </div>
-              </div>
-            }
-          </div>
-        }
-      </section>
-    </div>
-
-    <aside class="rail">
-      <section class="card p2">
-        <div class="eyebrow">Cliente</div>
-        <span style="font-size: 13px; color: var(--ink)">{{ p.cliente.nome }}</span>
-      </section>
-      <section class="card p2">
-        <div class="eyebrow">Entrega</div>
-        @if (p.enderecoEntrega; as e) {
-          <span class="endereco"
-            >{{ e.destinatario }}<br />{{ e.logradouro }}, {{ e.numero
-            }}{{ e.complemento ? ', ' + e.complemento : '' }}<br />{{ e.bairro }} · {{ e.cidade }} /
-            {{ e.uf }}<br />{{ e.cep | cep }}</span
+        <h1>
+          <span class="mono numero">#{{ p.numero }}</span
+          ><span class="badge-st"
+            ><span class="st" [style.color]="corStatus(p.status.id)"
+              ><span>{{ rotuloStatus(p.status.id) }}</span></span
+            ></span
           >
-        }
-        <div style="margin-top: 12px; font-size: 11.5px; color: var(--dim2)">
-          Modalidade de envio ainda não registrada
-        </div>
-      </section>
-      <section class="card p2">
-        <div class="eyebrow">Resumo</div>
-        <div style="display: flex; flex-direction: column; gap: 9px">
-          <div class="kv" style="color: var(--dim)">
-            <span>Subtotal</span><span>{{ moeda(subtotal()) }}</span>
-          </div>
-          <div class="kv" style="color: var(--dim)">
-            <span>Frete</span><span>{{ moeda(p.valorFrete) }}</span>
-          </div>
-          @if (p.valorDesconto > 0) {
-            <div class="kv" style="color: var(--dim)">
-              <span>Desconto</span><span>- {{ moeda(p.valorDesconto) }}</span>
-            </div>
-          }
-          <div class="kv" style="color: var(--ink)">
-            <span>Total</span><span>{{ moeda(p.valorTotal) }}</span>
-          </div>
-        </div>
-      </section>
-    </aside>
-  </div>
-
-  <div class="actionbar">
-    @if (erroAcao(); as msg) {
-      <span class="sub erro-acao" role="alert">{{ msg }}</span>
-    } @else {
-      <span class="sub">Alterações de status notificam o cliente por e-mail</span>
-    }
-    <div class="actions">
-      <button
-        class="btn d"
-        type="button"
-        [disabled]="!podeCancelar()"
-        [title]="podeCancelar() ? '' : 'O pedido não pode ser cancelado neste status'"
-        (click)="cancelar()"
-      >
-        Cancelar pedido
-      </button>
-      <button class="btn" type="button" disabled title="Em construção">Imprimir etiqueta</button>
-      <button
-        class="btn p"
-        type="button"
-        [disabled]="!podeEnviar()"
-        [title]="podeEnviar() ? '' : 'Só pedidos em separação podem ser marcados como enviados'"
-        (click)="marcarComoEnviado()"
-      >
-        Marcar como enviado
-      </button>
+        </h1>
+      </div>
+      <div class="acts">
+        <button
+          class="btn"
+          type="button"
+          [disabled]="gerandoEtiqueta()"
+          (click)="imprimirEtiqueta()"
+        >
+          {{ gerandoEtiqueta() ? 'Gerando etiqueta…' : 'Imprimir etiqueta' }}
+        </button>
+      </div>
     </div>
-  </div>
-}
+    @if (erroAcao()) {
+      <div class="alerta" role="alert">{{ erroAcao() }}</div>
+    }
+    <div class="ord">
+      <div>
+        <section class="card">
+          <div class="hd">
+            <h2>Itens do pedido</h2>
+            <span class="slug">{{ p.itens.length }} itens</span>
+          </div>
+          <div class="bd">
+            <div class="itens">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th class="r">Unitário</th>
+                    <th class="r">Qtd.</th>
+                    <th class="r">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (i of p.itens; track i.id) {
+                    <tr>
+                      <td>
+                        <div class="pc">
+                          <span class="thumb ph" aria-hidden="true"></span>
+                          <div>
+                            <b>{{ i.produto.nome }}</b
+                            ><span class="chip">{{ i.produto.sku }}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td data-l="Unitário" class="r num">{{ moeda(i.precoUnitarioCongelado) }}</td>
+                      <td data-l="Qtd." class="r mono">{{ i.quantidade }}</td>
+                      <td data-l="Total" class="r num valor">{{ moeda(i.subtotal) }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <section class="card">
+          <div class="hd"><h2>Andamento</h2></div>
+          <div class="bd">
+            @if (erroHistorico()) {
+              <p class="note" role="alert">Não foi possível carregar o histórico do pedido.</p>
+            } @else if (historico().length === 0) {
+              <p class="note">Nenhuma mudança de status registrada.</p>
+            } @else {
+              <ol class="tl">
+                @for (h of historico(); track $index; let ultimo = $last) {
+                  <li [class.done]="!ultimo" [class.now]="ultimo">
+                    <span class="dot" aria-hidden="true"></span>
+                    <div>
+                      <b>{{ tituloEvento(h) }}</b
+                      ><span
+                        >{{ h.dataCadastro | date: 'dd/MM/yyyy · HH:mm' }} ·
+                        {{ responsavel(h) }}</span
+                      >
+                      @if (h.observacao) {
+                        <span class="obs">{{ h.observacao }}</span>
+                      }
+                    </div>
+                  </li>
+                }
+                @for (s of proximasEtapas(); track s) {
+                  <li class="todo">
+                    <span class="dot" aria-hidden="true"></span>
+                    <div>
+                      <b>{{ rotuloStatus(s) }}</b>
+                    </div>
+                  </li>
+                }
+              </ol>
+            }
+          </div>
+        </section>
+      </div>
+      <aside class="rail">
+        <section class="card">
+          <div class="bd">
+            <span class="lbl">Cliente</span>
+            <div class="cliente">
+              <span class="av" aria-hidden="true">{{
+                p.cliente.nome.slice(0, 2).toUpperCase()
+              }}</span
+              ><b>{{ p.cliente.nome }}</b>
+            </div>
+          </div>
+        </section>
+        <section class="card">
+          <div class="bd">
+            <span class="lbl">Entrega</span>
+            @if (p.enderecoEntrega; as e) {
+              <p class="endereco">
+                {{ e.destinatario }}<br />{{ e.logradouro }}, {{ e.numero
+                }}{{ e.complemento ? ', ' + e.complemento : '' }}<br />{{ e.bairro }} ·
+                {{ e.cidade }} / {{ e.uf }}<br /><span class="mono">{{ e.cep | cep }}</span>
+              </p>
+            } @else {
+              <p class="note">Endereço de entrega não registrado.</p>
+            }
+          </div>
+        </section>
+        <section class="card">
+          <div class="bd">
+            <span class="lbl">Resumo</span>
+            <div class="rl resumo">
+              <div>
+                <span>Subtotal</span><b class="num">{{ moeda(subtotal()) }}</b>
+              </div>
+              <div>
+                <span>Frete</span><b class="num">{{ moeda(p.valorFrete) }}</b>
+              </div>
+              @if (p.valorDesconto > 0) {
+                <div>
+                  <span>Desconto</span><b class="num desconto">− {{ moeda(p.valorDesconto) }}</b>
+                </div>
+              }
+              <div class="total">
+                <span>Total</span><b class="num">{{ moeda(p.valorTotal) }}</b>
+              </div>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </div>
+    <div class="actionbar">
+      <div class="in gut">
+        <span class="msg">Pedido #{{ p.numero }}</span
+        ><button class="btn d" type="button" [disabled]="!podeCancelar()" (click)="cancelar()">
+          Cancelar pedido</button
+        ><button
+          class="btn p"
+          type="button"
+          [disabled]="!podeEnviar()"
+          (click)="marcarComoEnviado()"
+        >
+          Marcar como enviado
+        </button>
+      </div>
+    </div>
+  }
+</main>

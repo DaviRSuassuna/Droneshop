@@ -26,8 +26,7 @@ export type SituacaoEstoque = 'TODOS' | 'ABAIXO_MINIMO' | 'ZERADO';
 
 /** Item de GET /estoque. No kit, estoqueFisico é nulo e o disponível vem dos componentes (D7). */
 export interface ItemEstoque {
-  variante: { id: number; sku: string | null; nome: string | null; ehKit: boolean; ativa: boolean };
-  produto: { id: number; nome: string | null };
+  produto: { id: number; sku: string | null; nome: string | null; tipo: StatusRef; status: StatusRef };
   estoqueFisico: number | null;
   reservado: number;
   disponivel: number;
@@ -38,6 +37,7 @@ export interface ItemEstoque {
 export interface FiltroEstoque {
   situacao?: SituacaoEstoque | null;
   busca?: string | null;
+  idMarca?: number | null;
 }
 
 /**
@@ -53,17 +53,17 @@ export interface MovimentoEstoque {
   observacao: string | null;
   autor: { id: number; nome: string } | null;
   dataCadastro: string;
-  variante: { id: number; sku: string | null; nome: string | null };
+  produto: { id: number; sku: string | null; nome: string | null };
 }
 
 export interface FiltroMovimentos {
-  idVariante?: number | null;
+  idProduto?: number | null;
   idTipo?: number | null;
 }
 
 /** Corpo de POST /estoque/movimentos. No AJUSTE, quantidade é o saldo novo. */
 export interface MovimentoEstoqueRequest {
-  idVariante: number;
+  idProduto: number;
   idTipo: number;
   quantidade: number;
   observacao: string | null;

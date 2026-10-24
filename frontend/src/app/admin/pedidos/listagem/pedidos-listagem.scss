@@ -1,59 +1,43 @@
 :host {
   display: block;
+  min-width: 0;
 }
-
-.trow.ped {
-  grid-template-columns: 38px 130px minmax(0, 1fr) 108px 66px 116px 130px 130px 44px;
+.numero {
+  font-size: 13px;
 }
-
+.valor {
+  font: 300 15px var(--display);
+}
 .pages {
   align-items: center;
-  gap: 10px;
+}
+.stabs a b {
+  color: var(--mute);
+}
+.stabs a[aria-current] b {
+  color: var(--amber);
+}
+@media (max-width: 800px) {
+  .tw td[data-l='Cliente'],
+  .tw td[data-l='Status'],
+  .tw td[data-l='Total'] {
+    white-space: normal;
+  }
 }
 
-// Celular (D20): abas quebram linha e cada pedido vira número + status / cliente + total
+.kpis {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 22px;
+}
 @media (max-width: 640px) {
-  .tabs {
-    flex-wrap: wrap;
-    gap: 0 2px;
+  .kpis {
+    grid-template-columns: 1fr;
   }
-  .pager {
-    flex-wrap: wrap;
-    gap: 8px;
+  .kpi {
+    border-left: 0;
+    padding-left: 0;
   }
-  .pad-t .trow.ped {
-    grid-template-columns: minmax(0, 1fr) auto !important;
-    row-gap: 6px;
-  }
-  .pad-t .trow.ped > * {
-    display: none;
-  }
-  .pad-t .trow.ped > .m-num,
-  .pad-t .trow.ped > .m-cli {
-    display: block;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .pad-t .trow.ped > .m-st {
-    display: flex;
-    justify-self: end;
-  }
-  .pad-t .trow.ped > .m-tot {
-    display: block;
-    justify-self: end;
-  }
-  .m-num {
-    order: 1;
-  }
-  .m-st {
-    order: 2;
-  }
-  .m-cli {
-    order: 3;
-  }
-  .m-tot {
-    order: 4;
+  .kpi + .kpi {
+    border-top: 1px solid var(--line);
   }
 }

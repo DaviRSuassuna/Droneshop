@@ -1,8 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
+import { RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AdminNav } from '../../layout/admin/admin-nav/admin-nav';
 import { ConfiguracaoLojaService } from '../../core/services/configuracao-loja.service';
 import { ProblemDetail } from '../../core/models/problem.model';
 import { somenteDigitos } from '../../core/utils/documentos';
@@ -10,7 +11,7 @@ import { MascaraDirective } from '../../shared/directives/mascara.directive';
 
 @Component({
   selector: 'app-configuracao-loja',
-  imports: [ReactiveFormsModule, AdminNav, MascaraDirective],
+  imports: [ReactiveFormsModule, MascaraDirective, RouterLink],
   templateUrl: './configuracao-loja.html',
   styleUrl: './configuracao-loja.scss',
 })
@@ -29,10 +30,20 @@ export class ConfiguracaoLojaPage implements OnInit {
     dadosFiscais: ['', [Validators.required, Validators.maxLength(2000)]],
     cepOrigemFrete: ['', [Validators.required, Validators.pattern(/^\d{5}-\d{3}$/)]],
     remetentePadrao: ['', [Validators.required, Validators.maxLength(150)]],
-    prazoArrependimentoDias: [7, [Validators.required, Validators.min(7), Validators.pattern(/^\d+$/)]],
+    prazoArrependimentoDias: [
+      7,
+      [Validators.required, Validators.min(7), Validators.pattern(/^\d+$/)],
+    ],
     prazoGarantiaDias: [365, [Validators.required, Validators.min(1), Validators.pattern(/^\d+$/)]],
-    prazoAnaliseDevolucaoDiasUteis: [5, [Validators.required, Validators.min(1), Validators.pattern(/^\d+$/)]],
+    prazoAnaliseDevolucaoDiasUteis: [
+      5,
+      [Validators.required, Validators.min(1), Validators.pattern(/^\d+$/)],
+    ],
     freteReversoPorContaLoja: [true],
+  });
+
+  readonly valores = toSignal(this.form.valueChanges.pipe(map(() => this.form.getRawValue())), {
+    initialValue: this.form.getRawValue(),
   });
 
   private readonly fieldMessages: Record<string, Record<string, string>> = {
@@ -108,6 +119,7 @@ export class ConfiguracaoLojaPage implements OnInit {
   }
 
   salvar(): void {
+    if (this.salvando() || this.carregando() || this.falhaCarregamento()) return;
     this.erroGeral.set(null);
     this.salvo.set(false);
 
@@ -120,16 +132,18 @@ export class ConfiguracaoLojaPage implements OnInit {
 
     const valores = this.form.getRawValue();
     this.salvando.set(true);
-    this.service.atualizar({
-      ...valores,
-      cepOrigemFrete: somenteDigitos(valores.cepOrigemFrete),
-    }).subscribe({
-      next: () => {
-        this.salvando.set(false);
-        this.salvo.set(true);
-      },
-      error: (err: HttpErrorResponse) => this.tratarErro(err),
-    });
+    this.service
+      .atualizar({
+        ...valores,
+        cepOrigemFrete: somenteDigitos(valores.cepOrigemFrete),
+      })
+      .subscribe({
+        next: () => {
+          this.salvando.set(false);
+          this.salvo.set(true);
+        },
+        error: (err: HttpErrorResponse) => this.tratarErro(err),
+      });
   }
 
   /** Erro do back (Problem, RFC 7807): cada erro de campo vai para o controle certo como "api". */
@@ -143,7 +157,9 @@ export class ConfiguracaoLojaPage implements OnInit {
       // o detalhe de cada erro já aparece embaixo do campo
       this.erroGeral.set('Verifique os campos destacados.');
     } else {
-      this.erroGeral.set(problem?.detail ?? 'Não foi possível salvar a configuração. Tente novamente.');
+      this.erroGeral.set(
+        problem?.detail ?? 'Não foi possível salvar a configuração. Tente novamente.',
+      );
     }
   }
 

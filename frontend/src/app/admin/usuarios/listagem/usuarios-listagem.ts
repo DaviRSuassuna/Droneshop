@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
-import { AdminNav } from '../../../layout/admin/admin-nav/admin-nav';
 import { UsuarioService } from '../../../core/services/usuario.service';
 import { PapelAdministrativo, UsuarioAdministrativo } from '../../../core/models/usuario.model';
 
@@ -9,8 +8,7 @@ const TAMANHO_PAGINA = 10;
 
 @Component({
   selector: 'app-usuarios-listagem',
-  standalone: true,
-  imports: [RouterLink, AdminNav],
+  imports: [RouterLink],
   templateUrl: './usuarios-listagem.html',
   styleUrl: './usuarios-listagem.scss',
 })
@@ -30,9 +28,7 @@ export class UsuariosListagem implements OnInit, OnDestroy {
   readonly totalPaginasApi = signal(0);
 
   readonly totalAtivos = computed(() => this.usuarios().filter((u) => u.ativo).length);
-  readonly totalPaginas = computed(() =>
-    Math.max(1, this.totalPaginasApi()),
-  );
+  readonly totalPaginas = computed(() => Math.max(1, this.totalPaginasApi()));
   readonly usuariosPagina = computed(() => this.usuarios());
   readonly intervaloExibido = computed(() => {
     if (this.totalItens() === 0) return '0–0';
@@ -42,10 +38,17 @@ export class UsuariosListagem implements OnInit, OnDestroy {
   private buscaTimeout: ReturnType<typeof setTimeout> | undefined;
 
   ngOnInit(): void {
+    this.erro.set(null);
     this.carregando.set(true);
     forkJoin({
       papeis: this.usuarioService.papeis(),
-      usuarios: this.usuarioService.listar('', undefined, 0, TAMANHO_PAGINA),
+      usuarios: this.usuarioService.listar(
+        this.termoBusca().trim(),
+        this.filtroPapel() ? Number(this.filtroPapel()) : undefined,
+        this.pagina(),
+        TAMANHO_PAGINA,
+        this.filtroStatus() === '' ? undefined : this.filtroStatus() === 'true',
+      ),
     }).subscribe({
       next: ({ papeis, usuarios }) => {
         this.papeis.set(papeis);
@@ -69,8 +72,7 @@ export class UsuariosListagem implements OnInit, OnDestroy {
     this.carregando.set(true);
     this.erro.set(null);
 
-    const filtroAtivo =
-      this.filtroStatus() === '' ? undefined : this.filtroStatus() === 'true';
+    const filtroAtivo = this.filtroStatus() === '' ? undefined : this.filtroStatus() === 'true';
     this.usuarioService
       .listar(
         this.termoBusca().trim(),
@@ -80,16 +82,16 @@ export class UsuariosListagem implements OnInit, OnDestroy {
         filtroAtivo,
       )
       .subscribe({
-      next: (res) => {
-        this.usuarios.set(res.items);
-        this.totalItens.set(res.totalItems);
-        this.totalPaginasApi.set(res.totalPages);
-        this.carregando.set(false);
-      },
-      error: () => {
-        this.erro.set('Erro ao carregar usuários.');
-        this.carregando.set(false);
-      },
+        next: (res) => {
+          this.usuarios.set(res.items);
+          this.totalItens.set(res.totalItems);
+          this.totalPaginasApi.set(res.totalPages);
+          this.carregando.set(false);
+        },
+        error: () => {
+          this.erro.set('Erro ao carregar usuários.');
+          this.carregando.set(false);
+        },
       });
   }
 

@@ -1,6 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AdminNav } from '../../../../layout/admin/admin-nav/admin-nav';
 import { SubcategoriaService } from '../../../../core/services/subcategoria.service';
 import { CategoriaService } from '../../../../core/services/categoria.service';
 import { Subcategoria } from '../../../../core/models/subcategoria.model';
@@ -11,15 +10,12 @@ const TAMANHO_PAGINA = 10;
 
 @Component({
   selector: 'app-subcategorias-listagem',
-  standalone: true,
-  imports: [RouterLink, AdminNav],
+  imports: [RouterLink],
   templateUrl: './subcategorias-listagem.html',
 })
 export class SubcategoriasListagem implements OnInit {
   private readonly subcategoriaService = inject(SubcategoriaService);
   private readonly categoriaService = inject(CategoriaService);
-
-  readonly grid = 'minmax(0, 1fr) 200px 90px 118px 64px';
 
   readonly carregando = signal(true);
   readonly erro = signal<string | null>(null);
@@ -39,7 +35,7 @@ export class SubcategoriasListagem implements OnInit {
     return this.subcategorias().filter(
       (s) =>
         (!termo || s.nome.toLowerCase().includes(termo) || s.slug.includes(termo)) &&
-        (!categoria || s.categoria.id === categoria) &&
+        (!categoria || s.categoria?.id === categoria) &&
         (!status || s.status.id === status),
     );
   });
@@ -119,6 +115,6 @@ export class SubcategoriasListagem implements OnInit {
 
   corStatus(status: StatusRef): string {
     if (status.id === STATUS_PUBLICACAO.ATIVA) return 'var(--ok)';
-    return status.id === STATUS_PUBLICACAO.INATIVA ? 'var(--dim2)' : 'var(--warn)';
+    return status.id === STATUS_PUBLICACAO.INATIVA ? 'var(--mute)' : 'var(--warn)';
   }
 }

@@ -42,7 +42,7 @@ describe('CupomService', () => {
       ativo: true,
       idsCategorias: [],
       idsMarcas: [],
-      idsVariantes: [],
+      idsProdutos: [],
     };
 
     service.criar(dto).subscribe();

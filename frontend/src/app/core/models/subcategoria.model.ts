@@ -3,10 +3,11 @@ import { StatusRef } from './status.model';
 
 /** Espelha o SubcategoriaResponseDTO devolvido pela API (categoria aninhada). */
 export interface Subcategoria {
+  quantidadeProdutos: number;
   id: number;
   nome: string;
   slug: string;
-  categoria: Categoria;
+  categoria: Categoria | null;
   ordemExibicao: number;
   descricao: string | null;
   status: StatusRef;

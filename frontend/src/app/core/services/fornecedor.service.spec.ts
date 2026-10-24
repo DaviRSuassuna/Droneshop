@@ -67,4 +67,16 @@ describe('FornecedorService', () => {
     expect(req.request.method).toBe('DELETE');
     req.flush(null);
   });
+  it('exporta todos os resultados com os filtros e resposta binária', () => {
+    service.exportar({ busca: '  Aerion ', idStatus: 1, uf: 'TO' }).subscribe();
+    const req = http.expectOne((r) => r.url === url + '/exportar');
+    expect(req.request.method).toBe('GET');
+    expect(req.request.responseType).toBe('blob');
+    expect(req.request.params.has('page')).toBe(false);
+    expect(req.request.params.has('pageSize')).toBe(false);
+    expect(req.request.params.get('busca')).toBe('Aerion');
+    expect(req.request.params.get('idStatus')).toBe('1');
+    expect(req.request.params.get('uf')).toBe('TO');
+    req.flush(new Blob(['csv'], { type: 'text/csv' }));
+  });
 });

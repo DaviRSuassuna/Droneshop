@@ -1,0 +1,24 @@
+// O que a tela real precisa e o protótipo não desenha (estados que só existem com a API):
+// erro de campo devolvido no Problem e alerta geral. Usa só os tokens do DESIGN.md.
+.f [aria-invalid='true'] {
+  border-color: var(--warn);
+}
+.f .erro {
+  font-size: 12px;
+  color: var(--warn);
+}
+div.alerta {
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(240, 138, 108, 0.35);
+  background: rgba(240, 138, 108, 0.06);
+  font-size: 13px;
+  color: var(--ink2);
+}
+
+// Controles nativos desabilitados precisam continuar distinguíveis após a migração visual.
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

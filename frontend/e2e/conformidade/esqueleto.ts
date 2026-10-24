@@ -3,7 +3,7 @@ import { Page } from '@playwright/test';
 /**
  * "Esqueleto" de uma tela: os textos que definem a estrutura dela, lidos pelas
  * mesmas classes CSS no protótipo e no Angular (o Angular reaproveita as classes
- * do site.css, ver docs/design/DESIGN.md).
+ * do admin.css e do site.css do protótipo "Noite + Campo", ver docs/design/DESIGN.md).
  *
  * Texto com número, "R$" ou mais de 60 caracteres é tratado como dado de
  * exemplo e fica de fora (nome de produto, preço, contagem...).
@@ -32,10 +32,17 @@ export const PARTES: { chave: Exclude<keyof Esqueleto, 'colunas'>; nome: string 
 export async function lerEsqueleto(page: Page): Promise<Esqueleto> {
   return page.evaluate(() => {
     const limpar = (s: string | null | undefined) =>
-      (s ?? '').replace(/\*/g, '').replace(/[↗→←▾▸]/g, '').replace(/\s+/g, ' ').trim();
+      (s ?? '')
+        .replace(/\*/g, '')
+        .replace(/[↗→←▾▸]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
     const ehDado = (s: string) => !s || /\d|R\$/.test(s) || s.length > 60;
-    const fora = (el: Element) => !!el.closest('.theme-t, [hidden], script, template');
-    const textos = (seletor: string, transformar: (el: Element) => string = (el) => el.textContent ?? '') => {
+    const fora = (el: Element) => !!el.closest('[hidden], script, template');
+    const textos = (
+      seletor: string,
+      transformar: (el: Element) => string = (el) => el.textContent ?? '',
+    ) => {
       const vistos = new Set<string>();
       for (const el of Array.from(document.querySelectorAll(seletor))) {
         if (fora(el)) continue;
@@ -53,31 +60,40 @@ export async function lerEsqueleto(page: Page): Promise<Esqueleto> {
     // item de menu sem o contador (ex.: "Carrinho 2")
     const semContador = (el: Element) => (el.textContent ?? '').replace(/\d+/g, '');
 
+    // admin (admin.css): .tabs = menu de módulos, .ph = cabeçalho, .toolbar = filtros,
+    // .stabs/.seg = abas da página. Loja (site.css): .nav .links = menu, .atabs = abas.
     return {
-      navegacao: textos('.tb-nav a, .tb-nav span, .snav-nav a, .snav-r a, .acct-n a', semContador),
-      titulo: textos('.pagebar .h1, .pagebar h1'),
-      acoes: textos('.pagebar .actions a, .pagebar .actions button, .actions .btn, .actions .sbtn, button.btn, a.btn, .sbtn'),
+      navegacao: textos('.tb .tabs a, .nav .links a', semContador),
+      titulo: textos('.ph h1, .pagehead h1, main h1'),
+      acoes: textos('.acts .btn, .actionbar .btn, button.btn, a.btn'),
       filtros: [
-        ...textos('.filters input[placeholder]', (el) => el.getAttribute('placeholder') ?? ''),
-        ...textos('.filters select', (el) => (el as HTMLSelectElement).options[0]?.text ?? ''),
+        ...textos(
+          '.toolbar input[placeholder], .filters input[placeholder]',
+          (el) => el.getAttribute('placeholder') ?? '',
+        ),
+        ...textos(
+          '.toolbar select, .filters select',
+          (el) => (el as HTMLSelectElement).options[0]?.text ?? '',
+        ),
       ],
-      colunas: Array.from(document.querySelectorAll('.trow.head'))
+      colunas: Array.from(document.querySelectorAll('thead tr'))
         .filter((el) => !fora(el))
-        .map((el) => Array.from(el.children).map((c) => limpar(c.textContent)).filter((t) => t && !/\d/.test(t))),
-      secoes: textos('.card-t, .eyebrow, .sec-t, .scard-t, .pad-t h2, h2, h3'),
+        .map((el) =>
+          Array.from(el.children)
+            .map((c) => limpar(c.textContent))
+            .filter((t) => t && !/\d/.test(t)),
+        ),
+      secoes: textos('.sh h2, .card .hd h2, h2, h3'),
       rotulos: textos('label', textoProprio),
-      abas: textos('.tabs a, .tabs button, .tabs > span'),
+      abas: textos('.stabs a, .seg button, .atabs a, .atabs button'),
     };
   });
 }
 
-/** Variáveis CSS do :root (tokens do DESIGN.md) no tema informado. */
-export async function lerTokens(page: Page, tema: 'light' | 'dark'): Promise<Record<string, string>> {
-  return page.evaluate((t) => {
-    const raiz = document.documentElement;
-    const anterior = raiz.getAttribute('data-theme');
-    raiz.setAttribute('data-theme', t);
-    const estilo = getComputedStyle(raiz);
+/** Variáveis CSS do :root (tokens do DESIGN.md; tema único escuro). */
+export async function lerTokens(page: Page): Promise<Record<string, string>> {
+  return page.evaluate(() => {
+    const estilo = getComputedStyle(document.documentElement);
     const nomes = new Set<string>();
     for (const folha of Array.from(document.styleSheets)) {
       let regras: CSSRuleList;
@@ -96,39 +112,46 @@ export async function lerTokens(page: Page, tema: 'light' | 'dark'): Promise<Rec
     // mesma escrita para o mesmo valor: ".5" = "0.50" = "0.5"
     const normalizar = (v: string) =>
       v
+        .replace(/'/g, '"') // Aspas simples e duplas são equivalentes nos nomes de fonte CSS.
         .replace(/\s+/g, '')
         .toLowerCase()
         .replace(/(^|[^\d])\.(\d)/g, '$10.$2')
         .replace(/(\d+\.\d*?)0+(?=\D|$)/g, '$1')
         .replace(/\.(?=\D|$)/g, '');
     for (const n of nomes) saida[n] = normalizar(estilo.getPropertyValue(n));
-    if (anterior) raiz.setAttribute('data-theme', anterior);
-    else raiz.removeAttribute('data-theme');
     return saida;
-  }, tema);
+  });
 }
 
 /** Estilo calculado de elementos-chave, quando existem. */
-export async function lerEstilos(page: Page): Promise<Record<string, Record<string, string> | null>> {
+export async function lerEstilos(
+  page: Page,
+): Promise<Record<string, Record<string, string> | null>> {
   return page.evaluate(() => {
     const alvo: Record<string, string[]> = {
       body: ['font-family', 'font-size', 'background-color', 'color'],
-      '.pagebar .h1': ['font-family', 'font-size', 'font-weight', 'color'],
+      '.ph h1': ['font-family', 'font-size', 'font-weight', 'color'],
       '.btn.p': ['background-color', 'color', 'border-radius', 'font-size'],
-      '.trow.head': ['font-size', 'text-transform', 'color'],
-      '.tb-nav a': ['font-size', 'color'],
-      '.sbtn.p': ['background-color', 'color', 'border-radius'],
-      'label': ['font-size', 'color'],
+      th: ['font-family', 'font-size', 'text-transform', 'color'],
+      '.tb .tabs a': ['font-size', 'color'],
+      '.f label': ['font-size', 'color'],
     };
     const saida: Record<string, Record<string, string> | null> = {};
     for (const [sel, props] of Object.entries(alvo)) {
-      const el = Array.from(document.querySelectorAll(sel)).find((e) => !e.closest('.theme-t'));
+      // Compara o controle visível: a loja também contém botões de busca ocultos no desktop.
+      const el = Array.from(document.querySelectorAll(sel)).find(
+        (elemento) =>
+          elemento.getClientRects().length > 0 &&
+          getComputedStyle(elemento).visibility !== 'hidden',
+      );
       if (!el) {
         saida[sel] = null;
         continue;
       }
       const cs = getComputedStyle(el);
-      saida[sel] = Object.fromEntries(props.map((p) => [p, cs.getPropertyValue(p).replace(/\s+/g, ' ').trim()]));
+      saida[sel] = Object.fromEntries(
+        props.map((p) => [p, cs.getPropertyValue(p).replace(/\s+/g, ' ').trim()]),
+      );
     }
     return saida;
   });

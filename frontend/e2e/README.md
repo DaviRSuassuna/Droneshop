@@ -23,7 +23,7 @@ PROTOTIPO_URL=https://davirsuassuna.github.io/droneshop/prototipo/ npm run e2e
 | Teste | Passa quando |
 |---|---|
 | estrutura igual à do protótipo | menu, título, botões, filtros, títulos de seção, rótulos e abas do protótipo existem na tela; as colunas das tabelas são as mesmas, na mesma ordem. Texto com número ou "R$" é dado de exemplo e não conta. O que a tela tem a mais vira anotação no relatório |
-| estilo igual ao do protótipo | os tokens do `DESIGN.md` (variáveis CSS, tema claro e escuro) e o estilo calculado de título, botão principal, cabeçalho de tabela, menu e rótulos são iguais |
+| estilo igual ao do protótipo | os tokens do `DESIGN.md` (variáveis CSS, tema único escuro) e o estilo calculado de título, botão principal, cabeçalho de tabela, menu e rótulos são iguais |
 | abre no celular sem rolagem horizontal | em 390px de largura a página não rola para o lado (D20) |
 
 Cada teste anexa ao relatório as imagens do protótipo e da tela, no desktop e no celular, para a avaliação visual.
@@ -49,16 +49,45 @@ No CI, todo PR roda as telas de `telas-entregues.txt` (bloqueia) e as telas da i
 ## Situação atual
 
 <!-- situacao:inicio -->
-Rodado em 14/10/2026 sobre as telas já implementadas (`@base`). Os estilos (tokens e estilo calculado) batem com o protótipo; a estrutura e o celular não:
+Atualização de 23/10/2026 (issue #80): as oito telas base — listagem e cadastro de marcas,
+categorias, subcategorias e fornecedores — passaram nas 24 verificações de estrutura,
+estilo e celular (390px). A etiqueta `base` voltou a `telas-entregues.txt`.
 
-| Tela | Diferenças de estrutura |
-|---|---|
-| Marcas | coluna "Destaque" na tela, "Produtos" no protótipo |
-| Cadastrar marca | faltam os botões "Salvar rascunho" e "Publicar marca", a seção "Pendências" e o upload "Logo da marca" |
-| Categorias | faltam o botão "Reordenar", o filtro "Categoria" e a coluna "No menu" |
-| Cadastrar categoria | faltam os botões "Salvar rascunho" e "Publicar categoria", as seções "Ícone / imagem" e "Prévia da árvore" e os campos "Ícone (URL)" e "Ícone da categoria" |
-| Fornecedores | colunas "Cidade/UF" e "Telefone" diferentes do protótipo |
-| Cadastrar fornecedor | faltam os campos "Cidade" e "UF" |
+O logo da marca continua por URL, conforme autorização do mantenedor; upload fica para outro bloco.
+Subcategoria em rascunho aceita campos vazios conforme D21, inclusive `categoria: null`.
+Foram verificados pelo MCP os fluxos de criação, edição, rascunho e publicação com API real em
+banco descartável. No fornecedor, só a consulta externa de CEP foi simulada no navegador.
+As cinco telas deste bloco foram conferidas em 360, 390 e 480px sem rolagem horizontal e
+sem violações axe WCAG A/AA, incluindo o estado de erro de publicação da subcategoria.
 
-Todas as telas do admin já existentes naquela rodada rolavam para o lado no celular (117 a 125px), e o protótipo também não tinha layout para telas estreitas. As telas das issues ainda não implementadas no Angular não foram avaliadas nessa rodada. Promoções (`@issue-14`) foram implementadas depois e passaram nas verificações de estrutura, estilo e celular.
+Produtos continua com seleção e ações em lote; a seleção usa o checkbox da linha no celular.
+Os seletores usam `idStatus` com a constante do enum, sem um segundo filtro para produtos ativos.
+Configuração da loja também passou nos 3 testes de conformidade e a etiqueta `issue-6` foi ativada.
+Os componentes de mídia usam o visual novo: foram verificados upload por teclado, imagem principal,
+galeria/ordem, troca da principal, vídeo, PDF, exclusão e fila de produto novo com API real.
+Configuração e cadastros de drone/acessório/kit passaram em 12 verificações deste bloco.
+Axe WCAG A/AA sem violações e sem rolagem horizontal em 360/390/480px, inclusive com mídias preenchidas.
+Login e listagem/cadastro de usuários passaram nas 9 verificações de conformidade (24/10/2026).
+As etiquetas `issue-4` e `issue-5` foram reativadas. A comparação de estilos usa elementos visíveis
+nas duas versões, evitando o botão da busca móvel oculto no protótipo.
+Convite, 2FA, recuperação de senha, cadastro de clientes e busca da loja não foram antecipados.
+Listagens de promoções e cupons migradas; lista + cadastro passaram em 12 verificações de conformidade
+com dados preenchidos nas listas (24/10/2026). Etiquetas `issue-14` e `issue-15` reativadas.
+Exportar usos fica em cada cupom, conforme autorização do mantenedor, usando o endpoint existente
+com leitura de todas as páginas; falha não gera arquivo parcial. As listas preservam a carga atual
+(até 1000 registros e filtros locais). Testes MCP verificaram 1280/360/390/480px e axe WCAG A/AA.
+Pedidos (listagem/detalhe) e dashboard também foram migrados. `_legado.scss` e sua importação
+foram removidos; não restam hosts `.legado` nem tokens CSS sem definição em `frontend/src`.
+A regressão após essa remoção passou nos 81 casos das 27 telas implementadas (36 base/acesso/configuração,
+18 catálogo, 27 estoque/promoções/cupons/pedidos/dashboard), reativando também `issue-8`, `issue-80`,
+`issue-13`, `issue-16` e `issue-18`.
+No MCP, pedidos e dashboard foram conferidos em 1280/360/390/480px sem overflow ou violações axe WCAG A/AA.
+CSV com filtros, etiqueta PDF A5, busca/paginação e período usam a API real do banco descartável;
+ações de status e cenários de falha foram verificados com respostas simuladas, sem alterar pedidos da prévia.
+
+A API atual não calcula série diária/comparação, conversão, ranking ou relatório do dashboard.
+Essas partes continuam fora da tela, registradas em `ignorar`; a tabela futura de ranking tem uma
+exceção de colunas exatas e motivo em `tabelasSemApi`. As demais tabelas continuam sendo comparadas.
+Em pedidos, as contagens dos cartões usam o resumo global por status. Busca é por número/nome,
+etiqueta é individual e dados financeiros/logísticos futuros não foram antecipados.
 <!-- situacao:fim -->

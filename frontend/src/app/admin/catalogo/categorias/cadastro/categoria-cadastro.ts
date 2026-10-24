@@ -1,9 +1,9 @@
+import { toSignal } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Observable } from 'rxjs';
-import { AdminNav } from '../../../../layout/admin/admin-nav/admin-nav';
+import { Observable, map } from 'rxjs';
 import { CategoriaService } from '../../../../core/services/categoria.service';
 import { CategoriaDTO } from '../../../../core/models/categoria.model';
 import { STATUS_PUBLICACAO } from '../../../../core/models/status.model';
@@ -12,8 +12,7 @@ import { ProblemDetail } from '../../../../core/models/problem.model';
 
 @Component({
   selector: 'app-categoria-cadastro',
-  standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, AdminNav],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './categoria-cadastro.html',
   styleUrl: './categoria-cadastro.scss',
 })
@@ -45,9 +44,13 @@ export class CategoriaCadastro implements OnInit {
     exibirMenu: [false],
   });
 
+  private readonly valores = toSignal(
+    this.form.valueChanges.pipe(map(() => this.form.getRawValue())),
+    { initialValue: this.form.getRawValue() },
+  );
+
   readonly pendencias = computed(() => {
-    const v = this.form.getRawValue();
-    if (v.idStatus === STATUS_PUBLICACAO.RASCUNHO) return [];
+    const v = this.valores();
     const faltando: string[] = [];
     if (!v.nome.trim()) faltando.push('Nome da categoria');
     if (v.ordemExibicao === null || Number(v.ordemExibicao) < 0) faltando.push('Ordem de exibição');
@@ -81,7 +84,11 @@ export class CategoriaCadastro implements OnInit {
         this.carregando.set(false);
       },
       error: (err) => {
-        this.erroGeral.set(err.status === 404 ? 'Esta categoria não foi encontrada.' : 'Não foi possível carregar esta categoria.');
+        this.erroGeral.set(
+          err.status === 404
+            ? 'Esta categoria não foi encontrada.'
+            : 'Não foi possível carregar esta categoria.',
+        );
         this.carregando.set(false);
       },
     });
@@ -95,7 +102,10 @@ export class CategoriaCadastro implements OnInit {
     return this.errosCampo()[campo] ?? null;
   }
 
-  salvar(): void {
+  salvar(publicar = false): void {
+    if (this.salvando()) return;
+    if (publicar && this.form.controls.idStatus.value === STATUS_PUBLICACAO.RASCUNHO)
+      this.form.controls.idStatus.setValue(STATUS_PUBLICACAO.ATIVA);
     this.erroGeral.set(null);
     this.errosCampo.set({});
 

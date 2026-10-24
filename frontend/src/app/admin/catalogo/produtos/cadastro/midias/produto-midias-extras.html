@@ -10,7 +10,7 @@
       (keydown.enter)="$event.preventDefault(); adicionarVideo()"
     />
     <button
-      class="sbtn sm"
+      class="btn sm"
       type="button"
       (click)="adicionarVideo()"
       [disabled]="!url().trim() || estado.ocupado()"
@@ -21,7 +21,7 @@
   @for (video of estado.videos(); track video.chave) {
     <div class="extra-item">
       <a [href]="video.src" target="_blank" rel="noopener">{{ video.src }}</a>
-      <button class="sbtn sm" type="button" (click)="excluir(video)" aria-label="Excluir vídeo">
+      <button class="btn sm" type="button" (click)="excluir(video)" aria-label="Excluir vídeo">
         ✕
       </button>
     </div>
@@ -30,16 +30,29 @@
 
 <div class="f">
   <label>Manual em PDF</label>
-  <label class="up">
-    Arraste um arquivo ou clique<small>Arquivo até 20 MB</small>
-    <input type="file" hidden accept=".pdf,application/pdf" (change)="aoEscolherManual($event)" />
+  <label
+    class="up"
+    tabindex="0"
+    role="button"
+    aria-label="Adicionar manual em PDF"
+    (keydown.enter)="manualArquivo.click()"
+    (keydown.space)="$event.preventDefault(); manualArquivo.click()"
+    ><div class="mini" aria-hidden="true"><span>+</span></div>
+    Clique para selecionar<small>Arquivo PDF até 20 MB</small>
+    <input
+      #manualArquivo
+      type="file"
+      hidden
+      accept=".pdf,application/pdf"
+      (change)="aoEscolherManual($event)"
+    />
   </label>
   @for (manual of estado.manuais(); track manual.chave) {
     <div class="extra-item">
       <a [href]="manual.src" target="_blank" rel="noopener">{{
         manual.nomeArquivo ?? 'Manual PDF'
       }}</a>
-      <button class="sbtn sm" type="button" (click)="excluir(manual)" aria-label="Excluir manual">
+      <button class="btn sm" type="button" (click)="excluir(manual)" aria-label="Excluir manual">
         ✕
       </button>
     </div>
@@ -47,5 +60,5 @@
 </div>
 
 @if (erro(); as e) {
-  <span class="warn full">{{ e }}</span>
+  <span class="erro w6" role="alert">{{ e }}</span>
 }

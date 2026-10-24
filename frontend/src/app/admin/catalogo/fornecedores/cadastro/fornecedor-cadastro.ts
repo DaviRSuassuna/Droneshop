@@ -4,7 +4,6 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Observable, debounceTime, distinctUntilChanged, filter, map } from 'rxjs';
-import { AdminNav } from '../../../../layout/admin/admin-nav/admin-nav';
 import { FornecedorService } from '../../../../core/services/fornecedor.service';
 import { CepService } from '../../../../core/services/cep.service';
 import { EstadoService } from '../../../../core/services/estado.service';
@@ -27,8 +26,7 @@ interface AvisoCep {
 
 @Component({
   selector: 'app-fornecedor-cadastro',
-  standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, AdminNav, MascaraDirective],
+  imports: [ReactiveFormsModule, RouterLink, MascaraDirective],
   templateUrl: './fornecedor-cadastro.html',
   styleUrl: './fornecedor-cadastro.scss',
 })
@@ -138,9 +136,12 @@ export class FornecedorCadastro implements OnInit {
   };
 
   // valueChanges em signal, para a lista de pendências atualizar enquanto o usuário digita
-  private readonly valores = toSignal(this.form.valueChanges.pipe(map(() => this.form.getRawValue())), {
-    initialValue: this.form.getRawValue(),
-  });
+  private readonly valores = toSignal(
+    this.form.valueChanges.pipe(map(() => this.form.getRawValue())),
+    {
+      initialValue: this.form.getRawValue(),
+    },
+  );
 
   // Fornecedor não tem RASCUNHO: os obrigatórios valem para qualquer status.
   readonly pendencias = computed(() => {
@@ -227,7 +228,11 @@ export class FornecedorCadastro implements OnInit {
         this.carregando.set(false);
       },
       error: (err) => {
-        this.erroGeral.set(err.status === 404 ? 'Este fornecedor não foi encontrado.' : 'Não foi possível carregar este fornecedor.');
+        this.erroGeral.set(
+          err.status === 404
+            ? 'Este fornecedor não foi encontrado.'
+            : 'Não foi possível carregar este fornecedor.',
+        );
         this.carregando.set(false);
       },
     });

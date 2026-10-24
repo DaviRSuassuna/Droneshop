@@ -1,3 +1,22 @@
 :host {
   display: block;
 }
+.rail .bd {
+  padding-top: 18px;
+}
+.acesso {
+  margin-top: 12px;
+  grid-column: auto;
+}
+.permissoes {
+  min-width: 0;
+}
+.perm td:first-child {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 480px) {
+  .perm th,
+  .perm td {
+    padding: 10px 4px;
+  }
+}

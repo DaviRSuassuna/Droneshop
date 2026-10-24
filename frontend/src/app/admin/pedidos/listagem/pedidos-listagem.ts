@@ -1,7 +1,7 @@
+import { baixarArquivo } from '../../../shared/arquivo';
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { AdminNav } from '../../../layout/admin/admin-nav/admin-nav';
 import { PedidoService } from '../../../core/services/pedido.service';
 import {
   EXIBICAO_STATUS_PEDIDO,
@@ -25,8 +25,7 @@ const ABAS: { rotulo: string; idStatus: number | null }[] = [
 
 @Component({
   selector: 'app-pedidos-listagem',
-  standalone: true,
-  imports: [RouterLink, AdminNav, DatePipe],
+  imports: [RouterLink, DatePipe],
   templateUrl: './pedidos-listagem.html',
   styleUrl: './pedidos-listagem.scss',
 })
@@ -34,6 +33,7 @@ export class PedidosListagem implements OnInit, OnDestroy {
   private readonly pedidoService = inject(PedidoService);
 
   readonly abas = ABAS;
+  readonly STATUS = STATUS_PEDIDO;
   readonly periodos = [
     { rotulo: 'Período: todos', dias: 0 },
     { rotulo: 'Período: 7 dias', dias: 7 },
@@ -156,12 +156,27 @@ export class PedidosListagem implements OnInit, OnDestroy {
     this.carregar();
   }
 
+  exportarCsv(): void {
+    const periodo = this.periodo();
+    this.pedidoService
+      .exportar({
+        idStatus: this.aba(),
+        busca: this.termoBusca(),
+        dataInicio: periodo?.inicio,
+        dataFim: periodo?.fim,
+      })
+      .subscribe({
+        next: (blob) => baixarArquivo('pedidos.csv', blob),
+        error: () => this.erro.set('Não foi possível exportar os pedidos.'),
+      });
+  }
+
   rotuloStatus(id: number): string {
     return EXIBICAO_STATUS_PEDIDO[id]?.rotulo ?? '';
   }
 
   corStatus(id: number): string {
-    return EXIBICAO_STATUS_PEDIDO[id]?.cor ?? 'var(--dim2)';
+    return EXIBICAO_STATUS_PEDIDO[id]?.cor ?? 'var(--mute)';
   }
 
   moeda(valor: number): string {

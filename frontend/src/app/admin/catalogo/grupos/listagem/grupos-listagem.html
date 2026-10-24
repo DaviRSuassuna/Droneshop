@@ -1,0 +1,85 @@
+<main class="gut">
+  <div class="ph">
+    <div>
+      <span class="lbl">Catálogo</span>
+      <h1>Grupos de produto</h1>
+      <div class="sub">{{ total() }} {{ total() === 1 ? 'grupo' : 'grupos' }} · {{ produtosAgrupados() }} produtos agrupados nesta página</div>
+    </div>
+    <div class="acts"><a class="btn p" routerLink="/admin/grupos/novo">Novo grupo</a></div>
+  </div>
+
+  <nav class="stabs" aria-label="Filtro rápido">
+    <a routerLink="/admin/produtos">Produtos<b>{{ totalProdutos() }}</b></a>
+    <a routerLink="/admin/grupos" aria-current="page">Grupos de produto<b>{{ total() }}</b></a>
+  </nav>
+
+  <div class="toolbar">
+    <label class="field-s grow">
+      <input type="search" placeholder="Buscar por nome" aria-label="Buscar" [value]="termoBusca()" (input)="aoDigitarBusca($any($event.target).value)" />
+    </label>
+    <select class="sel" aria-label="Status" (change)="aoMudarStatus($any($event.target).value)">
+      <option value="">Status</option>
+      <option value="true">Ativo</option>
+      <option value="false">Inativo</option>
+    </select>
+  </div>
+
+  <div class="info">
+    Grupo junta versões parecidas numa página de venda (D40). Cada versão continua sendo um produto, com SKU, preço,
+    estoque e ficha próprios. Na vitrine o grupo é um card só, <b>a partir do menor preço ativo</b>.
+  </div>
+
+  @if (erro(); as mensagem) {
+    <div class="alerta" role="alert">{{ mensagem }} <button class="btn sm" type="button" (click)="carregar()">Tentar novamente</button></div>
+  }
+
+  <div class="tw">
+    <table>
+      <thead>
+        <tr><th>Grupo</th><th>Versões</th><th class="r">A partir de</th><th>Status</th><th></th></tr>
+      </thead>
+      <tbody>
+        @if (carregando()) {
+          <tr><td colspan="5" style="color: var(--mute)">Carregando grupos…</td></tr>
+        } @else {
+          @for (grupo of grupos(); track grupo.id) {
+            <tr (click)="abrir(grupo)">
+              <td>
+                <div class="pc">
+                  <span class="thumb ph"></span>
+                  <div>
+                    <b><a [routerLink]="['/admin/grupos', grupo.id, 'editar']" (click)="$event.stopPropagation()">{{ grupo.nome }}</a></b>
+                    <span class="slug">/{{ grupo.slug }}</span>
+                  </div>
+                </div>
+              </td>
+              <td data-l="Versões">
+                @for (v of grupo.versoes; track v.idProduto) {
+                  <span class="chip" style="margin: 2px 6px 2px 0">{{ v.rotulo }}</span>
+                } @empty {
+                  <span class="sub2" style="color: var(--faint)">nenhuma versão</span>
+                }
+              </td>
+              <td data-l="A partir de" class="r num" style="font-family: var(--display); font-weight: 300; font-size: 15px">{{ preco(grupo.precoAPartirDe) }}</td>
+              <td data-l="Status"><span class="st" [class.ok]="grupo.ativo" [class.mute]="!grupo.ativo"><span>{{ grupo.ativo ? 'Ativo' : 'Inativo' }}</span></span></td>
+              <td class="r">
+                <a class="more" [routerLink]="['/admin/grupos', grupo.id, 'editar']" (click)="$event.stopPropagation()" [attr.aria-label]="'Editar ' + grupo.nome">⋯</a>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="5" style="color: var(--mute)">Nenhum grupo encontrado.</td></tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pager">
+    <span>{{ exibindo() }}</span>
+    <div class="pages">
+      <a href="" (click)="$event.preventDefault(); irParaPagina(pagina() - 1)" aria-label="Página anterior">‹</a>
+      <a href="" aria-current="page" (click)="$event.preventDefault()">{{ pagina() + 1 }}</a>
+      <a href="" (click)="$event.preventDefault(); irParaPagina(pagina() + 1)" aria-label="Próxima página">›</a>
+    </div>
+  </div>
+</main>

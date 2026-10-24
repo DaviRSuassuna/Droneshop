@@ -17,6 +17,19 @@ export class PedidoService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/pedidos`;
 
+  etiqueta(id: number): Observable<Blob> {
+    return this.http.get(this.baseUrl + '/' + id + '/etiqueta', { responseType: 'blob' });
+  }
+
+  exportar(filtro: FiltroPedidos = {}): Observable<Blob> {
+    let params = new HttpParams();
+    if (filtro.idStatus) params = params.set('idStatus', filtro.idStatus);
+    if (filtro.dataInicio) params = params.set('dataInicio', filtro.dataInicio);
+    if (filtro.dataFim) params = params.set('dataFim', filtro.dataFim);
+    if (filtro.busca?.trim()) params = params.set('busca', filtro.busca.trim());
+    return this.http.get(this.baseUrl + '/exportar', { params, responseType: 'blob' });
+  }
+
   listar(
     filtro: FiltroPedidos = {},
     page = 0,

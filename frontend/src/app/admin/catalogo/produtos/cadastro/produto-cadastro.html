@@ -1,917 +1,539 @@
-<app-admin-nav />
-
-@if (carregando()) {
-  <div class="pad">
-    <span class="sub">Carregando produto…</span>
-  </div>
-} @else {
-  <div class="pad cols">
-    <div class="main">
-      <div>
-        <h1 class="h1 big">{{ titulo() }}</h1>
-        <div class="crumb">
-          Catálogo · <a routerLink="/admin/produtos">Produtos</a> ·
-          {{ modoEdicao() ? titulo() : ehDrone ? 'Novo drone' : 'Novo acessório' }}
-        </div>
+<main class="gut">
+  <div class="ph">
+    <div>
+      <div class="crumb">
+        <a routerLink="/admin/produtos">← Produtos</a><span>·</span><span>{{ trilha() }}</span>
       </div>
+      <h1>{{ titulo() }}</h1>
+    </div>
+    <div class="acts">
+      <span class="st" [class.mute]="statusAtual() !== 'Ativo'" [class.ok]="statusAtual() === 'Ativo'"
+        ><span>{{ statusAtual() }}</span></span
+      >
+    </div>
+  </div>
 
-      @if (erroGeral()) {
-        <div class="card p" style="border-color: var(--warn-b)">
-          <span class="warn">{{ erroGeral() }}</span>
-        </div>
-      }
+  @if (erroGeral(); as erro) {
+    <div class="alerta" role="alert">{{ erro }}</div>
+  }
 
-      <section class="card p" [formGroup]="form">
-        <div class="card-t" style="margin-bottom: 20px">Informações básicas</div>
-        <div class="g2">
-          <div class="f full">
-            <label for="nome">Nome do produto <span class="req">*</span></label>
-            <input id="nome" type="text" placeholder="Ex: Falcon X2 Pro" formControlName="nome" />
-            @if (campoInvalido('nome')) {
-              <span class="warn">{{ mensagemErro('nome') }}</span>
-            }
+  @if (carregando()) {
+    <p class="note">Carregando {{ nomeTipo }}…</p>
+  } @else {
+    <div class="form">
+      <div>
+        <!-- Informações básicas -->
+        <section class="sec" id="s1" [formGroup]="form">
+          <div class="sh">
+            <h2>Informações básicas</h2>
+            <span>{{ ehKit ? 'Kit é um produto do tipo KIT (D40)' : '5 campos obrigatórios' }}</span>
           </div>
-          <div class="f">
-            <label for="modelo">Modelo <span class="req">*</span></label>
-            <input
-              id="modelo"
-              type="text"
-              placeholder="Ex: DRN-FX2P-0042"
-              formControlName="modelo"
-            />
-            @if (campoInvalido('modelo')) {
-              <span class="warn">{{ mensagemErro('modelo') }}</span>
-            }
-          </div>
-          <div class="f full">
-            <label for="descricaoCurta">Descrição curta</label>
-            <textarea
-              id="descricaoCurta"
-              placeholder="Resumo exibido no card do produto"
-              formControlName="descricaoCurta"
-            ></textarea>
-            @if (campoInvalido('descricaoCurta')) {
-              <span class="warn">{{ mensagemErro('descricaoCurta') }}</span>
-            }
-          </div>
-          <div class="f full">
-            <label for="descricao">Descrição completa</label>
-            <textarea
-              id="descricao"
-              placeholder="Texto completo exibido na página do produto"
-              formControlName="descricao"
-            ></textarea>
-            @if (campoInvalido('descricao')) {
-              <span class="warn">{{ mensagemErro('descricao') }}</span>
-            }
-          </div>
-        </div>
-      </section>
-
-      <section class="card p" [formGroup]="form">
-        <div class="card-t" style="margin-bottom: 20px">Classificação</div>
-        <div class="g2">
-          <div class="f">
-            <label for="idMarca">Marca <span class="req">*</span></label>
-            <select id="idMarca" formControlName="idMarca">
-              <option [ngValue]="null">Selecione a marca</option>
-              @for (marca of marcas(); track marca.id) {
-                <option [ngValue]="marca.id">{{ marca.nome }}</option>
-              }
-            </select>
-            @if (campoInvalido('idMarca')) {
-              <span class="warn">{{ mensagemErro('idMarca') }}</span>
-            }
-          </div>
-          <div class="f">
-            <label for="idFornecedor">Fornecedor <span class="req">*</span></label>
-            <select id="idFornecedor" formControlName="idFornecedor">
-              <option [ngValue]="null">Selecione o fornecedor</option>
-              @for (fornecedor of fornecedores(); track fornecedor.id) {
-                <option [ngValue]="fornecedor.id">
-                  {{ fornecedor.razaoSocial
-                  }}{{ fornecedor.status.id === FORNECEDOR_INATIVO ? ' (inativo)' : '' }}
-                </option>
-              }
-            </select>
-            @if (campoInvalido('idFornecedor')) {
-              <span class="warn">{{ mensagemErro('idFornecedor') }}</span>
-            }
-          </div>
-          <div class="f">
-            <label for="idCategoria">Categoria <span class="req">*</span></label>
-            <select id="idCategoria" formControlName="idCategoria">
-              <option [ngValue]="null">Selecione a categoria</option>
-              @for (categoria of categorias(); track categoria.id) {
-                <option [ngValue]="categoria.id">{{ categoria.nome }}</option>
-              }
-            </select>
-          </div>
-          <div class="f">
-            <label for="idSubcategoria">Subcategoria <span class="req">*</span></label>
-            <select id="idSubcategoria" formControlName="idSubcategoria">
-              <option [ngValue]="null">
-                {{
-                  categoriaSelecionada()
-                    ? 'Selecione a subcategoria'
-                    : 'Escolha a categoria primeiro'
-                }}
-              </option>
-              @for (sub of subcategoriasDisponiveis(); track sub.id) {
-                <option [ngValue]="sub.id">{{ sub.nome }}</option>
-              }
-            </select>
-            @if (campoInvalido('idSubcategoria')) {
-              <span class="warn">{{ mensagemErro('idSubcategoria') }}</span>
-            }
-          </div>
-        </div>
-        <p class="legend">
-          Campos com <span class="req">*</span> são obrigatórios para publicar; o rascunho salva sem
-          eles
-        </p>
-      </section>
-
-      @if (ehDrone) {
-        <section class="card p" [formGroup]="specs">
-          <div class="card-h">
-            <span class="card-t">Especificações técnicas</span>
-            <span class="card-n">Colunas fixas da entidade Drone (D14)</span>
-          </div>
-          <div class="g2">
-            <div class="f">
-              <label for="pesoGramas">Peso (g) <span class="req">*</span></label>
-              <input
-                id="pesoGramas"
-                type="number"
-                min="0"
-                placeholder="Ex: 895"
-                formControlName="pesoGramas"
-              />
-              @if (campoInvalido('pesoGramas')) {
-                <span class="warn">{{ mensagemErro('pesoGramas') }}</span>
-              }
+          <div class="fg">
+            <div class="f" [class.w3]="!ehKit" [class.w4]="ehKit">
+              <label for="nome">{{ ehKit ? 'Nome do kit' : 'Nome do produto' }} <span class="req">*</span></label>
+              <input id="nome" type="text" maxlength="120" formControlName="nome" [attr.aria-invalid]="campoInvalido('nome')" />
+              @if (mensagemErro('nome'); as m) { <span class="erro">{{ m }}</span> }
             </div>
-            <div class="f">
-              <label for="dimensoesDobrado">Dimensões dobrado (mm)</label>
-              <input
-                id="dimensoesDobrado"
-                type="text"
-                placeholder="214×110×89"
-                formControlName="dimensoesDobrado"
-              />
-              @if (campoInvalido('dimensoesDobrado')) {
-                <span class="warn">{{ mensagemErro('dimensoesDobrado') }}</span>
-              }
-            </div>
-            <div class="f">
-              <label for="dimensoesAberto">Dimensões aberto (mm)</label>
-              <input
-                id="dimensoesAberto"
-                type="text"
-                placeholder="347×283×107"
-                formControlName="dimensoesAberto"
-              />
-              @if (campoInvalido('dimensoesAberto')) {
-                <span class="warn">{{ mensagemErro('dimensoesAberto') }}</span>
-              }
-            </div>
-            <div class="f">
-              <label for="autonomiaMinutos">Autonomia de voo (min)</label>
-              <input
-                id="autonomiaMinutos"
-                type="number"
-                min="0"
-                placeholder="Ex: 43"
-                formControlName="autonomiaMinutos"
-              />
-              @if (campoInvalido('autonomiaMinutos')) {
-                <span class="warn">{{ mensagemErro('autonomiaMinutos') }}</span>
-              }
-            </div>
-            <div class="f">
-              <label for="alcanceKm">Alcance de transmissão (km)</label>
-              <input
-                id="alcanceKm"
-                type="number"
-                min="0"
-                step="0.1"
-                placeholder="Ex: 15"
-                formControlName="alcanceKm"
-              />
-              @if (campoInvalido('alcanceMetros')) {
-                <span class="warn">{{ mensagemErro('alcanceMetros') }}</span>
-              }
-            </div>
-            <div class="f">
-              <label for="velocidadeMaximaKmh">Velocidade máxima (km/h)</label>
-              <input
-                id="velocidadeMaximaKmh"
-                type="number"
-                min="0"
-                placeholder="Ex: 72"
-                formControlName="velocidadeMaximaKmh"
-              />
-              @if (campoInvalido('velocidadeMaximaKmh')) {
-                <span class="warn">{{ mensagemErro('velocidadeMaximaKmh') }}</span>
-              }
-            </div>
-            <div class="fhead full"><span>Câmera</span><i></i></div>
-            <div class="f">
-              <label for="resolucaoFotoMp">Resolução de foto (MP)</label>
-              <input
-                id="resolucaoFotoMp"
-                type="number"
-                min="0"
-                placeholder="Ex: 48"
-                formControlName="resolucaoFotoMp"
-              />
-              @if (campoInvalido('resolucaoFotoMp')) {
-                <span class="warn">{{ mensagemErro('resolucaoFotoMp') }}</span>
-              }
-            </div>
-            <div class="f">
-              <label for="tipoSensor">Sensor</label>
-              <select id="tipoSensor" formControlName="tipoSensor">
-                <option value="">Selecione</option>
-                @for (opcao of opcoes('sensor'); track opcao) {
-                  <option [value]="opcao">{{ opcao }}</option>
+            <div class="f" [class.w2]="ehKit">
+              <label for="marca">Marca <span class="req">*</span></label>
+              <select id="marca" formControlName="idMarca" [attr.aria-invalid]="campoInvalido('idMarca')">
+                <option [ngValue]="null">Selecione a marca</option>
+                @for (m of marcas(); track m.id) {
+                  <option [ngValue]="m.id">{{ m.nome }}</option>
                 }
               </select>
-              @if (campoInvalido('tipoSensor')) {
-                <span class="warn">{{ mensagemErro('tipoSensor') }}</span>
-              }
+              @if (mensagemErro('idMarca'); as m) { <span class="erro">{{ m }}</span> }
             </div>
-            <div class="f">
-              <label for="resolucaoVideo">Resolução de vídeo</label>
-              <select id="resolucaoVideo" formControlName="resolucaoVideo">
-                <option value="">Selecione</option>
-                @for (opcao of opcoes('video'); track opcao) {
-                  <option [value]="opcao">{{ opcao }}</option>
+            <div class="f" [class.w1]="!ehKit" [class.w2]="ehKit">
+              <label for="sku">SKU <span class="req">*</span></label>
+              <input id="sku" type="text" class="mono" maxlength="40" formControlName="sku" [attr.aria-invalid]="campoInvalido('sku')" />
+              @if (mensagemErro('sku'); as m) { <span class="erro">{{ m }}</span> }
+            </div>
+            <div class="f w2">
+              <label for="categoria">Categoria <span class="req">*</span></label>
+              <select id="categoria" formControlName="idCategoria">
+                <option [ngValue]="null">Selecione a categoria</option>
+                @for (c of categorias(); track c.id) {
+                  <option [ngValue]="c.id">{{ rotuloCategoria(c) }}</option>
                 }
               </select>
-              @if (campoInvalido('resolucaoVideo')) {
-                <span class="warn">{{ mensagemErro('resolucaoVideo') }}</span>
-              }
             </div>
-            <div class="f">
-              <label for="estabilizacao">Estabilização</label>
-              <select id="estabilizacao" formControlName="estabilizacao">
-                <option value="">Selecione</option>
-                @for (opcao of opcoes('estabilizacao'); track opcao) {
-                  <option [value]="opcao">{{ opcao }}</option>
+            <div class="f w2">
+              <label for="subcategoria">Subcategoria <span class="req">*</span></label>
+              <select id="subcategoria" formControlName="idSubcategoria" [attr.aria-invalid]="campoInvalido('idSubcategoria')">
+                <option [ngValue]="null">Selecione a subcategoria</option>
+                @for (s of subcategoriasDisponiveis(); track s.id) {
+                  <option [ngValue]="s.id">{{ s.nome }}</option>
                 }
               </select>
-              @if (campoInvalido('estabilizacao')) {
-                <span class="warn">{{ mensagemErro('estabilizacao') }}</span>
-              }
+              @if (mensagemErro('idSubcategoria'); as m) { <span class="erro">{{ m }}</span> }
             </div>
-            <div class="fhead full"><span>Bateria</span><i></i></div>
-            <div class="f">
-              <label for="tipoBateria">Tipo</label>
-              <select id="tipoBateria" formControlName="tipoBateria">
-                <option value="">Selecione</option>
-                @for (opcao of opcoes('bateria'); track opcao) {
-                  <option [value]="opcao">{{ opcao }}</option>
+            <div class="f" [class.w2]="!ehKit" [class.w6]="ehKit">
+              <label for="fornecedor">Fornecedor <span class="req">*</span></label>
+              <select id="fornecedor" formControlName="idFornecedor" [attr.aria-invalid]="campoInvalido('idFornecedor')">
+                <option [ngValue]="null">Selecione o fornecedor</option>
+                @for (f of fornecedores(); track f.id) {
+                  <option [ngValue]="f.id" [disabled]="f.status.id === FORNECEDOR_INATIVO">
+                    {{ f.razaoSocial }}{{ f.status.id === FORNECEDOR_INATIVO ? ' (inativo)' : '' }}
+                  </option>
                 }
               </select>
-              @if (campoInvalido('tipoBateria')) {
-                <span class="warn">{{ mensagemErro('tipoBateria') }}</span>
-              }
+              @if (mensagemErro('idFornecedor'); as m) { <span class="erro">{{ m }}</span> }
             </div>
-            <div class="f">
-              <label for="capacidadeBateriaMah">Capacidade (mAh)</label>
-              <input
-                id="capacidadeBateriaMah"
-                type="number"
-                min="0"
-                placeholder="Ex: 5000"
-                formControlName="capacidadeBateriaMah"
-              />
-              @if (campoInvalido('capacidadeBateriaMah')) {
-                <span class="warn">{{ mensagemErro('capacidadeBateriaMah') }}</span>
-              }
+            <div class="f w6">
+              <label for="descricaoCurta">Descrição curta</label>
+              <input id="descricaoCurta" type="text" maxlength="300" placeholder="Aparece no card da loja" formControlName="descricaoCurta" />
+              <span class="hint">Até 300 caracteres · {{ form.controls.descricaoCurta.value.length }} usados</span>
             </div>
-            <div class="f">
-              <label for="tempoCarregamentoMinutos">Tempo de carregamento (min)</label>
-              <input
-                id="tempoCarregamentoMinutos"
-                type="number"
-                min="0"
-                placeholder="Ex: 80"
-                formControlName="tempoCarregamentoMinutos"
-              />
-              @if (campoInvalido('tempoCarregamentoMinutos')) {
-                <span class="warn">{{ mensagemErro('tempoCarregamentoMinutos') }}</span>
-              }
-            </div>
-            <div class="fhead full"><span>Navegação e segurança</span><i></i></div>
-            <label class="ck full">
-              <input type="checkbox" formControlName="gpsIntegrado" /> GPS integrado (GPS + GLONASS)
-            </label>
-            <label class="ck full">
-              <input type="checkbox" formControlName="sensoresAnticolisao" /> Sensores anticolisão
-              omnidirecionais
-            </label>
-            <div class="fhead full"><span>Regulatório</span><i></i></div>
-            <label class="ck full">
-              <input type="checkbox" formControlName="exigeRegistroAnac" /> Exige registro na ANAC
-              (acima de 250 g)
-            </label>
-            <div class="f">
-              <label for="classeAnac">Classe ANAC</label>
-              <select id="classeAnac" formControlName="classeAnac">
-                <option value="">Selecione</option>
-                @for (opcao of opcoes('classeAnac'); track opcao) {
-                  <option [value]="opcao">{{ opcao }}</option>
-                }
-              </select>
-              @if (campoInvalido('classeAnac')) {
-                <span class="warn">{{ mensagemErro('classeAnac') }}</span>
-              }
-            </div>
-            <div class="f">
-              <label for="registroSisant">Registro SISANT</label>
-              <input
-                id="registroSisant"
-                type="text"
-                placeholder="PP-123456789"
-                formControlName="registroSisant"
-              />
-              @if (campoInvalido('registroSisant')) {
-                <span class="warn">{{ mensagemErro('registroSisant') }}</span>
-              }
+            <div class="f w6">
+              <label for="descricao">Descrição completa</label>
+              <textarea id="descricao" maxlength="5000" formControlName="descricao"></textarea>
             </div>
           </div>
         </section>
-      } @else {
-        <section class="card p">
-          <div class="card-h">
-            <span class="card-t">Dados do acessório</span>
-            <span class="card-n">Colunas exclusivas da entidade Acessorio</span>
-          </div>
-          <div class="g2">
-            <div class="f">
-              <label for="tipoAcessorio">Tipo de acessório <span class="req">*</span></label>
-              <select id="tipoAcessorio" [formControl]="tipoAcessorio">
-                <option value="">Selecione</option>
-                @for (opcao of opcoes('tipoAcessorio'); track opcao) {
-                  <option [value]="opcao">{{ opcao }}</option>
-                }
-              </select>
-              @if (campoInvalido('tipoAcessorio')) {
-                <span class="warn">{{ mensagemErro('tipoAcessorio') }}</span>
-              }
+
+        @if (ehDrone) {
+          <!-- Ficha técnica (D14) -->
+          <section class="sec" id="s2" [formGroup]="specs">
+            <div class="sh"><h2>Ficha técnica</h2><span>Filtrável e comparável na loja</span></div>
+            <div class="fg">
+              <div class="sub-h lbl">Estrutura e voo</div>
+              <div class="f">
+                <label for="pesoGramas">Peso <span class="req">*</span></label>
+                <div class="unit"><input id="pesoGramas" type="number" min="0" inputmode="decimal" formControlName="pesoGramas" [attr.aria-invalid]="campoInvalido('pesoGramas')" /><em>g</em></div>
+                @if (mensagemErro('pesoGramas'); as m) { <span class="erro">{{ m }}</span> }
+              </div>
+              <div class="f">
+                <label for="dimensoesDobrado">Dimensões dobrado</label>
+                <div class="unit"><input id="dimensoesDobrado" type="text" maxlength="30" formControlName="dimensoesDobrado" /><em>mm</em></div>
+              </div>
+              <div class="f">
+                <label for="dimensoesAberto">Dimensões aberto</label>
+                <div class="unit"><input id="dimensoesAberto" type="text" maxlength="30" formControlName="dimensoesAberto" /><em>mm</em></div>
+              </div>
+              <div class="f">
+                <label for="autonomia">Autonomia de voo</label>
+                <div class="unit"><input id="autonomia" type="number" min="0" inputmode="decimal" formControlName="autonomiaMinutos" /><em>min</em></div>
+              </div>
+              <div class="f">
+                <label for="alcance">Alcance de transmissão</label>
+                <div class="unit"><input id="alcance" type="number" min="0" step="0.1" inputmode="decimal" formControlName="alcanceKm" /><em>km</em></div>
+              </div>
+              <div class="f">
+                <label for="velocidade">Velocidade máxima</label>
+                <div class="unit"><input id="velocidade" type="number" min="0" inputmode="decimal" formControlName="velocidadeMaximaKmh" /><em>km/h</em></div>
+              </div>
+              <div class="sub-h lbl">Câmera</div>
+              <div class="f">
+                <label for="foto">Resolução de foto</label>
+                <div class="unit"><input id="foto" type="number" min="0" inputmode="decimal" formControlName="resolucaoFotoMp" /><em>MP</em></div>
+              </div>
+              <div class="f">
+                <label for="sensor">Sensor</label>
+                <select id="sensor" formControlName="tipoSensor">
+                  <option value="">Selecione</option>
+                  @for (o of opcoes('sensor'); track o) { <option [value]="o">{{ o }}</option> }
+                </select>
+              </div>
+              <div class="f">
+                <label for="video">Vídeo</label>
+                <select id="video" formControlName="resolucaoVideo">
+                  <option value="">Selecione</option>
+                  @for (o of opcoes('video'); track o) { <option [value]="o">{{ o }}</option> }
+                </select>
+              </div>
+              <div class="f w3">
+                <label for="estabilizacao">Estabilização</label>
+                <select id="estabilizacao" formControlName="estabilizacao">
+                  <option value="">Selecione</option>
+                  @for (o of opcoes('estabilizacao'); track o) { <option [value]="o">{{ o }}</option> }
+                </select>
+              </div>
+              <div class="sub-h lbl">Bateria</div>
+              <div class="f">
+                <label for="tipoBateria">Tipo</label>
+                <select id="tipoBateria" formControlName="tipoBateria">
+                  <option value="">Selecione</option>
+                  @for (o of opcoes('bateria'); track o) { <option [value]="o">{{ o }}</option> }
+                </select>
+              </div>
+              <div class="f">
+                <label for="capacidade">Capacidade</label>
+                <div class="unit"><input id="capacidade" type="number" min="0" inputmode="decimal" formControlName="capacidadeBateriaMah" /><em>mAh</em></div>
+              </div>
+              <div class="f">
+                <label for="carga">Carregamento</label>
+                <div class="unit"><input id="carga" type="number" min="0" inputmode="decimal" formControlName="tempoCarregamentoMinutos" /><em>min</em></div>
+              </div>
+              <div class="sub-h lbl">Navegação, segurança e regulatório</div>
+              <label class="toggle"><input type="checkbox" formControlName="gpsIntegrado" />GPS integrado (GPS + GLONASS)</label>
+              <label class="toggle"><input type="checkbox" formControlName="sensoresAnticolisao" />Sensores anticolisão omnidirecionais</label>
+              <label class="toggle"><input type="checkbox" formControlName="exigeRegistroAnac" />Exige registro na ANAC (acima de 250 g)</label>
+              <div class="f">
+                <label for="classeAnac">Classe ANAC</label>
+                <select id="classeAnac" formControlName="classeAnac" [attr.aria-invalid]="campoInvalido('classeAnac')">
+                  <option value="">Selecione</option>
+                  @for (o of opcoes('classeAnac'); track o) { <option [value]="o">{{ o }}</option> }
+                </select>
+                @if (mensagemErro('classeAnac'); as m) { <span class="erro">{{ m }}</span> }
+              </div>
+              <div class="f">
+                <label for="sisant">Registro SISANT</label>
+                <input id="sisant" type="text" maxlength="40" placeholder="PR-00000000" formControlName="registroSisant" />
+              </div>
             </div>
-          </div>
+          </section>
+        }
+
+        @if (ehAcessorio) {
+          <section class="sec" [formGroup]="form">
+            <div class="sh"><h2>Dados do acessório</h2><span>Colunas exclusivas da entidade Acessorio</span></div>
+            <div class="fg">
+              <div class="f w3">
+                <label for="tipoAcessorio">Tipo de acessório <span class="req">*</span></label>
+                <select id="tipoAcessorio" formControlName="tipoAcessorio" [attr.aria-invalid]="campoInvalido('tipoAcessorio')">
+                  <option value="">Selecione o tipo</option>
+                  @for (o of opcoes('tipoAcessorio'); track o) { <option [value]="o">{{ o }}</option> }
+                </select>
+                @if (mensagemErro('tipoAcessorio'); as m) { <span class="erro">{{ m }}</span> }
+              </div>
+            </div>
+          </section>
+
           <app-compativeis-acessorio
-            [(vinculos)]="compativeis"
             [idAtual]="produtoId()"
             [erro]="mensagemErro('idsCompativeis')"
+            [(vinculos)]="compativeis"
           />
-        </section>
-      }
+        }
 
-      @if (ehDrone || modoEdicao()) {
-        <section class="card p">
-          <div class="card-h">
-            <span class="card-t">Acessórios compatíveis</span>
-            <span class="card-n">O vínculo é feito no cadastro do acessório</span>
-          </div>
-          @if (acessoriosCompativeis().length) {
-            <ul
-              class="tbl"
-              style="list-style: none; margin: 0; padding: 0"
-              aria-label="Acessórios compatíveis"
-            >
-              @for (acessorio of acessoriosCompativeis(); track acessorio.id) {
-                <li class="trow" style="grid-template-columns: minmax(0, 1fr) auto">
-                  <span class="ink">{{ acessorio.nome || 'Sem nome (rascunho)' }}</span>
-                  <a class="dim" [routerLink]="rotaEdicao(acessorio)">Abrir acessório</a>
-                </li>
+        @if (ehKit) {
+          <!-- Componentes (D7): qualquer produto que não seja outro kit -->
+          <section class="sec">
+            <div class="sh">
+              <h2>Componentes</h2>
+              <span>{{ componentes().length }} {{ componentes().length === 1 ? 'produto' : 'produtos' }} · {{ unidadesNoKit() }} {{ unidadesNoKit() === 1 ? 'unidade' : 'unidades' }}</span>
+            </div>
+            <div class="list">
+              @for (c of componentes(); track c.produto.id; let i = $index) {
+                <div class="li">
+                  <span class="thumb ph"></span>
+                  <div>
+                    <div class="t">{{ c.produto.nome || 'Produto sem nome' }}</div>
+                    <div class="s mono">{{ c.produto.sku || 'sem SKU' }} · {{ c.produto.disponivel }} em estoque</div>
+                    @if (erroComponente(i); as m) { <span class="erro" style="font-size: 12px; color: var(--warn)">{{ m }}</span> }
+                  </div>
+                  <div style="display: flex; gap: 10px; align-items: center">
+                    <label class="qty-in">
+                      <input type="number" min="1" inputmode="numeric" [value]="c.quantidade" (input)="mudarQuantidade(c.produto.id, $event)" [attr.aria-label]="'Quantidade de ' + (c.produto.nome || 'produto')" /><em>un</em>
+                    </label>
+                    <button class="x" type="button" style="border: 0; background: none; color: var(--mute); cursor: pointer" [attr.aria-label]="'Remover ' + (c.produto.nome || 'produto')" (click)="removerComponente(c.produto.id)">✕</button>
+                  </div>
+                </div>
+              } @empty {
+                <p class="note" style="margin: 0">Nenhum componente ainda.</p>
               }
-            </ul>
-          } @else {
-            <p class="dim">
-              Nenhum acessório vinculado. Para vincular, abra o acessório e use “Compatível com”.
+            </div>
+            @if (mensagemErro('componentes'); as m) { <p class="erro" style="font-size: 12px; color: var(--warn)">{{ m }}</p> }
+            @if (escolhendoComponente()) {
+              <div class="toolbar" style="margin: 12px 0 0">
+                <select class="sel" aria-label="Produto componente" (change)="adicionarComponente($event)">
+                  <option value="">Escolha o produto</option>
+                  @for (o of opcoesLivres(); track o.id) {
+                    <option [value]="o.id">{{ o.nome || 'Sem nome' }} · {{ o.sku || 'sem SKU' }} · {{ o.tipo }}</option>
+                  }
+                </select>
+              </div>
+            } @else {
+              <button class="btn sm addrow" type="button" (click)="escolhendoComponente.set(true)">Adicionar componente</button>
+            }
+            <p class="note">
+              Componente é qualquer produto que não seja outro kit (<code>ComponenteKit</code> aponta para
+              <code>Produto</code>). Vender o kit dá baixa em cada componente, nunca num estoque do kit (D7).
             </p>
+          </section>
+        }
+
+        <!-- Preço, estoque e embalagem (D26, D40) -->
+        <section class="sec" id="s3" [formGroup]="dadosComerciais">
+          <div class="sh">
+            <h2>{{ ehKit ? 'Preço e embalagem' : 'Preço, estoque e embalagem' }}</h2>
+            <span>{{ ehKit ? 'O estoque vem dos componentes' : 'Cada versão é um produto próprio (D40)' }}</span>
+          </div>
+          <div class="fg">
+            <div class="f">
+              <label for="preco">Preço de venda <span class="req">*</span></label>
+              <div class="unit"><input id="preco" type="number" min="0" step="0.01" inputmode="decimal" formControlName="preco" [attr.aria-invalid]="campoInvalido('preco')" /><em>R$</em></div>
+              @if (mensagemErro('preco'); as m) { <span class="erro">{{ m }}</span> }
+            </div>
+            <div class="f">
+              <label for="custo">Custo de aquisição</label>
+              <div class="unit"><input id="custo" type="number" min="0" step="0.01" inputmode="decimal" formControlName="custoAquisicao" [attr.aria-invalid]="campoInvalido('custoAquisicao')" /><em>R$</em></div>
+              @if (mensagemErro('custoAquisicao'); as m) { <span class="erro">{{ m }}</span> }
+            </div>
+            <div class="f">
+              <label for="margem">Margem</label>
+              <div class="unit"><input id="margem" [value]="margemTexto()" readonly aria-label="Margem" style="color: var(--mute)" /><em>%</em></div>
+              <span class="hint">(preço − custo) ÷ preço</span>
+            </div>
+            @if (ehKit) {
+              <div class="f w2">
+                <label for="estoqueKit">Estoque</label>
+                <div class="unit"><input id="estoqueKit" value="derivado dos componentes" readonly aria-label="Estoque" style="color: var(--mute)" /></div>
+                <span class="hint">Kit não tem estoque próprio</span>
+              </div>
+            } @else {
+              <div class="f">
+                <label for="estoqueFisico">{{ modoEdicao() ? 'Estoque físico' : 'Estoque inicial' }}</label>
+                <div class="unit"><input id="estoqueFisico" type="number" min="0" inputmode="numeric" formControlName="estoqueFisico" [readonly]="modoEdicao()" [attr.aria-invalid]="campoInvalido('estoqueFisico')" /><em>un</em></div>
+                <span class="hint">{{ modoEdicao() ? 'Muda só por movimento de estoque' : 'Depois, só muda por movimento' }}</span>
+                @if (mensagemErro('estoqueFisico'); as m) { <span class="erro">{{ m }}</span> }
+              </div>
+              <div class="f">
+                <label for="estoqueMinimo">Estoque mínimo</label>
+                <div class="unit"><input id="estoqueMinimo" type="number" min="0" inputmode="numeric" formControlName="estoqueMinimo" /><em>un</em></div>
+                <span class="hint">Abaixo disso, alerta no estoque</span>
+              </div>
+            }
+            @if (!ehKit || dadosComerciais.controls.sobrescreverEmbalagem.value) {
+              <div class="f">
+                <label for="pesoCaixa">Peso da caixa <span class="req">*</span></label>
+                <div class="unit"><input id="pesoCaixa" type="number" min="0" step="0.001" inputmode="decimal" formControlName="pesoEmbalagemKg" [attr.aria-invalid]="campoInvalido('pesoEmbalagemKg')" /><em>kg</em></div>
+                @if (mensagemErro('pesoEmbalagemKg'); as m) { <span class="erro">{{ m }}</span> }
+              </div>
+              <div class="f w2">
+                <label for="caixa">Caixa A × L × C <span class="req">*</span></label>
+                <div class="unit"><input id="caixa" type="text" inputmode="decimal" placeholder="15×28×38" formControlName="dimensoes" [attr.aria-invalid]="!!erroDimensoes()" /><em>cm</em></div>
+                @if (erroDimensoes(); as m) { <span class="erro">{{ m }}</span> }
+              </div>
+            } @else {
+              <div class="f">
+                <label for="pesoDerivado">Peso da caixa <span class="req">*</span></label>
+                <div class="unit"><input id="pesoDerivado" [value]="embalagemDerivada().peso ?? ''" readonly placeholder="dos componentes" style="color: var(--mute)" /><em>kg</em></div>
+                @if (mensagemErro('pesoEmbalagemKg'); as m) { <span class="erro">{{ m }}</span> }
+              </div>
+              <div class="f w2">
+                <label for="caixaDerivada">Caixa A × L × C <span class="req">*</span></label>
+                <div class="unit"><input id="caixaDerivada" [value]="embalagemDerivada().dimensoes ?? ''" readonly placeholder="dos componentes" style="color: var(--mute)" /><em>cm</em></div>
+                @if (erroDimensoes(); as m) { <span class="erro">{{ m }}</span> }
+              </div>
+            }
+          </div>
+          <p class="note">
+            Peso e dimensões são os da <b>embalagem</b>: é o que a transportadora usa na cotação do frete (D16).
+            Preço promocional não fica aqui: é uma <a routerLink="/admin/promocoes" style="text-decoration: underline">Promoção</a> com vigência.
+          </p>
+          @if (ehKit) {
+            <label class="toggle" style="margin-top: 10px">
+              <input type="checkbox" formControlName="sobrescreverEmbalagem" />Sobrescrever peso e dimensões (padrão: calculados a partir dos componentes)
+            </label>
           }
         </section>
-      }
 
-      <section class="card p">
-        <div class="card-h">
-          <span class="card-t">Variantes</span>
-          <span class="card-n">A unidade vendável é a variante, não o produto</span>
-        </div>
-        <label class="ck full" style="margin-bottom: 16px">
-          <input type="checkbox" [formControl]="semOpcoes" /> Este produto não tem opções (cria uma
-          variante única "Padrão")
-        </label>
-        @if (campoInvalido('variantes')) {
-          <span class="warn" style="display: block; margin-bottom: 12px">
-            {{ mensagemErro('variantes') }}
-          </span>
-        }
-        <div class="tbl" style="overflow-x: auto">
-          <div
-            class="trow head"
-            [style.grid-template-columns]="gridVariantes"
-            style="min-width: 820px; gap: 8px"
-          >
-            <span>Nome</span>
-            <span>SKU</span>
-            <span>Preço (R$)</span>
-            <span>Custo (R$)</span>
-            <span>Margem</span>
-            <span>Estoque</span>
-            <span>Estoque mín.</span>
-            <span>Peso cx (kg)</span>
-            <span>Dimensões cx (cm)</span>
-            <span>Ativa</span>
-            <span></span>
+        <!-- Página de venda (D40) -->
+        <section class="sec" id="s4" [formGroup]="pagina">
+          <div class="sh">
+            <h2>Página de venda</h2>
+            <span>{{ ehAcessorio ? 'Opcional · junta versões parecidas numa página' : 'Junta versões parecidas numa página só' }}</span>
           </div>
-          @for (linha of variantes.controls; track linha; let i = $index) {
-            <div
-              class="trow"
-              [formGroup]="linha"
-              [style.grid-template-columns]="gridVariantes"
-              style="min-width: 820px; gap: 8px; align-items: start"
-            >
-              <div class="f">
-                <input
-                  type="text"
-                  formControlName="nome"
-                  maxlength="60"
-                  [readonly]="semOpcoes.value"
-                  [attr.aria-label]="'Nome da variante ' + (i + 1)"
-                />
-                @if (linha.controls.ehKit.value) {
-                  <span class="dim" style="font-size: 11px">Kit · ver Kit ou combo</span>
+          <div class="fg">
+            <div class="f w3">
+              <label for="grupo">Grupo</label>
+              <select id="grupo" formControlName="idGrupo" [attr.aria-invalid]="campoInvalido('idGrupo')">
+                <option [ngValue]="null">Sem grupo · página própria</option>
+                @for (g of grupos(); track g.id) {
+                  <option [ngValue]="g.id">{{ g.nome }}{{ g.ativo ? '' : ' (inativo)' }}</option>
                 }
-                @if (erroVariante(i, 'ehKit'); as erro) {
-                  <span class="warn">{{ erro }}</span>
-                }
-                @if (erroVariante(i, 'nome'); as erro) {
-                  <span class="warn">{{ erro }}</span>
-                }
-              </div>
-              <div class="f">
-                <input
-                  type="text"
-                  formControlName="sku"
-                  maxlength="40"
-                  placeholder="DRN-FX2P-STD"
-                  [attr.aria-label]="'SKU da variante ' + (i + 1)"
-                />
-                @if (erroVariante(i, 'sku'); as erro) {
-                  <span class="warn">{{ erro }}</span>
-                }
-              </div>
-              <div class="f">
-                <input
-                  type="number"
-                  style="padding: 0 6px"
-                  min="0"
-                  step="0.01"
-                  formControlName="preco"
-                  [attr.aria-label]="'Preço da variante ' + (i + 1)"
-                />
-                @if (erroVariante(i, 'preco'); as erro) {
-                  <span class="warn">{{ erro }}</span>
-                }
-              </div>
-              <div class="f">
-                <input
-                  type="number"
-                  style="padding: 0 6px"
-                  min="0"
-                  step="0.01"
-                  formControlName="custoAquisicao"
-                  [attr.aria-label]="'Custo da variante ' + (i + 1)"
-                />
-                @if (erroVariante(i, 'custoAquisicao'); as erro) {
-                  <span class="warn">{{ erro }}</span>
-                }
-              </div>
-              <span
-                class="dim num"
-                style="line-height: 38px"
-                title="Calculada pelo sistema ao salvar"
-              >
-                {{ formatarMargem(linha.controls.margemPercentual.value) }}
-              </span>
-              @if (linha.controls.ehKit.value) {
-                <!-- kit não tem estoque próprio (D7): mostra o disponível derivado -->
-                <div class="f">
-                  <span
-                    class="dim"
-                    style="line-height: 38px"
-                    title="Kit: mínimo entre componentes ÷ quantidade exigida"
-                    >{{ disponibilidadeKit(i) }} un.</span
-                  >
-                  @if (erroVariante(i, 'estoqueFisico'); as erro) {
-                    <span class="warn">{{ erro }}</span>
-                  }
-                </div>
-                <span class="dim" style="line-height: 38px">—</span>
-              } @else {
-                <div class="f">
-                  <input
-                    type="number"
-                    style="padding: 0 6px"
-                    min="0"
-                    step="1"
-                    formControlName="estoqueFisico"
-                    [readonly]="varianteSalva(i)"
-                    [title]="
-                      varianteSalva(i) ? 'Depois de criada, o estoque muda só por movimento' : ''
-                    "
-                    [attr.aria-label]="'Estoque da variante ' + (i + 1)"
-                  />
-                  @if (erroVariante(i, 'estoqueFisico'); as erro) {
-                    <span class="warn">{{ erro }}</span>
-                  }
-                </div>
-                <div class="f">
-                  <input
-                    type="number"
-                    style="padding: 0 6px"
-                    min="0"
-                    step="1"
-                    formControlName="estoqueMinimo"
-                    [attr.aria-label]="'Estoque mínimo da variante ' + (i + 1)"
-                  />
-                  @if (erroVariante(i, 'estoqueMinimo'); as erro) {
-                    <span class="warn">{{ erro }}</span>
-                  }
+              </select>
+              <span class="hint">Vazio: o produto tem página própria</span>
+              @if (mensagemErro('idGrupo'); as m) { <span class="erro">{{ m }}</span> }
+            </div>
+            <div class="f">
+              <label for="rotulo">Rótulo no grupo @if (grupoSelecionado()) {<span class="req">*</span>}</label>
+              <input id="rotulo" type="text" maxlength="40" placeholder="Ex.: Pro, Standard, Fly More" formControlName="rotuloNoGrupo" [attr.aria-invalid]="campoInvalido('rotuloNoGrupo')" />
+              <span class="hint">Aparece no seletor “Versão”</span>
+              @if (mensagemErro('rotuloNoGrupo'); as m) { <span class="erro">{{ m }}</span> }
+            </div>
+            <div class="f">
+              <label for="ordem">Ordem no seletor</label>
+              <input id="ordem" type="number" min="0" inputmode="numeric" formControlName="ordemNoGrupo" />
+            </div>
+          </div>
+          @if (versoes().length) {
+            <div class="list" style="margin-top: 14px">
+              @for (v of versoes(); track v.id ?? 'este') {
+                <div class="li">
+                  <span class="thumb ph"></span>
+                  <div>
+                    <div class="t">{{ v.nome }} @if (v.este) {<span class="chip" style="margin-left: 6px">ESTE</span>}</div>
+                    <div class="s">rótulo “{{ v.rotulo }}” · {{ v.tipo }}</div>
+                  </div>
+                  <span class="num" style="font: 300 15px var(--display)">{{ moeda(v.preco) }}</span>
                 </div>
               }
-              <div class="f">
-                <input
-                  type="number"
-                  style="padding: 0 6px"
-                  min="0"
-                  step="0.001"
-                  formControlName="pesoEmbalagemKg"
-                  [placeholder]="linha.controls.ehKit.value ? linha.controls.pesoAuto.value : ''"
-                  [title]="
-                    linha.controls.ehKit.value
-                      ? 'Vazio: soma dos componentes. Preencha só para sobrescrever'
-                      : ''
-                  "
-                  [attr.aria-label]="'Peso da embalagem da variante ' + (i + 1)"
-                />
-                @if (erroVariante(i, 'pesoEmbalagemKg'); as erro) {
-                  <span class="warn">{{ erro }}</span>
-                }
-              </div>
-              <div class="f">
-                <input
-                  type="text"
-                  formControlName="dimensoes"
-                  [placeholder]="
-                    linha.controls.ehKit.value ? linha.controls.dimensoesAuto.value : '15×28×38'
-                  "
-                  [title]="
-                    linha.controls.ehKit.value
-                      ? 'Vazio: maior altura e largura e comprimentos somados. Preencha só para sobrescrever'
-                      : ''
-                  "
-                  [attr.aria-label]="
-                    'Altura × largura × comprimento da embalagem da variante ' + (i + 1)
-                  "
-                />
-                @if (erroDimensoes(i); as erro) {
-                  <span class="warn">{{ erro }}</span>
-                }
-              </div>
-              <label class="ck" style="height: 38px">
-                <input
-                  type="checkbox"
-                  formControlName="ativa"
-                  [attr.aria-label]="'Variante ' + (i + 1) + ' ativa'"
-                />
-              </label>
-              <button
-                class="btn sm d ghost"
-                type="button"
-                (click)="removerVariante(i)"
-                [disabled]="semOpcoes.value"
-                [attr.aria-label]="'Remover variante ' + (i + 1)"
-              >
-                ✕
-              </button>
             </div>
           }
-        </div>
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            margin-top: 14px;
-            flex-wrap: wrap;
-          "
-        >
-          <span class="dim"
-            >Peso e dimensões são os da <strong>embalagem</strong>: é o que a transportadora
-            cota</span
-          >
-          @if (!semOpcoes.value) {
-            <button class="sbtn sm" type="button" (click)="adicionarVariante()">
-              + Adicionar variante
-            </button>
-          }
-        </div>
-      </section>
-
-      <section class="card p">
-        <div class="card-h">
-          <span class="card-t">Kit ou combo</span>
-          <span class="card-n">Variante sem estoque próprio, composta por outras variantes</span>
-        </div>
-        <label class="ck full" style="margin-bottom: 16px">
-          <input
-            type="checkbox"
-            [checked]="indicesKit().length > 0"
-            (change)="alternarKit($event)"
-          />
-          Criar uma variante do tipo kit para este produto
-        </label>
-        @for (i of indicesKit(); track i) {
-          @let kit = variantes.at(i);
-          @if (indicesKit().length > 1) {
-            <strong style="display: block; margin: 8px 0">{{
-              kit.controls.nome.value || 'Kit sem nome'
-            }}</strong>
-          }
-          @if (erroVariante(i, 'componentes'); as erro) {
-            <span class="warn" style="display: block; margin-bottom: 12px">{{ erro }}</span>
-          }
-          <div class="tbl">
-            <div class="trow head" [style.grid-template-columns]="gridKit" style="gap: 8px">
-              <span>Variante componente</span>
-              <span>Qtd.</span>
-              <span>Disponível</span>
-              <span></span>
-            </div>
-            @for (comp of kit.controls.componentes.controls; track comp; let j = $index) {
-              <div
-                class="trow"
-                [formGroup]="comp"
-                [style.grid-template-columns]="gridKit"
-                style="gap: 8px; align-items: start"
-              >
-                <div class="f" style="min-width: 0">
-                  <select
-                    formControlName="idVariante"
-                    [attr.aria-label]="'Variante componente ' + (j + 1) + ' do kit'"
-                  >
-                    <option [ngValue]="null">Selecione</option>
-                    @for (op of opcoesComponente(); track op.id) {
-                      <option [ngValue]="op.id">{{ rotuloVariante(op) }}</option>
-                    }
-                  </select>
-                  @if (erroComponente(i, j); as erro) {
-                    <span class="warn">{{ erro }}</span>
-                  }
-                </div>
-                <div class="f">
-                  <input
-                    type="number"
-                    style="padding: 0 6px"
-                    min="1"
-                    step="1"
-                    formControlName="quantidade"
-                    [attr.aria-label]="'Quantidade do componente ' + (j + 1)"
-                  />
-                </div>
-                <span class="dim" style="line-height: 38px">
-                  @if (disponivelDe(comp.controls.idVariante.value); as d) {
-                    {{ d }} un.
-                  } @else if (comp.controls.idVariante.value !== null) {
-                    0 un.
-                  } @else {
-                    —
-                  }
-                </span>
-                <button
-                  class="btn sm d ghost"
-                  type="button"
-                  (click)="removerComponente(i, j)"
-                  [attr.aria-label]="'Remover componente ' + (j + 1)"
-                >
-                  ✕
-                </button>
-              </div>
-            }
-          </div>
-          <div
-            style="
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              gap: 16px;
-              margin-top: 14px;
-              flex-wrap: wrap;
-            "
-          >
-            <span class="dim"
-              >Disponibilidade do kit: <strong>{{ disponibilidadeKit(i) }} un.</strong> (mínimo
-              entre componentes ÷ quantidade exigida). A baixa acontece no componente, nunca no
-              kit</span
-            >
-            <button class="sbtn sm" type="button" (click)="adicionarComponente(i)">
-              + Adicionar componente
-            </button>
-          </div>
-        } @empty {
-          <div class="tbl">
-            <div class="trow head" [style.grid-template-columns]="gridKit" style="gap: 8px">
-              <span>Variante componente</span>
-              <span>Qtd.</span>
-              <span>Disponível</span>
-              <span></span>
-            </div>
-            <div class="trow">
-              <span class="dim"
-                >Este produto não tem kit. Marque a opção acima para montar um.</span
-              >
-            </div>
-          </div>
-          <div
-            style="
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              gap: 16px;
-              margin-top: 14px;
-              flex-wrap: wrap;
-            "
-          >
-            <span class="dim">A baixa acontece no componente, nunca no kit</span>
-            <button class="sbtn sm" type="button" (click)="adicionarComponente()">
-              + Adicionar componente
-            </button>
-          </div>
-        }
-        @if (!modoEdicao()) {
-          <p class="legend" style="margin-top: 14px">
-            As variantes deste produto entram na lista de componentes depois que ele for salvo.
+          <p class="note">
+            As outras versões do grupo aparecem no seletor “Versão” da página deste produto. Na vitrine, o grupo vira
+            um card só, a partir do menor preço. <a routerLink="/admin/grupos" style="text-decoration: underline">Gerenciar grupos</a>
           </p>
-        }
-      </section>
-
-      <section class="card p" [formGroup]="form">
-        <div class="card-h">
-          <span class="card-t">Comercial</span>
-          <span class="card-n">Desconto é Promoção com vigência, não campo do produto</span>
-        </div>
-        <div class="g2">
-          <div class="f">
-            <label for="garantiaMeses">Garantia (meses)</label>
-            <input
-              id="garantiaMeses"
-              type="number"
-              min="0"
-              step="1"
-              placeholder="Vazio usa o padrão da loja"
-              formControlName="garantiaMeses"
-            />
-            @if (campoInvalido('garantiaMeses')) {
-              <span class="warn">{{ mensagemErro('garantiaMeses') }}</span>
-            }
-          </div>
-          <div class="f">
-            <label for="dataLancamento">Data de lançamento</label>
-            <input id="dataLancamento" type="date" formControlName="dataLancamento" />
-            @if (campoInvalido('dataLancamento')) {
-              <span class="warn">{{ mensagemErro('dataLancamento') }}</span>
-            }
-          </div>
-        </div>
-        <p class="legend" style="margin-top: 14px">
-          Preço promocional se cadastra em Promoções, com início, fim e escopo.
-        </p>
-      </section>
-
-      <details class="card p" [formGroup]="form" [open]="erroNoSeo()">
-        <summary
-          style="
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            list-style: none;
-          "
-        >
-          <span class="card-t">Mostrar mais opções</span>
-          <span class="dim">Expandir ▾</span>
-        </summary>
-        <div class="g2" style="margin-top: 20px">
-          <app-produto-midias-extras />
-          <div class="f full">
-            <label for="slug">Slug (URL amigável)</label>
-            <input
-              id="slug"
-              type="text"
-              placeholder="falcon-x2-pro · gerado a partir do nome, se vazio"
-              formControlName="slug"
-            />
-            @if (campoInvalido('slug')) {
-              <span class="warn">{{ mensagemErro('slug') }}</span>
-            }
-          </div>
-          <div class="f full">
-            <label for="metaTitle">Meta title</label>
-            <input
-              id="metaTitle"
-              type="text"
-              maxlength="70"
-              placeholder="Até 70 caracteres"
-              formControlName="metaTitle"
-            />
-            @if (campoInvalido('metaTitle')) {
-              <span class="warn">{{ mensagemErro('metaTitle') }}</span>
-            }
-          </div>
-          <div class="f full">
-            <label for="metaDescription">Meta description</label>
-            <input
-              id="metaDescription"
-              type="text"
-              maxlength="160"
-              placeholder="Até 160 caracteres"
-              formControlName="metaDescription"
-            />
-            @if (campoInvalido('metaDescription')) {
-              <span class="warn">{{ mensagemErro('metaDescription') }}</span>
-            }
-          </div>
-          <div class="f full">
-            <label for="tags">Tags</label>
-            <input
-              id="tags"
-              type="text"
-              placeholder="drone, 4k, profissional"
-              formControlName="tags"
-            />
-            @if (campoInvalido('tags')) {
-              <span class="warn">{{ mensagemErro('tags') }}</span>
-            }
-          </div>
-        </div>
-      </details>
-    </div>
-
-    <aside class="rail" [formGroup]="form">
-      <section class="card p2">
-        <div class="eyebrow">Publicação</div>
-        <div class="stack">
-          <div class="f">
-            <label for="idStatus">Status <span class="req">*</span></label>
-            <select id="idStatus" formControlName="idStatus">
-              <option [ngValue]="STATUS.RASCUNHO">Rascunho</option>
-              <option [ngValue]="STATUS.ATIVO">Ativo</option>
-              <option [ngValue]="STATUS.INATIVO">Inativo</option>
-            </select>
-            @if (campoInvalido('idStatus')) {
-              <span class="warn">{{ mensagemErro('idStatus') }}</span>
-            }
-          </div>
-          <label class="ck full">
-            <input type="checkbox" formControlName="destaque" /> Produto em destaque
-          </label>
-        </div>
-      </section>
-
-      <app-produto-midias [publicado]="form.controls.idStatus.value !== STATUS.RASCUNHO" />
-
-      @if (modoEdicao()) {
-        <section class="card p2">
-          <div class="eyebrow">Zona de risco</div>
-          <button
-            class="btn d"
-            type="button"
-            style="width: 100%"
-            (click)="excluir()"
-            [disabled]="excluindo()"
-          >
-            {{ excluindo() ? 'Excluindo…' : 'Excluir produto' }}
-          </button>
         </section>
-      }
-    </aside>
-  </div>
+
+        <!-- Comercial e SEO (#7): garantia, lançamento, destaque e o que vai para a busca -->
+        <section class="sec" [formGroup]="form">
+          <div class="sh"><h2>Comercial</h2><span>Desconto é Promoção com vigência, não campo do produto</span></div>
+          <div class="fg">
+            <div class="f">
+              <label for="garantia">Garantia</label>
+              <div class="unit"><input id="garantia" type="number" min="0" inputmode="numeric" placeholder="padrão da loja" formControlName="garantiaMeses" [attr.aria-invalid]="campoInvalido('garantiaMeses')" /><em>meses</em></div>
+              @if (mensagemErro('garantiaMeses'); as m) { <span class="erro">{{ m }}</span> }
+            </div>
+            <div class="f">
+              <label for="lancamento">Data de lançamento</label>
+              <input id="lancamento" type="date" formControlName="dataLancamento" />
+            </div>
+            <label class="toggle" style="grid-column: span 2; align-self: end"><input type="checkbox" formControlName="destaque" />Produto em destaque</label>
+            <div class="sub-h lbl">SEO</div>
+            <div class="f w3">
+              <label for="slug">Slug</label>
+              <input id="slug" type="text" class="mono" maxlength="140" placeholder="gerado a partir do nome" formControlName="slug" [attr.aria-invalid]="campoInvalido('slug')" />
+              @if (mensagemErro('slug'); as m) { <span class="erro">{{ m }}</span> }
+            </div>
+            <div class="f w3">
+              <label for="metaTitle">Meta title</label>
+              <input id="metaTitle" type="text" maxlength="70" formControlName="metaTitle" />
+            </div>
+            <div class="f w6">
+              <label for="metaDescription">Meta description</label>
+              <input id="metaDescription" type="text" maxlength="160" formControlName="metaDescription" />
+            </div>
+            <div class="f w6">
+              <label for="tags">Tags</label>
+              <input id="tags" type="text" maxlength="255" placeholder="separadas por vírgula" formControlName="tags" />
+            </div>
+          </div>
+        </section>
+
+        @if (acessoriosCompativeis().length) {
+          <section class="sec">
+            <div class="sh"><h2>Acessórios compatíveis</h2><span>Vínculo gravado no cadastro de cada acessório (D17)</span></div>
+            <div class="list">
+              @for (a of acessoriosCompativeis(); track a.id) {
+                <div class="li">
+                  <span class="thumb ph"></span>
+                  <div>
+                    <div class="t"><a [routerLink]="rotaEdicao(a)">{{ a.nome || 'Sem nome (rascunho)' }}</a></div>
+                    <div class="s">{{ rotuloTipo(a) }}</div>
+                  </div>
+                  <span></span>
+                </div>
+              }
+            </div>
+          </section>
+        }
+      </div>
+
+      <aside class="rail">
+        <app-produto-midias />
+        <section class="card">
+          <div class="bd" style="padding-top: 18px">
+            <span class="lbl">Vídeo e manual</span>
+            <div style="display: grid; gap: 12px; margin-top: 12px"><app-produto-midias-extras /></div>
+          </div>
+        </section>
+
+        @if (ehKit) {
+          <section class="card">
+            <div class="bd" style="padding-top: 18px">
+              <span class="lbl">Disponibilidade</span>
+              <div style="margin-top: 12px">
+                <div class="saldo">
+                  @for (c of componentes(); track c.produto.id) {
+                    <div><span>{{ c.produto.nome || 'Sem nome' }} · precisa {{ c.quantidade }}</span><b class="num">{{ c.produto.disponivel }}</b></div>
+                  }
+                  <div class="hl"><span>Disponível do kit</span><b class="num">{{ disponivelKit() }}</b></div>
+                </div>
+                @if (limitante(); as l) {
+                  <p class="note" style="margin: 10px 0 0">
+                    Limitado por {{ l.produto.nome || 'um componente' }}: {{ l.produto.disponivel }} disponíveis ÷ {{ l.quantidade }} por kit.
+                  </p>
+                }
+              </div>
+            </div>
+          </section>
+        }
+
+        <section class="card" [formGroup]="form">
+          <div class="bd" style="padding-top: 18px">
+            <span class="lbl">Publicação</span>
+            <div style="margin-top: 12px">
+              <div class="f" style="grid-column: auto">
+                <label>Status <span class="req">*</span></label>
+                <div class="rad" role="radiogroup" aria-label="Status">
+                  <label><input type="radio" formControlName="idStatus" [value]="STATUS.RASCUNHO" />Rascunho</label>
+                  <label><input type="radio" formControlName="idStatus" [value]="STATUS.ATIVO" />Ativo</label>
+                  <label><input type="radio" formControlName="idStatus" [value]="STATUS.INATIVO" />Inativo</label>
+                </div>
+                @if (mensagemErro('idStatus'); as m) { <span class="erro">{{ m }}</span> }
+              </div>
+              <div class="rl" style="margin-top: 14px">
+                <div><span>Aparece na loja</span><b>{{ statusAtual() === 'Ativo' ? 'Sim' : 'Não' }}</b></div>
+                <div><span>Preço</span><b class="num">{{ moeda(dadosComerciais.controls.preco.value) }}</b></div>
+                <div><span>Estoque</span><b class="num">{{ ehKit ? disponivelKit() + ' un (derivado)' : (dadosComerciais.controls.estoqueFisico.value ?? 0) + ' un' }}</b></div>
+                <div><span>Margem</span><b class="num" [style.color]="margem() !== null && margem()! > 0 ? 'var(--ok)' : null">{{ margem() === null ? '—' : margemTexto() + '%' }}</b></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        @if (versoes().length) {
+          <section class="card">
+            <div class="bd" style="padding-top: 18px">
+              <span class="lbl">Seletor “Versão” na loja</span>
+              <div style="margin-top: 12px">
+                <div class="rad">
+                  @for (v of versoes(); track v.id ?? 'este') {
+                    <label><input type="radio" name="previaVersao" [checked]="v.este" />{{ v.rotulo }} · {{ moeda(v.preco) }}</label>
+                  }
+                </div>
+                <p class="note" style="margin: 10px 0 0">Cada versão tem URL própria: <code>/produto/{{ form.controls.slug.value || 'slug-do-produto' }}</code>.</p>
+              </div>
+            </div>
+          </section>
+        }
+
+        @if (pendencias().length) {
+          <section class="card pend">
+            <div class="bd" style="padding-top: 18px">
+              <div class="t">{{ pendencias().length }} {{ pendencias().length === 1 ? 'campo obrigatório vazio' : 'campos obrigatórios vazios' }}</div>
+              <p>{{ pendencias().join(' · ') }}</p>
+              <small>Rascunho aceita campos vazios (D28); para publicar, todos precisam estar preenchidos.</small>
+            </div>
+          </section>
+        }
+      </aside>
+    </div>
+  }
 
   <div class="actionbar">
-    <a class="btn" routerLink="/admin/produtos">Cancelar</a>
-    <div class="actions">
-      <button class="btn p" type="button" (click)="salvar()" [disabled]="salvando()">
-        {{ salvando() ? 'Salvando…' : 'Salvar' }}
+    <div class="in gut">
+      <span class="msg">
+        @if (pendencias().length) {
+          {{ pendencias().length === 1 ? 'Falta' : 'Faltam' }} <b>{{ pendencias().length }} {{ pendencias().length === 1 ? 'campo obrigatório' : 'campos obrigatórios' }}</b>.
+        } @else {
+          Todos os campos obrigatórios preenchidos. <b>Pronto para publicar.</b>
+        }
+      </span>
+      @if (modoEdicao()) {
+        <button class="btn d" type="button" (click)="excluir()" [disabled]="excluindo() || salvando()">
+          {{ excluindo() ? 'Excluindo…' : 'Excluir' }}
+        </button>
+      }
+      <a class="btn" routerLink="/admin/produtos">Cancelar</a>
+      <button class="btn" type="button" (click)="salvar(false)" [disabled]="salvando() || carregando()">Salvar rascunho</button>
+      <button class="btn p" type="button" (click)="salvar(true)" [disabled]="salvando() || carregando()">
+        {{ salvando() ? 'Salvando…' : rotuloPublicar }}
       </button>
     </div>
   </div>
-}
+</main>

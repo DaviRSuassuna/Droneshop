@@ -1,219 +1,353 @@
-<app-admin-nav />
-
-<div class="pagebar">
-  <div class="pagebar-t">
-    <h1 class="h1">Produtos</h1>
-    <span class="sub">
-      {{ total() }} {{ total() === 1 ? 'produto encontrado' : 'produtos encontrados' }}
-    </span>
+<main class="gut">
+  <div class="ph">
+    <div>
+      <span class="lbl">Catálogo</span>
+      <h1>Produtos</h1>
+      <div class="sub">
+        {{ total() }} {{ total() === 1 ? 'item' : 'itens' }} · {{ rascunhos() }}
+        {{ rascunhos() === 1 ? 'rascunho' : 'rascunhos' }}
+      </div>
+    </div>
+    <div class="acts">
+      <button
+        class="btn"
+        type="button"
+        (click)="exportarCsv()"
+        [disabled]="carregando() || total() === 0"
+      >
+        Exportar CSV
+      </button>
+      <a class="btn" routerLink="/admin/kits/novo">Novo kit</a>
+      <a class="btn" routerLink="/admin/acessorios/novo">Novo acessório</a>
+      <a class="btn p" routerLink="/admin/drones/novo">Novo drone</a>
+    </div>
   </div>
-  <div class="actions">
-    <a class="btn" routerLink="/admin/acessorios/novo">Novo acessório</a>
-    <a class="btn p" routerLink="/admin/drones/novo">Novo drone</a>
-  </div>
-</div>
 
-<div class="pad-t stack-l">
-  <div class="filters">
-    <div class="f grow">
+  <nav class="stabs" aria-label="Catálogo">
+    <a routerLink="/admin/produtos" aria-current="page"
+      >Produtos<b>{{ total() }}</b></a
+    >
+    <a routerLink="/admin/grupos"
+      >Grupos de produto<b>{{ totalGrupos() }}</b></a
+    >
+  </nav>
+
+  <div class="toolbar">
+    <label class="field-s grow">
       <input
         type="search"
-        placeholder="Buscar por nome ou modelo"
-        aria-label="Buscar por nome ou modelo"
+        placeholder="Buscar por nome ou SKU"
+        aria-label="Buscar por nome ou SKU"
         [value]="termoBusca()"
         (input)="aoDigitarBusca($any($event.target).value)"
       />
-    </div>
-    <div class="f">
-      <select
-        aria-label="Filtrar por tipo"
-        [value]="filtroTipo() ?? ''"
-        (change)="aoMudarTipo($any($event.target).value)"
-      >
-        <option value="">Todos os tipos</option>
-        <option [value]="TIPO.DRONE">Drone</option>
-        <option [value]="TIPO.ACESSORIO">Acessório</option>
-      </select>
-    </div>
-    <div class="f">
-      <select
-        aria-label="Filtrar por marca"
-        [value]="filtroMarca() ?? ''"
-        (change)="aoMudarMarca($any($event.target).value)"
-      >
-        <option value="">Todas as marcas</option>
-        @for (marca of marcas(); track marca.id) {
-          <option [value]="marca.id" [selected]="marca.id === filtroMarca()">
-            {{ marca.nome }}
-          </option>
-        }
-      </select>
-    </div>
-    <div class="f">
-      <select
-        aria-label="Filtrar por categoria"
-        [value]="filtroCategoria() ?? ''"
-        (change)="aoMudarCategoria($any($event.target).value)"
-      >
-        <option value="">Todas as categorias</option>
-        @for (categoria of categoriasDoFiltro(); track categoria.id) {
-          <option [value]="categoria.id" [selected]="categoria.id === filtroCategoria()">
-            {{ categoria.nome }}
-          </option>
-        }
-      </select>
-    </div>
-    <div class="f">
-      <select
-        aria-label="Filtrar por subcategoria"
-        (change)="aoMudarSubcategoria($any($event.target).value)"
-      >
-        <option value="">Todas as subcategorias</option>
-        @for (sub of subcategoriasDoFiltro(); track sub.id) {
-          <option [value]="sub.id" [selected]="sub.id === filtroSubcategoria()">
-            {{ sub.nome }}
-          </option>
-        }
-      </select>
-    </div>
-    <div class="f">
-      <select
-        aria-label="Filtrar por status"
-        [value]="filtroStatus() ?? ''"
-        (change)="aoMudarStatus($any($event.target).value)"
-      >
-        <option value="">Todos os status</option>
-        <option [value]="STATUS.ATIVO">Ativo</option>
-        <option [value]="STATUS.INATIVO">Inativo</option>
-        <option [value]="STATUS.RASCUNHO">Rascunho</option>
-      </select>
-    </div>
+    </label>
+    <select class="sel" aria-label="Tipo" (change)="aoMudar('tipo', $any($event.target).value)">
+      <option value="" [selected]="!filtroTipo()">Tipo</option>
+      <option [value]="TIPO.DRONE" [selected]="filtroTipo() === TIPO.DRONE">Drone</option>
+      <option [value]="TIPO.ACESSORIO" [selected]="filtroTipo() === TIPO.ACESSORIO">
+        Acessório
+      </option>
+      <option [value]="TIPO.KIT" [selected]="filtroTipo() === TIPO.KIT">Kit</option>
+    </select>
+    <select class="sel" aria-label="Grupo" (change)="aoMudar('grupo', $any($event.target).value)">
+      <option value="" [selected]="!filtroGrupo()">Grupo</option>
+      @for (g of grupos(); track g.id) {
+        <option [value]="g.id" [selected]="filtroGrupo() === g.id">{{ g.nome }}</option>
+      }
+    </select>
+    <select class="sel" aria-label="Marca" (change)="aoMudar('marca', $any($event.target).value)">
+      <option value="" [selected]="!filtroMarca()">Marca</option>
+      @for (m of marcas(); track m.id) {
+        <option [value]="m.id" [selected]="filtroMarca() === m.id">{{ m.nome }}</option>
+      }
+    </select>
+    <select class="sel" aria-label="Status" (change)="aoMudar('status', $any($event.target).value)">
+      <option value="" [selected]="!filtroStatus()">Status</option>
+      <option [value]="STATUS.ATIVO" [selected]="filtroStatus() === STATUS.ATIVO">Ativo</option>
+      <option [value]="STATUS.RASCUNHO" [selected]="filtroStatus() === STATUS.RASCUNHO">
+        Rascunho
+      </option>
+      <option [value]="STATUS.INATIVO" [selected]="filtroStatus() === STATUS.INATIVO">
+        Inativo
+      </option>
+    </select>
+    <select class="sel" aria-label="Estoque" (change)="aoMudarEstoque($any($event.target).value)">
+      <option value="" [selected]="!filtroEstoque()">Estoque</option>
+      <option value="ABAIXO_MINIMO" [selected]="filtroEstoque() === 'ABAIXO_MINIMO'">
+        Abaixo do mínimo
+      </option>
+      <option value="ZERADO" [selected]="filtroEstoque() === 'ZERADO'">Zerado</option>
+    </select>
   </div>
 
-  @if (filtrosAtivos().length > 0) {
-    <div class="chips">
-      <span>Filtros ativos:</span>
+  @if (filtrosAtivos().length) {
+    <div class="tags">
+      Filtros ativos:
       @for (chip of filtrosAtivos(); track chip.rotulo) {
-        <button
-          type="button"
-          class="tag"
-          (click)="chip.limpar()"
-          [attr.aria-label]="'Remover ' + chip.rotulo"
+        <span class="tag"
+          >{{ chip.rotulo }}
+          <button
+            type="button"
+            [attr.aria-label]="'Remover ' + chip.rotulo"
+            (click)="chip.limpar()"
+          >
+            ×
+          </button></span
         >
-          {{ chip.rotulo }} <span aria-hidden="true">×</span>
-        </button>
       }
-      <button type="button" class="link" (click)="limparFiltros()">Limpar tudo</button>
+      <button
+        type="button"
+        class="tag"
+        style="border: 0; text-decoration: underline; cursor: pointer; background: none"
+        (click)="limparFiltros()"
+      >
+        Limpar
+      </button>
     </div>
   }
 
-  <div class="tbl" [class.is-loading]="carregando()">
-    <div class="trow head" [style.grid-template-columns]="grid">
-      <span>Produto</span>
-      <span>Marca</span>
-      <span>Subcategoria</span>
-      <span class="num">Preço</span>
-      <span>Status</span>
-      <span></span>
+  @if (erro(); as mensagem) {
+    <div class="alerta" role="alert">
+      {{ mensagem }}
+      <button class="btn sm" type="button" (click)="carregar()">Tentar novamente</button>
     </div>
+  }
 
-    @if (erro()) {
-      <div class="empty">
-        <span class="warn">{{ erro() }}</span>
-        <button class="btn sm" type="button" (click)="carregar()">Tentar novamente</button>
-      </div>
-    } @else {
-      @for (produto of produtos(); track produto.id) {
-        <a class="trow" [style.grid-template-columns]="grid" [routerLink]="rotaEdicao(produto)">
-          <span class="cell-name">
-            <b>
-              {{ produto.nome ?? 'Rascunho sem nome' }}
-              @if (produto.destaque) {
-                <span class="star" title="Destaque na loja">★</span>
-              }
-            </b>
-            @if (produto.modelo) {
-              <span class="chip">{{ produto.modelo }}</span>
-            }
-          </span>
-          <span class="ink">{{ produto.marca?.nome }}</span>
-          <span class="cell-name">
-            <span class="ink">{{ produto.subcategoria?.nome }}</span>
-            <span class="dim sm">{{ produto.subcategoria?.categoria?.nome }}</span>
-          </span>
-          <span class="ink num">{{ formatarPreco(menorPreco(produto)) }}</span>
-          <span class="status">
-            <span class="dot" [style.background]="corStatus(produto.status)"></span>
-            {{ statusLabel(produto.status) }}
-          </span>
-          <span style="justify-self: end">
-            <button class="btn sm d ghost" type="button" (click)="excluir($event, produto)">
-              Excluir
-            </button>
-          </span>
-        </a>
-      } @empty {
-        @if (!carregando()) {
-          <div class="empty">
-            <b>Nenhum produto encontrado</b>
-            <span>Ajuste ou limpe os filtros para ver mais resultados.</span>
-            @if (filtrosAtivos().length > 0) {
-              <button class="btn sm" type="button" (click)="limparFiltros()">Limpar filtros</button>
-            }
-          </div>
-        } @else {
-          <div class="empty"><span>Carregando produtos…</span></div>
+  @if (resultadoLote()) {
+    <div class="info" role="status">{{ resultadoLote() }}</div>
+  }
+  @if (falhasLote().length) {
+    <div class="alerta" role="alert">
+      <ul>
+        @for (falha of falhasLote(); track falha.id) {
+          <li>Produto {{ falha.id }}: {{ falha.motivo }}</li>
         }
+      </ul>
+    </div>
+  }
+  @if (selecionados().size) {
+    <div class="bulk" style="display: flex">
+      <b>{{ selecionados().size }} produtos selecionados</b>
+      <button
+        class="btn sm"
+        type="button"
+        [disabled]="processandoLote()"
+        (click)="aplicarLote('ATIVAR')"
+      >
+        Ativar
+      </button>
+      <button
+        class="btn sm"
+        type="button"
+        [disabled]="processandoLote()"
+        (click)="aplicarLote('INATIVAR')"
+      >
+        Desativar
+      </button>
+      <button
+        class="btn sm"
+        type="button"
+        [disabled]="processandoLote()"
+        (click)="acaoPendente.set('REAJUSTAR_PRECO')"
+      >
+        Alterar preço
+      </button>
+      <button
+        class="btn sm"
+        type="button"
+        [disabled]="processandoLote()"
+        (click)="acaoPendente.set('MOVER_SUBCATEGORIA')"
+      >
+        Mover categoria
+      </button>
+      @if (acaoPendente() === 'REAJUSTAR_PRECO') {
+        <label class="field-s"
+          >Reajuste (%)<input
+            type="number"
+            step="0.01"
+            aria-label="Percentual de reajuste"
+            [value]="percentualLote()"
+            (input)="percentualLote.set($any($event.target).value)"
+        /></label>
       }
-    }
-
-    <div class="pager">
-      <span class="pager-info">
-        Exibindo {{ intervaloExibido() }} de {{ total() }}
-        <label class="pager-size">
-          Itens por página
-          <select
-            [value]="tamanhoPagina()"
-            (change)="aoMudarTamanhoPagina($any($event.target).value)"
-          >
-            @for (t of tamanhosPagina; track t) {
-              <option [value]="t" [selected]="t === tamanhoPagina()">{{ t }}</option>
-            }
-          </select>
-        </label>
-      </span>
-      <nav class="pages" aria-label="Paginação">
-        <button
-          type="button"
-          (click)="irParaPagina(pagina() - 1)"
-          [disabled]="pagina() === 0"
-          aria-label="Página anterior"
+      @if (acaoPendente() === 'MOVER_SUBCATEGORIA') {
+        <select
+          class="sel"
+          aria-label="Subcategoria de destino"
+          [value]="subcategoriaLote()"
+          (change)="subcategoriaLote.set($any($event.target).value)"
         >
-          ‹
+          <option value="">Selecione a subcategoria</option>
+          @for (sub of subcategorias(); track sub.id) {
+            <option [value]="sub.id">{{ sub.categoria?.nome }} · {{ sub.nome }}</option>
+          }
+        </select>
+      }
+      @if (acaoPendente(); as acao) {
+        <button
+          class="btn sm"
+          type="button"
+          [disabled]="processandoLote()"
+          (click)="aplicarLote(acao)"
+        >
+          Aplicar
         </button>
-        @for (p of paginasVisiveis(); track $index) {
-          @if (p === null) {
-            <span class="gap">…</span>
-          } @else {
-            <button
-              type="button"
-              [class.on]="p === pagina()"
-              [attr.aria-current]="p === pagina() ? 'page' : null"
-              (click)="irParaPagina(p)"
-            >
-              {{ p + 1 }}
-            </button>
+        <button
+          class="btn sm"
+          type="button"
+          [disabled]="processandoLote()"
+          (click)="acaoPendente.set(null)"
+        >
+          Cancelar
+        </button>
+      }
+    </div>
+  }
+
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th>
+            <input
+              class="ck"
+              type="checkbox"
+              aria-label="Selecionar todos"
+              [checked]="todosSelecionados()"
+              [disabled]="processandoLote()"
+              (change)="selecionarTodos($any($event.target).checked)"
+            />
+          </th>
+          <th>Produto</th>
+          <th>Tipo</th>
+          <th>Grupo · versão</th>
+          <th>Marca</th>
+          <th class="r">Preço</th>
+          <th class="r">Estoque</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (carregando()) {
+          <tr>
+            <td colspan="9" style="color: var(--mute)">Carregando produtos…</td>
+          </tr>
+        } @else {
+          @for (produto of produtos(); track produto.id) {
+            <tr (click)="abrir(produto)" [class.picked]="selecionados().has(produto.id)">
+              <td (click)="$event.stopPropagation()">
+                <input
+                  class="ck"
+                  type="checkbox"
+                  [attr.aria-label]="'Selecionar ' + produto.nome"
+                  [checked]="selecionados().has(produto.id)"
+                  [disabled]="processandoLote()"
+                  (change)="selecionar(produto.id, $any($event.target).checked)"
+                />
+              </td>
+              <td>
+                <div class="pc">
+                  <span class="thumb ph"></span>
+                  <div>
+                    <b
+                      ><a [routerLink]="rotaEdicao(produto)" (click)="$event.stopPropagation()">{{
+                        produto.nome || 'Sem nome (rascunho)'
+                      }}</a></b
+                    >
+                    @if (produto.sku) {
+                      <span class="chip">{{ produto.sku }}</span>
+                    }
+                  </div>
+                </div>
+              </td>
+              <td data-l="Tipo">{{ nomeTipo(produto.tipo.id) }}</td>
+              <td data-l="Grupo · versão">
+                @if (produto.grupo) {
+                  <span class="sub2">{{ produto.grupo.nome }} · {{ produto.rotuloNoGrupo }}</span>
+                } @else {
+                  <span class="sub2" style="color: var(--faint)">sem grupo</span>
+                }
+              </td>
+              <td data-l="Marca">{{ produto.marca?.nome ?? '—' }}</td>
+              <td
+                data-l="Preço"
+                class="r num"
+                style="font-family: var(--display); font-weight: 300; font-size: 15px"
+              >
+                {{ preco(produto.preco) }}
+              </td>
+              <td data-l="Estoque" class="r">
+                @if (produto.tipo.id === TIPO.KIT) {
+                  <span class="kits">derivado</span>
+                } @else {
+                  <span class="stock num" [class.low]="estoqueBaixo(produto)">{{
+                    produto.estoqueFisico ?? 0
+                  }}</span>
+                }
+              </td>
+              <td data-l="Status">
+                <span [class]="'st ' + classeStatus(produto)"
+                  ><span>{{ produto.status.nome }}</span></span
+                >
+              </td>
+              <td class="r">
+                <button
+                  class="more"
+                  type="button"
+                  [attr.aria-label]="'Excluir ' + (produto.nome || 'produto')"
+                  title="Excluir"
+                  (click)="excluir($event, produto)"
+                >
+                  ⋯
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="9" style="color: var(--mute)">
+                Nenhum produto encontrado com os filtros atuais.
+                @if (filtrosAtivos().length) {
+                  <button class="btn sm" type="button" (click)="limparFiltros()">
+                    Limpar filtros
+                  </button>
+                }
+              </td>
+            </tr>
           }
         }
-        <button
-          type="button"
-          (click)="irParaPagina(pagina() + 1)"
-          [disabled]="pagina() + 1 >= totalPaginas()"
-          aria-label="Próxima página"
-        >
-          ›
-        </button>
-      </nav>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pager">
+    <span>{{ exibindo() }}</span>
+    <div class="pages">
+      <a
+        href=""
+        (click)="$event.preventDefault(); irParaPagina(pagina() - 1)"
+        aria-label="Página anterior"
+        >‹</a
+      >
+      @for (p of paginasVisiveis(); track $index) {
+        @if (p === null) {
+          <a aria-hidden="true">…</a>
+        } @else {
+          <a
+            href=""
+            [attr.aria-current]="p === pagina() ? 'page' : null"
+            (click)="$event.preventDefault(); irParaPagina(p)"
+            >{{ p + 1 }}</a
+          >
+        }
+      }
+      <a
+        href=""
+        (click)="$event.preventDefault(); irParaPagina(pagina() + 1)"
+        aria-label="Próxima página"
+        >›</a
+      >
     </div>
   </div>
-</div>
+</main>

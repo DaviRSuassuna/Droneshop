@@ -1,131 +1,175 @@
-<app-admin-nav />
-
-<div class="pagebar">
-  <div style="display: flex; align-items: baseline; gap: 12px">
-    <h1 class="h1">Categorias</h1>
-    <span class="sub">
-      @if (!carregando()) {
-        {{ categoriasFiltradas().length }} de {{ categorias().length }}
-        {{ categorias().length === 1 ? 'categoria' : 'categorias' }}
-      }
-    </span>
+<main class="gut">
+  <div class="ph">
+    <div>
+      <span class="lbl">Catálogo</span>
+      <h1>Categorias</h1>
+      <div class="sub">{{ categoriasFiltradas().length }} categorias</div>
+    </div>
+    <div class="acts">
+      <button
+        class="btn"
+        type="button"
+        (click)="iniciarOrdem()"
+        [disabled]="carregando() || reordenando()"
+      >
+        Reordenar</button
+      ><a class="btn p" routerLink="/admin/categorias/novo">Nova categoria</a>
+    </div>
   </div>
-  <div class="actions">
-    <button
-      class="btn"
-      type="button"
-      (click)="exportarCsv()"
-      [disabled]="carregando() || categoriasFiltradas().length === 0"
-    >
-      Exportar CSV
-    </button>
-    <a class="btn p" routerLink="/admin/categorias/novo">Nova categoria</a>
-  </div>
-</div>
-
-<div class="pad-t" style="display: flex; flex-direction: column; gap: 16px">
-  <div class="filters">
-    <div class="f grow">
-      <input
-        type="text"
-        placeholder="Buscar por nome ou slug"
+  <div class="toolbar">
+    <label class="field-s grow"
+      ><input
+        type="search"
+        [disabled]="reordenando()"
+        placeholder="Buscar por nome"
+        aria-label="Buscar"
         [value]="termoBusca()"
-        (input)="aoDigitarBusca($any($event.target).value)"
-      />
-    </div>
-    <div class="f">
-      <select [value]="filtroStatus() ?? ''" (change)="aoMudarStatus($any($event.target).value)">
-        <option value="">Status</option>
-        <option [value]="STATUS.ATIVA">Ativa</option>
-        <option [value]="STATUS.INATIVA">Inativa</option>
-        <option [value]="STATUS.RASCUNHO">Rascunho</option>
-      </select>
-    </div>
+        (input)="aoDigitarBusca($any($event.target).value)" /></label
+    ><select
+      class="sel"
+      aria-label="Tipo"
+      [disabled]="reordenando()"
+      [value]="filtroTipo() ?? ''"
+      (change)="
+        filtroTipo.set($any($event.target).value ? +$any($event.target).value : null); pagina.set(0)
+      "
+    >
+      <option value="">Tipo</option>
+      <option [value]="TIPO.DRONE">Drone</option>
+      <option [value]="TIPO.ACESSORIO">Acessório</option></select
+    ><select
+      class="sel"
+      aria-label="Status"
+      [disabled]="reordenando()"
+      [value]="filtroStatus() ?? ''"
+      (change)="aoMudarStatus($any($event.target).value)"
+    >
+      <option value="">Status</option>
+      <option [value]="STATUS.ATIVA">Ativa</option>
+      <option [value]="STATUS.INATIVA">Inativa</option>
+      <option [value]="STATUS.RASCUNHO">Rascunho</option>
+    </select>
   </div>
-
-  @if (carregando()) {
-    <div class="tbl">
-      <div class="pager"><span>Carregando categorias…</span></div>
-    </div>
-  } @else if (erro()) {
-    <div class="tbl">
-      <div class="pager">
-        <span class="warn">{{ erro() }}</span>
-        <button class="btn sm" type="button" (click)="carregarCategorias()">
-          Tentar novamente
-        </button>
-      </div>
-    </div>
-  } @else {
-    <div class="tbl">
-      <div class="trow head" style="grid-template-columns: minmax(0, 1fr) 90px 110px 118px 64px">
-        <span>Categoria</span>
-        <span>Ordem</span>
-        <span>No menu</span>
-        <span>Status</span>
-        <span></span>
-      </div>
-
-      @for (categoria of categoriasPagina(); track categoria.id) {
-        <a
-          class="trow"
-          style="grid-template-columns: minmax(0, 1fr) 90px 110px 118px 64px"
-          [routerLink]="['/admin/categorias', categoria.id, 'editar']"
-        >
-          <span class="cell-name">
-            <b>{{ categoria.nome || '(sem nome)' }}</b>
-            <span class="chip">{{ categoria.slug }}</span>
-            @if (categoria.tipo) {
-              <span class="dim sm">{{
-                categoria.tipo.id === TIPO.DRONE ? 'Drones' : 'Acessórios'
-              }}</span>
-            }
-          </span>
-          <span class="ink">{{ categoria.ordemExibicao }}</span>
-          <span class="ink">{{ categoria.exibirMenu ? 'Sim' : 'Não' }}</span>
-          <span class="status">
-            <span
-              class="dot"
-              [style.background]="
-                categoria.status.id === STATUS.ATIVA
-                  ? 'var(--ok)'
-                  : categoria.status.id === STATUS.INATIVA
-                    ? 'var(--dim2)'
-                    : 'var(--warn)'
-              "
-            ></span>
-            {{ statusLabel(categoria.status) }}
-          </span>
-          <span style="justify-self: end">
-            <button class="btn sm d" type="button" (click)="excluir($event, categoria)">
-              Excluir
-            </button>
-          </span>
-        </a>
-      }
-
-      @if (categoriasPagina().length === 0) {
-        <div class="pager"><span>Nenhuma categoria encontrada com os filtros atuais.</span></div>
-      }
-
-      <div class="pager">
-        <span>Exibindo {{ intervaloExibido() }} de {{ categoriasFiltradas().length }}</span>
-        <span class="pages">
-          <a
-            (click)="paginaAnterior()"
-            [style.opacity]="pagina() === 0 ? 0.4 : 1"
-            [style.cursor]="pagina() === 0 ? 'default' : 'pointer'"
-            >‹</a
-          >
-          <span>Página {{ pagina() + 1 }} de {{ totalPaginas() }}</span>
-          <a
-            (click)="proximaPagina()"
-            [style.opacity]="pagina() + 1 >= totalPaginas() ? 0.4 : 1"
-            [style.cursor]="pagina() + 1 >= totalPaginas() ? 'default' : 'pointer'"
-            >›</a
-          >
-        </span>
-      </div>
+  <div class="info">
+    O tipo define a vitrine dentro dele (D39). As subcategorias ficam em Subcategorias. Categoria
+    com subcategorias não se exclui: <b>inative</b> (D24).
+  </div>
+  @if (erro(); as mensagem) {
+    <div class="alerta" role="alert">
+      {{ mensagem }}
+      <button class="btn sm" type="button" (click)="carregarCategorias()">Tentar novamente</button>
     </div>
   }
-</div>
+  @if (reordenando()) {
+    <div class="bulk" style="display: flex">
+      <span>Reordenar categorias</span
+      ><button class="btn sm" type="button" (click)="salvarOrdem()" [disabled]="salvandoOrdem()">
+        Salvar ordem</button
+      ><button class="btn sm" type="button" (click)="cancelarOrdem()" [disabled]="salvandoOrdem()">
+        Cancelar
+      </button>
+    </div>
+  }
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th>Categoria</th>
+          <th>Tipo</th>
+          <th class="r">Ordem</th>
+          <th>No menu</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (carregando()) {
+          <tr>
+            <td colspan="6">Carregando…</td>
+          </tr>
+        } @else {
+          @for (item of categoriasPagina(); track item.id) {
+            <tr>
+              <td>
+                <div class="pc">
+                  <div>
+                    <b
+                      ><a [routerLink]="['/admin/categorias', item.id, 'editar']">{{
+                        item.nome || '(sem nome)'
+                      }}</a></b
+                    ><span class="slug">/{{ item.slug }}</span>
+                  </div>
+                </div>
+              </td>
+              <td data-l="Tipo">{{ item.tipo?.nome || 'a definir' }}</td>
+              <td data-l="Ordem" class="r num mono">{{ item.ordemExibicao }}</td>
+              <td data-l="No menu">{{ item.exibirMenu ? 'Sim' : 'Não' }}</td>
+              <td data-l="Status">
+                <span
+                  class="st"
+                  [class.ok]="item.status.id === STATUS.ATIVA"
+                  [class.mute]="item.status.id !== STATUS.ATIVA"
+                  ><span>{{ item.status.nome }}</span></span
+                >
+              </td>
+              <td class="r">
+                @if (reordenando()) {
+                  <button
+                    class="btn sm"
+                    type="button"
+                    [attr.aria-label]="'Subir ' + item.nome"
+                    (click)="mover(item, -1)"
+                    [disabled]="salvandoOrdem()"
+                  >
+                    ↑</button
+                  ><button
+                    class="btn sm"
+                    type="button"
+                    [attr.aria-label]="'Descer ' + item.nome"
+                    (click)="mover(item, 1)"
+                    [disabled]="salvandoOrdem()"
+                  >
+                    ↓
+                  </button>
+                }
+                <a
+                  class="more"
+                  [routerLink]="['/admin/categorias', item.id, 'editar']"
+                  [attr.aria-label]="'Editar ' + item.nome"
+                  >⋯</a
+                >
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6">Nenhum registro encontrado.</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  <div class="pager">
+    <span>Exibindo {{ intervaloExibido() }} de {{ categoriasFiltradas().length }}</span>
+    <div class="pages">
+      <button
+        class="btn sm"
+        type="button"
+        aria-label="Página anterior"
+        (click)="paginaAnterior()"
+        [disabled]="pagina() === 0"
+      >
+        ‹</button
+      ><span>{{ pagina() + 1 }}</span
+      ><button
+        class="btn sm"
+        type="button"
+        aria-label="Próxima página"
+        (click)="proximaPagina()"
+        [disabled]="pagina() + 1 >= totalPaginas()"
+      >
+        ›
+      </button>
+    </div>
+  </div>
+</main>

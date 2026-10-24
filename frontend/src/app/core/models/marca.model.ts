@@ -2,6 +2,7 @@ import { StatusRef } from './status.model';
 
 /** Espelha o MarcaResponseDTO devolvido pela API. */
 export interface Marca {
+  quantidadeProdutos: number;
   id: number;
   nome: string;
   slug: string;

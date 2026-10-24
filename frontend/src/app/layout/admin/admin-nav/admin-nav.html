@@ -1,32 +1,37 @@
 <header class="tb">
-  <div class="tb-l">
-    <a class="tb-brand" routerLink="/admin/marcas">ADMIN</a>
-    <nav class="tb-nav">
-      @for (item of itens; track item.rotulo) {
-        @if (item.rota) {
-          <a
-            [routerLink]="item.rota"
-            routerLinkActive="on"
-            [routerLinkActiveOptions]="{ exact: !!item.exata }"
-            >{{ item.rotulo }}</a
-          >
-        } @else {
-          <span class="tb-nav-em-breve" title="Em construção">{{ item.rotulo }}</span>
-        }
+  <div class="in gut">
+    <a class="brand" routerLink="/admin">AERIA <span>ADMIN</span></a>
+    <nav class="tabs" aria-label="Painel">
+      @for (item of itens; track item.rota) {
+        <a
+          [routerLink]="item.rota"
+          routerLinkActive
+          ariaCurrentWhenActive="page"
+          [routerLinkActiveOptions]="{ exact: !!item.exata }"
+          >{{ item.rotulo }}</a
+        >
       }
     </nav>
+    <div class="r">
+      <div class="search">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" />
+        </svg>
+        Buscar no painel<kbd>/</kbd>
+      </div>
+      <span class="avatar" title="Usuário do painel">DR</span>
+    </div>
   </div>
-  <div class="tb-r">
-    <span class="tb-search">Buscar no painel</span>
-    <button
-      type="button"
-      class="theme-t"
-      (click)="alternarTema()"
-      [attr.aria-label]="tema() === 'light' ? 'Mudar para tema escuro' : 'Mudar para tema claro'"
-      [title]="tema() === 'light' ? 'Mudar para tema escuro' : 'Mudar para tema claro'"
-    >
-      {{ tema() === 'light' ? '◐' : '◑' }}
-    </button>
-    <span class="avatar">DR</span>
-  </div>
+  <nav class="mnav" aria-label="Painel (celular)">
+    @for (item of itens; track item.rota) {
+      <a
+        [routerLink]="item.rota"
+        routerLinkActive
+        ariaCurrentWhenActive="page"
+        [routerLinkActiveOptions]="{ exact: !!item.exata }"
+        >{{ item.rotulo }}</a
+      >
+    }
+  </nav>
 </header>

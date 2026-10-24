@@ -1,0 +1,32 @@
+// Tokens e base do DESIGN.md (direção "Noite + Campo", tema único escuro).
+// Porte de docs/design/prototipo/assets/admin.css: mudou lá, muda aqui.
+:root{
+  --bg:#0E0F11; --bg2:#121417; --surf:#17191C; --surf2:#1D2024; --field:#0B0C0E;
+  --ink:#F1F2F4; --ink2:#C3C7CD; --mute:#8A9099; --faint:#5C626B;
+  --line:rgba(255,255,255,.07); --line2:rgba(255,255,255,.14);
+  --amber:#E8A86B; --ok:#7CC49A; --warn:#F08A6C; --info:#8FB4F0;
+  --display:'Sora',system-ui,sans-serif; --body:'DM Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 14px/1.5 var(--body);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;height:auto;display:block}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px;border-radius:4px}
+.lbl{font:500 10.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.mono{font-family:var(--mono)}
+.num{font-variant-numeric:tabular-nums}
+.ico{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.gut{padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+
+// Loja (site.css): mesmos nomes, superfícies um pouco mais claras. O App marca
+// <html class="loja"> fora do /admin.
+:root.loja{
+  --bg2:#141619; --surf:#1A1C20; --surf2:#202328;
+  --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.16);
+}
+
+:root.loja body { font-size: 15px; line-height: 1.55; }

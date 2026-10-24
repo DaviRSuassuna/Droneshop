@@ -1,9 +1,9 @@
+import { toSignal } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Observable } from 'rxjs';
-import { AdminNav } from '../../../../layout/admin/admin-nav/admin-nav';
+import { Observable, map } from 'rxjs';
 import { SubcategoriaService } from '../../../../core/services/subcategoria.service';
 import { CategoriaService } from '../../../../core/services/categoria.service';
 import { SubcategoriaDTO } from '../../../../core/models/subcategoria.model';
@@ -13,8 +13,7 @@ import { ProblemDetail } from '../../../../core/models/problem.model';
 
 @Component({
   selector: 'app-subcategoria-cadastro',
-  standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, AdminNav],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './subcategoria-cadastro.html',
 })
 export class SubcategoriaCadastro implements OnInit {
@@ -42,7 +41,19 @@ export class SubcategoriaCadastro implements OnInit {
     idCategoria: this.fb.control<number | null>(null),
     ordemExibicao: this.fb.nonNullable.control(0),
     descricao: this.fb.nonNullable.control(''),
-    idStatus: this.fb.nonNullable.control<number>(STATUS_PUBLICACAO.ATIVA, Validators.required),
+    idStatus: this.fb.nonNullable.control<number>(STATUS_PUBLICACAO.RASCUNHO, Validators.required),
+  });
+
+  private readonly valores = toSignal(
+    this.form.valueChanges.pipe(map(() => this.form.getRawValue())),
+    { initialValue: this.form.getRawValue() },
+  );
+  readonly pendencias = computed(() => {
+    const v = this.valores();
+    const faltando: string[] = [];
+    if (!v.nome?.trim()) faltando.push('Nome da subcategoria');
+    if (!v.idCategoria) faltando.push('Categoria');
+    return faltando;
   });
 
   ngOnInit(): void {
@@ -65,7 +76,7 @@ export class SubcategoriaCadastro implements OnInit {
         this.form.patchValue({
           nome: sub.nome,
           slug: sub.slug,
-          idCategoria: sub.categoria.id,
+          idCategoria: sub.categoria?.id ?? null,
           ordemExibicao: sub.ordemExibicao,
           descricao: sub.descricao ?? '',
           idStatus: sub.status.id,
@@ -73,7 +84,11 @@ export class SubcategoriaCadastro implements OnInit {
         this.carregando.set(false);
       },
       error: (err) => {
-        this.erroGeral.set(err.status === 404 ? 'Esta subcategoria não foi encontrada.' : 'Não foi possível carregar esta subcategoria.');
+        this.erroGeral.set(
+          err.status === 404
+            ? 'Esta subcategoria não foi encontrada.'
+            : 'Não foi possível carregar esta subcategoria.',
+        );
         this.carregando.set(false);
       },
     });
@@ -87,7 +102,10 @@ export class SubcategoriaCadastro implements OnInit {
     return this.errosCampo()[campo] ?? null;
   }
 
-  salvar(): void {
+  salvar(publicar = false): void {
+    if (this.salvando()) return;
+    if (publicar && this.form.controls.idStatus.value === STATUS_PUBLICACAO.RASCUNHO)
+      this.form.controls.idStatus.setValue(STATUS_PUBLICACAO.ATIVA);
     this.erroGeral.set(null);
     this.errosCampo.set({});
 

@@ -1,145 +1,136 @@
-<app-admin-nav />
-
-<div class="pagebar">
-  <div style="display: flex; align-items: baseline; gap: 12px">
-    <h1 class="h1">Marcas</h1>
-    <span class="sub">
-      @if (!carregando()) {
-        {{ marcasFiltradas().length }} de {{ marcas().length }}
-        {{ marcas().length === 1 ? 'marca' : 'marcas' }}
-      }
-    </span>
+<main class="gut">
+  <div class="ph">
+    <div>
+      <span class="lbl">Catálogo</span>
+      <h1>Marcas</h1>
+      <div class="sub">{{ marcasFiltradas().length }} marcas</div>
+    </div>
+    <div class="acts">
+      <button class="btn" type="button" (click)="exportarCsv()" [disabled]="carregando()">
+        Exportar CSV</button
+      ><a class="btn p" routerLink="/admin/marcas/novo">Nova marca</a>
+    </div>
   </div>
-  <div class="actions">
-    <button
-      class="btn"
-      type="button"
-      (click)="exportarCsv()"
-      [disabled]="carregando() || marcasFiltradas().length === 0"
-    >
-      Exportar CSV
-    </button>
-    <a class="btn p" routerLink="/admin/marcas/novo">Nova marca</a>
-  </div>
-</div>
-
-<div class="pad-t" style="display: flex; flex-direction: column; gap: 16px">
-  <div class="filters">
-    <div class="f grow">
-      <input
-        type="text"
-        placeholder="Buscar por nome ou slug"
+  <div class="toolbar">
+    <label class="field-s grow"
+      ><input
+        type="search"
+        placeholder="Buscar por nome"
+        aria-label="Buscar"
         [value]="termoBusca()"
-        (input)="aoDigitarBusca($any($event.target).value)"
-      />
-    </div>
-    <div class="f">
-      <select [value]="filtroPais()" (change)="aoMudarPais($any($event.target).value)">
-        <option value="">País de origem</option>
-        @for (pais of paisesDisponiveis(); track pais) {
-          <option [value]="pais">{{ pais }}</option>
-        }
-      </select>
-    </div>
-    <div class="f">
-      <select [value]="filtroStatus() ?? ''" (change)="aoMudarStatus($any($event.target).value)">
-        <option value="">Status</option>
-        <option [value]="STATUS.ATIVA">Ativa</option>
-        <option [value]="STATUS.INATIVA">Inativa</option>
-        <option [value]="STATUS.RASCUNHO">Rascunho</option>
-      </select>
-    </div>
+        (input)="aoDigitarBusca($any($event.target).value)" /></label
+    ><select
+      class="sel"
+      aria-label="País de origem"
+      [value]="filtroPais()"
+      (change)="aoMudarPais($any($event.target).value)"
+    >
+      <option value="">País de origem</option>
+      @for (pais of paisesDisponiveis(); track pais) {
+        <option [value]="pais">{{ pais }}</option>
+      }</select
+    ><select
+      class="sel"
+      aria-label="Status"
+      [value]="filtroStatus() ?? ''"
+      (change)="aoMudarStatus($any($event.target).value)"
+    >
+      <option value="">Status</option>
+      <option [value]="STATUS.ATIVA">Ativa</option>
+      <option [value]="STATUS.INATIVA">Inativa</option>
+      <option [value]="STATUS.RASCUNHO">Rascunho</option>
+    </select>
   </div>
-
-  @if (carregando()) {
-    <div class="tbl">
-      <div class="pager"><span>Carregando marcas…</span></div>
-    </div>
-  } @else if (erro()) {
-    <div class="tbl">
-      <div class="pager">
-        <span class="warn">{{ erro() }}</span>
-        <button class="btn sm" type="button" (click)="carregarMarcas()">Tentar novamente</button>
-      </div>
-    </div>
-  } @else {
-    <div class="tbl">
-      <div
-        class="trow head"
-        style="grid-template-columns: 54px minmax(0, 1fr) 180px 100px 118px 64px"
-      >
-        <span></span>
-        <span>Marca</span>
-        <span>País de origem</span>
-        <span>Destaque</span>
-        <span>Status</span>
-        <span></span>
-      </div>
-
-      @for (marca of marcasPagina(); track marca.id) {
-        <a
-          class="trow"
-          style="grid-template-columns: 54px minmax(0, 1fr) 180px 100px 118px 64px"
-          [routerLink]="['/admin/marcas', marca.id, 'editar']"
-        >
-          @if (marca.logoUrl) {
-            <img
-              class="thumb"
-              [src]="marca.logoUrl"
-              [alt]="marca.nome"
-              style="object-fit: contain"
-            />
-          } @else {
-            <span class="ph thumb"></span>
-          }
-          <span class="cell-name">
-            <b>{{ marca.nome || '(sem nome)' }}</b>
-            <span class="chip">{{ marca.slug }}</span>
-          </span>
-          <span class="dim">{{ marca.paisOrigem || '—' }}</span>
-          <span class="ink">{{ marca.destacarHome ? 'Sim' : 'Não' }}</span>
-          <span class="status">
-            <span
-              class="dot"
-              [style.background]="
-                marca.status.id === STATUS.ATIVA
-                  ? 'var(--ok)'
-                  : marca.status.id === STATUS.INATIVA
-                    ? 'var(--dim2)'
-                    : 'var(--warn)'
-              "
-            ></span>
-            {{ statusLabel(marca.status) }}
-          </span>
-          <span style="justify-self: end">
-            <button class="btn sm d" type="button" (click)="excluir($event, marca)">Excluir</button>
-          </span>
-        </a>
-      }
-
-      @if (marcasPagina().length === 0) {
-        <div class="pager"><span>Nenhuma marca encontrada com os filtros atuais.</span></div>
-      }
-
-      <div class="pager">
-        <span>Exibindo {{ intervaloExibido() }} de {{ marcasFiltradas().length }}</span>
-        <span class="pages">
-          <a
-            [class.on]="false"
-            (click)="paginaAnterior()"
-            [style.opacity]="pagina() === 0 ? 0.4 : 1"
-            [style.cursor]="pagina() === 0 ? 'default' : 'pointer'"
-            >‹</a
-          >
-          <span>Página {{ pagina() + 1 }} de {{ totalPaginas() }}</span>
-          <a
-            (click)="proximaPagina()"
-            [style.opacity]="pagina() + 1 >= totalPaginas() ? 0.4 : 1"
-            [style.cursor]="pagina() + 1 >= totalPaginas() ? 'default' : 'pointer'"
-            >›</a
-          >
-        </span>
-      </div>
+  <div class="info">
+    Marca com produtos vinculados não se exclui: <b>inative</b> (D24). A marca inativa some dos
+    filtros da loja, mas os produtos continuam no histórico de pedidos.
+  </div>
+  @if (erro(); as mensagem) {
+    <div class="alerta" role="alert">
+      {{ mensagem }}
+      <button class="btn sm" type="button" (click)="carregarMarcas()">Tentar novamente</button>
     </div>
   }
-</div>
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th>Marca</th>
+          <th>País de origem</th>
+          <th class="r">Produtos</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (carregando()) {
+          <tr>
+            <td colspan="5">Carregando…</td>
+          </tr>
+        } @else {
+          @for (item of marcasPagina(); track item.id) {
+            <tr>
+              <td>
+                <div class="pc">
+                  <span class="av">{{ item.nome.slice(0, 2).toUpperCase() }}</span>
+                  <div>
+                    <b
+                      ><a [routerLink]="['/admin/marcas', item.id, 'editar']">{{
+                        item.nome || '(sem nome)'
+                      }}</a></b
+                    ><span class="slug">/{{ item.slug }}</span>
+                  </div>
+                </div>
+              </td>
+              <td data-l="País de origem">{{ item.paisOrigem || '—' }}</td>
+              <td data-l="Produtos" class="r num mono">{{ item.quantidadeProdutos }}</td>
+              <td data-l="Status">
+                <span
+                  class="st"
+                  [class.ok]="item.status.id === STATUS.ATIVA"
+                  [class.mute]="item.status.id !== STATUS.ATIVA"
+                  ><span>{{ item.status.nome }}</span></span
+                >
+              </td>
+              <td class="r">
+                <a
+                  class="more"
+                  [routerLink]="['/admin/marcas', item.id, 'editar']"
+                  [attr.aria-label]="'Editar ' + item.nome"
+                  >⋯</a
+                >
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5">Nenhum registro encontrado.</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  <div class="pager">
+    <span>Exibindo {{ intervaloExibido() }} de {{ marcasFiltradas().length }}</span>
+    <div class="pages">
+      <button
+        class="btn sm"
+        type="button"
+        aria-label="Página anterior"
+        (click)="paginaAnterior()"
+        [disabled]="pagina() === 0"
+      >
+        ‹</button
+      ><span>{{ pagina() + 1 }}</span
+      ><button
+        class="btn sm"
+        type="button"
+        aria-label="Próxima página"
+        (click)="proximaPagina()"
+        [disabled]="pagina() + 1 >= totalPaginas()"
+      >
+        ›
+      </button>
+    </div>
+  </div>
+</main>

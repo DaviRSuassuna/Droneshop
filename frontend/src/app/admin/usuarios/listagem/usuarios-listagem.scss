@@ -1,3 +1,13 @@
 :host {
   display: block;
 }
+.sub2 {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.pc > div {
+  min-width: 0;
+}
+.pages {
+  align-items: center;
+}

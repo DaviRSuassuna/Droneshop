@@ -10,6 +10,10 @@ export class CategoriaService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/categorias`;
 
+  reordenar(ids: number[]): Observable<void> {
+    return this.http.patch<void>(this.baseUrl + '/ordem', { ids });
+  }
+
   listar(page = 0, pageSize = 10): Observable<PageResponse<Categoria>> {
     const params = new HttpParams().set('page', page).set('pageSize', pageSize);
     return this.http.get<PageResponse<Categoria>>(this.baseUrl, { params });
@@ -17,7 +21,10 @@ export class CategoriaService {
 
   buscarPorNome(nome: string, page = 0, pageSize = 10): Observable<PageResponse<Categoria>> {
     const params = new HttpParams().set('page', page).set('pageSize', pageSize);
-    return this.http.get<PageResponse<Categoria>>(`${this.baseUrl}/nome/${encodeURIComponent(nome)}`, { params });
+    return this.http.get<PageResponse<Categoria>>(
+      `${this.baseUrl}/nome/${encodeURIComponent(nome)}`,
+      { params },
+    );
   }
 
   buscarPorId(id: number): Observable<Categoria> {

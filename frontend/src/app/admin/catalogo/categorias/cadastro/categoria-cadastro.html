@@ -1,168 +1,220 @@
-<app-admin-nav />
-
-@if (carregando()) {
-  <div class="pad">
-    <span class="sub">Carregando categoria…</span>
-  </div>
-} @else {
-  <div class="pad cols">
-    <div class="main">
-      <div>
-        <h1 class="h1 big">{{ modoEdicao() ? 'Editar categoria' : 'Cadastrar categoria' }}</h1>
-        <div class="crumb">
-          Catálogo · <a routerLink="/admin/categorias">Categorias</a> ·
-          {{ modoEdicao() ? 'Editar categoria' : 'Nova categoria' }}
-        </div>
+<main class="gut">
+  <div class="ph">
+    <div>
+      <div class="crumb">
+        <a routerLink="/admin/categorias">← Categorias</a><span>·</span
+        ><span>{{ modoEdicao() ? 'Editar categoria' : 'Nova categoria' }}</span>
       </div>
-
-      @if (erroGeral()) {
-        <div class="card p" style="border-color: var(--warn-b)">
-          <span class="warn">{{ erroGeral() }}</span>
-        </div>
-      }
-
-      <section class="card p" [formGroup]="form">
-        <div class="card-t" style="margin-bottom: 20px">Dados da categoria</div>
-        <div class="g2">
-          <div class="f full">
-            <label>Nome da categoria <span class="req">*</span></label>
-            <input type="text" placeholder="Ex: Profissionais" formControlName="nome" />
-            @if (campoInvalido('nome')) {
-              <span class="warn">{{ mensagemErro('nome') }}</span>
-            }
-          </div>
-          <div class="f">
-            <label for="idTipo">Tipo de produto <span class="req">*</span></label>
-            <select id="idTipo" formControlName="idTipo">
-              <option [ngValue]="null">Selecione</option>
-              <option [ngValue]="TIPO.DRONE">Drones</option>
-              <option [ngValue]="TIPO.ACESSORIO">Acessórios</option>
-            </select>
-            @if (campoInvalido('idTipo')) {
-              <span class="warn">{{ mensagemErro('idTipo') }}</span>
-            }
-          </div>
-          <div class="f">
-            <label>Ordem de exibição <span class="req">*</span></label>
-            <input type="number" min="0" formControlName="ordemExibicao" />
-            @if (campoInvalido('ordemExibicao')) {
-              <span class="warn">{{ mensagemErro('ordemExibicao') }}</span>
-            }
-          </div>
-          <div class="f full">
-            <label>Descrição</label>
-            <textarea
-              placeholder="Texto exibido no topo da listagem do storefront"
-              formControlName="descricao"
-            ></textarea>
-            @if (campoInvalido('descricao')) {
-              <span class="warn">{{ mensagemErro('descricao') }}</span>
-            }
-          </div>
-        </div>
-        <p class="legend">
-          Campos com <span class="req">*</span> são obrigatórios para publicar (status Ativa ou
-          Inativa)
-        </p>
-      </section>
+      <h1>{{ modoEdicao() ? 'Editar categoria' : 'Cadastrar categoria' }}</h1>
     </div>
-
-    <aside class="rail" [formGroup]="form">
-      <section class="card p2">
-        <div class="eyebrow">Publicação</div>
-        <div class="stack">
-          <div class="f">
-            <label>Status <span class="req">*</span></label>
-            <select formControlName="idStatus">
-              <option [ngValue]="STATUS.RASCUNHO">Rascunho</option>
-              <option [ngValue]="STATUS.ATIVA">Ativa</option>
-              <option [ngValue]="STATUS.INATIVA">Inativa</option>
-            </select>
-            @if (campoInvalido('idStatus')) {
-              <span class="warn">{{ mensagemErro('idStatus') }}</span>
-            }
-          </div>
-          <div class="f">
-            <label>Slug</label>
-            <input
-              type="text"
-              placeholder="gerado a partir do nome, se vazio"
-              formControlName="slug"
-            />
-            @if (campoInvalido('slug')) {
-              <span class="warn">{{ mensagemErro('slug') }}</span>
-            }
-          </div>
-          <label class="ck full">
-            <input type="checkbox" formControlName="exibirMenu" /> Exibir no menu principal
-          </label>
-        </div>
-      </section>
-
-      <section class="card p2">
-        <div class="eyebrow">Ícone</div>
-        <div class="f">
-          <label>URL do ícone</label>
-          <input type="text" placeholder="https://…/icone.svg" formControlName="iconeUrl" />
-          @if (campoInvalido('iconeUrl')) {
-            <span class="warn">{{ mensagemErro('iconeUrl') }}</span>
-          }
-        </div>
-        @if (form.controls.iconeUrl.value) {
-          <div
-            style="
-              margin-top: 12px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              height: 80px;
-              border: 1px solid var(--line);
-              border-radius: 6px;
-              background: var(--field);
-            "
-          >
-            <img
-              [src]="form.controls.iconeUrl.value"
-              alt="Pré-visualização do ícone"
-              style="max-height: 56px; max-width: 90%; object-fit: contain"
-            />
-          </div>
-        }
-      </section>
-
-      @if (pendencias().length > 0) {
-        <section class="card p2">
-          <div class="eyebrow">Pendências</div>
-          <div style="display: flex; flex-direction: column; gap: 9px">
-            <span class="warn">{{ pendencias().length }} campo(s) obrigatório(s) vazio(s)</span>
-            <span style="font-size: 12px; color: var(--mute)">{{ pendencias().join(' · ') }}</span>
-          </div>
-        </section>
-      }
-
-      @if (modoEdicao()) {
-        <section class="card p2">
-          <div class="eyebrow">Zona de risco</div>
-          <button
-            class="btn d"
-            type="button"
-            style="width: 100%"
-            (click)="excluir()"
-            [disabled]="excluindo()"
-          >
-            {{ excluindo() ? 'Excluindo…' : 'Excluir categoria' }}
-          </button>
-        </section>
-      }
-    </aside>
   </div>
-
+  @if (erroGeral(); as erro) {
+    <div class="alerta" role="alert">{{ erro }}</div>
+  }
+  @if (carregando()) {
+    <p class="note">Carregando…</p>
+  } @else {
+    <div class="form" [formGroup]="form">
+      <div>
+        <section class="sec">
+          <div class="sh"><h2>Dados da categoria</h2></div>
+          <div class="fg">
+            <div class="f w3">
+              <label for="nome">Nome da categoria <span class="req">*</span></label
+              ><input
+                id="nome"
+                type="text"
+                formControlName="nome"
+                [attr.aria-invalid]="!!mensagemErro('nome')"
+                maxlength="100"
+              />
+              @if (mensagemErro('nome'); as erro) {
+                <span class="erro" role="alert">{{ erro }}</span>
+              }
+            </div>
+            <div class="f w3">
+              <label for="idTipo">Tipo de produto <span class="req">*</span></label
+              ><select
+                id="idTipo"
+                formControlName="idTipo"
+                [attr.aria-invalid]="!!mensagemErro('idTipo')"
+              >
+                <option [ngValue]="null">Selecione o tipo</option>
+                <option [ngValue]="TIPO.DRONE">Drone</option>
+                <option [ngValue]="TIPO.ACESSORIO">Acessório</option>
+              </select>
+              @if (mensagemErro('idTipo'); as erro) {
+                <span class="erro" role="alert">{{ erro }}</span>
+              }
+            </div>
+            <div class="f w1">
+              <label for="ordemExibicao">Ordem de exibição</label
+              ><input
+                id="ordemExibicao"
+                type="number"
+                formControlName="ordemExibicao"
+                [attr.aria-invalid]="!!mensagemErro('ordemExibicao')"
+                min="0"
+              />
+              @if (mensagemErro('ordemExibicao'); as erro) {
+                <span class="erro" role="alert">{{ erro }}</span>
+              }
+            </div>
+            <div class="f w6">
+              <label for="descricao">Descrição</label
+              ><textarea
+                id="descricao"
+                formControlName="descricao"
+                [attr.aria-invalid]="!!mensagemErro('descricao')"
+                maxlength="2000"
+              ></textarea>
+              @if (mensagemErro('descricao'); as erro) {
+                <span class="erro" role="alert">{{ erro }}</span>
+              }
+            </div>
+          </div>
+          <p class="note">
+            Categoria com produtos não muda de tipo (D39). As subcategorias desta categoria são
+            cadastradas em <a routerLink="/admin/subcategorias">Subcategorias</a>.
+          </p>
+        </section>
+      </div>
+      <aside class="rail">
+        <section class="card">
+          <div class="bd">
+            <span class="lbl">Publicação</span>
+            <div class="f">
+              <label>Status <span class="req">*</span></label>
+              <div class="rad" role="radiogroup" aria-label="Status">
+                <label
+                  ><input
+                    type="radio"
+                    formControlName="idStatus"
+                    [attr.aria-invalid]="!!mensagemErro('idStatus')"
+                    [value]="STATUS.RASCUNHO"
+                  />Rascunho</label
+                ><label
+                  ><input
+                    type="radio"
+                    formControlName="idStatus"
+                    [attr.aria-invalid]="!!mensagemErro('idStatus')"
+                    [value]="STATUS.ATIVA"
+                  />Ativa</label
+                ><label
+                  ><input
+                    type="radio"
+                    formControlName="idStatus"
+                    [attr.aria-invalid]="!!mensagemErro('idStatus')"
+                    [value]="STATUS.INATIVA"
+                  />Inativa</label
+                >
+              </div>
+            </div>
+            <label class="toggle"
+              ><input
+                type="checkbox"
+                formControlName="exibirMenu"
+                [attr.aria-invalid]="!!mensagemErro('exibirMenu')"
+              />Exibir no menu principal</label
+            >
+          </div>
+        </section>
+        <section class="card">
+          <div class="bd">
+            <span class="lbl">Endereço</span>
+            <div class="f">
+              <label for="slug">Slug</label
+              ><input
+                id="slug"
+                type="text"
+                formControlName="slug"
+                [attr.aria-invalid]="!!mensagemErro('slug')"
+                maxlength="110"
+                class="mono"
+                placeholder="Gerado a partir do nome"
+              />
+              @if (mensagemErro('slug'); as erro) {
+                <span class="erro" role="alert">{{ erro }}</span>
+              }
+            </div>
+          </div>
+        </section>
+        <section class="card">
+          <div class="bd">
+            <span class="lbl">Ícone</span>
+            <div class="f">
+              <label for="iconeUrl">URL do ícone</label
+              ><input
+                id="iconeUrl"
+                type="url"
+                formControlName="iconeUrl"
+                [attr.aria-invalid]="!!mensagemErro('iconeUrl')"
+                maxlength="255"
+                placeholder="https://"
+              />
+              @if (mensagemErro('iconeUrl'); as erro) {
+                <span class="erro" role="alert">{{ erro }}</span>
+              }
+              @if (form.controls.iconeUrl.value) {
+                <div class="preview-card">
+                  <img [src]="form.controls.iconeUrl.value" alt="Pré-visualização do ícone" />
+                </div>
+              }
+            </div>
+          </div>
+        </section>
+        <section class="card pend">
+          <div class="bd">
+            @if (pendencias().length) {
+              <div class="t">{{ pendencias().length }} campos obrigatórios vazios</div>
+              <p>{{ pendencias().join(' · ') }}</p>
+              <small>Rascunho aceita campos vazios (D21)</small>
+            } @else {
+              <div class="t">Pronto para publicar.</div>
+            }
+          </div>
+        </section>
+        @if (modoEdicao()) {
+          <section class="card">
+            <div class="bd">
+              <span class="lbl">Zona de risco</span
+              ><button
+                class="btn d"
+                type="button"
+                (click)="excluir()"
+                [disabled]="excluindo() || salvando()"
+              >
+                Excluir categoria
+              </button>
+            </div>
+          </section>
+        }
+      </aside>
+    </div>
+  }
   <div class="actionbar">
-    <a class="btn" routerLink="/admin/categorias">Cancelar</a>
-    <div class="actions">
-      <button class="btn p" type="button" (click)="salvar()" [disabled]="salvando()">
-        {{ salvando() ? 'Salvando…' : 'Salvar' }}
+    <div class="in gut">
+      <span class="msg">{{
+        pendencias().length
+          ? 'Preencha os campos obrigatórios para publicar.'
+          : 'Pronto para publicar.'
+      }}</span
+      ><a class="btn" routerLink="/admin/categorias">Cancelar</a
+      ><button
+        class="btn"
+        type="button"
+        [disabled]="salvando() || carregando()"
+        (click)="form.controls.idStatus.setValue(STATUS.RASCUNHO); salvar()"
+      >
+        Salvar rascunho</button
+      ><button
+        class="btn p"
+        type="button"
+        [disabled]="salvando() || carregando()"
+        (click)="salvar(true)"
+      >
+        {{ salvando() ? 'Salvando…' : 'Publicar categoria' }}
       </button>
     </div>
   </div>
-}
+</main>
