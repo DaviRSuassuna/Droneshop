@@ -181,6 +181,7 @@ Estas rotas não tinham issue. Viraram duas issues novas, com contrato em `docs/
 | Perfil: Drones registrados | `GET /conta/drones` · `PATCH /conta/drones/{idUnidade}` | meus-drones |
 | Favoritos: queda de preço, mover tudo para o carrinho, compartilhar | `POST /conta/desejos/mover-para-carrinho` · `POST DELETE /conta/desejos/compartilhar` · `GET /loja/listas/{token}` | favoritos-compartilhar |
 | Suporte: temas e perguntas frequentes | nenhuma (texto fixo no front) | suporte-faq |
+| Miniatura do produto em todas as listagens; fotos na carga de dados | campo `imagemPrincipal` nos produtos | imagem-produto |
 
 As linhas a partir do dashboard vieram da revisão do protótipo novo (D38) contra as issues; contratos em `docs/issues/nova-*.md`.
 

@@ -102,10 +102,11 @@ Testes escritos a partir do contrato de cada issue (`docs/issues/NNN.md`), antes
 | `issue-dashboard-indicadores` | informativo | `administracao/DashboardIndicadoresResourceTest` | 8 |
 | `issue-empresas` | informativo | `atendimento/LeadEmpresaResourceTest` | 2 |
 | `issue-favoritos-compartilhar` | informativo | `compra/FavoritosCompartilharResourceTest` | 6 |
+| `issue-imagem-produto` | informativo | `catalogo/ImagemProdutoResourceTest` | 8 |
 | `issue-meus-drones` | informativo | `estoque/MeusDronesResourceTest` | 6 |
 | `issue-pedidos-painel` | informativo | `pedido/PainelPedidosResourceTest` | 6 |
 
-Total: 467 testes. Gerado por `scripts/vincular_testes_issues.py --matriz`.
+Total: 475 testes. Gerado por `scripts/vincular_testes_issues.py --matriz`.
 
 <!-- matriz:fim -->
 
