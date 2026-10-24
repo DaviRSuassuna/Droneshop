@@ -48,15 +48,15 @@ class CriacaoPedidoResourceTest {
         c.put("limitePorCliente", 1);
         c.put("idsCategorias", List.of());
         c.put("idsMarcas", List.of());
-        c.put("idsVariantes", List.of());
+        c.put("idsProdutos", List.of());
         long id = Fixtures.criar("/cupons", c);
         return new Object[] { id, codigo };
     }
 
     /** Fluxo completo com cupom opcional; devolve o id do pedido. */
-    static long comprar(Fixtures.Cliente cli, long idVariante, String codigoCupom) {
+    static long comprar(Fixtures.Cliente cli, long idProduto, String codigoCupom) {
         String c = Fixtures.novoCarrinho();
-        Fixtures.adicionar(c, idVariante, 1);
+        Fixtures.adicionar(c, idProduto, 1);
         carrinho(cli.token(), c).when().post("/carrinho/vincular").then().statusCode(200);
         if (codigoCupom != null)
             carrinho(cli.token(), c).contentType(ContentType.JSON).body(Map.of("codigo", codigoCupom))
@@ -83,7 +83,7 @@ class CriacaoPedidoResourceTest {
     void cupomViraDescontoDoPedidoEUso() {
         Fixtures.Cliente cli = Fixtures.novoCliente();
         Object[] cupom = cupom(10, 100);
-        long pedido = comprar(cli, Fixtures.criarAcessorio(1000.0, 5).idVariante(), (String) cupom[1]);
+        long pedido = comprar(cli, Fixtures.criarAcessorio(1000.0, 5).id(), (String) cupom[1]);
         JsonPath j = como(cli.token()).when().get("/conta/pedidos/{id}", pedido)
                 .then().statusCode(200)
                 .body("valorProdutos", equalTo(1000.0f))
@@ -101,7 +101,7 @@ class CriacaoPedidoResourceTest {
     @Test
     void promocaoVigenteViraDescontoDeOrigemPromocao() {
         Fixtures.Cliente cli = Fixtures.novoCliente();
-        long v = Fixtures.criarAcessorio(1000.0, 5).idVariante();
+        long v = Fixtures.criarAcessorio(1000.0, 5).id();
         Map<String, Object> promo = new HashMap<>();
         promo.put("nome", "Promo " + Dados.sufixo());
         promo.put("idEscopo", 1);
@@ -109,7 +109,7 @@ class CriacaoPedidoResourceTest {
         promo.put("dataFim", agora(5));
         promo.put("percentualDesconto", 20);
         promo.put("ativa", true);
-        promo.put("idsVariantes", List.of(v));
+        promo.put("idsProdutos", List.of(v));
         Fixtures.criar("/promocoes", promo);
         long pedido = comprar(cli, v, null);
         como(cli.token()).when().get("/conta/pedidos/{id}", pedido)
@@ -122,12 +122,12 @@ class CriacaoPedidoResourceTest {
     void cancelarOPedidoLiberaOUsoDoCupom() {
         Object[] cupom = cupom(10, 1);
         Fixtures.Cliente primeiro = Fixtures.novoCliente();
-        long pedido = comprar(primeiro, Fixtures.criarAcessorio(1000.0, 5).idVariante(), (String) cupom[1]);
+        long pedido = comprar(primeiro, Fixtures.criarAcessorio(1000.0, 5).id(), (String) cupom[1]);
         Fixtures.mudarStatus(pedido, Fixtures.PEDIDO_CANCELADO).then().statusCode(204);
         given().when().get("/cupons/{id}/usos", cupom[0]).then().statusCode(200).body("totalItems", equalTo(0));
 
         String outro = Fixtures.novoCarrinho();
-        Fixtures.adicionar(outro, Fixtures.criarAcessorio(1000.0, 5).idVariante(), 1);
+        Fixtures.adicionar(outro, Fixtures.criarAcessorio(1000.0, 5).id(), 1);
         carrinho(outro).contentType(ContentType.JSON).body(Map.of("codigo", cupom[1]))
                 .when().post("/carrinho/cupom").then().statusCode(200);
     }
@@ -136,7 +136,7 @@ class CriacaoPedidoResourceTest {
     void meusPedidosSoDoCliente() {
         Fixtures.Cliente dono = Fixtures.novoCliente();
         Fixtures.Cliente outro = Fixtures.novoCliente();
-        long pedido = comprar(dono, Fixtures.criarAcessorio(100.0, 5).idVariante(), null);
+        long pedido = comprar(dono, Fixtures.criarAcessorio(100.0, 5).id(), null);
         como(dono.token()).when().get("/conta/pedidos").then().statusCode(200)
                 .body("totalItems", equalTo(1)).body("items[0].id", equalTo((int) pedido));
         como(outro.token()).when().get("/conta/pedidos/{id}", pedido).then().statusCode(404);

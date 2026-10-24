@@ -44,10 +44,10 @@ public class Promocao extends DefaultEntity {
     private boolean ativa;
 
     @ManyToMany
-    @JoinTable(name = "promocao_variante",
+    @JoinTable(name = "promocao_produto",
             joinColumns = @JoinColumn(name = "id_promocao"),
-            inverseJoinColumns = @JoinColumn(name = "id_variante"))
-    private List<VarianteProduto> variantes = new ArrayList<>();
+            inverseJoinColumns = @JoinColumn(name = "id_produto"))
+    private List<Produto> produtos = new ArrayList<>();
 
     @OneToMany(mappedBy = "promocao")
     private List<DescontoPedido> descontos = new ArrayList<>();
@@ -116,12 +116,12 @@ public class Promocao extends DefaultEntity {
         this.ativa = ativa;
     }
 
-    public List<VarianteProduto> getVariantes() {
-        return variantes;
+    public List<Produto> getProdutos() {
+        return produtos;
     }
 
-    public void setVariantes(List<VarianteProduto> variantes) {
-        this.variantes = variantes;
+    public void setProdutos(List<Produto> produtos) {
+        this.produtos = produtos;
     }
 
     public List<DescontoPedido> getDescontos() {

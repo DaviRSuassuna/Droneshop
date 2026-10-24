@@ -17,8 +17,8 @@ import io.restassured.http.ContentType;
 
 /**
  * #7 Produto: SEO, garantia e lançamento.
- * Contrato: docs/issues/007.md. Cria pelo /drones desde a #8 (D27); o preço vai
- * na variante desde a #9.
+ * Contrato: docs/issues/007.md. Cria pelo /drones desde a #8 (D27); preço e
+ * estoque vão no próprio produto desde a D40.
  */
 @QuarkusTest
 @Tag("issue-7")

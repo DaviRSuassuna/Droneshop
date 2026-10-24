@@ -27,8 +27,7 @@ class DroneResourceTest {
 
     static Map<String, Object> drone(String nome) {
         Fixtures.Arvore a = Fixtures.arvore();
-        return Fixtures.drone(nome, a, Fixtures.lista(
-                Fixtures.variante("DR-" + Dados.sufixo().toUpperCase(), 7999.0, 5)));
+        return Fixtures.drone(nome, a, Fixtures.dadosComerciais("DR-" + Dados.sufixo().toUpperCase(), 7999.0, 5));
     }
 
     static long criar(Map<String, Object> d) {
@@ -148,14 +147,12 @@ class DroneResourceTest {
     @Test
     void subcategoriaDeOutroTipoResponde400() {
         Fixtures.Arvore a = Fixtures.arvore();
-        Map<String, Object> d = Fixtures.drone("Errado " + Dados.sufixo(), a, Fixtures.lista(
-                Fixtures.variante("DR-" + Dados.sufixo().toUpperCase(), 100.0, 1)));
+        Map<String, Object> d = Fixtures.drone("Errado " + Dados.sufixo(), a, Fixtures.dadosComerciais("DR-" + Dados.sufixo().toUpperCase(), 100.0, 1));
         d.put("idSubcategoria", a.idSubcategoriaAcessorio());
         given().contentType(ContentType.JSON).body(d).when().post("/drones")
                 .then().statusCode(400).body("errors.field", hasItem("idSubcategoria"));
 
-        Map<String, Object> ac = Fixtures.acessorio("Errado " + Dados.sufixo(), a, Fixtures.lista(
-                Fixtures.variante("AC-" + Dados.sufixo().toUpperCase(), 100.0, 1)));
+        Map<String, Object> ac = Fixtures.acessorio("Errado " + Dados.sufixo(), a, Fixtures.dadosComerciais("AC-" + Dados.sufixo().toUpperCase(), 100.0, 1));
         ac.put("idSubcategoria", a.idSubcategoria());
         given().contentType(ContentType.JSON).body(ac).when().post("/acessorios")
                 .then().statusCode(400).body("errors.field", hasItem("idSubcategoria"));

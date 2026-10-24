@@ -21,7 +21,7 @@ public record CupomResponseDTO(
         long usos,
         List<ReferenciaCupomDTO> categorias,
         List<ReferenciaCupomDTO> marcas,
-        List<ReferenciaCupomDTO> variantes
+        List<ReferenciaCupomDTO> produtos
 ) {
     public record ReferenciaCupomDTO(Long id, String nome, String sku) {
         public ReferenciaCupomDTO(Long id, String nome) {

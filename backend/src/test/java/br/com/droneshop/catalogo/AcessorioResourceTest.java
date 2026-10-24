@@ -24,8 +24,7 @@ import io.restassured.http.ContentType;
 class AcessorioResourceTest {
 
     static Map<String, Object> acessorio(String nome) {
-        return Fixtures.acessorio(nome, Fixtures.arvore(), Fixtures.lista(
-                Fixtures.variante("AC-" + Dados.sufixo().toUpperCase(), 199.0, 5)));
+        return Fixtures.acessorio(nome, Fixtures.arvore(), Fixtures.dadosComerciais("AC-" + Dados.sufixo().toUpperCase(), 199.0, 5));
     }
 
     @Test

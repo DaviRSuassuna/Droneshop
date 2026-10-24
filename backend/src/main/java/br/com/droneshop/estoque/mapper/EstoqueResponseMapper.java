@@ -1,7 +1,7 @@
 package br.com.droneshop.estoque.mapper;
 
+import br.com.droneshop.catalogo.model.Kit;
 import br.com.droneshop.catalogo.model.Produto;
-import br.com.droneshop.catalogo.model.VarianteProduto;
 import br.com.droneshop.catalogo.service.KitCalculo;
 import br.com.droneshop.estoque.dto.EstoqueResponseDTO;
 import br.com.droneshop.estoque.dto.MovimentoEstoqueResponseDTO;
@@ -15,7 +15,7 @@ public final class EstoqueResponseMapper {
 
     public static MovimentoEstoqueResponseDTO toResponse(MovimentoEstoque m) {
         Usuario autor = m.getAutor();
-        VarianteProduto v = m.getVariante();
+        Produto p = m.getProduto();
         return new MovimentoEstoqueResponseDTO(
                 m.getId(),
                 m.getTipo(),
@@ -25,20 +25,19 @@ public final class EstoqueResponseMapper {
                 m.getObservacao(),
                 (autor == null) ? null : new MovimentoEstoqueResponseDTO.Autor(autor.getId(), autor.getNome()),
                 m.getDataCadastro(),
-                new MovimentoEstoqueResponseDTO.Variante(v.getId(), v.getSku(), v.getNome()));
+                new MovimentoEstoqueResponseDTO.Produto(p.getId(), p.getSku(), p.getNome()));
     }
 
     // Kit nao entra no alerta de minimo: quem se repoe e o componente
-    public static EstoqueResponseDTO toEstoque(VarianteProduto v) {
-        Produto p = v.getProduto();
-        int disponivel = KitCalculo.disponivel(v);
+    public static EstoqueResponseDTO toEstoque(Produto p) {
+        int disponivel = KitCalculo.disponivel(p);
+        boolean kit = p instanceof Kit;
         return new EstoqueResponseDTO(
-                new EstoqueResponseDTO.Variante(v.getId(), v.getSku(), v.getNome(), v.isEhKit(), v.isAtiva()),
-                new EstoqueResponseDTO.Produto(p.getId(), p.getNome()),
-                v.getEstoqueFisico(),
+                new EstoqueResponseDTO.Produto(p.getId(), p.getSku(), p.getNome(), p.getTipo(), p.getStatus()),
+                p.getEstoqueFisico(),
                 0,
                 disponivel,
-                v.getEstoqueMinimo(),
-                !v.isEhKit() && disponivel < v.getEstoqueMinimo());
+                p.getEstoqueMinimo(),
+                !kit && disponivel < p.getEstoqueMinimo());
     }
 }

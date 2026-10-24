@@ -47,14 +47,14 @@ class DashboardResourceTest {
     }
 
     @Test
-    void varianteAbaixoDoMinimoApareceNoEstoqueBaixo() {
+    void produtoAbaixoDoMinimoApareceNoEstoqueBaixo() {
         Fixtures.ProdutoCriado p = Fixtures.criarDrone(1000.0, 5);
         given().contentType(ContentType.JSON)
-                .body(Map.of("idVariante", p.idVariante(), "idTipo", Fixtures.MOV_AJUSTE, "quantidade", 0))
+                .body(Map.of("idProduto", p.id(), "idTipo", Fixtures.MOV_AJUSTE, "quantidade", 0))
                 .when().post("/estoque/movimentos").then().statusCode(200);
         given().when().get("/admin/dashboard")
                 .then().statusCode(200)
-                .body("estoqueBaixo.variante.id", hasItem((int) p.idVariante()));
+                .body("estoqueBaixo.produto.id", hasItem((int) p.id()));
     }
 
     @Test

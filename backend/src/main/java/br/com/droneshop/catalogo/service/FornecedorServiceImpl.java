@@ -21,6 +21,15 @@ import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class FornecedorServiceImpl implements FornecedorService {
+    @Override
+    public List<Fornecedor> findComFiltro(String busca, Long idStatus, String uf, int page, int pageSize) {
+        return fornecedorRepository.findComFiltro(busca, idStatus, uf).page(page, pageSize).list();
+    }
+    @Override
+    public long countComFiltro(String busca, Long idStatus, String uf) {
+        return fornecedorRepository.findComFiltro(busca, idStatus, uf).count();
+    }
+
 
     @Inject
     FornecedorRepository fornecedorRepository;

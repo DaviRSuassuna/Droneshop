@@ -173,4 +173,45 @@ class SubcategoriaResourceTest {
                 .then().statusCode(409)
                 .body("detail", containsString("1 produto"));
     }
+    @Test
+    @Tag("issue-80")
+    void rascunhoAceitaCamposVaziosEContinuaNaListagem() {
+        long id = given().contentType(ContentType.JSON).body(Map.of("idStatus", 1, "nome", "   "))
+                .post("/subcategorias").then().statusCode(200)
+                .body("nome", equalTo(""))
+                .body("categoria", org.hamcrest.Matchers.nullValue())
+                .extract().jsonPath().getLong("id");
+        given().get("/subcategorias/{id}", id).then().statusCode(200).body("status.id", equalTo(1));
+        given().queryParam("pageSize", 10000).get("/subcategorias").then().statusCode(200)
+                .body("items.id", hasItem((int) id));
+        for (int status : new int[] { 2, 3 })
+            given().contentType(ContentType.JSON).body(Map.of("idStatus", status))
+                    .put("/subcategorias/{id}", id).then().statusCode(400)
+                    .body("errors.field", org.hamcrest.Matchers.hasItems("nome", "idCategoria"));
+        long categoria = novaCategoria(Dados.sufixo());
+        given().contentType(ContentType.JSON).body(subcategoria("Publicada " + Dados.sufixo(), categoria))
+                .put("/subcategorias/{id}", id).then().statusCode(204);
+        given().get("/subcategorias/{id}", id).then().body("categoria.id", equalTo((int) categoria));
+    }
+
+    @Test
+    @Tag("issue-80")
+    void produtoNaoSelecionaSubcategoriaSemCategoria() {
+        long sub = given().contentType(ContentType.JSON).body(Map.of("idStatus", 1))
+                .post("/subcategorias").then().statusCode(200).extract().jsonPath().getLong("id");
+        var corpo = Fixtures.drone("Drone " + Dados.sufixo(), Fixtures.arvore(), Fixtures.dadosComerciais("SUB-" + Dados.sufixo(), 1000, 1));
+        corpo.put("idSubcategoria", sub);
+        given().contentType(ContentType.JSON).body(corpo).post("/drones").then().statusCode(400)
+                .body("errors.field", hasItem("idSubcategoria"));
+    }
+    @Test
+    @Tag("issue-80")
+    void rascunhoNaoRetiraCategoriaDeSubcategoriaEmUso() {
+        var a = Fixtures.arvore();
+        Fixtures.criarDrone(a, 1000, 1);
+        given().contentType(ContentType.JSON).body(Map.of("idStatus", 1))
+                .put("/subcategorias/{id}", a.idSubcategoria()).then().statusCode(409);
+        given().get("/subcategorias/{id}", a.idSubcategoria()).then().statusCode(200)
+                .body("categoria.id", equalTo((int) a.idCategoria()));
+    }
 }

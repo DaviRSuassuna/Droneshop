@@ -7,10 +7,10 @@ import java.util.List;
 
 import br.com.droneshop.catalogo.dto.PromocaoRequestDTO;
 import br.com.droneshop.catalogo.model.EscopoPromocao;
+import br.com.droneshop.catalogo.model.Produto;
 import br.com.droneshop.catalogo.model.Promocao;
-import br.com.droneshop.catalogo.model.VarianteProduto;
+import br.com.droneshop.catalogo.repository.ProdutoRepository;
 import br.com.droneshop.catalogo.repository.PromocaoRepository;
-import br.com.droneshop.catalogo.repository.VarianteProdutoRepository;
 import br.com.droneshop.exception.ConflitoException;
 import br.com.droneshop.exception.ResourceNotFoundException;
 import br.com.droneshop.exception.ValidationException;
@@ -25,7 +25,7 @@ public class PromocaoServiceImpl implements PromocaoService {
     PromocaoRepository promocaoRepository;
 
     @Inject
-    VarianteProdutoRepository varianteRepository;
+    ProdutoRepository produtoRepository;
 
     @Override
     @Transactional
@@ -73,7 +73,7 @@ public class PromocaoServiceImpl implements PromocaoService {
             throw ValidationException.of("idEscopo", "Escopo de promoção não encontrado.");
         validar(dto, escopo);
 
-        List<VarianteProduto> variantes = buscarVariantes(dto.idsVariantes());
+        List<Produto> produtos = buscarProdutos(dto.idsProdutos());
         promocao.setNome(dto.nome().trim());
         promocao.setEscopo(escopo);
         promocao.setDataInicio(dto.dataInicio());
@@ -82,7 +82,7 @@ public class PromocaoServiceImpl implements PromocaoService {
         promocao.setValorDesconto(dto.valorDesconto());
         promocao.setValorMinimoCarrinho(dto.valorMinimoCarrinho());
         promocao.setAtiva(Boolean.TRUE.equals(dto.ativa()));
-        promocao.setVariantes(variantes);
+        promocao.setProdutos(produtos);
     }
 
     private void validar(PromocaoRequestDTO dto, EscopoPromocao escopo) {
@@ -95,18 +95,18 @@ public class PromocaoServiceImpl implements PromocaoService {
         if (dto.dataInicio() != null && dto.dataFim() != null && dto.dataFim().isBefore(dto.dataInicio()))
             erros.add(new br.com.droneshop.exception.Problem.FieldError(
                     "dataFim", "A data de fim deve ser igual ou posterior à data de início."));
-        if (escopo == EscopoPromocao.PRODUTO && (dto.idsVariantes() == null || dto.idsVariantes().isEmpty()))
+        if (escopo == EscopoPromocao.PRODUTO && (dto.idsProdutos() == null || dto.idsProdutos().isEmpty()))
             erros.add(new br.com.droneshop.exception.Problem.FieldError(
-                    "idsVariantes", "Selecione ao menos uma variante para uma promoção de produto."));
-        if (escopo != EscopoPromocao.PRODUTO && dto.idsVariantes() != null && !dto.idsVariantes().isEmpty())
+                    "idsProdutos", "Selecione ao menos um produto para uma promoção de produto."));
+        if (escopo != EscopoPromocao.PRODUTO && dto.idsProdutos() != null && !dto.idsProdutos().isEmpty())
             erros.add(new br.com.droneshop.exception.Problem.FieldError(
-                    "idsVariantes", "Somente promoções de produto podem vincular variantes."));
+                    "idsProdutos", "Somente promoções de produto podem vincular produtos."));
         if (escopo == EscopoPromocao.CARRINHO && dto.valorMinimoCarrinho() == null)
             erros.add(new br.com.droneshop.exception.Problem.FieldError(
                     "valorMinimoCarrinho", "Informe o valor mínimo do carrinho."));
-        if (dto.idsVariantes() != null && new HashSet<>(dto.idsVariantes()).size() != dto.idsVariantes().size())
+        if (dto.idsProdutos() != null && new HashSet<>(dto.idsProdutos()).size() != dto.idsProdutos().size())
             erros.add(new br.com.droneshop.exception.Problem.FieldError(
-                    "idsVariantes", "Não informe a mesma variante mais de uma vez."));
+                    "idsProdutos", "Não informe o mesmo produto mais de uma vez."));
         if (!erros.isEmpty())
             throw new ValidationException("Revise os dados da promoção.", erros);
     }
@@ -120,17 +120,17 @@ public class PromocaoServiceImpl implements PromocaoService {
         return normalizada;
     }
 
-    private List<VarianteProduto> buscarVariantes(List<Long> ids) {
+    private List<Produto> buscarProdutos(List<Long> ids) {
         if (ids == null || ids.isEmpty())
             return new ArrayList<>();
-        List<VarianteProduto> variantes = varianteRepository.list("id in ?1", ids);
-        if (variantes.size() != ids.size()) {
+        List<Produto> produtos = produtoRepository.list("id in ?1", ids);
+        if (produtos.size() != ids.size()) {
             HashSet<Long> encontrados = new HashSet<>();
-            variantes.forEach(v -> encontrados.add(v.getId()));
+            produtos.forEach(p -> encontrados.add(p.getId()));
             Long ausente = ids.stream().filter(id -> !encontrados.contains(id)).findFirst().orElse(null);
-            throw ValidationException.of("idsVariantes", "Variante não encontrada (id " + ausente + ").");
+            throw ValidationException.of("idsProdutos", "Produto não encontrado (id " + ausente + ").");
         }
-        return variantes;
+        return produtos;
     }
 
     private Promocao buscarOuFalhar(long id) {

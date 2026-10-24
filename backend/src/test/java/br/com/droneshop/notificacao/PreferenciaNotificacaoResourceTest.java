@@ -37,7 +37,7 @@ class PreferenciaNotificacaoResourceTest {
     /** Carrinho do cliente com um item, parado (a rotina usa referência no futuro). */
     static void carrinhoParado(Fixtures.Cliente c) {
         String carrinho = Fixtures.novoCarrinho();
-        Fixtures.adicionar(carrinho, Fixtures.criarAcessorio(100.0, 5).idVariante(), 1);
+        Fixtures.adicionar(carrinho, Fixtures.criarAcessorio(100.0, 5).id(), 1);
         Api.carrinho(c.token(), carrinho).when().post("/carrinho/vincular").then().statusCode(200);
         given().queryParam("referencia", "2099-01-01T00:00:00").when().post("/admin/rotinas/carrinhos-abandonados")
                 .then().statusCode(200);
@@ -92,7 +92,7 @@ class PreferenciaNotificacaoResourceTest {
     @Test
     void transacionalSaiMesmoSemOptIn() {
         Fixtures.Cliente c = Fixtures.novoCliente();
-        Fixtures.pedidoPendente(c, Fixtures.criarAcessorio(100.0, 5).idVariante(), 1, Fixtures.PIX);
+        Fixtures.pedidoPendente(c, Fixtures.criarAcessorio(100.0, 5).id(), 1, Fixtures.PIX);
         anonimo().queryParam("para", c.email()).when().get("/resend-falso/emails")
                 .then().statusCode(200).body("$", org.hamcrest.Matchers.not(hasSize(0)));
     }

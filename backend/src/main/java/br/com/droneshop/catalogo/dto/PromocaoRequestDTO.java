@@ -37,6 +37,6 @@ public record PromocaoRequestDTO(
         @NotNull(message = "A situação ativa deve ser informada (back).")
         Boolean ativa,
 
-        List<Long> idsVariantes
+        List<Long> idsProdutos
 ) {
 }

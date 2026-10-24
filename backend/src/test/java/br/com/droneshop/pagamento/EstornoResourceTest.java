@@ -28,7 +28,7 @@ class EstornoResourceTest {
     /** Pagamento aprovado de um pedido novo: [id, valor]. */
     static Object[] pagamentoAprovado() {
         Fixtures.Cliente c = Fixtures.novoCliente();
-        long pedido = Fixtures.pedidoPago(c, Fixtures.criarAcessorio(200.0, 5).idVariante(), 1);
+        long pedido = Fixtures.pedidoPago(c, Fixtures.criarAcessorio(200.0, 5).id(), 1);
         JsonPath j = given().when().get("/pedidos/{id}/pagamentos", pedido).then().statusCode(200).extract().jsonPath();
         return new Object[] { j.getLong("find { it.vigente }.id"), new BigDecimal(j.getString("find { it.vigente }.valor")) };
     }

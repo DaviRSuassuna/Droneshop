@@ -15,11 +15,11 @@ public record MovimentoEstoqueResponseDTO(
     String observacao,
     Autor autor,
     LocalDateTime dataCadastro,
-    Variante variante
+    Produto produto
 ) {
     public record Autor(Long id, String nome) {
     }
 
-    public record Variante(Long id, String sku, String nome) {
+    public record Produto(Long id, String sku, String nome) {
     }
 }

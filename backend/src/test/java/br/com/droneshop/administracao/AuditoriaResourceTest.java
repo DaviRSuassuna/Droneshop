@@ -35,10 +35,10 @@ class AuditoriaResourceTest {
     @Test
     void alteracaoDePrecoGuardaValorAnteriorENovo() {
         Fixtures.ProdutoCriado p = Fixtures.criarDrone(1000.0, 2);
-        Map<String, Object> v = Fixtures.variante(p.sku(), 1200.0, 2);
-        given().contentType(ContentType.JSON).body(v).when().put("/variantes/{id}", p.idVariante())
-                .then().statusCode(204);
-        given().queryParam("entidade", "VarianteProduto").queryParam("entidadeId", p.idVariante())
+        Map<String, Object> corpo = Fixtures.corpoDoProduto(p.id());
+        corpo.put("preco", 1200.0);
+        Fixtures.alterarProduto(p.id(), corpo).then().statusCode(204);
+        given().queryParam("entidade", "Produto").queryParam("entidadeId", p.id())
                 .queryParam("pageSize", 50)
                 .when().get("/admin/auditoria")
                 .then().statusCode(200)

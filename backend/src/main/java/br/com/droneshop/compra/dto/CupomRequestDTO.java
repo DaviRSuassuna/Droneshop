@@ -40,6 +40,6 @@ public record CupomRequestDTO(
         Boolean ativo,
         List<Long> idsCategorias,
         List<Long> idsMarcas,
-        List<Long> idsVariantes
+        List<Long> idsProdutos
 ) {
 }

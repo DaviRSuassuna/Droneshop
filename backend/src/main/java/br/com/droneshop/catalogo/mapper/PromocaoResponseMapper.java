@@ -3,7 +3,7 @@ package br.com.droneshop.catalogo.mapper;
 import java.time.LocalDateTime;
 
 import br.com.droneshop.catalogo.dto.PromocaoResponseDTO;
-import br.com.droneshop.catalogo.dto.VariantePromocaoResponseDTO;
+import br.com.droneshop.catalogo.dto.ProdutoPromocaoResponseDTO;
 import br.com.droneshop.catalogo.model.Promocao;
 
 public final class PromocaoResponseMapper {
@@ -23,8 +23,8 @@ public final class PromocaoResponseMapper {
                 promocao.getValorMinimoCarrinho(),
                 promocao.isAtiva(),
                 situacao(promocao, LocalDateTime.now()),
-                promocao.getVariantes().stream()
-                        .map(v -> new VariantePromocaoResponseDTO(v.getId(), v.getSku(), v.getNome()))
+                promocao.getProdutos().stream()
+                        .map(p -> new ProdutoPromocaoResponseDTO(p.getId(), p.getSku(), p.getNome()))
                         .toList());
     }
 

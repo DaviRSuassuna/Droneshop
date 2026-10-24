@@ -7,6 +7,8 @@ import br.com.droneshop.catalogo.model.Marca;
 import jakarta.validation.Valid;
 
 public interface MarcaService {
+    List<Marca> findComFiltro(String busca, Long idStatus, String paisOrigem, int page, int pageSize);
+    long countComFiltro(String busca, Long idStatus, String paisOrigem);
 
     Marca create(@Valid MarcaRequestDTO marca);
     void update(long id, @Valid MarcaRequestDTO marca);

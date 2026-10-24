@@ -5,7 +5,7 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 // Specs como colunas fixas e tipadas (D14). Ficam nulas no rascunho; pesoGramas e
-// spec de exibicao e filtro, o peso que cota frete e o da embalagem (variante).
+// spec de exibicao e filtro, o peso que cota frete e o da embalagem (Produto, D16).
 @Entity
 @DiscriminatorValue("1")
 public class Drone extends Produto {

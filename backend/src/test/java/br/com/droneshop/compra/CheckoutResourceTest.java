@@ -27,13 +27,13 @@ import io.restassured.response.ValidatableResponse;
 @Tag("issue-26")
 class CheckoutResourceTest {
 
-    record Preparado(Fixtures.Cliente cliente, String carrinho, long idEndereco, long idVariante) {
+    record Preparado(Fixtures.Cliente cliente, String carrinho, long idEndereco, long idProduto) {
     }
 
     /** Cliente logado com carrinho vinculado, um item e reserva feita. */
     static Preparado preparar(boolean reservar) {
         Fixtures.Cliente cli = Fixtures.novoCliente();
-        long v = Fixtures.criarAcessorio(250.0, 10).idVariante();
+        long v = Fixtures.criarAcessorio(250.0, 10).id();
         String c = Fixtures.novoCarrinho();
         Fixtures.adicionar(c, v, 2);
         carrinho(cli.token(), c).when().post("/carrinho/vincular").then().statusCode(200);

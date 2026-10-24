@@ -64,7 +64,7 @@ class NotificacaoResourceTest {
     @Test
     void pedidoEPagamentoDisparamEmail() {
         Fixtures.Cliente c = Fixtures.novoCliente();
-        Fixtures.pedidoPago(c, Fixtures.criarAcessorio(100.0, 5).idVariante(), 1);
+        Fixtures.pedidoPago(c, Fixtures.criarAcessorio(100.0, 5).id(), 1);
         anonimo().queryParam("para", c.email()).when().get("/resend-falso/emails")
                 .then().statusCode(200).body("size()", greaterThanOrEqualTo(2));
         notificacoes(c.email())
@@ -75,7 +75,7 @@ class NotificacaoResourceTest {
     @Test
     void webhookAtualizaOStatusDeEntrega() {
         Fixtures.Cliente c = Fixtures.novoCliente();
-        Fixtures.pedidoPendente(c, Fixtures.criarAcessorio(100.0, 5).idVariante(), 1, Fixtures.PIX);
+        Fixtures.pedidoPendente(c, Fixtures.criarAcessorio(100.0, 5).id(), 1, Fixtures.PIX);
         String idProvedor = notificacoes(c.email()).extract().jsonPath().getString("items[0].identificadorProvedor");
         anonimo().contentType(ContentType.JSON)
                 .body(Map.of("type", "email.opened", "data", Map.of("email_id", idProvedor)))
@@ -89,7 +89,7 @@ class NotificacaoResourceTest {
         Api.anonimo().contentType(ContentType.JSON).body(Fixtures.novaConta(email))
                 .when().post("/clientes").then().statusCode(200);
         Fixtures.Cliente c = new Fixtures.Cliente(0, email, "segredo123", Api.login(email, "segredo123"));
-        long pedido = Fixtures.pedidoPendente(c, Fixtures.criarAcessorio(100.0, 5).idVariante(), 1, Fixtures.PIX);
+        long pedido = Fixtures.pedidoPendente(c, Fixtures.criarAcessorio(100.0, 5).id(), 1, Fixtures.PIX);
         given().when().get("/pedidos/{id}", pedido).then().statusCode(200);
         notificacoes(email).body("items[0].statusEnvio.nome", equalTo("FALHA"));
     }

@@ -15,6 +15,8 @@ import io.restassured.path.json.JsonPath;
 
 /**
  * Massa de dados dos testes das issues, montada só pela API (nunca pelo banco).
+ * Desde a D40 cada versão é um produto: preço, estoque e embalagem vão no corpo do
+ * drone/acessório (dadosComerciais) e o kit é o tipo KIT, em /kits.
  *
  * Os corpos seguem os contratos das issues (docs/issues/NNN.md). Cada método
  * cria registros novos com sufixo aleatório, então os testes não dependem uns
@@ -24,7 +26,7 @@ public final class Fixtures {
 
     // ids de enum (D31)
     public static final long PRODUTO_RASCUNHO = 1, PRODUTO_ATIVO = 2, PRODUTO_INATIVO = 3;
-    public static final long TIPO_DRONE = 1, TIPO_ACESSORIO = 2;
+    public static final long TIPO_DRONE = 1, TIPO_ACESSORIO = 2, TIPO_KIT = 3;
     public static final long PAPEL_ADMIN = 1, PAPEL_OPERADOR = 2, PAPEL_CATALOGO = 3, PAPEL_ATENDIMENTO = 4,
             PAPEL_SOMENTE_LEITURA = 5;
     public static final long MOV_ENTRADA = 1, MOV_SAIDA = 2, MOV_AJUSTE = 3, MOV_DEVOLUCAO = 4, MOV_PERDA = 5;
@@ -54,7 +56,7 @@ public final class Fixtures {
             long idCategoriaAcessorio, long idSubcategoriaAcessorio) {
     }
 
-    public record ProdutoCriado(long id, String slug, long idVariante, String sku) {
+    public record ProdutoCriado(long id, String slug, String sku) {
     }
 
     public static long idPalmas() {
@@ -118,10 +120,9 @@ public final class Fixtures {
         return criar("/subcategorias", sub);
     }
 
-    /** Variante completa (publicável), com embalagem. */
-    public static Map<String, Object> variante(String sku, double preco, int estoque) {
+    /** Preço, estoque e embalagem de um produto publicável (D40). Entra no corpo do drone/acessório. */
+    public static Map<String, Object> dadosComerciais(String sku, double preco, int estoque) {
         Map<String, Object> v = new HashMap<>();
-        v.put("nome", "Padrão");
         v.put("sku", sku);
         v.put("preco", preco);
         v.put("custoAquisicao", BigDecimal.valueOf(preco).multiply(BigDecimal.valueOf(0.6)).doubleValue());
@@ -131,8 +132,6 @@ public final class Fixtures {
         v.put("alturaEmbalagemCm", 20);
         v.put("larguraEmbalagemCm", 30);
         v.put("comprimentoEmbalagemCm", 25);
-        v.put("ehKit", false);
-        v.put("ativa", true);
         return v;
     }
 
@@ -140,7 +139,6 @@ public final class Fixtures {
     static Map<String, Object> produtoBase(String nome, Arvore a) {
         Map<String, Object> p = new HashMap<>();
         p.put("nome", nome);
-        p.put("modelo", nome.toUpperCase().replace(' ', '-'));
         p.put("descricaoCurta", "Produto criado pelo teste.");
         p.put("descricao", "Descrição longa do produto criado pelo teste.");
         p.put("idMarca", a.idMarca());
@@ -153,8 +151,8 @@ public final class Fixtures {
         return p;
     }
 
-    /** Corpo de drone ATIVO com todas as specs e as variantes informadas. */
-    public static Map<String, Object> drone(String nome, Arvore a, List<Map<String, Object>> variantes) {
+    /** Corpo de drone ATIVO com todas as specs e o preço, estoque e embalagem informados. */
+    public static Map<String, Object> drone(String nome, Arvore a, Map<String, Object> dadosComerciais) {
         Map<String, Object> d = produtoBase(nome, a);
         d.put("pesoGramas", 895);
         d.put("dimensoesDobrado", "22x10x9");
@@ -174,17 +172,35 @@ public final class Fixtures {
         d.put("exigeRegistroAnac", true);
         d.put("classeAnac", "Classe 3");
         d.put("registroSisant", "");
-        d.put("variantes", variantes);
+        d.putAll(dadosComerciais);
         return d;
     }
 
     /** Corpo de acessório ATIVO, na subcategoria de acessório da árvore. */
-    public static Map<String, Object> acessorio(String nome, Arvore a, List<Map<String, Object>> variantes) {
+    public static Map<String, Object> acessorio(String nome, Arvore a, Map<String, Object> dadosComerciais) {
         Map<String, Object> d = produtoBase(nome, a);
         d.put("idSubcategoria", a.idSubcategoriaAcessorio());
         d.put("tipoAcessorio", "Bateria");
-        d.put("variantes", variantes);
+        d.putAll(dadosComerciais);
         return d;
+    }
+
+    /** Item de "componentes" do kit. */
+    public static Map<String, Object> componente(long idProduto, int quantidade) {
+        Map<String, Object> c = new HashMap<>();
+        c.put("idProduto", idProduto);
+        c.put("quantidade", quantidade);
+        return c;
+    }
+
+    /** Corpo de kit ATIVO (D7, D40): sem estoque nem embalagem, que vêm dos componentes. */
+    public static Map<String, Object> kit(String nome, Arvore a, List<Map<String, Object>> componentes) {
+        Map<String, Object> k = produtoBase(nome, a);
+        k.put("sku", "KIT-" + Dados.sufixo().toUpperCase());
+        k.put("preco", 9999.0);
+        k.put("custoAquisicao", 6000.0);
+        k.put("componentes", componentes);
+        return k;
     }
 
     public static ProdutoCriado criarDrone(double preco, int estoque) {
@@ -195,8 +211,8 @@ public final class Fixtures {
         String s = Dados.sufixo();
         String sku = "DR-" + s.toUpperCase();
         return extrairProduto(given().contentType(ContentType.JSON)
-                .body(drone("Drone " + s, a, lista(variante(sku, preco, estoque))))
-                .when().post("/drones").then().statusCode(200).extract().jsonPath(), sku);
+                .body(drone("Drone " + s, a, dadosComerciais(sku, preco, estoque)))
+                .when().post("/drones").then().statusCode(200).extract().jsonPath());
     }
 
     public static ProdutoCriado criarAcessorio(double preco, int estoque) {
@@ -207,15 +223,56 @@ public final class Fixtures {
         String s = Dados.sufixo();
         String sku = "AC-" + s.toUpperCase();
         return extrairProduto(given().contentType(ContentType.JSON)
-                .body(acessorio("Acessorio " + s, a, lista(variante(sku, preco, estoque))))
-                .when().post("/acessorios").then().statusCode(200).extract().jsonPath(), sku);
+                .body(acessorio("Acessorio " + s, a, dadosComerciais(sku, preco, estoque)))
+                .when().post("/acessorios").then().statusCode(200).extract().jsonPath());
     }
 
-    // Até a #9 o produto não devolve variantes; aí idVariante fica 0.
-    private static ProdutoCriado extrairProduto(JsonPath j, String sku) {
-        List<Object> variantes = j.getList("variantes");
-        long idVariante = (variantes == null || variantes.isEmpty()) ? 0 : j.getLong("variantes[0].id");
-        return new ProdutoCriado(j.getLong("id"), j.getString("slug"), idVariante, sku);
+    /** Kit ATIVO com os componentes informados (use componente(id, quantidade)). */
+    @SafeVarargs
+    public static ProdutoCriado criarKit(Map<String, Object>... componentes) {
+        return extrairProduto(given().contentType(ContentType.JSON)
+                .body(kit("Kit " + Dados.sufixo(), arvore(), lista(componentes)))
+                .when().post("/kits").then().statusCode(200).extract().jsonPath());
+    }
+
+    private static ProdutoCriado extrairProduto(JsonPath j) {
+        return new ProdutoCriado(j.getLong("id"), j.getString("slug"), j.getString("sku"));
+    }
+
+    /**
+     * Corpo de PUT montado a partir do GET /produtos/{id}: o que é objeto na resposta
+     * (marca, subcategoria, fornecedor, status, grupo, compatíveis, componentes) volta como id.
+     * Campos só de leitura (margemPercentual, disponivel...) são ignorados pela API.
+     */
+    public static Map<String, Object> corpoDoProduto(long id) {
+        JsonPath j = given().when().get("/produtos/{id}", id).then().statusCode(200).extract().jsonPath();
+        Map<String, Object> p = new HashMap<>(j.getMap("$"));
+        p.put("idMarca", j.get("marca.id"));
+        p.put("idSubcategoria", j.get("subcategoria.id"));
+        p.put("idFornecedor", j.get("fornecedor.id"));
+        p.put("idStatus", j.get("status.id"));
+        p.put("idGrupo", j.get("grupo.id"));
+        if (j.get("compativeis") != null)
+            p.put("idsCompativeis", j.getList("compativeis.id"));
+        if (j.get("componentes") != null) {
+            List<Map<String, Object>> componentes = new ArrayList<>();
+            for (Map<String, Object> c : j.<Map<String, Object>>getList("componentes"))
+                componentes.add(componente(((Number) c.get("idProduto")).longValue(), (Integer) c.get("quantidade")));
+            p.put("componentes", componentes);
+        }
+        return p;
+    }
+
+    /** PUT na rota do tipo do produto (/drones, /acessorios ou /kits). */
+    public static io.restassured.response.Response alterarProduto(long id, Map<String, Object> corpo) {
+        @SuppressWarnings("unchecked")
+        String tipo = ((Map<String, Object>) corpo.get("tipo")).get("nome").toString();
+        String rota = switch (tipo) {
+            case "DRONE" -> "/drones/{id}";
+            case "ACESSORIO" -> "/acessorios/{id}";
+            default -> "/kits/{id}";
+        };
+        return given().contentType(ContentType.JSON).body(corpo).when().put(rota, id);
     }
 
     // ---------------------------------------------------------------- pessoas
@@ -302,9 +359,9 @@ public final class Fixtures {
                 .extract().jsonPath().getString("token");
     }
 
-    public static void adicionar(String tokenCarrinho, long idVariante, int quantidade) {
+    public static void adicionar(String tokenCarrinho, long idProduto, int quantidade) {
         Api.carrinho(tokenCarrinho).contentType(ContentType.JSON)
-                .body(Map.of("idVariante", idVariante, "quantidade", quantidade))
+                .body(Map.of("idProduto", idProduto, "quantidade", quantidade))
                 .when().post("/carrinho/itens").then().statusCode(200);
     }
 
@@ -312,9 +369,9 @@ public final class Fixtures {
      * Pedido PENDENTE do cliente: carrinho anônimo, vínculo, reserva e checkout
      * com entrega PADRAO e o método informado. Devolve o id do pedido.
      */
-    public static long pedidoPendente(Cliente c, long idVariante, int quantidade, long idMetodo) {
+    public static long pedidoPendente(Cliente c, long idProduto, int quantidade, long idMetodo) {
         String carrinho = novoCarrinho();
-        adicionar(carrinho, idVariante, quantidade);
+        adicionar(carrinho, idProduto, quantidade);
         Api.carrinho(c.token(), carrinho).when().post("/carrinho/vincular").then().statusCode(200);
         Api.carrinho(c.token(), carrinho).when().post("/carrinho/reservar").then().statusCode(200);
         long idEndereco = enderecoCliente(c);
@@ -332,8 +389,8 @@ public final class Fixtures {
     }
 
     /** Pedido PAGO: pendente + cartão aprovado no Mercado Pago falso. */
-    public static long pedidoPago(Cliente c, long idVariante, int quantidade) {
-        long id = pedidoPendente(c, idVariante, quantidade, CARTAO);
+    public static long pedidoPago(Cliente c, long idProduto, int quantidade) {
+        long id = pedidoPendente(c, idProduto, quantidade, CARTAO);
         pagarComCartao(c, id, "tok_aprovado").then().statusCode(200);
         return id;
     }

@@ -1,6 +1,6 @@
 package br.com.droneshop.estoque.model;
 
-import br.com.droneshop.catalogo.model.VarianteProduto;
+import br.com.droneshop.catalogo.model.Produto;
 import br.com.droneshop.identidade.model.Usuario;
 import br.com.droneshop.model.DefaultEntity;
 import br.com.droneshop.model.OrigemRegistro;
@@ -16,10 +16,10 @@ import jakarta.persistence.Table;
 @Table(name = "movimento_estoque")
 public class MovimentoEstoque extends DefaultEntity {
 
-    // sempre variante comum: kit nao tem estoque proprio (D7)
+    // nunca kit: kit nao tem estoque proprio (D7)
     @ManyToOne(optional = false)
-    @JoinColumn(name = "id_variante", nullable = false)
-    private VarianteProduto variante;
+    @JoinColumn(name = "id_produto", nullable = false)
+    private Produto produto;
 
     @Column(nullable = false)
     private TipoMovimento tipo;
@@ -42,12 +42,12 @@ public class MovimentoEstoque extends DefaultEntity {
     @JoinColumn(name = "id_autor")
     private Usuario autor;
 
-    public VarianteProduto getVariante() {
-        return variante;
+    public Produto getProduto() {
+        return produto;
     }
 
-    public void setVariante(VarianteProduto variante) {
-        this.variante = variante;
+    public void setProduto(Produto produto) {
+        this.produto = produto;
     }
 
     public TipoMovimento getTipo() {

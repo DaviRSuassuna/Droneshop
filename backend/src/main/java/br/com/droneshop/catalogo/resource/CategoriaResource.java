@@ -1,5 +1,8 @@
 package br.com.droneshop.catalogo.resource;
 
+import jakarta.ws.rs.PATCH;
+import jakarta.validation.Valid;
+import br.com.droneshop.catalogo.dto.CategoriaOrdemRequestDTO;
 import java.util.List;
 
 import br.com.droneshop.dto.PageResponse;
@@ -34,6 +37,12 @@ public class CategoriaResource {
 
     @Inject
     CategoriaService service;
+
+    @PATCH
+    @Path("/ordem")
+    public void reordenar(@Valid CategoriaOrdemRequestDTO dto) {
+        service.reordenar(dto);
+    }
 
     @GET
     public PageResponse<CategoriaResponseDTO> buscarTodos(@QueryParam("page") @DefaultValue("0") int page,

@@ -1,5 +1,8 @@
 package br.com.droneshop.catalogo.resource;
 
+import java.util.Arrays;
+import br.com.droneshop.util.Csv;
+import jakarta.ws.rs.core.Response;
 import java.util.List;
 
 import br.com.droneshop.dto.PageResponse;
@@ -36,10 +39,18 @@ public class FornecedorResource {
     FornecedorService service;
 
     @GET
-    public PageResponse<FornecedorResponseDTO> buscarTodos(@QueryParam("page") @DefaultValue("0") int page,
+    @Path("/exportar")
+    @Produces("text/csv")
+    public Response exportar(@QueryParam("busca") String busca, @QueryParam("idStatus") Long idStatus, @QueryParam("uf") String uf) {
+        return Csv.resposta("fornecedors.csv", List.of("Fornecedor", "CNPJ", "Contato", "E-mail", "Telefone", "Status", "Produtos"),
+                service.findComFiltro(busca, idStatus, uf, 0, Integer.MAX_VALUE).stream().map(p -> Arrays.<Object>asList(p.getRazaoSocial(), p.getCnpj(), p.getNomeContato(), p.getEmailContato(), p.getTelefoneContato(), p.getStatus().getNome(), p.getQuantidadeProdutos())));
+    }
+
+    @GET
+    public PageResponse<FornecedorResponseDTO> buscarTodos(@QueryParam("busca") String busca, @QueryParam("idStatus") Long idStatus, @QueryParam("uf") String uf, @QueryParam("page") @DefaultValue("0") int page,
             @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
-        List<Fornecedor> fornecedors = service.findAll(page, pageSize);
-        long totalItems = service.count();
+        List<Fornecedor> fornecedors = service.findComFiltro(busca, idStatus, uf, page, pageSize);
+        long totalItems = service.countComFiltro(busca, idStatus, uf);
 
         return PageResponse.of(fornecedors, page, pageSize, totalItems, FornecedorResponseMapper::toResponse);
     }

@@ -15,7 +15,6 @@ import java.util.Map;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import br.com.droneshop.testes.Dados;
 import br.com.droneshop.testes.Fixtures;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
@@ -29,9 +28,9 @@ import io.restassured.response.ValidatableResponse;
 @Tag("issue-30")
 class FreteResourceTest {
 
-    static ValidatableResponse cotar(String cep, long idVariante, int quantidade) {
+    static ValidatableResponse cotar(String cep, long idProduto, int quantidade) {
         return anonimo().contentType(ContentType.JSON)
-                .body(Map.of("cep", cep, "itens", List.of(Map.of("idVariante", idVariante, "quantidade", quantidade))))
+                .body(Map.of("cep", cep, "itens", List.of(Map.of("idProduto", idProduto, "quantidade", quantidade))))
                 .when().post("/frete/cotacao").then();
     }
 
@@ -50,7 +49,7 @@ class FreteResourceTest {
 
     @Test
     void cotaPeloAgregadorEIncluiRetirada() {
-        long v = Fixtures.criarAcessorio(100.0, 5).idVariante();
+        long v = Fixtures.criarAcessorio(100.0, 5).id();
         cotar(Fixtures.CEP_DESTINO, v, 1).statusCode(200)
                 .body("modalidade.nome", hasItems("EXPRESSA", "PADRAO", "RETIRADA_SHOWROOM"))
                 .body("find { it.modalidade.nome == 'PADRAO' }.origemCalculo.nome", equalTo("INTEGRACAO_AGREGADOR"))
@@ -61,7 +60,7 @@ class FreteResourceTest {
 
     @Test
     void agregadorForaDoArCaiParaARegraFrete() {
-        long v = Fixtures.criarAcessorio(100.0, 5).idVariante();
+        long v = Fixtures.criarAcessorio(100.0, 5).id();
         cotar(FreteFalso.CEP_AGREGADOR_FORA, v, 1).statusCode(200)
                 .body("find { it.modalidade.nome == 'PADRAO' }.origemCalculo.nome", equalTo("REGRA_FRETE"))
                 .body("find { it.modalidade.nome == 'EXPRESSA' }.origemCalculo.nome", equalTo("REGRA_FRETE"));
@@ -69,32 +68,22 @@ class FreteResourceTest {
 
     @Test
     void cepInvalidoResponde400() {
-        long v = Fixtures.criarAcessorio(100.0, 5).idVariante();
+        long v = Fixtures.criarAcessorio(100.0, 5).id();
         cotar("7700", v, 1).statusCode(400).body("errors.field", hasItem("cep"));
     }
 
     @Test
     void pesoDaEmbalagemSomaAsQuantidades() {
-        long v = Fixtures.criarAcessorio(100.0, 5).idVariante(); // 1,5 kg na fixture
+        long v = Fixtures.criarAcessorio(100.0, 5).id(); // 1,5 kg na fixture
         cotar(Fixtures.CEP_DESTINO, v, 2).statusCode(200);
         org.junit.jupiter.api.Assertions.assertEquals(3.0f, pesoCotado(), 0.001f);
     }
 
     @Test
     void kitCotaComPesoDerivadoDosComponentes() {
-        long drone = Fixtures.criarDrone(1000.0, 5).idVariante();
-        long bateria = Fixtures.criarAcessorio(100.0, 5).idVariante();
-        Map<String, Object> kit = new HashMap<>();
-        kit.put("nome", "Combo");
-        kit.put("sku", "KIT-" + Dados.sufixo().toUpperCase());
-        kit.put("preco", 1150.0);
-        kit.put("ehKit", true);
-        kit.put("ativa", true);
-        kit.put("componentes", List.of(Map.of("idVariante", drone, "quantidade", 1),
-                Map.of("idVariante", bateria, "quantidade", 2)));
-        long idKit = given().contentType(ContentType.JSON)
-                .body(Fixtures.drone("Combo " + Dados.sufixo(), Fixtures.arvore(), Fixtures.lista(kit)))
-                .when().post("/drones").then().statusCode(200).extract().jsonPath().getLong("variantes[0].id");
+        long drone = Fixtures.criarDrone(1000.0, 5).id();
+        long bateria = Fixtures.criarAcessorio(100.0, 5).id();
+        long idKit = Fixtures.criarKit(Fixtures.componente(drone, 1), Fixtures.componente(bateria, 2)).id();
         cotar(Fixtures.CEP_DESTINO, idKit, 1).statusCode(200);
         org.junit.jupiter.api.Assertions.assertEquals(4.5f, pesoCotado(), 0.001f);
     }
@@ -102,7 +91,7 @@ class FreteResourceTest {
     @Test
     void pedidoCongelaAEntregaEscolhida() {
         Fixtures.Cliente c = Fixtures.novoCliente();
-        long pedido = Fixtures.pedidoPendente(c, Fixtures.criarAcessorio(100.0, 5).idVariante(), 1, Fixtures.PIX);
+        long pedido = Fixtures.pedidoPendente(c, Fixtures.criarAcessorio(100.0, 5).id(), 1, Fixtures.PIX);
         given().when().get("/pedidos/{id}", pedido).then().statusCode(200)
                 .body("entrega.modalidade.nome", equalTo("PADRAO"))
                 .body("entrega.transportadora", equalTo("Correios"))

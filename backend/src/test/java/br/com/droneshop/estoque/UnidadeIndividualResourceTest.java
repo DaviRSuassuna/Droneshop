@@ -27,14 +27,14 @@ import io.restassured.response.ValidatableResponse;
 @Tag("issue-34")
 class UnidadeIndividualResourceTest {
 
-    static ValidatableResponse unidade(long idVariante, String serie) {
+    static ValidatableResponse unidade(long idProduto, String serie) {
         return given().contentType(ContentType.JSON)
-                .body(Map.of("idVariante", idVariante, "numeroSerie", serie, "registroAnac", ""))
+                .body(Map.of("idProduto", idProduto, "numeroSerie", serie, "registroAnac", ""))
                 .when().post("/unidades").then();
     }
 
-    static long novaUnidade(long idVariante) {
-        return unidade(idVariante, "SN-" + Dados.sufixo().toUpperCase()).statusCode(200)
+    static long novaUnidade(long idProduto) {
+        return unidade(idProduto, "SN-" + Dados.sufixo().toUpperCase()).statusCode(200)
                 .extract().jsonPath().getLong("id");
     }
 
@@ -43,10 +43,10 @@ class UnidadeIndividualResourceTest {
                 .when().post("/pedidos/{id}/itens/{idItem}/unidades", pedido, item).then();
     }
 
-    /** Pedido PAGO de 2 unidades de um drone, já em SEPARACAO. Devolve [pedido, item, variante]. */
+    /** Pedido PAGO de 2 unidades de um drone, já em SEPARACAO. Devolve [pedido, item, produto]. */
     static long[] pedidoDeDroneEmSeparacao() {
         Fixtures.Cliente c = Fixtures.novoCliente();
-        long v = Fixtures.criarDrone(3000.0, 5).idVariante();
+        long v = Fixtures.criarDrone(3000.0, 5).id();
         long pedido = Fixtures.pedidoPago(c, v, 2);
         Fixtures.mudarStatus(pedido, Fixtures.PEDIDO_SEPARACAO).then().statusCode(204);
         long item = given().when().get("/pedidos/{id}", pedido).then().statusCode(200)
@@ -62,12 +62,12 @@ class UnidadeIndividualResourceTest {
 
     @Test
     void numeroDeSerieUnicoESoParaDrone() {
-        long v = Fixtures.criarDrone(3000.0, 1).idVariante();
+        long v = Fixtures.criarDrone(3000.0, 1).id();
         String serie = "SN-" + Dados.sufixo().toUpperCase();
         unidade(v, serie).statusCode(200).body("status.nome", equalTo("DISPONIVEL"));
         unidade(v, serie).statusCode(400).body("errors.field", hasItem("numeroSerie"));
-        long acessorio = Fixtures.criarAcessorio(100.0, 1).idVariante();
-        unidade(acessorio, "SN-" + Dados.sufixo()).statusCode(400).body("errors.field", hasItem("idVariante"));
+        long acessorio = Fixtures.criarAcessorio(100.0, 1).id();
+        unidade(acessorio, "SN-" + Dados.sufixo()).statusCode(400).body("errors.field", hasItem("idProduto"));
     }
 
     @Test
@@ -85,9 +85,9 @@ class UnidadeIndividualResourceTest {
     }
 
     @Test
-    void unidadeDeOutraVarianteNaoServe() {
+    void unidadeDeOutroProdutoNaoServe() {
         long[] p = pedidoDeDroneEmSeparacao();
-        long outra = novaUnidade(Fixtures.criarDrone(3000.0, 1).idVariante());
+        long outra = novaUnidade(Fixtures.criarDrone(3000.0, 1).id());
         vincular(p[0], p[1], List.of(novaUnidade(p[2]), outra)).statusCode(400)
                 .body("errors.field", hasItem("idsUnidades"));
     }
@@ -99,7 +99,7 @@ class UnidadeIndividualResourceTest {
         long u2 = novaUnidade(p[2]);
         vincular(p[0], p[1], List.of(u1, u2)).statusCode(204);
         Fixtures.mudarStatus(p[0], Fixtures.PEDIDO_ENVIADO).then().statusCode(204);
-        given().queryParam("idVariante", p[2]).when().get("/unidades")
+        given().queryParam("idProduto", p[2]).when().get("/unidades")
                 .then().statusCode(200)
                 .body("items.status.nome", everyItem(equalTo("VENDIDA")))
                 .body("items.validadeGarantia", everyItem(notNullValue()));

@@ -97,7 +97,7 @@ class CartaoSalvoResourceTest {
         Map<String, Object> c = cartao();
         c.put("tokenGateway", MercadoPagoFalso.CARTAO_APROVADO);
         long idCartao = salvar(cli.token(), c).statusCode(200).extract().jsonPath().getLong("id");
-        long pedido = Fixtures.pedidoPendente(cli, Fixtures.criarAcessorio(100.0, 5).idVariante(), 1, Fixtures.CARTAO);
+        long pedido = Fixtures.pedidoPendente(cli, Fixtures.criarAcessorio(100.0, 5).id(), 1, Fixtures.CARTAO);
         como(cli.token()).contentType(ContentType.JSON)
                 .body(Map.of("idMetodo", Fixtures.CARTAO, "idCartaoSalvo", idCartao))
                 .when().post("/pedidos/{id}/pagamentos", pedido)

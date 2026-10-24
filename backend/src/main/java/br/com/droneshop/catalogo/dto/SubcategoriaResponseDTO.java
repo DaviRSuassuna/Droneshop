@@ -9,6 +9,7 @@ public record SubcategoriaResponseDTO(
     CategoriaResponseDTO categoria,
     Integer ordemExibicao,
     String descricao,
-    StatusCategoria status
+    StatusCategoria status,
+    long quantidadeProdutos
 ) {
 }

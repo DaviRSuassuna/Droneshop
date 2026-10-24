@@ -67,7 +67,7 @@ class PedidoResourceTest {
         given().when().get("/pedidos/{id}", id)
                 .then().statusCode(200)
                 .body("itens[0].precoUnitarioCongelado", notNullValue())
-                .body("itens[0].variante.sku", notNullValue())
+                .body("itens[0].produto.sku", notNullValue())
                 .body("enderecoEntrega.cep", matchesPattern("\\d{8}"))
                 .body("enderecoEntrega.uf", notNullValue())
                 .body("cliente.nome", notNullValue());
@@ -75,17 +75,15 @@ class PedidoResourceTest {
     }
 
     @Test
-    void mudarPrecoDaVarianteNaoMudaOPedido() {
+    void mudarPrecoDoProdutoNaoMudaOPedido() {
         long id = Fixtures.pedidoDaCarga(Fixtures.PEDIDO_PENDENTE);
         JsonPath antes = given().when().get("/pedidos/{id}", id).then().statusCode(200).extract().jsonPath();
-        long idVariante = antes.getLong("itens[0].variante.id");
+        long idProduto = antes.getLong("itens[0].produto.id");
         float precoCongelado = antes.getFloat("itens[0].precoUnitarioCongelado");
 
-        Map<String, Object> v = given().when().get("/variantes/{id}", idVariante).then().statusCode(200)
-                .extract().jsonPath().getMap("$");
-        v.put("preco", precoCongelado * 2);
-        given().contentType(ContentType.JSON).body(v).when().put("/variantes/{id}", idVariante)
-                .then().statusCode(204);
+        Map<String, Object> corpo = Fixtures.corpoDoProduto(idProduto);
+        corpo.put("preco", precoCongelado * 2);
+        Fixtures.alterarProduto(idProduto, corpo).then().statusCode(204);
 
         given().when().get("/pedidos/{id}", id)
                 .then().statusCode(200)

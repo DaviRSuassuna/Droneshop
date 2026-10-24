@@ -5,8 +5,9 @@ import java.util.Locale;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
-import br.com.droneshop.catalogo.model.VarianteProduto;
-import br.com.droneshop.catalogo.repository.VarianteProdutoRepository;
+import br.com.droneshop.catalogo.model.Kit;
+import br.com.droneshop.catalogo.model.Produto;
+import br.com.droneshop.catalogo.repository.ProdutoRepository;
 import br.com.droneshop.estoque.dto.MovimentoEstoqueRequestDTO;
 import br.com.droneshop.estoque.dto.SituacaoEstoque;
 import br.com.droneshop.estoque.model.MovimentoEstoque;
@@ -35,7 +36,7 @@ public class MovimentoEstoqueServiceImpl implements MovimentoEstoqueService {
     EstoqueRepository estoqueRepository;
 
     @Inject
-    VarianteProdutoRepository varianteRepository;
+    ProdutoRepository produtoRepository;
 
     @Inject
     UsuarioRepository usuarioRepository;
@@ -55,15 +56,15 @@ public class MovimentoEstoqueServiceImpl implements MovimentoEstoqueService {
                     ? "Informe o saldo novo, zero ou mais (back)."
                     : "A quantidade deve ser de pelo menos 1 (back).");
 
-        // trava a linha da variante: dois movimentos ao mesmo tempo nao leem o mesmo saldo
-        VarianteProduto variante = varianteRepository.findById(dto.idVariante(), LockModeType.PESSIMISTIC_WRITE);
-        if (variante == null)
-            throw new ResourceNotFoundException("Variante não encontrada.");
-        if (variante.isEhKit())
-            throw ValidationException.of("idVariante",
+        // trava a linha do produto: dois movimentos ao mesmo tempo nao leem o mesmo saldo
+        Produto produto = produtoRepository.findById(dto.idProduto(), LockModeType.PESSIMISTIC_WRITE);
+        if (produto == null)
+            throw new ResourceNotFoundException("Produto não encontrado.");
+        if (produto instanceof Kit)
+            throw ValidationException.of("idProduto",
                     "Kit não tem estoque próprio: lance o movimento em cada componente (back).");
 
-        int atual = (variante.getEstoqueFisico() == null) ? 0 : variante.getEstoqueFisico();
+        int atual = (produto.getEstoqueFisico() == null) ? 0 : produto.getEstoqueFisico();
         int saldo;
         int quantidade = dto.quantidade();
         switch (tipo) {
@@ -75,20 +76,20 @@ public class MovimentoEstoqueServiceImpl implements MovimentoEstoqueService {
             }
         }
         if (saldo < 0)
-            throw new ConflitoException("Saldo insuficiente: a variante tem " + atual + " em estoque e o movimento "
+            throw new ConflitoException("Saldo insuficiente: o produto tem " + atual + " em estoque e o movimento "
                     + "retira " + dto.quantidade() + ".");
 
-        MovimentoEstoque movimento = novo(variante, tipo, quantidade, saldo, dto.observacao());
+        MovimentoEstoque movimento = novo(produto, tipo, quantidade, saldo, dto.observacao());
         movimentoRepository.persist(movimento);
         return movimento;
     }
 
     @Override
     @Transactional
-    public void entradaInicial(VarianteProduto variante, int quantidade) {
-        variante.setEstoqueFisico(quantidade);
+    public void entradaInicial(Produto produto, int quantidade) {
+        produto.setEstoqueFisico(quantidade);
         if (quantidade > 0)
-            variante.getMovimentos().add(novo(variante, TipoMovimento.ENTRADA, quantidade, quantidade, "Saldo inicial"));
+            produto.getMovimentos().add(novo(produto, TipoMovimento.ENTRADA, quantidade, quantidade, "Saldo inicial"));
     }
 
     @Override
@@ -107,48 +108,53 @@ public class MovimentoEstoqueServiceImpl implements MovimentoEstoqueService {
     }
 
     @Override
-    public List<MovimentoEstoque> findComFiltro(Long idVariante, TipoMovimento tipo, int page, int pageSize) {
-        return movimentoRepository.findComFiltro(idVariante, tipo).page(page, pageSize).list();
+    public List<MovimentoEstoque> findComFiltro(Long idProduto, TipoMovimento tipo, int page, int pageSize) {
+        return movimentoRepository.findComFiltro(idProduto, tipo).page(page, pageSize).list();
     }
 
     @Override
-    public long countComFiltro(Long idVariante, TipoMovimento tipo) {
-        return movimentoRepository.findComFiltro(idVariante, tipo).count();
+    public long countComFiltro(Long idProduto, TipoMovimento tipo) {
+        return movimentoRepository.findComFiltro(idProduto, tipo).count();
     }
 
     @Override
     public SituacaoEstoque situacao(String situacao) {
+        return situacao(situacao, "situacao");
+    }
+
+    @Override
+    public SituacaoEstoque situacao(String situacao, String campo) {
         if (situacao == null || situacao.isBlank())
             return SituacaoEstoque.TODOS;
         try {
             return SituacaoEstoque.valueOf(situacao.trim().toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
-            throw ValidationException.of("situacao", "Situação inválida: use ABAIXO_MINIMO, ZERADO ou TODOS.");
+            throw ValidationException.of(campo, "Situação inválida: use ABAIXO_MINIMO, ZERADO ou TODOS.");
         }
     }
 
     @Override
-    public List<VarianteProduto> findEstoque(SituacaoEstoque situacao, String busca, int page, int pageSize) {
-        return estoqueRepository.findComFiltro(situacao, busca).page(page, pageSize).list();
+    public List<Produto> findEstoque(SituacaoEstoque situacao, String busca, Long idMarca, int page, int pageSize) {
+        return estoqueRepository.findComFiltro(situacao, busca, idMarca).page(page, pageSize).list();
     }
 
     @Override
-    public long countEstoque(SituacaoEstoque situacao, String busca) {
-        return estoqueRepository.findComFiltro(situacao, busca).count();
+    public long countEstoque(SituacaoEstoque situacao, String busca, Long idMarca) {
+        return estoqueRepository.findComFiltro(situacao, busca, idMarca).count();
     }
 
     // Pela API e no cadastro, sempre MANUAL com o usuario do token (D11)
-    private MovimentoEstoque novo(VarianteProduto variante, TipoMovimento tipo, int quantidade, int saldo,
+    private MovimentoEstoque novo(Produto produto, TipoMovimento tipo, int quantidade, int saldo,
             String observacao) {
         MovimentoEstoque m = new MovimentoEstoque();
-        m.setVariante(variante);
+        m.setProduto(produto);
         m.setTipo(tipo);
         m.setOrigem(OrigemRegistro.MANUAL);
         m.setAutor(usuarioLogado());
         m.setQuantidade(quantidade);
         m.setSaldoResultante(saldo);
         m.setObservacao((observacao == null || observacao.isBlank()) ? null : observacao.trim());
-        variante.setEstoqueFisico(saldo);
+        produto.setEstoqueFisico(saldo);
         return m;
     }
 

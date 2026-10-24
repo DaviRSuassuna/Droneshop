@@ -12,6 +12,7 @@ public record FornecedorResponseDTO(
     String emailContato,
     String telefoneContato,
     EnderecoResponseDTO endereco,
-    StatusFornecedor status
+    StatusFornecedor status,
+    long quantidadeProdutos
 ) {
 }

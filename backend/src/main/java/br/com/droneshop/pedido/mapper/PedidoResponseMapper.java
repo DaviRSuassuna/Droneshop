@@ -3,7 +3,7 @@ package br.com.droneshop.pedido.mapper;
 import java.math.BigDecimal;
 import java.util.List;
 
-import br.com.droneshop.catalogo.model.VarianteProduto;
+import br.com.droneshop.catalogo.model.Produto;
 import br.com.droneshop.identidade.model.PerfilCliente;
 import br.com.droneshop.identidade.model.Usuario;
 import br.com.droneshop.model.OrigemRegistro;
@@ -66,11 +66,10 @@ public final class PedidoResponseMapper {
     }
 
     static ItemPedidoResponseDTO item(ItemPedido i) {
-        VarianteProduto v = i.getVariante();
+        Produto p = i.getProduto();
         return new ItemPedidoResponseDTO(
                 i.getId(),
-                new ItemPedidoResponseDTO.VarianteResumo(v.getId(), v.getSku(), v.getNome()),
-                new ItemPedidoResponseDTO.ProdutoResumo(v.getProduto().getId(), v.getProduto().getNome()),
+                new ItemPedidoResponseDTO.ProdutoResumo(p.getId(), p.getSku(), p.getNome()),
                 i.getQuantidade(),
                 i.getPrecoUnitarioCongelado(),
                 i.getPrecoUnitarioCongelado().multiply(BigDecimal.valueOf(i.getQuantidade())));

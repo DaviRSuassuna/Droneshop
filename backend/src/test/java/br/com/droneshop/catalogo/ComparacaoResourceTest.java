@@ -26,7 +26,7 @@ class ComparacaoResourceTest {
     static long drone(Fixtures.Arvore a, int autonomia) {
         String s = Dados.sufixo();
         Map<String, Object> d = Fixtures.drone("Comparado " + s, a,
-                Fixtures.lista(Fixtures.variante("CP-" + s.toUpperCase(), 1000.0, 1)));
+                Fixtures.dadosComerciais("CP-" + s.toUpperCase(), 1000.0, 1));
         d.put("autonomiaMinutos", autonomia);
         return Fixtures.criar("/drones", d);
     }

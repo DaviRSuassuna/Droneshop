@@ -34,7 +34,7 @@ class LojaVitrineResourceTest {
 
     static Map<String, Object> acessorioCompativel(Fixtures.Arvore a, List<Long> ids, long idStatus) {
         Map<String, Object> ac = Fixtures.acessorio("Bateria " + Dados.sufixo(), a,
-                Fixtures.lista(Fixtures.variante("AC-" + Dados.sufixo().toUpperCase(), 499.0, 3)));
+                Fixtures.dadosComerciais("AC-" + Dados.sufixo().toUpperCase(), 499.0, 3));
         ac.put("idsCompativeis", ids);
         ac.put("idStatus", idStatus);
         return ac;
@@ -44,7 +44,7 @@ class LojaVitrineResourceTest {
         return LocalDateTime.now().plusDays(d).truncatedTo(ChronoUnit.SECONDS).toString();
     }
 
-    static void promocao(long idVariante, int inicio, int fim) {
+    static void promocao(long idProduto, int inicio, int fim) {
         Map<String, Object> p = new HashMap<>();
         p.put("nome", "Promo " + Dados.sufixo());
         p.put("idEscopo", 1);
@@ -54,7 +54,7 @@ class LojaVitrineResourceTest {
         p.put("valorDesconto", null);
         p.put("valorMinimoCarrinho", null);
         p.put("ativa", true);
-        p.put("idsVariantes", List.of(idVariante));
+        p.put("idsProdutos", List.of(idProduto));
         given().contentType(ContentType.JSON).body(p).when().post("/promocoes").then().statusCode(200);
     }
 
@@ -89,12 +89,12 @@ class LojaVitrineResourceTest {
     void ofertasMostramSoAsVigentes() {
         Fixtures.ProdutoCriado vigente = Fixtures.criarDrone(1000.0, 5);
         Fixtures.ProdutoCriado agendada = Fixtures.criarDrone(1000.0, 5);
-        promocao(vigente.idVariante(), -1, 5);
-        promocao(agendada.idVariante(), 5, 10);
+        promocao(vigente.id(), -1, 5);
+        promocao(agendada.id(), 5, 10);
         anonimo().when().get("/loja/ofertas")
                 .then().statusCode(200)
-                .body("variante.id", hasItem((int) vigente.idVariante()))
-                .body("variante.id", not(hasItem((int) agendada.idVariante())))
-                .body("find { it.variante.id == " + vigente.idVariante() + " }.precoPor", equalTo(900.0f));
+                .body("produto.id", hasItem((int) vigente.id()))
+                .body("produto.id", not(hasItem((int) agendada.id())))
+                .body("find { it.produto.id == " + vigente.id() + " }.precoPor", equalTo(900.0f));
     }
 }

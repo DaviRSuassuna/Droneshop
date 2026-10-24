@@ -16,6 +16,7 @@ public final class SubcategoriaResponseMapper {
                 CategoriaResponseMapper.toResponse(subcategoria.getCategoria()),
                 subcategoria.getOrdemExibicao(),
                 subcategoria.getDescricao(),
-                subcategoria.getStatus());
+                subcategoria.getStatus(),
+                subcategoria.getQuantidadeProdutos());
     }
 }

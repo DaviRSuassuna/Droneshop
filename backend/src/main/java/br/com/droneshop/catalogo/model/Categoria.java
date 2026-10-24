@@ -7,6 +7,14 @@ import jakarta.persistence.Entity;
 @Entity
 public class Categoria extends DefaultEntity {
 
+    // Contagem derivada, sem coluna ou saldo mantido pelo cadastro.
+    @org.hibernate.annotations.Formula("(SELECT count(*) FROM produto p JOIN subcategoria s ON s.id = p.id_subcategoria WHERE s.id_categoria = id)")
+    private long quantidadeProdutos;
+
+    public long getQuantidadeProdutos() {
+        return quantidadeProdutos;
+    }
+
     @Column(length = 100, nullable = false)
     private String nome;
 

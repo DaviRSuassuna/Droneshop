@@ -12,6 +12,7 @@ public record CategoriaResponseDTO(
     StatusCategoria status,
     TipoProduto tipo,
     boolean exibirMenu,
-    String iconeUrl
+    String iconeUrl,
+    long quantidadeProdutos
 ) {
 }

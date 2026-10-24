@@ -7,6 +7,8 @@ import br.com.droneshop.catalogo.model.Fornecedor;
 import jakarta.validation.Valid;
 
 public interface FornecedorService {
+    List<Fornecedor> findComFiltro(String busca, Long idStatus, String uf, int page, int pageSize);
+    long countComFiltro(String busca, Long idStatus, String uf);
 
     Fornecedor create(@Valid FornecedorRequestDTO fornecedor);
     void update(long id, @Valid FornecedorRequestDTO fornecedor);
