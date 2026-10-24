@@ -16,9 +16,9 @@
 </svg>
 <header class="tb"><div class="in gut">
   <a class="brand" href="index.html">AERIA <span>ADMIN</span></a>
-  <nav class="tabs" aria-label="Painel"><a href="index.html" aria-current="page">Dashboard</a><a href="produtos.html">Produtos</a><a href="marcas.html">Marcas</a><a href="categorias.html">Categorias</a><a href="fornecedores.html">Fornecedores</a><a href="promocoes.html">Promoções</a><a href="cupons.html">Cupons</a><a href="estoque.html">Estoque</a><a href="pedidos.html">Pedidos</a><a href="usuarios.html">Usuários</a></nav>
+  <nav class="tabs" aria-label="Painel"><a href="index.html" aria-current="page">Dashboard</a><a href="produtos.html">Produtos</a><a href="marcas.html">Marcas</a><a href="categorias.html">Categorias</a><a href="subcategorias.html">Subcategorias</a><a href="fornecedores.html">Fornecedores</a><a href="promocoes.html">Promoções</a><a href="cupons.html">Cupons</a><a href="estoque.html">Estoque</a><a href="pedidos.html">Pedidos</a><a href="usuarios.html">Usuários</a><a href="configuracao.html">Configuração</a></nav>
   <div class="r"><div class="search"><svg class="ico"><use href="#i-search"/></svg>Buscar no painel<kbd>/</kbd></div><a class="store" href="../index.html">Ver loja ↗</a><span class="avatar" title="Marina Ribeiro">MR</span></div>
-</div><nav class="mnav" aria-label="Painel (celular)"><a href="index.html" aria-current="page">Dashboard</a><a href="produtos.html">Produtos</a><a href="marcas.html">Marcas</a><a href="categorias.html">Categorias</a><a href="fornecedores.html">Fornecedores</a><a href="promocoes.html">Promoções</a><a href="cupons.html">Cupons</a><a href="estoque.html">Estoque</a><a href="pedidos.html">Pedidos</a><a href="usuarios.html">Usuários</a></nav></header>
+</div><nav class="mnav" aria-label="Painel (celular)"><a href="index.html" aria-current="page">Dashboard</a><a href="produtos.html">Produtos</a><a href="marcas.html">Marcas</a><a href="categorias.html">Categorias</a><a href="subcategorias.html">Subcategorias</a><a href="fornecedores.html">Fornecedores</a><a href="promocoes.html">Promoções</a><a href="cupons.html">Cupons</a><a href="estoque.html">Estoque</a><a href="pedidos.html">Pedidos</a><a href="usuarios.html">Usuários</a><a href="configuracao.html">Configuração</a></nav></header>
 <main class="gut">
 <div class="ph"><div><span class="lbl">Painel de operação</span><h1>Visão geral</h1><div class="sub">Últimos 30 dias, comparado ao período anterior</div></div>
 <div class="acts"><select class="sel" aria-label="Período"><option>Últimos 30 dias</option><option>Últimos 7 dias</option><option>Este ano</option></select><button class="btn"><svg class="ico"><use href="#i-down"/></svg>Exportar relatório</button><a class="btn p" href="produto-novo.html"><svg class="ico"><use href="#i-plus"/></svg>Novo drone</a></div></div>
@@ -38,4 +38,5 @@
 <p class="foot-note">Protótipo acadêmico · dados fictícios · Aeria 2026</p>
 </main>
 <script>document.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>b.parentNode.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b)))</script>
+<script>document.querySelectorAll('.tabs a[aria-current],.mnav a[aria-current]').forEach(a=>{const p=a.parentElement;p.scrollLeft=a.offsetLeft-(p.clientWidth-a.offsetWidth)/2})</script>
 </body></html>

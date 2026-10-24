@@ -9,15 +9,23 @@ import jakarta.persistence.ManyToOne;
 @Entity
 public class Subcategoria extends DefaultEntity {
 
+    // Contagem derivada, sem coluna ou saldo mantido pelo cadastro.
+    @org.hibernate.annotations.Formula("(SELECT count(*) FROM produto p WHERE p.id_subcategoria = id)")
+    private long quantidadeProdutos;
+
+    public long getQuantidadeProdutos() {
+        return quantidadeProdutos;
+    }
+
     @Column(length = 100, nullable = false)
     private String nome;
 
     @Column(length = 110, nullable = false, unique = true)
     private String slug;
 
-    // muitas subcategorias -> uma categoria
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "id_categoria", nullable = false)
+    // Rascunho pode ficar sem categoria; publicar exige o vínculo (D21).
+    @ManyToOne
+    @JoinColumn(name = "id_categoria")
     private Categoria categoria;
 
     @Column(nullable = false, name = "ordem_exibicao")

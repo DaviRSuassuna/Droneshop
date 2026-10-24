@@ -28,8 +28,8 @@ import io.restassured.http.ContentType;
 @Tag("issue-27")
 class PagamentoResourceTest {
 
-    static int estoque(long idVariante) {
-        return given().when().get("/variantes/{id}", idVariante).then().statusCode(200)
+    static int estoque(long idProduto) {
+        return given().when().get("/produtos/{id}", idProduto).then().statusCode(200)
                 .extract().jsonPath().getInt("estoqueFisico");
     }
 
@@ -50,7 +50,7 @@ class PagamentoResourceTest {
     @Test
     void cartaoAprovadoPagaOPedidoEBaixaOEstoque() {
         Fixtures.Cliente c = Fixtures.novoCliente();
-        long v = Fixtures.criarAcessorio(300.0, 10).idVariante();
+        long v = Fixtures.criarAcessorio(300.0, 10).id();
         long pedido = Fixtures.pedidoPendente(c, v, 2, Fixtures.CARTAO);
         Fixtures.pagarComCartao(c, pedido, MercadoPagoFalso.CARTAO_APROVADO).then().statusCode(200)
                 .body("status.nome", equalTo("APROVADO"))
@@ -58,19 +58,19 @@ class PagamentoResourceTest {
                 .body("gatewayTransacaoId", notNullValue());
         given().when().get("/pedidos/{id}", pedido).then().statusCode(200).body("status.nome", equalTo("PAGO"));
         org.junit.jupiter.api.Assertions.assertEquals(8, estoque(v));
-        given().queryParam("idVariante", v).queryParam("idTipo", Fixtures.MOV_SAIDA).when().get("/estoque/movimentos")
+        given().queryParam("idProduto", v).queryParam("idTipo", Fixtures.MOV_SAIDA).when().get("/estoque/movimentos")
                 .then().statusCode(200)
                 .body("totalItems", equalTo(1))
                 .body("items[0].origem.nome", equalTo("SISTEMA"))
                 .body("items[0].autor", nullValue());
-        given().queryParam("idVariante", v).when().get("/estoque/reservas")
+        given().queryParam("idProduto", v).when().get("/estoque/reservas")
                 .then().statusCode(200).body("totalItems", equalTo(0));
     }
 
     @Test
     void recusaENovaTentativaTrocamOVigente() {
         Fixtures.Cliente c = Fixtures.novoCliente();
-        long pedido = Fixtures.pedidoPendente(c, Fixtures.criarAcessorio(300.0, 10).idVariante(), 1, Fixtures.CARTAO);
+        long pedido = Fixtures.pedidoPendente(c, Fixtures.criarAcessorio(300.0, 10).id(), 1, Fixtures.CARTAO);
         Fixtures.pagarComCartao(c, pedido, MercadoPagoFalso.CARTAO_RECUSADO).then().statusCode(200)
                 .body("status.nome", equalTo("RECUSADO"));
         given().when().get("/pedidos/{id}", pedido).then().statusCode(200).body("status.nome", equalTo("PENDENTE"));
@@ -84,7 +84,7 @@ class PagamentoResourceTest {
     @Test
     void pixFicaPendenteAteOWebhookQueEIdempotente() {
         Fixtures.Cliente c = Fixtures.novoCliente();
-        long v = Fixtures.criarAcessorio(300.0, 10).idVariante();
+        long v = Fixtures.criarAcessorio(300.0, 10).id();
         long pedido = Fixtures.pedidoPendente(c, v, 1, Fixtures.PIX);
         String gid = como(c.token()).contentType(ContentType.JSON).body(Map.of("idMetodo", Fixtures.PIX))
                 .when().post("/pedidos/{id}/pagamentos", pedido)
@@ -107,14 +107,14 @@ class PagamentoResourceTest {
     @Test
     void pedidoJaPagoResponde409() {
         Fixtures.Cliente c = Fixtures.novoCliente();
-        long pedido = Fixtures.pedidoPago(c, Fixtures.criarAcessorio(300.0, 10).idVariante(), 1);
+        long pedido = Fixtures.pedidoPago(c, Fixtures.criarAcessorio(300.0, 10).id(), 1);
         Fixtures.pagarComCartao(c, pedido, MercadoPagoFalso.CARTAO_APROVADO).then().statusCode(409);
     }
 
     @Test
     void gatewayForaDoArResponde503() {
         Fixtures.Cliente c = Fixtures.novoCliente();
-        long pedido = Fixtures.pedidoPendente(c, Fixtures.criarAcessorio(300.0, 10).idVariante(), 1, Fixtures.CARTAO);
+        long pedido = Fixtures.pedidoPendente(c, Fixtures.criarAcessorio(300.0, 10).id(), 1, Fixtures.CARTAO);
         Fixtures.pagarComCartao(c, pedido, MercadoPagoFalso.GATEWAY_FORA).then().statusCode(503)
                 .body("type", endsWith("/errors/external-service-unavailable"));
     }
@@ -122,7 +122,7 @@ class PagamentoResourceTest {
     @Test
     void faturamentoPjNaoValeParaPf() {
         Fixtures.Cliente c = Fixtures.novoCliente();
-        long pedido = Fixtures.pedidoPendente(c, Fixtures.criarAcessorio(300.0, 10).idVariante(), 1, Fixtures.PIX);
+        long pedido = Fixtures.pedidoPendente(c, Fixtures.criarAcessorio(300.0, 10).id(), 1, Fixtures.PIX);
         como(c.token()).contentType(ContentType.JSON).body(Map.of("idMetodo", Fixtures.FATURAMENTO_PJ))
                 .when().post("/pedidos/{id}/pagamentos", pedido)
                 .then().statusCode(400).body("errors.field", hasItem("idMetodo"));
@@ -132,7 +132,7 @@ class PagamentoResourceTest {
     void outroClienteNaoPagaOPedido() {
         Fixtures.Cliente dono = Fixtures.novoCliente();
         Fixtures.Cliente outro = Fixtures.novoCliente();
-        long pedido = Fixtures.pedidoPendente(dono, Fixtures.criarAcessorio(300.0, 10).idVariante(), 1, Fixtures.CARTAO);
+        long pedido = Fixtures.pedidoPendente(dono, Fixtures.criarAcessorio(300.0, 10).id(), 1, Fixtures.CARTAO);
         Fixtures.pagarComCartao(outro, pedido, MercadoPagoFalso.CARTAO_APROVADO).then().statusCode(404);
     }
 }

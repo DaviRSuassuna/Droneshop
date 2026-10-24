@@ -9,6 +9,14 @@ import jakarta.persistence.Entity;
 @Entity
 public class Fornecedor extends DefaultEntity {
 
+    // Contagem derivada, sem coluna ou saldo mantido pelo cadastro.
+    @org.hibernate.annotations.Formula("(SELECT count(*) FROM produto p WHERE p.id_fornecedor = id)")
+    private long quantidadeProdutos;
+
+    public long getQuantidadeProdutos() {
+        return quantidadeProdutos;
+    }
+
     @Column(length = 150, nullable = false, name = "razao_social")
     private String razaoSocial;
 

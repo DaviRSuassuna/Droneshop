@@ -19,11 +19,11 @@ import io.restassured.http.ContentType;
 
 /**
  * Issue nova "Ações em lote, reordenação de categorias, exportação CSV e
- * etiqueta de pedido" (D36). Contrato: docs/issues/nova-lote-csv.md.
+ * etiqueta de pedido" (D36). Contrato: docs/issues/061.md (#61).
  * A etiqueta não tem número de issue: é o nome do arquivo.
  */
 @QuarkusTest
-@Tag("issue-lote-csv")
+@Tag("issue-61")
 class AcoesAdminResourceTest {
 
     @Test
@@ -58,7 +58,7 @@ class AcoesAdminResourceTest {
         given().contentType(ContentType.JSON)
                 .body(Map.of("ids", List.of(p.id()), "acao", "REAJUSTAR_PRECO", "percentual", 10.0))
                 .when().patch("/produtos/lote").then().statusCode(200).body("processados", equalTo(1));
-        given().when().get("/variantes/{id}", p.idVariante()).then().body("preco", equalTo(1100.0f));
+        given().when().get("/produtos/{id}", p.id()).then().body("preco", equalTo(1100.0f));
     }
 
     @Test
@@ -86,7 +86,7 @@ class AcoesAdminResourceTest {
     @Test
     void etiquetaDoPedido() {
         Fixtures.Cliente c = Fixtures.novoCliente();
-        long pedido = Fixtures.pedidoPendente(c, Fixtures.criarAcessorio(100.0, 5).idVariante(), 1, Fixtures.PIX);
+        long pedido = Fixtures.pedidoPendente(c, Fixtures.criarAcessorio(100.0, 5).id(), 1, Fixtures.PIX);
         given().when().get("/pedidos/{id}/etiqueta", pedido).then().statusCode(200).contentType("application/pdf");
     }
 }

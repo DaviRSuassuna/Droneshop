@@ -60,7 +60,7 @@ class AvaliacaoResourceTest {
     void compraVerificadaSoComItemEntregue() {
         Fixtures.ProdutoCriado p = Fixtures.criarAcessorio(100.0, 5);
         Fixtures.Cliente comprou = Fixtures.novoCliente();
-        long pedido = Fixtures.pedidoPago(comprou, p.idVariante(), 1);
+        long pedido = Fixtures.pedidoPago(comprou, p.id(), 1);
         Fixtures.avancarAteEntregue(pedido);
         avaliar(comprou.token(), p.slug(), 4).statusCode(200).body("compraVerificada", equalTo(true));
 
@@ -68,7 +68,7 @@ class AvaliacaoResourceTest {
         avaliar(naoComprou.token(), p.slug(), 4).statusCode(200).body("compraVerificada", equalTo(false));
 
         Fixtures.Cliente naoRecebeu = Fixtures.novoCliente();
-        Fixtures.pedidoPago(naoRecebeu, p.idVariante(), 1);
+        Fixtures.pedidoPago(naoRecebeu, p.id(), 1);
         avaliar(naoRecebeu.token(), p.slug(), 4).statusCode(200).body("compraVerificada", equalTo(false));
     }
 

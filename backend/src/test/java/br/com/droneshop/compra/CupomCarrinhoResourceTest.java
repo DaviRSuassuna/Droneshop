@@ -39,9 +39,9 @@ class CupomCarrinhoResourceTest {
                 .when().post("/carrinho/cupom").then();
     }
 
-    static String carrinhoCom(long idVariante, int quantidade) {
+    static String carrinhoCom(long idProduto, int quantidade) {
         String c = Fixtures.novoCarrinho();
-        Fixtures.adicionar(c, idVariante, quantidade);
+        Fixtures.adicionar(c, idProduto, quantidade);
         return c;
     }
 
@@ -54,7 +54,7 @@ class CupomCarrinhoResourceTest {
     @Test
     void aplicaCupomPercentual() {
         String codigo = cupom(percentual(10));
-        String c = carrinhoCom(Fixtures.criarDrone(1000.0, 5).idVariante(), 1);
+        String c = carrinhoCom(Fixtures.criarDrone(1000.0, 5).id(), 1);
         aplicar(c, codigo.toLowerCase()).statusCode(200)
                 .body("cupom.codigo", equalTo(codigo))
                 .body("cupom.desconto", equalTo(100.0f))
@@ -65,7 +65,7 @@ class CupomCarrinhoResourceTest {
     @Test
     void removerRecalculaOTotal() {
         String codigo = cupom(percentual(10));
-        String c = carrinhoCom(Fixtures.criarDrone(1000.0, 5).idVariante(), 1);
+        String c = carrinhoCom(Fixtures.criarDrone(1000.0, 5).id(), 1);
         aplicar(c, codigo).statusCode(200);
         carrinho(c).when().delete("/carrinho/cupom")
                 .then().statusCode(200)
@@ -75,7 +75,7 @@ class CupomCarrinhoResourceTest {
 
     @Test
     void cupomInexistente() {
-        String c = carrinhoCom(Fixtures.criarDrone(1000.0, 5).idVariante(), 1);
+        String c = carrinhoCom(Fixtures.criarDrone(1000.0, 5).id(), 1);
         recusa(aplicar(c, "NAOEXISTE" + Dados.sufixo()), "CUPOM_INEXISTENTE");
     }
 
@@ -84,7 +84,7 @@ class CupomCarrinhoResourceTest {
         Map<String, Object> futuro = percentual(10);
         futuro.put("dataInicio", CupomResourceTest.dias(5));
         futuro.put("dataFim", CupomResourceTest.dias(10));
-        String c = carrinhoCom(Fixtures.criarDrone(1000.0, 5).idVariante(), 1);
+        String c = carrinhoCom(Fixtures.criarDrone(1000.0, 5).id(), 1);
         recusa(aplicar(c, cupom(futuro)), "FORA_DA_VIGENCIA");
     }
 
@@ -92,7 +92,7 @@ class CupomCarrinhoResourceTest {
     void valorMinimoNaoAtingido() {
         Map<String, Object> minimo = percentual(10);
         minimo.put("valorMinimo", 5000);
-        String c = carrinhoCom(Fixtures.criarDrone(1000.0, 5).idVariante(), 1);
+        String c = carrinhoCom(Fixtures.criarDrone(1000.0, 5).id(), 1);
         recusa(aplicar(c, cupom(minimo)), "VALOR_MINIMO_NAO_ATINGIDO");
     }
 
@@ -101,15 +101,15 @@ class CupomCarrinhoResourceTest {
         Fixtures.Arvore outra = Fixtures.arvore();
         Map<String, Object> restrito = percentual(10);
         restrito.put("idsMarcas", List.of(outra.idMarca()));
-        String c = carrinhoCom(Fixtures.criarDrone(1000.0, 5).idVariante(), 1);
+        String c = carrinhoCom(Fixtures.criarDrone(1000.0, 5).id(), 1);
         recusa(aplicar(c, cupom(restrito)), "SEM_ITENS_ELEGIVEIS");
     }
 
     @Test
     void restricaoDescontaSoOsItensElegiveis() {
         Fixtures.Arvore a = Fixtures.arvore();
-        long elegivel = Fixtures.criarDrone(a, 1000.0, 5).idVariante();
-        long outro = Fixtures.criarDrone(500.0, 5).idVariante();
+        long elegivel = Fixtures.criarDrone(a, 1000.0, 5).id();
+        long outro = Fixtures.criarDrone(500.0, 5).id();
         Map<String, Object> restrito = percentual(10);
         restrito.put("idsMarcas", List.of(a.idMarca()));
         String c = carrinhoCom(elegivel, 1);
@@ -123,7 +123,7 @@ class CupomCarrinhoResourceTest {
     void carrinhoQueCaiAbaixoDoMinimoPerdeOCupom() {
         Map<String, Object> minimo = percentual(10);
         minimo.put("valorMinimo", 1500);
-        long v = Fixtures.criarDrone(1000.0, 5).idVariante();
+        long v = Fixtures.criarDrone(1000.0, 5).id();
         String c = carrinhoCom(v, 2);
         aplicar(c, cupom(minimo)).statusCode(200);
         long idItem = carrinho(c).when().get("/carrinho").then().statusCode(200)

@@ -1,3 +1,5 @@
+-- Subcategoria pode ficar sem categoria apenas no rascunho (D21); a carga mantém vínculos completos.
+-- quantidadeProdutos é calculada pelas relações com Produto; não há coluna ou valor na carga.
 -- Carga de dados do dev/test (depois de localidades.sql).
 -- Status (enums no padrao Regiao, gravados pelo id): marca, categoria, subcategoria e produto
 -- 1 = Rascunho, 2 = Ativa(o), 3 = Inativa(o); fornecedor 1 = Ativo, 2 = Inativo.
@@ -71,37 +73,37 @@ insert into fornecedor (razao_social, cnpj, nome_contato, email_contato, telefon
 insert into fornecedor (razao_social, cnpj, nome_contato, email_contato, telefone_contato, cep, logradouro, numero, complemento, bairro, id_municipio, status) values
     ('Heron Aeronáutica Europa', '07118290000111', 'Marc Girard', 'm.girard@heron.eu', null, '20040020', 'Avenida Rio Branco', '156', 'Sala 1201', 'Centro', (select id from municipio where codigo_ibge = 3304557), 2);
 
--- produtos (tipo: 1 = Drone, 2 = Acessorio; id_marca / id_subcategoria / id_fornecedor seguem a ordem dos inserts acima;
+-- produtos (tipo: 1 = Drone, 2 = Acessorio, 3 = Kit; cada versao e um produto, D40; id_marca / id_subcategoria / id_fornecedor seguem a ordem dos inserts acima;
 -- fornecedor = mesma posicao da marca, exceto Sparrow, que usa a Skyline Trading)
-insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (1, 'Falcon X2 Pro', 'DRN-FX2P-0042', 'Drone profissional com câmera 1" e 45 min de voo.', 1, 1, 1, 2, true, 'falcon-x2-pro', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (1, 'Falcon X2 Standard', 'DRN-FX2S-0041', 'Versão de entrada da linha Falcon.', 1, 1, 1, 2, false, 'falcon-x2-standard', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (1, 'Nimbus Mini 3', 'DRN-NM3-0038', 'Compacto abaixo de 250 g, dispensa registro na ANAC.', 2, 2, 2, 2, true, 'nimbus-mini-3', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (1, 'Nimbus Mini 3 Combo', 'DRN-NM3C-0039', 'Mini 3 com 3 baterias e case.', 2, 2, 2, 1, false, 'nimbus-mini-3-combo', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (1, 'Vortex FPV Racer', 'DRN-VFR-0027', 'Drone FPV para corrida.', 3, 2, 3, 3, false, 'vortex-fpv-racer', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (1, 'Atlas Agro 10L', 'DRN-AT10-0019', 'Pulverizador agrícola com tanque de 10 L.', 4, 1, 4, 2, false, 'atlas-agro-10l', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (1, 'Heron Survey Pro', 'DRN-HSP-0015', 'Mapeamento com RTK integrado.', 5, 1, 5, 2, true, 'heron-survey-pro', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (1, 'Sparrow Kids Drone', 'DRN-SKD-0009', 'Drone de brinquedo para iniciantes.', 6, 2, 2, 1, false, 'sparrow-kids-drone', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (2, 'Bateria Inteligente Falcon X2', 'ACC-BFX2-0101', '5000 mAh, compatível com a linha Falcon X2.', 1, 3, 1, 2, false, 'bateria-inteligente-falcon-x2', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (2, 'Bateria Nimbus Mini Plus', 'ACC-BNMP-0102', 'Bateria estendida para a linha Mini.', 2, 3, 2, 2, false, 'bateria-nimbus-mini-plus', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (2, 'Bateria Atlas Agro 20000', 'ACC-BAA-0103', 'Bateria de alta capacidade para pulverizadores.', 4, 3, 4, 2, false, 'bateria-atlas-agro-20000', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (2, 'Hélices Falcon X2', 'ACC-HFX2-0201', 'Par de hélices de baixo ruído.', 1, 4, 1, 2, false, 'helices-falcon-x2', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (2, 'Hélices Nimbus Mini', 'ACC-HNM-0202', 'Jogo com 4 hélices de reposição.', 2, 4, 2, 2, false, 'helices-nimbus-mini', 13);
-insert into produto (tipo, nome, modelo, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses) values
-    (2, 'Hélices FPV Tri-blade', 'ACC-HFPV-0203', 'Hélices tripá para drones de corrida.', 3, 4, 3, 3, false, 'helices-fpv-tri-blade', 13);
-update produto set descricao = 'Drone profissional com sensor de 1 polegada, 45 minutos de voo e transmissão de vídeo em até 15 km.', meta_title = 'Falcon X2 Pro | Aeria Drones', meta_description = 'Drone profissional Falcon X2 Pro com câmera de 1 polegada e 45 min de autonomia.', tags = 'profissional,4k,mapeamento', garantia_meses = 12, data_lancamento = '2026-03-01' where modelo = 'DRN-FX2P-0042';
+insert into produto (tipo, nome, sku, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses, estoque_minimo, ordem_no_grupo) values
+    (1, 'Falcon X2 Pro', 'DRN-FX2P-0042', 'Drone profissional com câmera 1" e 45 min de voo.', 1, 1, 1, 2, true, 'falcon-x2-pro', 13, 0, 0);
+insert into produto (tipo, nome, sku, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses, estoque_minimo, ordem_no_grupo) values
+    (1, 'Falcon X2 Standard', 'DRN-FX2S-0041', 'Versão de entrada da linha Falcon.', 1, 1, 1, 2, false, 'falcon-x2-standard', 13, 0, 0);
+insert into produto (tipo, nome, sku, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses, estoque_minimo, ordem_no_grupo) values
+    (1, 'Nimbus Mini 3', 'DRN-NM3-0038', 'Compacto abaixo de 250 g, dispensa registro na ANAC.', 2, 2, 2, 2, true, 'nimbus-mini-3', 13, 0, 0);
+insert into produto (tipo, nome, sku, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses, estoque_minimo, ordem_no_grupo) values
+    (1, 'Nimbus Mini 3 Combo', 'DRN-NM3C-0039', 'Mini 3 com 3 baterias e case.', 2, 2, 2, 1, false, 'nimbus-mini-3-combo', 13, 0, 0);
+insert into produto (tipo, nome, sku, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses, estoque_minimo, ordem_no_grupo) values
+    (1, 'Vortex FPV Racer', 'DRN-VFR-0027', 'Drone FPV para corrida.', 3, 2, 3, 3, false, 'vortex-fpv-racer', 13, 0, 0);
+insert into produto (tipo, nome, sku, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses, estoque_minimo, ordem_no_grupo) values
+    (1, 'Atlas Agro 10L', 'DRN-AT10-0019', 'Pulverizador agrícola com tanque de 10 L.', 4, 1, 4, 2, false, 'atlas-agro-10l', 13, 0, 0);
+insert into produto (tipo, nome, sku, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses, estoque_minimo, ordem_no_grupo) values
+    (1, 'Heron Survey Pro', 'DRN-HSP-0015', 'Mapeamento com RTK integrado.', 5, 1, 5, 2, true, 'heron-survey-pro', 13, 0, 0);
+insert into produto (tipo, nome, sku, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses, estoque_minimo, ordem_no_grupo) values
+    (1, 'Sparrow Kids Drone', 'DRN-SKD-0009', 'Drone de brinquedo para iniciantes.', 6, 2, 2, 1, false, 'sparrow-kids-drone', 13, 0, 0);
+insert into produto (tipo, nome, sku, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses, estoque_minimo, ordem_no_grupo) values
+    (2, 'Bateria Inteligente Falcon X2', 'ACC-BFX2-0101', '5000 mAh, compatível com a linha Falcon X2.', 1, 3, 1, 2, false, 'bateria-inteligente-falcon-x2', 13, 0, 0);
+insert into produto (tipo, nome, sku, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses, estoque_minimo, ordem_no_grupo) values
+    (2, 'Bateria Nimbus Mini Plus', 'ACC-BNMP-0102', 'Bateria estendida para a linha Mini.', 2, 3, 2, 2, false, 'bateria-nimbus-mini-plus', 13, 0, 0);
+insert into produto (tipo, nome, sku, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses, estoque_minimo, ordem_no_grupo) values
+    (2, 'Bateria Atlas Agro 20000', 'ACC-BAA-0103', 'Bateria de alta capacidade para pulverizadores.', 4, 3, 4, 2, false, 'bateria-atlas-agro-20000', 13, 0, 0);
+insert into produto (tipo, nome, sku, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses, estoque_minimo, ordem_no_grupo) values
+    (2, 'Hélices Falcon X2', 'ACC-HFX2-0201', 'Par de hélices de baixo ruído.', 1, 4, 1, 2, false, 'helices-falcon-x2', 13, 0, 0);
+insert into produto (tipo, nome, sku, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses, estoque_minimo, ordem_no_grupo) values
+    (2, 'Hélices Nimbus Mini', 'ACC-HNM-0202', 'Jogo com 4 hélices de reposição.', 2, 4, 2, 2, false, 'helices-nimbus-mini', 13, 0, 0);
+insert into produto (tipo, nome, sku, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses, estoque_minimo, ordem_no_grupo) values
+    (2, 'Hélices FPV Tri-blade', 'ACC-HFPV-0203', 'Hélices tripá para drones de corrida.', 3, 4, 3, 3, false, 'helices-fpv-tri-blade', 13, 0, 0);
+update produto set descricao = 'Drone profissional com sensor de 1 polegada, 45 minutos de voo e transmissão de vídeo em até 15 km.', meta_title = 'Falcon X2 Pro | Aeria Drones', meta_description = 'Drone profissional Falcon X2 Pro com câmera de 1 polegada e 45 min de autonomia.', tags = 'profissional,4k,mapeamento', garantia_meses = 12, data_lancamento = '2026-03-01' where sku = 'DRN-FX2P-0042';
 
 -- drones e acessorios (heranca JOINED, D27): a linha do subtipo reaproveita o id do produto
 insert into drone (id, peso_gramas, dimensoes_dobrado, dimensoes_aberto, autonomia_minutos, alcance_metros, velocidade_maxima_kmh, resolucao_foto_mp, tipo_sensor, resolucao_video, estabilizacao, tipo_bateria, capacidade_bateria_mah, tempo_carregamento_minutos, gps_integrado, sensores_anticolisao, exige_registro_anac, classe_anac)
@@ -115,15 +117,16 @@ from produto p join (values
     ('DRN-AT10-0019', 24800, '98x58x63', '150x150x63', 18, 3000, 36, null, null, null, null, 'LiPo 12S', 20000, 120, true, true, true, 'Classe 2'),
     ('DRN-HSP-0015', 1390, '25x14x10', '40x35x14', 55, 15000, 72, 45, 'CMOS 4/3', '5.1K', 'Gimbal 3 eixos', 'LiPo 4S', 6000, 100, true, true, true, 'Classe 3'),
     ('DRN-SKD-0009', 120, null, '15x15x4', 7, 80, 20, 2, null, '720p', 'Eletrônica', 'LiPo 1S', 600, 40, false, false, false, null)
-) as v(modelo, peso, dobrado, aberto, autonomia, alcance, velocidade, foto, sensor, video, estabilizacao, bateria, mah, carga, gps, anticolisao, anac, classe) on v.modelo = p.modelo;
+) as v(sku, peso, dobrado, aberto, autonomia, alcance, velocidade, foto, sensor, video, estabilizacao, bateria, mah, carga, gps, anticolisao, anac, classe) on v.sku = p.sku;
 insert into acessorio (id, tipo_acessorio)
-select p.id, case when p.modelo like 'ACC-B%' then 'Bateria' else 'Hélice' end from produto p where p.tipo = 2;
+select p.id, case when p.sku like 'ACC-B%' then 'Bateria' else 'Hélice' end from produto p where p.tipo = 2;
 
--- variantes (D26): uma "Padrão" por produto, com o preço que antes ficava no produto;
--- custo de exemplo em 65% do preço; peso (kg) e altura x largura x comprimento (cm) da embalagem
-insert into variante_produto (id_produto, nome, sku, preco, custo_aquisicao, estoque_fisico, estoque_minimo, peso_embalagem_kg, altura_embalagem_cm, largura_embalagem_cm, comprimento_embalagem_cm, eh_kit, ativa)
-select p.id, 'Padrão', p.modelo || '-STD', v.preco, round(v.preco * 0.65, 2), v.estoque, v.minimo, v.peso, v.altura, v.largura, v.comprimento, false, true
-from produto p join (values
+-- preco, custo, estoque e embalagem ficam no proprio produto (D26, D40); custo de exemplo
+-- em 65% do preco; peso (kg) e altura x largura x comprimento (cm) da embalagem
+update produto p set preco = v.preco, custo_aquisicao = round(v.preco * 0.65, 2), estoque_fisico = v.estoque,
+    estoque_minimo = v.minimo, peso_embalagem_kg = v.peso, altura_embalagem_cm = v.altura,
+    largura_embalagem_cm = v.largura, comprimento_embalagem_cm = v.comprimento
+from (values
     ('DRN-FX2P-0042', 12499.00, 12, 2, 2.100, 15, 28, 38),
     ('DRN-FX2S-0041', 8990.00, 8, 2, 2.000, 15, 28, 38),
     ('DRN-NM3-0038', 4290.00, 25, 5, 0.900, 10, 20, 26),
@@ -138,13 +141,14 @@ from produto p join (values
     ('ACC-HFX2-0201', 129.00, 60, 15, 0.100, 3, 12, 25),
     ('ACC-HNM-0202', 79.00, 80, 20, 0.080, 3, 10, 15),
     ('ACC-HFPV-0203', 59.00, 50, 10, 0.050, 2, 8, 12)
-) as v(modelo, preco, estoque, minimo, peso, altura, largura, comprimento) on v.modelo = p.modelo;
+) as v(sku, preco, estoque, minimo, peso, altura, largura, comprimento)
+where v.sku = p.sku;
 
 -- compatibilidade acessorio -> produto (D17): baterias e helices com a linha de cada marca,
 -- e a bateria do Falcon tambem com as helices dele (acessorio-acessorio)
 insert into acessorio_compativel (id_acessorio, id_produto)
 select a.id, p.id
-from produto a join produto p on (a.modelo, p.modelo) in (
+from produto a join produto p on (a.sku, p.sku) in (
     ('ACC-BFX2-0101', 'DRN-FX2P-0042'), ('ACC-BFX2-0101', 'DRN-FX2S-0041'),
     ('ACC-HFX2-0201', 'DRN-FX2P-0042'), ('ACC-HFX2-0201', 'DRN-FX2S-0041'),
     ('ACC-BNMP-0102', 'DRN-NM3-0038'), ('ACC-BNMP-0102', 'DRN-NM3C-0039'),
@@ -153,30 +157,47 @@ from produto a join produto p on (a.modelo, p.modelo) in (
     ('ACC-HFPV-0203', 'DRN-VFR-0027'),
     ('ACC-BFX2-0101', 'ACC-HFX2-0201'));
 
--- kit (D7): Fly More do Falcon X2 Pro = 1 drone + 2 baterias, sem estoque proprio;
--- peso e dimensoes ficam nulos e saem dos componentes (D16)
-insert into variante_produto (id_produto, nome, sku, preco, custo_aquisicao, estoque_fisico, estoque_minimo, peso_embalagem_kg, altura_embalagem_cm, largura_embalagem_cm, comprimento_embalagem_cm, eh_kit, ativa)
-select p.id, 'Fly More Combo', 'DRN-FX2P-0042-FLY', 13999.00, round(13999.00 * 0.65, 2), null, 0, null, null, null, null, true, true
-from produto p where p.modelo = 'DRN-FX2P-0042';
-insert into componente_kit (id_kit, id_componente, quantidade)
+-- kit (D7, D40): o Fly More e o produto KIT "Falcon X2 Pro Fly More" = 1 drone + 2 baterias,
+-- sem estoque proprio; peso e dimensoes ficam nulos e saem dos componentes (D16)
+insert into produto (tipo, nome, sku, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses, estoque_minimo, ordem_no_grupo, preco, custo_aquisicao) values
+    (3, 'Falcon X2 Pro Fly More', 'DRN-FX2P-0042-FLY', 'Falcon X2 Pro com duas baterias extras.', 1, 1, 1, 2, false, 'falcon-x2-pro-fly-more', 12, 0, 0, 13999.00, round(13999.00 * 0.65, 2));
+insert into kit (id) select id from produto where sku = 'DRN-FX2P-0042-FLY';
+insert into componente_kit (id_kit, id_produto, quantidade)
 select k.id, c.id, v.quantidade
-from variante_produto k
-join (values ('DRN-FX2P-0042-STD', 1), ('ACC-BFX2-0101-STD', 2)) as v(sku, quantidade) on true
-join variante_produto c on c.sku = v.sku
+from produto k
+join (values ('DRN-FX2P-0042', 1), ('ACC-BFX2-0101', 2)) as v(sku, quantidade) on true
+join produto c on c.sku = v.sku
 where k.sku = 'DRN-FX2P-0042-FLY';
 
--- #13 estoque fisico so muda por movimento (RF14): o saldo inicial de cada variante comum
+-- grupos (D40): versoes parecidas numa pagina de venda so, com o rotulo do seletor "Versao".
+-- O grupo pode misturar tipos: o Fly More (kit) e mais uma versao do Falcon X2.
+insert into grupo_produto (nome, slug, descricao_curta, ativo) values
+    ('Falcon X2', 'falcon-x2', 'Linha profissional dobrável com câmera de 1".', true);
+insert into grupo_produto (nome, slug, descricao_curta, ativo) values
+    ('Nimbus Mini 3', 'nimbus-mini-3', 'Compacto abaixo de 250 g, sem registro na ANAC.', true);
+update produto p set id_grupo = g.id, rotulo_no_grupo = v.rotulo, ordem_no_grupo = v.ordem
+from (values
+    ('DRN-FX2P-0042', 'falcon-x2', 'Pro', 1),
+    ('DRN-FX2S-0041', 'falcon-x2', 'Standard', 2),
+    ('DRN-FX2P-0042-FLY', 'falcon-x2', 'Pro Fly More', 3),
+    ('DRN-NM3-0038', 'nimbus-mini-3', 'Padrão', 1),
+    ('DRN-NM3C-0039', 'nimbus-mini-3', 'Combo', 2)
+) as v(sku, grupo, rotulo, ordem)
+join grupo_produto g on g.slug = v.grupo
+where v.sku = p.sku;
+
+-- #13 estoque fisico so muda por movimento (RF14): o saldo inicial de cada produto
 -- vira uma ENTRADA (tipo 1) MANUAL (origem 1) do admin semente (D11). Kit nao tem estoque (D7).
-insert into movimento_estoque (id_variante, tipo, origem, quantidade, saldo_resultante, observacao, id_autor, dataCadastro)
-select v.id, 1, 1, v.estoque_fisico, v.estoque_fisico, 'Saldo inicial',
+insert into movimento_estoque (id_produto, tipo, origem, quantidade, saldo_resultante, observacao, id_autor, dataCadastro)
+select p.id, 1, 1, p.estoque_fisico, p.estoque_fisico, 'Saldo inicial',
        (select id from usuario where email = 'admin@aeria.com.br'), now()
-from variante_produto v
-where v.eh_kit = false and v.estoque_fisico > 0
-order by v.id;
+from produto p
+where p.tipo <> 3 and p.estoque_fisico > 0
+order by p.id;
 
 -- #16 Pedidos da carga (D19): cliente semente cliente@aeria.com.br / aeria123 e tres pedidos por status.
 -- Itens so de acessorios (a regra de numero de serie da #34 nao trava as transicoes) com o preco atual
--- da variante congelado (RN06). Status: 1 PENDENTE, 2 PAGO, 3 SEPARACAO, 4 ENVIADO, 5 ENTREGUE,
+-- do produto congelado (RN06). Status: 1 PENDENTE, 2 PAGO, 3 SEPARACAO, 4 ENVIADO, 5 ENTREGUE,
 -- 6 EM_DEVOLUCAO, 7 DEVOLVIDO, 8 CANCELADO. Origem do historico: 1 MANUAL (autor = admin), 2 SISTEMA, 3 INTEGRACAO.
 -- Os ENTREGUE foram entregues ha 60 dias (#37). O endereco de entrega e a fotografia congelada (D12).
 insert into usuario (nome, email, senha_hash, email_verificado, ativo)
@@ -202,38 +223,38 @@ cross join (values
 order by v.seq;
 
 -- itens: seq = ordem de criacao do pedido do cliente semente
-insert into item_pedido (id_pedido, id_variante, quantidade, preco_unitario_congelado)
-select p.id, vp.id, i.qtd, vp.preco
+insert into item_pedido (id_pedido, id_produto, quantidade, preco_unitario_congelado)
+select p.id, pr.id, i.qtd, pr.preco
 from (select pd.id, row_number() over (order by pd.id) as seq
       from pedido pd join perfil_cliente pc on pc.id = pd.id_perfil_cliente
       where pc.documento = '52998224725') p
 join (values
-    (1, 1, 'ACC-BFX2-0101-STD', 1), (1, 2, 'ACC-HFX2-0201-STD', 2),
-    (2, 1, 'ACC-BNMP-0102-STD', 2),
-    (3, 1, 'ACC-HNM-0202-STD', 1), (3, 2, 'ACC-BNMP-0102-STD', 1),
-    (4, 1, 'ACC-BAA-0103-STD', 1),
-    (5, 1, 'ACC-BFX2-0101-STD', 2),
-    (6, 1, 'ACC-HFX2-0201-STD', 1), (6, 2, 'ACC-HNM-0202-STD', 1),
-    (7, 1, 'ACC-BNMP-0102-STD', 1),
-    (8, 1, 'ACC-BFX2-0101-STD', 1), (8, 2, 'ACC-HFX2-0201-STD', 1),
-    (9, 1, 'ACC-BAA-0103-STD', 2),
-    (10, 1, 'ACC-HNM-0202-STD', 4),
-    (11, 1, 'ACC-BFX2-0101-STD', 1),
-    (12, 1, 'ACC-BNMP-0102-STD', 2), (12, 2, 'ACC-HNM-0202-STD', 2),
-    (13, 1, 'ACC-BFX2-0101-STD', 1), (13, 2, 'ACC-HFX2-0201-STD', 2),
-    (14, 1, 'ACC-BNMP-0102-STD', 1),
-    (15, 1, 'ACC-HFX2-0201-STD', 2),
-    (16, 1, 'ACC-BFX2-0101-STD', 1),
-    (17, 1, 'ACC-BNMP-0102-STD', 2),
-    (18, 1, 'ACC-BAA-0103-STD', 1),
-    (19, 1, 'ACC-HFX2-0201-STD', 1),
-    (20, 1, 'ACC-BFX2-0101-STD', 2),
-    (21, 1, 'ACC-HNM-0202-STD', 2),
-    (22, 1, 'ACC-BNMP-0102-STD', 1),
-    (23, 1, 'ACC-BAA-0103-STD', 1),
-    (24, 1, 'ACC-HFX2-0201-STD', 2), (24, 2, 'ACC-HNM-0202-STD', 1)
+    (1, 1, 'ACC-BFX2-0101', 1), (1, 2, 'ACC-HFX2-0201', 2),
+    (2, 1, 'ACC-BNMP-0102', 2),
+    (3, 1, 'ACC-HNM-0202', 1), (3, 2, 'ACC-BNMP-0102', 1),
+    (4, 1, 'ACC-BAA-0103', 1),
+    (5, 1, 'ACC-BFX2-0101', 2),
+    (6, 1, 'ACC-HFX2-0201', 1), (6, 2, 'ACC-HNM-0202', 1),
+    (7, 1, 'ACC-BNMP-0102', 1),
+    (8, 1, 'ACC-BFX2-0101', 1), (8, 2, 'ACC-HFX2-0201', 1),
+    (9, 1, 'ACC-BAA-0103', 2),
+    (10, 1, 'ACC-HNM-0202', 4),
+    (11, 1, 'ACC-BFX2-0101', 1),
+    (12, 1, 'ACC-BNMP-0102', 2), (12, 2, 'ACC-HNM-0202', 2),
+    (13, 1, 'ACC-BFX2-0101', 1), (13, 2, 'ACC-HFX2-0201', 2),
+    (14, 1, 'ACC-BNMP-0102', 1),
+    (15, 1, 'ACC-HFX2-0201', 2),
+    (16, 1, 'ACC-BFX2-0101', 1),
+    (17, 1, 'ACC-BNMP-0102', 2),
+    (18, 1, 'ACC-BAA-0103', 1),
+    (19, 1, 'ACC-HFX2-0201', 1),
+    (20, 1, 'ACC-BFX2-0101', 2),
+    (21, 1, 'ACC-HNM-0202', 2),
+    (22, 1, 'ACC-BNMP-0102', 1),
+    (23, 1, 'ACC-BAA-0103', 1),
+    (24, 1, 'ACC-HFX2-0201', 2), (24, 2, 'ACC-HNM-0202', 1)
 ) as i(seq, ord, sku, qtd) on i.seq = p.seq
-join variante_produto vp on vp.sku = i.sku
+join produto pr on pr.sku = i.sku
 order by p.id, i.ord;
 
 update pedido p set valor_total = p.valor_frete - p.valor_desconto

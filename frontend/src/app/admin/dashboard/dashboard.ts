@@ -1,7 +1,6 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { AdminNav } from '../../layout/admin/admin-nav/admin-nav';
 import { DashboardService } from '../../core/services/dashboard.service';
 import { PedidoService } from '../../core/services/pedido.service';
 import { FiltroDashboard, IndicadoresDashboard } from '../../core/models/dashboard.model';
@@ -13,14 +12,13 @@ import {
 
 type Periodo = '30' | '7' | 'ano';
 
-/** Quantas variantes de estoque baixo o card mostra; o resto fica no atalho para o estoque. */
+/** Quantos produtos de estoque baixo o card mostra; o resto fica no atalho para o estoque. */
 const ESTOQUE_NO_CARD = 5;
 const PENDENTES_NO_CARD = 5;
 
 @Component({
   selector: 'app-dashboard',
-  standalone: true,
-  imports: [RouterLink, AdminNav, DatePipe],
+  imports: [RouterLink, DatePipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -54,7 +52,7 @@ export class Dashboard implements OnInit {
     (this.dados()?.pedidosPorStatus ?? []).map((r) => ({
       id: r.status.id,
       rotulo: EXIBICAO_STATUS_PEDIDO[r.status.id]?.rotulo ?? r.status.nome,
-      cor: EXIBICAO_STATUS_PEDIDO[r.status.id]?.cor ?? 'var(--dim2)',
+      cor: EXIBICAO_STATUS_PEDIDO[r.status.id]?.cor ?? 'var(--mute)',
       quantidade: r.quantidade,
     })),
   );
@@ -128,7 +126,7 @@ export class Dashboard implements OnInit {
   }
 
   corStatus(id: number): string {
-    return EXIBICAO_STATUS_PEDIDO[id]?.cor ?? 'var(--dim2)';
+    return EXIBICAO_STATUS_PEDIDO[id]?.cor ?? 'var(--mute)';
   }
 
   /** 30 dias é o padrão da API, então vai sem datas; os outros períodos terminam hoje. */

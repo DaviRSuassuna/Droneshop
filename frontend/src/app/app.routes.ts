@@ -1,11 +1,13 @@
 import { Routes } from '@angular/router';
 import { adminAuthGuard } from './core/guards/admin-auth.guard';
+import { AdminLayout } from './layout/admin/admin-layout';
 import { TIPO_PRODUTO } from './core/models/produto.model';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'admin/marcas', pathMatch: 'full' },
   {
     path: 'admin',
+    component: AdminLayout,
     canActivateChild: [adminAuthGuard],
     children: [
       {
@@ -156,6 +158,33 @@ export const routes: Routes = [
       {
         path: 'acessorios/:id/editar',
         data: { tipo: TIPO_PRODUTO.ACESSORIO },
+        loadComponent: () =>
+          import('./admin/catalogo/produtos/cadastro/produto-cadastro').then((m) => m.ProdutoCadastro),
+      },
+      {
+        path: 'grupos',
+        loadComponent: () =>
+          import('./admin/catalogo/grupos/listagem/grupos-listagem').then((m) => m.GruposListagem),
+      },
+      {
+        path: 'grupos/novo',
+        loadComponent: () =>
+          import('./admin/catalogo/grupos/cadastro/grupo-cadastro').then((m) => m.GrupoCadastro),
+      },
+      {
+        path: 'grupos/:id/editar',
+        loadComponent: () =>
+          import('./admin/catalogo/grupos/cadastro/grupo-cadastro').then((m) => m.GrupoCadastro),
+      },
+      {
+        path: 'kits/novo',
+        data: { tipo: TIPO_PRODUTO.KIT },
+        loadComponent: () =>
+          import('./admin/catalogo/produtos/cadastro/produto-cadastro').then((m) => m.ProdutoCadastro),
+      },
+      {
+        path: 'kits/:id/editar',
+        data: { tipo: TIPO_PRODUTO.KIT },
         loadComponent: () =>
           import('./admin/catalogo/produtos/cadastro/produto-cadastro').then((m) => m.ProdutoCadastro),
       },

@@ -36,4 +36,4 @@ Wordmark em texto, "AERIA", em Sora com espaçamento largo. Não há logotipo em
 
 ## Acessibilidade
 
-Contraste adequado nos dois temas, navegação por teclado, texto alternativo em imagem e status nunca indicado só por cor (RNF08).
+Contraste adequado no tema escuro, navegação por teclado, texto alternativo em imagem e status nunca indicado só por cor (RNF08).

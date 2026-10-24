@@ -12,8 +12,8 @@ export interface EscopoPromocaoRef {
   nome: 'PRODUTO' | 'CARRINHO' | 'FRETE' | string;
 }
 
-/** Variante associada a uma promoção na resposta de /promocoes. */
-export interface VariantePromocao {
+/** Produto associado a uma promoção na resposta de /promocoes (D40). */
+export interface ProdutoPromocao {
   id: number;
   sku: string | null;
   nome: string | null;
@@ -31,7 +31,7 @@ export interface Promocao {
   valorMinimoCarrinho: number | null;
   ativa: boolean;
   situacao: 'VIGENTE' | 'AGENDADA' | 'ENCERRADA' | 'INATIVA' | string;
-  variantes: VariantePromocao[];
+  produtos: ProdutoPromocao[];
 }
 
 /** Corpo de POST /promocoes e PUT /promocoes/{id}. */
@@ -44,5 +44,5 @@ export interface PromocaoDTO {
   valorDesconto: number | null;
   valorMinimoCarrinho: number | null;
   ativa: boolean;
-  idsVariantes: number[];
+  idsProdutos: number[];
 }

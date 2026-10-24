@@ -8,38 +8,38 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
-// Item do kit (D7): quantas unidades de outra variante o kit leva. A baixa de estoque
+// Item do kit (D7): quantas unidades de outro produto o kit leva. A baixa de estoque
 // acontece sempre no componente, nunca no kit.
 @Entity
-@Table(name = "componente_kit", uniqueConstraints = @UniqueConstraint(columnNames = { "id_kit", "id_componente" }))
+@Table(name = "componente_kit", uniqueConstraints = @UniqueConstraint(columnNames = { "id_kit", "id_produto" }))
 public class ComponenteKit extends DefaultEntity {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_kit", nullable = false)
-    private VarianteProduto kit;
+    private Kit kit;
 
     // nunca e outro kit
     @ManyToOne(optional = false)
-    @JoinColumn(name = "id_componente", nullable = false)
-    private VarianteProduto componente;
+    @JoinColumn(name = "id_produto", nullable = false)
+    private Produto produto;
 
     @Column(nullable = false)
     private int quantidade;
 
-    public VarianteProduto getKit() {
+    public Kit getKit() {
         return kit;
     }
 
-    public void setKit(VarianteProduto kit) {
+    public void setKit(Kit kit) {
         this.kit = kit;
     }
 
-    public VarianteProduto getComponente() {
-        return componente;
+    public Produto getProduto() {
+        return produto;
     }
 
-    public void setComponente(VarianteProduto componente) {
-        this.componente = componente;
+    public void setProduto(Produto produto) {
+        this.produto = produto;
     }
 
     public int getQuantidade() {

@@ -30,9 +30,9 @@ import io.restassured.response.ValidatableResponse;
 @Tag("issue-24")
 class CarrinhoResourceTest {
 
-    static ValidatableResponse adicionar(String token, long idVariante, int quantidade) {
+    static ValidatableResponse adicionar(String token, long idProduto, int quantidade) {
         return carrinho(token).contentType(ContentType.JSON)
-                .body(Map.of("idVariante", idVariante, "quantidade", quantidade))
+                .body(Map.of("idProduto", idProduto, "quantidade", quantidade))
                 .when().post("/carrinho/itens").then();
     }
 
@@ -54,11 +54,11 @@ class CarrinhoResourceTest {
     }
 
     @Test
-    void mesmaVarianteSomaAQuantidadeEOTotalBate() {
+    void mesmoProdutoSomaAQuantidadeEOTotalBate() {
         Fixtures.ProdutoCriado p = Fixtures.criarDrone(1000.0, 10);
         String c = Fixtures.novoCarrinho();
-        adicionar(c, p.idVariante(), 1).statusCode(200);
-        adicionar(c, p.idVariante(), 2).statusCode(200)
+        adicionar(c, p.id(), 1).statusCode(200);
+        adicionar(c, p.id(), 2).statusCode(200)
                 .body("itens", hasSize(1))
                 .body("itens[0].quantidade", equalTo(3))
                 .body("itens[0].precoUnitario", equalTo(1000.0f))
@@ -70,7 +70,7 @@ class CarrinhoResourceTest {
     void alteraERemoveItem() {
         Fixtures.ProdutoCriado p = Fixtures.criarDrone(1000.0, 10);
         String c = Fixtures.novoCarrinho();
-        long idItem = adicionar(c, p.idVariante(), 1).statusCode(200).extract().jsonPath().getLong("itens[0].id");
+        long idItem = adicionar(c, p.id(), 1).statusCode(200).extract().jsonPath().getLong("itens[0].id");
         carrinho(c).contentType(ContentType.JSON).body(Map.of("quantidade", 4))
                 .when().patch("/carrinho/itens/{id}", idItem)
                 .then().statusCode(200).body("itens[0].quantidade", equalTo(4));
@@ -82,19 +82,19 @@ class CarrinhoResourceTest {
     void validacoesDoItem() {
         Fixtures.ProdutoCriado p = Fixtures.criarDrone(1000.0, 2);
         String c = Fixtures.novoCarrinho();
-        adicionar(c, p.idVariante(), 0).statusCode(400).body("errors.field", hasItem("quantidade"));
-        adicionar(c, p.idVariante(), 3).statusCode(409);
+        adicionar(c, p.id(), 0).statusCode(400).body("errors.field", hasItem("quantidade"));
+        adicionar(c, p.id(), 3).statusCode(409);
     }
 
     @Test
     void produtoEmRascunhoNaoEntra() {
         String s = Dados.sufixo();
         Map<String, Object> d = Fixtures.drone("Rascunho " + s, Fixtures.arvore(),
-                Fixtures.lista(Fixtures.variante("RS-" + s.toUpperCase(), 100.0, 5)));
+                Fixtures.dadosComerciais("RS-" + s.toUpperCase(), 100.0, 5));
         d.put("idStatus", Fixtures.PRODUTO_RASCUNHO);
-        long idVariante = given().contentType(ContentType.JSON).body(d).when().post("/drones")
-                .then().statusCode(200).extract().jsonPath().getLong("variantes[0].id");
-        adicionar(Fixtures.novoCarrinho(), idVariante, 1).statusCode(400).body("errors.field", hasItem("idVariante"));
+        long idProduto = given().contentType(ContentType.JSON).body(d).when().post("/drones")
+                .then().statusCode(200).extract().jsonPath().getLong("id");
+        adicionar(Fixtures.novoCarrinho(), idProduto, 1).statusCode(400).body("errors.field", hasItem("idProduto"));
     }
 
     @Test
@@ -104,16 +104,16 @@ class CarrinhoResourceTest {
         Fixtures.ProdutoCriado b = Fixtures.criarAcessorio(100.0, 10);
 
         String doCliente = Fixtures.novoCarrinho();
-        adicionar(doCliente, a.idVariante(), 1).statusCode(200);
+        adicionar(doCliente, a.id(), 1).statusCode(200);
         carrinho(cli.token(), doCliente).when().post("/carrinho/vincular").then().statusCode(200);
 
         String anonimo = Fixtures.novoCarrinho();
-        adicionar(anonimo, a.idVariante(), 2).statusCode(200);
-        adicionar(anonimo, b.idVariante(), 1).statusCode(200);
+        adicionar(anonimo, a.id(), 2).statusCode(200);
+        adicionar(anonimo, b.id(), 1).statusCode(200);
         carrinho(cli.token(), anonimo).when().post("/carrinho/vincular")
                 .then().statusCode(200)
                 .body("itens", hasSize(2))
-                .body("itens.find { it.variante.id == " + a.idVariante() + " }.quantidade", equalTo(3));
+                .body("itens.find { it.produto.id == " + a.id() + " }.quantidade", equalTo(3));
 
         carrinho(anonimo).when().get("/carrinho").then().statusCode(200).body("status.nome", equalTo("EXPIRADO"));
         como(cli.token()).when().get("/conta/carrinho").then().statusCode(200).body("itens", hasSize(2));
@@ -124,19 +124,19 @@ class CarrinhoResourceTest {
         Fixtures.Cliente cli = Fixtures.novoCliente();
         Fixtures.ProdutoCriado p = Fixtures.criarDrone(1000.0, 10);
         String c = Fixtures.novoCarrinho();
-        adicionar(c, p.idVariante(), 1).statusCode(200);
+        adicionar(c, p.id(), 1).statusCode(200);
         String token = carrinho(c).contentType(ContentType.JSON)
                 .body(Map.of("email", cli.email(), "senha", cli.senha()))
                 .when().post("/auth/login").then().statusCode(200).extract().jsonPath().getString("token");
         como(token).when().get("/conta/carrinho").then().statusCode(200)
-                .body("itens.variante.id", hasItem((int) p.idVariante()));
+                .body("itens.produto.id", hasItem((int) p.id()));
     }
 
     @Test
     void rotinaMarcaAbandonado() {
         Fixtures.ProdutoCriado p = Fixtures.criarDrone(1000.0, 10);
         String c = Fixtures.novoCarrinho();
-        adicionar(c, p.idVariante(), 1).statusCode(200);
+        adicionar(c, p.id(), 1).statusCode(200);
         given().queryParam("referencia", "2099-01-01T00:00:00")
                 .when().post("/admin/rotinas/carrinhos-abandonados")
                 .then().statusCode(200).body("processados", greaterThanOrEqualTo(1));

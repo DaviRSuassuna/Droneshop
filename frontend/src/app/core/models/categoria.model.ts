@@ -2,6 +2,7 @@ import { StatusRef } from './status.model';
 
 /** Espelha o CategoriaResponseDTO devolvido pela API. */
 export interface Categoria {
+  quantidadeProdutos: number;
   id: number;
   nome: string;
   slug: string;

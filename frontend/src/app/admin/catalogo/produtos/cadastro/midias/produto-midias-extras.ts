@@ -4,7 +4,7 @@ import { ItemMidia, ProdutoMidiasEstado } from './produto-midias-estado';
 
 const TAMANHO_MAXIMO = 20 * 1024 * 1024;
 
-/** Vídeo por URL e manual em PDF, dentro de "Mostrar mais opções" como no protótipo (#12, D29). */
+/** Vídeo por URL e manual em PDF, no cadastro do produto (#12, D29). */
 @Component({
   selector: 'app-produto-midias-extras',
   imports: [FormsModule],

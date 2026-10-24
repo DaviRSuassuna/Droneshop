@@ -18,6 +18,7 @@ public final class MarcaResponseMapper {
                 marca.getDescricao(),
                 marca.getLogoUrl(),
                 marca.getStatus(),
-                marca.isDestacarHome());
+                marca.isDestacarHome(),
+                marca.getQuantidadeProdutos());
     }
 }

@@ -1,3 +1,7 @@
+:host {
+  display: block;
+  min-width: 0;
+}
 .escolha {
   display: grid;
   gap: 10px;
@@ -11,7 +15,7 @@
     max-height: 160px;
     border-radius: 6px;
     object-fit: contain;
-    background: var(--st1);
+    background: var(--field);
   }
 }
 
@@ -29,10 +33,10 @@
 
   img {
     width: 100%;
-    aspect-ratio: 1;
-    border-radius: 6px;
-    object-fit: cover;
-    background: var(--st1);
+    aspect-ratio: 3 / 2;
+    border-radius: 9px;
+    object-fit: contain;
+    background: var(--field);
   }
 
   .dim {
@@ -60,7 +64,7 @@
     width: 100%;
     aspect-ratio: 1;
     object-fit: cover;
-    background: var(--st1);
+    background: var(--field);
   }
 
   figcaption {
@@ -74,7 +78,7 @@
     padding: 0;
     border: 0;
     background: none;
-    color: var(--dim);
+    color: var(--ink2);
     font-size: 12px;
     cursor: pointer;
 
@@ -108,8 +112,28 @@
 
   a {
     overflow: hidden;
-    color: var(--dim);
+    color: var(--ink2);
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+}
+
+.midias-conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.up .mini {
+  grid-template-columns: 1fr;
+}
+.up .mini span {
+  aspect-ratio: 3 / 1;
+  font-size: 22px;
+}
+.up:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+.erro {
+  color: var(--warn);
 }

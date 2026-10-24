@@ -7,6 +7,7 @@ import br.com.droneshop.catalogo.model.Produto;
 import br.com.droneshop.catalogo.model.StatusProduto;
 import br.com.droneshop.catalogo.model.TipoProduto;
 import br.com.droneshop.catalogo.repository.ProdutoRepository;
+import br.com.droneshop.estoque.dto.SituacaoEstoque;
 import br.com.droneshop.exception.ResourceNotFoundException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -26,12 +27,12 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     // remove pela entidade (e nao por deleteById) para apagar as linhas de produto e do subtipo.
     // Compatibilidade nao e "uso" (D17): os vinculos que apontam para ele saem junto.
-    // Variante que e componente de kit de outro produto e uso (409).
+    // Produto que e componente de algum kit e uso (409); os componentes do proprio kit saem junto.
     @Override
     @Transactional
     public void delete(long id) {
         Produto produto = buscarProdutoOuFalhar(id);
-        cadastro.prepararExclusao(produto);
+        cadastro.conferirUsoEmKits(produto);
         midiaProdutoService.excluirDoProduto(id);
         for (Acessorio acessorio : produto.getAcessoriosCompativeis())
             acessorio.getCompativeis().remove(produto);
@@ -53,18 +54,20 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     @Override
     public List<Produto> findComFiltro(Long idTipo, String nome, Long idMarca, Long idCategoria, Long idSubcategoria,
-                                      Long idStatus, int page, int pageSize) {
+                                      Long idStatus, Long idGrupo, boolean semKit,
+                                      SituacaoEstoque estoque, int page, int pageSize) {
         return produtoRepository.findComFiltro(TipoProduto.valueOf(idTipo), nome, idMarca, idCategoria,
-                        idSubcategoria, StatusProduto.valueOf(idStatus))
+                        idSubcategoria, StatusProduto.valueOf(idStatus), idGrupo, semKit, estoque)
                 .page(page, pageSize)
                 .list();
     }
 
     @Override
     public long countComFiltro(Long idTipo, String nome, Long idMarca, Long idCategoria, Long idSubcategoria,
-                               Long idStatus) {
+                               Long idStatus, Long idGrupo, boolean semKit,
+                               SituacaoEstoque estoque) {
         return produtoRepository.findComFiltro(TipoProduto.valueOf(idTipo), nome, idMarca, idCategoria,
-                        idSubcategoria, StatusProduto.valueOf(idStatus))
+                        idSubcategoria, StatusProduto.valueOf(idStatus), idGrupo, semKit, estoque)
                 .count();
     }
 

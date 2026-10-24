@@ -1,121 +1,136 @@
-<app-admin-nav />
-
-<div class="pagebar">
-  <div class="pagebar-t">
-    <h1 class="h1">Subcategorias</h1>
-    <span class="sub">
-      @if (!carregando()) {
-        {{ subcategoriasFiltradas().length }} de {{ subcategorias().length }}
-      }
-    </span>
+<main class="gut">
+  <div class="ph">
+    <div>
+      <span class="lbl">Catálogo</span>
+      <h1>Subcategorias</h1>
+      <div class="sub">{{ subcategoriasFiltradas().length }} subcategorias</div>
+    </div>
+    <div class="acts">
+      <a class="btn p" routerLink="/admin/subcategorias/novo">Nova subcategoria</a>
+    </div>
   </div>
-  <div class="actions">
-    <a class="btn p" routerLink="/admin/subcategorias/novo">Nova subcategoria</a>
-  </div>
-</div>
-
-<div class="pad-t stack-l">
-  <div class="filters">
-    <div class="f grow">
-      <input
+  <div class="toolbar">
+    <label class="field-s grow"
+      ><input
         type="search"
         placeholder="Buscar por nome ou slug"
-        aria-label="Buscar por nome ou slug"
+        aria-label="Buscar"
         [value]="termoBusca()"
-        (input)="aoDigitarBusca($any($event.target).value)"
-      />
+        (input)="aoDigitarBusca($any($event.target).value)" /></label
+    ><select
+      class="sel"
+      aria-label="Categoria"
+      [value]="filtroCategoria() ?? ''"
+      (change)="aoMudarCategoria($any($event.target).value)"
+    >
+      <option value="">Categoria</option>
+      @for (cat of categorias(); track cat.id) {
+        <option [value]="cat.id">{{ cat.nome }}</option>
+      }</select
+    ><select
+      class="sel"
+      aria-label="Status"
+      [value]="filtroStatus() ?? ''"
+      (change)="aoMudarStatus($any($event.target).value)"
+    >
+      <option value="">Status</option>
+      <option [value]="STATUS.ATIVA">Ativa</option>
+      <option [value]="STATUS.INATIVA">Inativa</option>
+      <option [value]="STATUS.RASCUNHO">Rascunho</option>
+    </select>
+  </div>
+  <div class="info">
+    Cada subcategoria pertence a uma categoria e herda o tipo dela (D39). Subcategoria com produtos
+    não se exclui: <b>inative</b> (D24).
+  </div>
+  @if (erro(); as mensagem) {
+    <div class="alerta" role="alert">
+      {{ mensagem }}
+      <button class="btn sm" type="button" (click)="carregar()">Tentar novamente</button>
     </div>
-    <div class="f">
-      <select
-        aria-label="Filtrar por categoria"
-        (change)="aoMudarCategoria($any($event.target).value)"
-      >
-        <option value="">Todas as categorias</option>
-        @for (categoria of categorias(); track categoria.id) {
-          <option [value]="categoria.id" [selected]="categoria.id === filtroCategoria()">
-            {{ categoria.nome }}
-          </option>
+  }
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th>Subcategoria</th>
+          <th>Categoria</th>
+          <th>Ordem</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (carregando()) {
+          <tr>
+            <td colspan="5">Carregando…</td>
+          </tr>
+        } @else {
+          @for (sub of subcategoriasPagina(); track sub.id) {
+            <tr>
+              <td>
+                <div class="pc">
+                  <div>
+                    <b
+                      ><a [routerLink]="['/admin/subcategorias', sub.id, 'editar']">{{
+                        sub.nome || '(sem nome)'
+                      }}</a></b
+                    ><span class="slug">/{{ sub.slug }}</span>
+                  </div>
+                </div>
+              </td>
+              <td data-l="Categoria">
+                {{ sub.categoria?.nome || 'A definir'
+                }}<span class="slug">{{ sub.categoria?.tipo?.nome }}</span>
+              </td>
+              <td data-l="Ordem" class="num mono">{{ sub.ordemExibicao }}</td>
+              <td data-l="Status">
+                <span
+                  class="st"
+                  [class.ok]="sub.status.id === STATUS.ATIVA"
+                  [class.mute]="sub.status.id !== STATUS.ATIVA"
+                  ><span>{{ sub.status.nome }}</span></span
+                >
+              </td>
+              <td class="r">
+                <a
+                  class="more"
+                  [routerLink]="['/admin/subcategorias', sub.id, 'editar']"
+                  [attr.aria-label]="'Editar ' + sub.nome"
+                  >⋯</a
+                >
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5">Nenhuma subcategoria encontrada.</td>
+            </tr>
+          }
         }
-      </select>
-    </div>
-    <div class="f">
-      <select aria-label="Filtrar por status" (change)="aoMudarStatus($any($event.target).value)">
-        <option value="">Todos os status</option>
-        <option [value]="STATUS.ATIVA">Ativa</option>
-        <option [value]="STATUS.INATIVA">Inativa</option>
-        <option [value]="STATUS.RASCUNHO">Rascunho</option>
-      </select>
+      </tbody>
+    </table>
+  </div>
+  <div class="pager">
+    <span>Exibindo {{ intervaloExibido() }} de {{ subcategoriasFiltradas().length }}</span>
+    <div class="pages">
+      <button
+        class="btn sm"
+        type="button"
+        aria-label="Página anterior"
+        (click)="irParaPagina(pagina() - 1)"
+        [disabled]="pagina() === 0"
+      >
+        ‹</button
+      ><span>{{ pagina() + 1 }}</span
+      ><button
+        class="btn sm"
+        type="button"
+        aria-label="Próxima página"
+        (click)="irParaPagina(pagina() + 1)"
+        [disabled]="pagina() + 1 >= totalPaginas()"
+      >
+        ›
+      </button>
     </div>
   </div>
-
-  <div class="tbl">
-    <div class="trow head" [style.grid-template-columns]="grid">
-      <span>Subcategoria</span>
-      <span>Categoria</span>
-      <span>Ordem</span>
-      <span>Status</span>
-      <span></span>
-    </div>
-
-    @if (carregando()) {
-      <div class="empty"><span>Carregando subcategorias…</span></div>
-    } @else if (erro()) {
-      <div class="empty">
-        <span class="warn">{{ erro() }}</span>
-        <button class="btn sm" type="button" (click)="carregar()">Tentar novamente</button>
-      </div>
-    } @else {
-      @for (sub of subcategoriasPagina(); track sub.id) {
-        <a
-          class="trow"
-          [style.grid-template-columns]="grid"
-          [routerLink]="['/admin/subcategorias', sub.id, 'editar']"
-        >
-          <span class="cell-name">
-            <b>{{ sub.nome }}</b>
-            <span class="chip">{{ sub.slug }}</span>
-          </span>
-          <span class="ink">{{ sub.categoria.nome }}</span>
-          <span class="ink">{{ sub.ordemExibicao }}</span>
-          <span class="status">
-            <span class="dot" [style.background]="corStatus(sub.status)"></span>
-            {{ statusLabel(sub.status) }}
-          </span>
-          <span style="justify-self: end">
-            <button class="btn sm d ghost" type="button" (click)="excluir($event, sub)">
-              Excluir
-            </button>
-          </span>
-        </a>
-      } @empty {
-        <div class="empty">
-          <b>Nenhuma subcategoria encontrada</b>
-          <span>Ajuste os filtros ou cadastre uma nova subcategoria.</span>
-        </div>
-      }
-    }
-
-    <div class="pager">
-      <span>Exibindo {{ intervaloExibido() }} de {{ subcategoriasFiltradas().length }}</span>
-      <nav class="pages" aria-label="Paginação">
-        <button
-          type="button"
-          (click)="irParaPagina(pagina() - 1)"
-          [disabled]="pagina() === 0"
-          aria-label="Página anterior"
-        >
-          ‹
-        </button>
-        <span>Página {{ pagina() + 1 }} de {{ totalPaginas() }}</span>
-        <button
-          type="button"
-          (click)="irParaPagina(pagina() + 1)"
-          [disabled]="pagina() + 1 >= totalPaginas()"
-          aria-label="Próxima página"
-        >
-          ›
-        </button>
-      </nav>
-    </div>
-  </div>
-</div>
+</main>

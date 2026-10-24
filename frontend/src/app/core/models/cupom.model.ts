@@ -28,7 +28,7 @@ export interface Cupom {
   usos: number;
   categorias: ReferenciaCupom[];
   marcas: ReferenciaCupom[];
-  variantes: ReferenciaCupom[];
+  produtos: ReferenciaCupom[];
 }
 
 export interface CupomDTO {
@@ -43,7 +43,7 @@ export interface CupomDTO {
   ativo: boolean;
   idsCategorias: number[];
   idsMarcas: number[];
-  idsVariantes: number[];
+  idsProdutos: number[];
 }
 
 export interface UsoCupom {

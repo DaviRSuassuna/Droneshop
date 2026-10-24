@@ -12,7 +12,7 @@ Cada arquivo começa com um cabeçalho entre `---`, um valor JSON por linha:
 ```
 ---
 numero: 9                      # null nas issues novas
-titulo: "[catalogo] VarianteProduto: ..."
+titulo: "[catalogo] Produto: ..."
 labels: ["tipo:feature", "camada:backend", "modulo:catalogo"]
 fase: 1                        # milestone cujo título contém "Fase 1"
 ---

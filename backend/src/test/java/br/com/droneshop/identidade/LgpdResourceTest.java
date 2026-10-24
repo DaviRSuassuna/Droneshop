@@ -62,7 +62,7 @@ class LgpdResourceTest {
     @Test
     void exclusaoAnonimizaEPreservaOsPedidos() {
         Fixtures.Cliente c = Fixtures.novoCliente();
-        long pedido = Fixtures.pedidoPendente(c, Fixtures.criarAcessorio(150.0, 5).idVariante(), 1, Fixtures.PIX);
+        long pedido = Fixtures.pedidoPendente(c, Fixtures.criarAcessorio(150.0, 5).id(), 1, Fixtures.PIX);
         JsonPath antes = given().when().get("/pedidos/{id}", pedido).then().statusCode(200).extract().jsonPath();
 
         como(c.token()).contentType(ContentType.JSON).body(Map.of("senha", c.senha()))

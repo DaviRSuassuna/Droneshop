@@ -67,4 +67,11 @@ describe('CategoriaService', () => {
     expect(req.request.method).toBe('DELETE');
     req.flush(null);
   });
+  it('grava a ordem dos ids por PATCH', () => {
+    service.reordenar([3, 1, 2]).subscribe();
+    const req = http.expectOne(url + '/ordem');
+    expect(req.request.method).toBe('PATCH');
+    expect(req.request.body).toEqual({ ids: [3, 1, 2] });
+    req.flush(null);
+  });
 });

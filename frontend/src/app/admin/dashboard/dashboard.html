@@ -1,185 +1,173 @@
-<app-admin-nav />
-
-<div class="pad painel" [class.carregando]="carregando()">
-  <div class="topo">
+<main class="gut painel">
+  <div class="ph">
     <div>
-      <h1 class="h1 big">Visão geral</h1>
-      <div class="crumb">
+      <span class="lbl">Painel de operação</span>
+      <h1>Visão geral</h1>
+      <div class="sub">
         {{ rotuloPeriodo() }}
         @if (intervalo()) {
           · {{ intervalo() }}
         }
       </div>
     </div>
-    <div class="actions">
-      <div class="f periodo">
-        <select
-          aria-label="Período"
-          [value]="periodo()"
-          (change)="aoMudarPeriodo($any($event.target).value)"
-        >
-          @for (p of periodos; track p.valor) {
-            <option [value]="p.valor" [selected]="p.valor === periodo()">{{ p.rotulo }}</option>
-          }
-        </select>
-      </div>
-      <button class="btn" type="button" disabled title="Em construção">Exportar relatório</button>
+    <div class="acts">
+      <select
+        class="sel"
+        aria-label="Período"
+        [value]="periodo()"
+        (change)="aoMudarPeriodo($any($event.target).value)"
+      >
+        @for (p of periodos; track p.valor) {
+          <option [value]="p.valor">{{ p.rotulo }}</option>
+        }</select
+      ><a class="btn p" routerLink="/admin/drones/novo">Novo drone</a>
     </div>
   </div>
-
-  @if (erro()) {
-    <section class="card p erro">
-      <span class="warn">{{ erro() }}</span>
-      <button class="btn sm" type="button" (click)="carregar()">Tentar novamente</button>
-    </section>
+  @if (carregando()) {
+    <p role="status">Carregando indicadores…</p>
   }
-
-  <div class="g4">
-    <div class="kpi">
-      <span class="eyebrow" style="margin: 0">Vendas no período</span>
-      <b>{{ moeda(dados()?.faturamento) }}</b>
-      <i class="dim">Pagos, em separação, enviados e entregues</i>
+  @if (erro()) {
+    <div class="alerta" role="alert">
+      {{ erro() }}
+      <button class="btn sm" type="button" (click)="carregar()">Tentar novamente</button>
     </div>
-    <div class="kpi">
-      <span class="eyebrow" style="margin: 0">Pedidos</span>
-      <b>{{ dados()?.quantidadePedidos ?? 0 }}</b>
-      <i class="dim">{{ totalPedidosPeriodo() }} criados no período, em todos os status</i>
-    </div>
-    <div class="kpi">
-      <span class="eyebrow" style="margin: 0">Ticket médio</span>
-      <b>{{ moeda(dados()?.ticketMedio) }}</b>
-    </div>
-    <div class="kpi" title="Em construção">
-      <span class="eyebrow" style="margin: 0">Conversão</span>
-      <b class="em-construcao">Em construção</b>
-    </div>
-  </div>
-
-  <div class="linha a">
-    <section class="card p">
-      <div class="card-h">
-        <span class="card-t">Pedidos por status</span>
-        <a class="card-n" routerLink="/admin/pedidos">Ver pedidos →</a>
+  }
+  @if (dados(); as d) {
+    <section class="kpis" aria-label="Indicadores">
+      <div class="kpi">
+        <span class="lbl">Vendas no período</span
+        ><strong class="num">{{ moeda(d.faturamento) }}</strong>
+        <div class="delta"><span>Pagos, em separação, enviados e entregues</span></div>
       </div>
-      @for (s of pedidosPorStatus(); track s.id) {
-        <div class="list-row">
-          <span class="status st"
-            ><span class="dot" [style.background]="s.cor"></span>{{ s.rotulo }}</span
-          >
-          <span class="barra" aria-hidden="true"
-            ><i [style.width.%]="(s.quantidade / maiorStatus()) * 100"></i
-          ></span>
-          <span class="ink qtd">{{ s.quantidade }}</span>
+      <div class="kpi">
+        <span class="lbl">Pedidos</span><strong class="num">{{ d.quantidadePedidos }}</strong>
+        <div class="delta">
+          <span>{{ totalPedidosPeriodo() }} criados no período, em todos os status</span>
         </div>
-      } @empty {
-        @if (!carregando()) {
-          <div class="empty"><b>Sem dados de pedidos.</b></div>
-        }
-      }
-    </section>
-
-    <section class="card p">
-      <div class="card-h">
-        <span class="card-t">Estoque baixo</span>
-        <a class="card-n" routerLink="/admin/estoque">Ver estoque →</a>
       </div>
-      @for (e of estoqueNoCard(); track e.variante.id) {
-        <a
-          class="list-row"
-          routerLink="/admin/estoque/movimento"
-          [queryParams]="{ idVariante: e.variante.id }"
-          title="Registrar movimento"
-        >
-          <span class="cell-name"
-            ><b
-              >{{ e.produto.nome ?? 'Produto sem nome' }} ·
-              {{ e.variante.nome ?? 'Variante sem nome' }}</b
-            ><span class="chip">{{ e.variante.sku }}</span></span
-          >
-          <span class="saldo"
-            ><span class="warn">{{ e.disponivel }} un</span
-            ><span class="dim">mín. {{ e.estoqueMinimo }}</span></span
-          >
-        </a>
-      } @empty {
-        @if (!carregando()) {
-          <div class="empty"><b>Nenhuma variante abaixo do mínimo.</b></div>
-        }
-      }
-      @if (estoqueRestante() > 0) {
-        <a class="list-row mais" routerLink="/admin/estoque"
-          >+ {{ estoqueRestante() }} abaixo do mínimo no estoque</a
-        >
-      }
-    </section>
-  </div>
-
-  <div class="linha b">
-    <section class="card p">
-      <div class="card-h">
-        <span class="card-t">Pedidos pendentes</span>
-        <a class="card-n" routerLink="/admin/pedidos">Ver todos →</a>
+      <div class="kpi">
+        <span class="lbl">Ticket médio</span><strong class="num">{{ moeda(d.ticketMedio) }}</strong>
       </div>
-      @for (p of pendentes(); track p.id) {
-        <a class="list-row" [routerLink]="['/admin/pedidos', p.id]">
-          <span class="cell-name"
-            ><b class="mono numero">#{{ p.numero }}</b
-            ><span class="cliente"
-              >{{ p.cliente.nome }} · {{ p.dataCadastro | date: 'dd/MM HH:mm' }}</span
-            ></span
-          >
-          <span class="ink">{{ moeda(p.valorTotal) }}</span>
-        </a>
-      } @empty {
-        <div class="empty"><b>Nenhum pedido aguardando pagamento.</b></div>
-      }
-      @if (totalPendentes() > pendentes().length) {
-        <a class="list-row mais" routerLink="/admin/pedidos"
-          >+ {{ totalPendentes() - pendentes().length }} aguardando pagamento</a
-        >
-      }
     </section>
-
-    <section class="card p" title="Em construção">
-      <div class="card-t" style="margin-bottom: 14px">Produtos mais vendidos</div>
-      <div class="trow head vendidos">
-        <span></span>
-        <span>Produto</span>
-        <span>Unidades</span>
-        <span>Receita</span>
-        <span>Share</span>
-      </div>
-      <div class="empty"><b>Em construção.</b>A API ainda não calcula as vendas por produto.</div>
-    </section>
-  </div>
-
-  <div class="linha">
-    <section class="card p">
-      <div class="card-h">
-        <span class="card-t">Últimos pedidos</span>
-        <a class="card-n" routerLink="/admin/pedidos">Ver todos →</a>
-      </div>
-      @for (p of ultimosPedidos(); track p.id) {
-        <a class="list-row" [routerLink]="['/admin/pedidos', p.id]">
-          <span class="cell-name"
-            ><b class="mono numero">#{{ p.numero }}</b
-            ><span class="cliente"
-              >{{ p.cliente.nome }} · {{ p.dataCadastro | date: 'dd/MM HH:mm' }}</span
-            ></span
-          >
-          <span class="saldo"
-            ><span class="ink">{{ moeda(p.valorTotal) }}</span
-            ><span class="status"
-              ><span class="dot" [style.background]="corStatus(p.status.id)"></span
-              >{{ rotuloStatus(p.status.id) }}</span
-            ></span
-          >
-        </a>
-      } @empty {
-        @if (!carregando()) {
-          <div class="empty"><b>Nenhum pedido no período.</b></div>
-        }
-      }
-    </section>
-  </div>
-</div>
+    <div class="grid g-21 bloco">
+      <section class="card">
+        <div class="hd">
+          <h2>Pedidos por status</h2>
+          <a routerLink="/admin/pedidos">Ver pedidos →</a>
+        </div>
+        <div class="bd">
+          <div class="list">
+            @for (s of pedidosPorStatus(); track s.id) {
+              <div class="status-linha">
+                <span class="st" [style.color]="s.cor"
+                  ><span>{{ s.rotulo }}</span></span
+                ><span class="barra" aria-hidden="true"
+                  ><i [style.width.%]="(s.quantidade / maiorStatus()) * 100"></i></span
+                ><span class="num qtd">{{ s.quantidade }}</span>
+              </div>
+            } @empty {
+              <p class="note">Sem dados de pedidos.</p>
+            }
+          </div>
+        </div>
+      </section>
+      <section class="card">
+        <div class="hd">
+          <h2>Estoque baixo</h2>
+          <a routerLink="/admin/estoque">Ver estoque</a>
+        </div>
+        <div class="bd">
+          <div class="list">
+            @for (e of estoqueNoCard(); track e.produto.id) {
+              <a
+                class="li"
+                routerLink="/admin/estoque/movimento"
+                [queryParams]="{ idProduto: e.produto.id }"
+                title="Registrar movimento"
+                ><span class="thumb ph" aria-hidden="true"></span>
+                <div class="produto">
+                  <div class="t">{{ e.produto.nome ?? 'Produto sem nome' }}</div>
+                  <span class="chip">{{ e.produto.sku }}</span>
+                </div>
+                <div class="saldo">
+                  <div class="stock low num">{{ e.disponivel }} un</div>
+                  <span class="s">mín. {{ e.estoqueMinimo }}</span>
+                </div></a
+              >
+            } @empty {
+              <p class="note">Nenhum produto abaixo do mínimo.</p>
+            }
+          </div>
+          @if (estoqueRestante() > 0) {
+            <a class="mais" routerLink="/admin/estoque"
+              >+ {{ estoqueRestante() }} abaixo do mínimo no estoque</a
+            >
+          }
+        </div>
+      </section>
+    </div>
+    <div class="grid g-11 bloco">
+      <section class="card">
+        <div class="hd">
+          <h2>Pedidos pendentes</h2>
+          <a routerLink="/admin/pedidos">Ver todos</a>
+        </div>
+        <div class="bd">
+          <div class="list">
+            @for (p of pendentes(); track p.id) {
+              <a class="li pedido" [routerLink]="['/admin/pedidos', p.id]"
+                ><div>
+                  <div class="t mono">#{{ p.numero }}</div>
+                  <div class="s">
+                    {{ p.cliente.nome }} · {{ p.dataCadastro | date: 'dd/MM HH:mm' }}
+                  </div>
+                </div>
+                <div class="saldo">
+                  <div class="num valor">{{ moeda(p.valorTotal) }}</div>
+                  <span class="st" [style.color]="corStatus(p.status.id)"
+                    ><span>{{ rotuloStatus(p.status.id) }}</span></span
+                  >
+                </div></a
+              >
+            } @empty {
+              <p class="note">Nenhum pedido aguardando pagamento.</p>
+            }
+          </div>
+          @if (totalPendentes() > pendentes().length) {
+            <a class="mais" routerLink="/admin/pedidos"
+              >+ {{ totalPendentes() - pendentes().length }} aguardando pagamento</a
+            >
+          }
+        </div>
+      </section>
+      <section class="card">
+        <div class="hd">
+          <h2>Últimos pedidos</h2>
+          <a routerLink="/admin/pedidos">Ver todos</a>
+        </div>
+        <div class="bd">
+          <div class="list">
+            @for (p of ultimosPedidos(); track p.id) {
+              <a class="li pedido" [routerLink]="['/admin/pedidos', p.id]"
+                ><div>
+                  <div class="t mono">#{{ p.numero }}</div>
+                  <div class="s">
+                    {{ p.cliente.nome }} · {{ p.dataCadastro | date: 'dd/MM HH:mm' }}
+                  </div>
+                </div>
+                <div class="saldo">
+                  <div class="num valor">{{ moeda(p.valorTotal) }}</div>
+                  <span class="st" [style.color]="corStatus(p.status.id)"
+                    ><span>{{ rotuloStatus(p.status.id) }}</span></span
+                  >
+                </div></a
+              >
+            } @empty {
+              <p class="note">Nenhum pedido no período.</p>
+            }
+          </div>
+        </div>
+      </section>
+    </div>
+  }
+</main>

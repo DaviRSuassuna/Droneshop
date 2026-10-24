@@ -1,0 +1,155 @@
+<main class="gut">
+  <div class="ph">
+    <div>
+      <div class="crumb">
+        <a routerLink="/admin/grupos">← Grupos</a><span>·</span><span>{{ modoEdicao() ? (grupo()?.nome ?? 'Grupo') : 'Novo grupo' }}</span>
+      </div>
+      <h1>{{ modoEdicao() ? 'Editar grupo' : 'Cadastrar grupo' }}</h1>
+    </div>
+    <div class="acts">
+      <span class="st" [class.ok]="form.controls.ativo.value" [class.mute]="!form.controls.ativo.value"
+        ><span>{{ form.controls.ativo.value ? 'Ativo' : 'Inativo' }}</span></span
+      >
+    </div>
+  </div>
+
+  @if (erroGeral(); as erro) {
+    <div class="alerta" role="alert">{{ erro }}</div>
+  }
+
+  @if (carregando()) {
+    <p class="note">Carregando grupo…</p>
+  } @else {
+    <div class="form" [formGroup]="form">
+      <div>
+        <section class="sec">
+          <div class="sh"><h2>Dados do grupo</h2><span>Aparece no card da vitrine e no topo da página</span></div>
+          <div class="fg">
+            <div class="f w3">
+              <label for="nome">Nome do grupo <span class="req">*</span></label>
+              <input id="nome" type="text" maxlength="120" formControlName="nome" [attr.aria-invalid]="!!mensagemErro('nome')" />
+              @if (mensagemErro('nome'); as m) { <span class="erro">{{ m }}</span> }
+            </div>
+            <div class="f w3">
+              <label for="slug">Slug</label>
+              <input id="slug" type="text" class="mono" maxlength="140" placeholder="gerado a partir do nome" formControlName="slug" [attr.aria-invalid]="!!mensagemErro('slug')" />
+              <span class="hint">Endereço do card na vitrine</span>
+              @if (mensagemErro('slug'); as m) { <span class="erro">{{ m }}</span> }
+            </div>
+            <div class="f w6">
+              <label for="descricaoCurta">Descrição curta</label>
+              <input id="descricaoCurta" type="text" maxlength="300" formControlName="descricaoCurta" />
+              <span class="hint">Opcional · aparece no card do grupo</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="sec">
+          <div class="sh">
+            <h2>Versões</h2>
+            <span>{{ versoes().length }} {{ versoes().length === 1 ? 'produto' : 'produtos' }} · drone e kit podem ficar juntos</span>
+          </div>
+          <div style="overflow-x: auto">
+            <table class="vt">
+              <thead>
+                <tr><th>Ordem</th><th>Produto</th><th>Tipo</th><th>Rótulo no seletor</th><th class="r">Preço</th><th>Status</th><th></th></tr>
+              </thead>
+              <tbody>
+                @for (v of versoes(); track v.idProduto) {
+                  <tr>
+                    <td data-l="Ordem" class="num">{{ v.ordem }}</td>
+                    <td>
+                      <div class="pc">
+                        <span class="thumb ph"></span>
+                        <div><b style="font-weight: 500">{{ v.nome || 'Sem nome' }}</b>@if (v.sku) {<span class="chip">{{ v.sku }}</span>}</div>
+                      </div>
+                    </td>
+                    <td data-l="Tipo">{{ nomeTipo(v) }}</td>
+                    <td data-l="Rótulo no seletor">{{ v.rotulo }}</td>
+                    <td data-l="Preço" class="r num" style="font-family: var(--display); font-weight: 300; font-size: 15px">{{ preco(v.preco) }}</td>
+                    <td data-l="Status"><span [class]="classeStatus(v)"><span>{{ v.status.nome }}</span></span></td>
+                    <td class="r"><a class="btn sm" [routerLink]="rotaProduto(v)">Editar</a></td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="7" style="color: var(--mute)">{{ modoEdicao() ? 'Nenhuma versão neste grupo.' : 'Salve o grupo e escolha-o no cadastro de cada produto.' }}</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+          <p class="note">
+            Rótulo, ordem e entrada no grupo se definem no cadastro de cada produto, no bloco “Página de venda”. O rótulo é
+            obrigatório e não se repete dentro do grupo. Tirar um produto do grupo não exclui o produto: ele volta a ter
+            página própria.
+          </p>
+        </section>
+      </div>
+
+      <aside class="rail">
+        <section class="card">
+          <div class="bd" style="padding-top: 18px">
+            <span class="lbl">Publicação</span>
+            <div style="margin-top: 12px">
+              <div class="f" style="grid-column: auto">
+                <label>Status <span class="req">*</span></label>
+                <div class="rad" role="radiogroup" aria-label="Status">
+                  <label><input type="radio" formControlName="ativo" [value]="true" />Ativo</label>
+                  <label><input type="radio" formControlName="ativo" [value]="false" />Inativo</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        @if (versoesAtivas().length) {
+          <section class="card">
+            <div class="bd" style="padding-top: 18px">
+              <span class="lbl">Seletor “Versão” na loja</span>
+              <div style="margin-top: 12px">
+                <div class="rad">
+                  @for (v of versoesAtivas(); track v.idProduto; let primeiro = $first) {
+                    <label><input type="radio" name="previaVersao" [checked]="primeiro" />{{ v.rotulo }} · {{ preco(v.preco) }}</label>
+                  }
+                </div>
+                <p class="note" style="margin: 10px 0 0">Cada versão tem URL própria, a do produto.</p>
+              </div>
+            </div>
+          </section>
+        }
+
+        <section class="card">
+          <div class="bd" style="padding-top: 18px">
+            <span class="lbl">Card na vitrine</span>
+            <div style="margin-top: 12px">
+              <div class="preview-card">
+                <div style="display: flex; justify-content: flex-end"><span class="lbl">{{ versoesAtivas().length }} {{ versoesAtivas().length === 1 ? 'versão' : 'versões' }}</span></div>
+                <div class="imgb"><span class="thumb ph" style="width: 72px; height: 72px"></span></div>
+                <b>{{ nomePrevia() }}</b>
+                <span class="slug">@for (v of versoesAtivas(); track v.idProduto; let ultimo = $last) {{{ v.rotulo }}@if (!ultimo) { · }}</span>
+                <div class="pp">
+                  <small style="display: block; font: 400 10.5px var(--mono); letter-spacing: 0.14em; color: var(--mute)">A PARTIR DE</small>{{ preco(grupo()?.precoAPartirDe ?? null) }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </div>
+  }
+
+  <div class="actionbar">
+    <div class="in gut">
+      <span class="msg">
+        @if (modoEdicao()) {
+          Grupo com <b>{{ versoesAtivas().length }} {{ versoesAtivas().length === 1 ? 'versão ativa' : 'versões ativas' }}</b>.
+        } @else {
+          Depois de salvar, escolha o grupo no cadastro de cada produto.
+        }
+      </span>
+      <a class="btn" routerLink="/admin/grupos">Cancelar</a>
+      @if (modoEdicao()) {
+        <button class="btn d" type="button" (click)="excluir()" [disabled]="excluindo() || salvando()">{{ excluindo() ? 'Excluindo…' : 'Excluir grupo' }}</button>
+      }
+      <button class="btn p" type="button" (click)="salvar()" [disabled]="salvando() || carregando()">{{ salvando() ? 'Salvando…' : 'Salvar grupo' }}</button>
+    </div>
+  </div>
+</main>

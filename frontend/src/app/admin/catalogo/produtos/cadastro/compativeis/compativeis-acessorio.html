@@ -1,68 +1,77 @@
-<div class="f full">
-  <label for="buscaCompativel">Compatível com</label>
-  <input
-    #campoBusca
-    id="buscaCompativel"
-    type="search"
-    autocomplete="off"
-    placeholder="Busque por nome ou SKU para vincular um produto"
-    [formControl]="busca"
-  />
-  @if (opcoes().length) {
-    <ul class="compat-opcoes" aria-label="Produtos encontrados">
-      @for (produto of opcoes(); track produto.id) {
-        <li>
-          <button type="button" (click)="vincular(produto)">
-            <span class="ink">{{ produto.nome || 'Sem nome (rascunho)' }}</span>
-            <span class="dim">{{ rotuloTipo(produto) }}</span>
+<section class="sec">
+  <div class="sh">
+    <h2>Compatível com</h2>
+    <span>{{ vinculos().length }} {{ vinculos().length === 1 ? 'produto vinculado' : 'produtos vinculados' }}</span>
+  </div>
+  <div class="list">
+    @for (vinculo of vinculos(); track vinculo.produto.id) {
+      <div class="li">
+        <span class="thumb ph"></span>
+        <div>
+          <div class="t">{{ vinculo.produto.nome || 'Sem nome (rascunho)' }}</div>
+          <div class="s">{{ rotuloTipo(vinculo.produto) }}</div>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center">
+          <span class="st" [class.ok]="vinculo.salvo" [class.amber]="!vinculo.salvo"
+            ><span>{{ vinculo.salvo ? 'Confirmado' : 'Salve para gravar' }}</span></span
+          >
+          <button
+            class="x"
+            type="button"
+            style="border: 0; background: none; color: var(--mute); cursor: pointer"
+            [attr.aria-label]="'Remover ' + (vinculo.produto.nome || 'produto')"
+            (click)="desvincular(vinculo.produto.id)"
+          >
+            ✕
           </button>
-        </li>
+        </div>
+      </div>
+    } @empty {
+      <p class="note" style="margin: 0">Nenhum produto vinculado.</p>
+    }
+  </div>
+
+  @if (buscando()) {
+    <div style="margin-top: 12px">
+      <label class="field-s grow">
+        <input
+          #campoBusca
+          type="search"
+          autocomplete="off"
+          placeholder="Busque por nome ou SKU"
+          aria-label="Buscar produto para vincular"
+          [formControl]="busca"
+        />
+      </label>
+      @if (opcoes().length) {
+        <div class="list" style="margin-top: 6px" aria-label="Produtos encontrados">
+          @for (produto of opcoes(); track produto.id) {
+            <button
+              type="button"
+              class="li"
+              style="width: 100%; border-left: 0; border-right: 0; border-bottom: 0; background: none; text-align: left; cursor: pointer"
+              (click)="vincular(produto)"
+            >
+              <span class="thumb ph"></span>
+              <span><span class="t" style="display: block">{{ produto.nome || 'Sem nome (rascunho)' }}</span
+                ><span class="s">{{ rotuloTipo(produto) }}</span></span
+              >
+              <span class="s">Vincular</span>
+            </button>
+          }
+        </div>
+      } @else if (buscou()) {
+        <p class="note">Nenhum produto encontrado para vincular.</p>
       }
-    </ul>
-  } @else if (buscou()) {
-    <span class="dim">Nenhum produto encontrado para vincular.</span>
+    </div>
+  } @else {
+    <button class="btn sm addrow" type="button" (click)="abrirBusca()">Vincular produto</button>
   }
   @if (erro()) {
-    <span class="warn">{{ erro() }}</span>
+    <p class="note" style="color: var(--warn)">{{ erro() }}</p>
   }
-</div>
-
-<div class="tbl compat-tabela">
-  <div class="trow head" [style.grid-template-columns]="grid">
-    <span>Produto compatível</span><span>Tipo</span><span>Vínculo</span><span></span>
-  </div>
-  @for (vinculo of vinculos(); track vinculo.produto.id) {
-    <div class="trow" [style.grid-template-columns]="grid">
-      <span class="ink compat-nome">{{ vinculo.produto.nome || 'Sem nome (rascunho)' }}</span>
-      <span class="dim">{{ rotuloTipo(vinculo.produto) }}</span>
-      <span class="dim">{{ vinculo.salvo ? 'Confirmado' : 'Salve para gravar' }}</span>
-      <button
-        type="button"
-        class="compat-x"
-        [attr.aria-label]="'Desvincular ' + (vinculo.produto.nome || 'produto')"
-        (click)="desvincular(vinculo.produto.id)"
-      >
-        ✕
-      </button>
-    </div>
-  } @empty {
-    <div class="trow">
-      <span class="dim">Nenhum produto vinculado.</span>
-    </div>
-  }
-</div>
-
-<div class="compat-rodape">
-  <span class="dim">
-    {{ vinculos().length }}
-    {{ vinculos().length === 1 ? 'produto vinculado' : 'produtos vinculados' }}
-    · o vínculo é recíproco e aparece nos dois cadastros
-  </span>
-  <button type="button" class="sbtn sm" (click)="focarBusca()">+ Vincular produto</button>
-</div>
-<p class="legend">
-  Compatibilidade é relação muitos-para-muitos entre <span class="chip">Acessorio</span> e
-  <span class="chip">Produto</span> (D17). Como <span class="chip">Acessorio</span> herda de
-  <span class="chip">Produto</span>, o mesmo vínculo cobre acessório-drone (bateria e modelo) e
-  acessório-acessório (carregador e bateria).
-</p>
+  <p class="note">
+    Compatibilidade é relação muitos-para-muitos entre <code>Acessorio</code> e <code>Produto</code> (D17). O
+    vínculo é recíproco e alimenta os acessórios compatíveis na página do drone e as sugestões do carrinho.
+  </p>
+</section>

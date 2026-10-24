@@ -81,7 +81,7 @@ class ChamadoResourceTest {
     void pedidoDeOutroClienteResponde400() {
         Fixtures.Cliente dono = Fixtures.novoCliente();
         Fixtures.Cliente outro = Fixtures.novoCliente();
-        long pedido = Fixtures.pedidoPendente(dono, Fixtures.criarAcessorio(100.0, 5).idVariante(), 1, Fixtures.PIX);
+        long pedido = Fixtures.pedidoPendente(dono, Fixtures.criarAcessorio(100.0, 5).id(), 1, Fixtures.PIX);
         abrir(outro.token(), pedido).statusCode(400).body("errors.field", hasItem("idPedido"));
     }
 

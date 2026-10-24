@@ -18,6 +18,7 @@ public final class FornecedorResponseMapper {
                 fornecedor.getEmailContato(),
                 fornecedor.getTelefoneContato(),
                 EnderecoResponseMapper.toResponse(fornecedor.getEndereco()),
-                fornecedor.getStatus());
+                fornecedor.getStatus(),
+                fornecedor.getQuantidadeProdutos());
     }
 }

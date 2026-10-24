@@ -56,7 +56,7 @@ describe('PromocaoService', () => {
       valorDesconto: null,
       valorMinimoCarrinho: null,
       ativa: true,
-      idsVariantes: [3],
+      idsProdutos: [3],
     };
 
     service.criar(dto).subscribe();

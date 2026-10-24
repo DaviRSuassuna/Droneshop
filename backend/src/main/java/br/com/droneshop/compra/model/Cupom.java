@@ -7,7 +7,7 @@ import java.util.List;
 
 import br.com.droneshop.catalogo.model.Categoria;
 import br.com.droneshop.catalogo.model.Marca;
-import br.com.droneshop.catalogo.model.VarianteProduto;
+import br.com.droneshop.catalogo.model.Produto;
 import br.com.droneshop.model.DefaultEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -62,10 +62,10 @@ public class Cupom extends DefaultEntity {
     private List<Marca> marcas = new ArrayList<>();
 
     @ManyToMany
-    @JoinTable(name = "cupom_variante",
+    @JoinTable(name = "cupom_produto",
             joinColumns = @JoinColumn(name = "id_cupom"),
-            inverseJoinColumns = @JoinColumn(name = "id_variante"))
-    private List<VarianteProduto> variantes = new ArrayList<>();
+            inverseJoinColumns = @JoinColumn(name = "id_produto"))
+    private List<Produto> produtos = new ArrayList<>();
 
     @OneToMany(mappedBy = "cupom")
     private List<UsoCupom> usos = new ArrayList<>();
@@ -92,7 +92,7 @@ public class Cupom extends DefaultEntity {
     public void setCategorias(List<Categoria> categorias) { this.categorias = categorias; }
     public List<Marca> getMarcas() { return marcas; }
     public void setMarcas(List<Marca> marcas) { this.marcas = marcas; }
-    public List<VarianteProduto> getVariantes() { return variantes; }
-    public void setVariantes(List<VarianteProduto> variantes) { this.variantes = variantes; }
+    public List<Produto> getProdutos() { return produtos; }
+    public void setProdutos(List<Produto> produtos) { this.produtos = produtos; }
     public List<UsoCupom> getUsos() { return usos; }
 }

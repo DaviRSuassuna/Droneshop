@@ -9,6 +9,7 @@ public final class CategoriaResponseMapper {
     }
 
     public static CategoriaResponseDTO toResponse(Categoria categoria) {
+        if (categoria == null) return null;
         return new CategoriaResponseDTO(
                 categoria.getId(),
                 categoria.getNome(),
@@ -18,6 +19,7 @@ public final class CategoriaResponseMapper {
                 categoria.getStatus(),
                 categoria.getTipo(),
                 categoria.isExibirMenu(),
-                categoria.getIconeUrl());
+                categoria.getIconeUrl(),
+                categoria.getQuantidadeProdutos());
     }
 }

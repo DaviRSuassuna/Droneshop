@@ -1,8 +1,8 @@
+import { baixarArquivo } from '../../../shared/arquivo';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { AdminNav } from '../../../layout/admin/admin-nav/admin-nav';
 import { PedidoService } from '../../../core/services/pedido.service';
 import {
   EXIBICAO_STATUS_PEDIDO,
@@ -23,11 +23,10 @@ const FLUXO_NORMAL: readonly number[] = [
   STATUS_PEDIDO.ENTREGUE,
 ];
 
-/** Detalhe do pedido no admin. Rastreio e etiqueta chegam com a entrega (#31). */
+/** Detalhe do pedido no admin. Rastreio chega com a entrega (#31); etiqueta local usa o endereço congelado. */
 @Component({
   selector: 'app-pedido-detalhe',
-  standalone: true,
-  imports: [RouterLink, AdminNav, DatePipe, CepPipe],
+  imports: [RouterLink, DatePipe, CepPipe],
   templateUrl: './pedido-detalhe.html',
   styleUrl: './pedido-detalhe.scss',
 })
@@ -61,6 +60,27 @@ export class PedidoDetalhe implements OnInit {
     style: 'currency',
     currency: 'BRL',
   });
+
+  readonly gerandoEtiqueta = signal(false);
+
+  imprimirEtiqueta(): void {
+    const pedido = this.pedido();
+    if (!pedido || this.gerandoEtiqueta()) return;
+    this.gerandoEtiqueta.set(true);
+    this.erroAcao.set(null);
+    this.pedidoService.etiqueta(pedido.id).subscribe({
+      next: (blob) => {
+        this.gerandoEtiqueta.set(false);
+        baixarArquivo('etiqueta-' + pedido.id + '.pdf', blob);
+      },
+      error: () => {
+        this.gerandoEtiqueta.set(false);
+        this.erroAcao.set(
+          'Não foi possível gerar a etiqueta. Confira se o pedido tem endereço de entrega.',
+        );
+      },
+    });
+  }
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -100,7 +120,7 @@ export class PedidoDetalhe implements OnInit {
   }
 
   corStatus(id: number): string {
-    return EXIBICAO_STATUS_PEDIDO[id]?.cor ?? 'var(--dim2)';
+    return EXIBICAO_STATUS_PEDIDO[id]?.cor ?? 'var(--mute)';
   }
 
   moeda(valor: number | null | undefined): string {

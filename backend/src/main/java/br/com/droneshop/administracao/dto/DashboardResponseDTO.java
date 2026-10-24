@@ -23,7 +23,6 @@ public record DashboardResponseDTO(
     }
 
     public record EstoqueBaixo(
-        EstoqueResponseDTO.Variante variante,
         EstoqueResponseDTO.Produto produto,
         int disponivel,
         int estoqueMinimo

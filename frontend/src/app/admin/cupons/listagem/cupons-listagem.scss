@@ -1,12 +1,56 @@
-:host { display: block; }
-.coupon-title { display: flex; align-items: baseline; gap: 12px; }
-.coupon-list { display: flex; flex-direction: column; gap: 16px; }
-.coupon-row { grid-template-columns: minmax(0, 1fr) 130px 200px 170px 118px 44px; }
-.row-menu { justify-self: end; color: var(--mute); }
-.underlined { text-decoration: underline; }
+:host {
+  display: block;
+  min-width: 0;
+}
+.codigo {
+  font-size: 12.5px;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.tipo {
+  margin-top: 4px;
+}
+.valor {
+  font: 300 16px var(--display);
+}
+.vigencia {
+  font-size: 12.5px;
+  color: var(--ink2);
+}
+.meter {
+  width: 110px;
+  max-width: 100%;
+  margin-left: 0;
+}
+.meter i {
+  background: var(--amber);
+}
+.meter i.esgotado {
+  background: var(--warn);
+}
+.info a {
+  text-decoration: underline;
+}
+@media (max-width: 800px) {
+  .tw td .usos .num {
+    white-space: normal;
+  }
+  .tw td.vigencia {
+    white-space: normal;
+  }
+  .tw td.identificacao {
+    grid-column: 1 / -1;
+    padding-right: 44px !important;
+    margin-bottom: 6px !important;
+  }
+}
 
-@media (max-width: 700px) {
-  .coupon-row { grid-template-columns: minmax(0, 1fr) 90px 90px; }
-  .coupon-row > :nth-child(3), .coupon-row > :nth-child(4) { display: none; }
-  .coupon-row > :nth-child(5) { justify-self: end; }
+.exportar {
+  display: flex;
+  margin-top: 8px;
+  max-width: 100%;
+}
+
+.usos {
+  width: 100%;
 }

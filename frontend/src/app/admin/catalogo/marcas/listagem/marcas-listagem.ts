@@ -1,6 +1,6 @@
+import { baixarArquivo } from '../../../../shared/arquivo';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AdminNav } from '../../../../layout/admin/admin-nav/admin-nav';
 import { MarcaService } from '../../../../core/services/marca.service';
 import { Marca } from '../../../../core/models/marca.model';
 import { STATUS_PUBLICACAO, StatusRef } from '../../../../core/models/status.model';
@@ -9,8 +9,7 @@ const TAMANHO_PAGINA = 10;
 
 @Component({
   selector: 'app-marcas-listagem',
-  standalone: true,
-  imports: [RouterLink, AdminNav],
+  imports: [RouterLink],
   templateUrl: './marcas-listagem.html',
   styleUrl: './marcas-listagem.scss',
 })
@@ -125,25 +124,15 @@ export class MarcasListagem implements OnInit {
   }
 
   exportarCsv(): void {
-    const linhas = [
-      ['Nome', 'Slug', 'Pais de origem', 'Status', 'Destaque na home'],
-      ...this.marcasFiltradas().map((m) => [
-        m.nome,
-        m.slug,
-        m.paisOrigem,
-        this.statusLabel(m.status),
-        m.destacarHome ? 'Sim' : 'Nao',
-      ]),
-    ];
-    const csv = linhas
-      .map((linha) => linha.map((v) => `"${v.replace(/"/g, '""')}"`).join(','))
-      .join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'marcas.csv';
-    a.click();
-    URL.revokeObjectURL(url);
+    this.marcaService
+      .exportar({
+        busca: this.termoBusca(),
+        idStatus: this.filtroStatus(),
+        paisOrigem: this.filtroPais(),
+      })
+      .subscribe({
+        next: (blob) => baixarArquivo('marcas.csv', blob),
+        error: () => this.erro.set('Não foi possível exportar o CSV.'),
+      });
   }
 }

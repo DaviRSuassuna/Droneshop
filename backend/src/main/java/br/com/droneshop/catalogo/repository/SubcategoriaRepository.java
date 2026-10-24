@@ -24,7 +24,7 @@ public class SubcategoriaRepository implements PanacheRepository<Subcategoria> {
 
     @Override
     public PanacheQuery<Subcategoria> findAll() {
-        return find("SELECT s FROM Subcategoria s ORDER BY s.categoria.ordemExibicao, s.categoria.nome, s.ordemExibicao, s.nome");
+        return find("SELECT s FROM Subcategoria s LEFT JOIN s.categoria c ORDER BY c.ordemExibicao, c.nome, s.ordemExibicao, s.nome");
     }
 
 }

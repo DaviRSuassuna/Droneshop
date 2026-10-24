@@ -37,7 +37,7 @@ class TermoBuscadoResourceTest {
         Fixtures.Arvore a = Fixtures.arvore();
         String s = Dados.sufixo();
         Fixtures.criar("/drones", Fixtures.drone("Fálcon " + s, a,
-                Fixtures.lista(Fixtures.variante("FA-" + s.toUpperCase(), 100.0, 1))));
+                Fixtures.dadosComerciais("FA-" + s.toUpperCase(), 100.0, 1)));
         anonimo().queryParam("q", "FALCON " + s.toUpperCase()).when().get("/loja/busca")
                 .then().statusCode(200).body("totalItems", equalTo(1));
     }
@@ -64,7 +64,7 @@ class TermoBuscadoResourceTest {
         Fixtures.Arvore a = Fixtures.arvore();
         String s = Dados.sufixo();
         Fixtures.criar("/drones", Fixtures.drone("Achavel " + s, a,
-                Fixtures.lista(Fixtures.variante("AH-" + s.toUpperCase(), 100.0, 1))));
+                Fixtures.dadosComerciais("AH-" + s.toUpperCase(), 100.0, 1)));
         buscar("achavel " + s);
         org.junit.jupiter.api.Assertions.assertTrue(relatorio(true).stream()
                 .noneMatch(i -> ("achavel " + s).equals(i.get("termo"))));

@@ -29,7 +29,7 @@ class RastreioResourceTest {
     }
 
     static long pedidoEnviado(Fixtures.Cliente c) {
-        long pedido = Fixtures.pedidoPago(c, Fixtures.criarAcessorio(100.0, 5).idVariante(), 1);
+        long pedido = Fixtures.pedidoPago(c, Fixtures.criarAcessorio(100.0, 5).id(), 1);
         Fixtures.mudarStatus(pedido, Fixtures.PEDIDO_SEPARACAO).then().statusCode(204);
         Fixtures.mudarStatus(pedido, Fixtures.PEDIDO_ENVIADO).then().statusCode(204);
         return pedido;
@@ -52,7 +52,7 @@ class RastreioResourceTest {
     @Test
     void pedidoAindaNaoEnviadoResponde409() {
         Fixtures.Cliente c = Fixtures.novoCliente();
-        long pedido = Fixtures.pedidoPago(c, Fixtures.criarAcessorio(100.0, 5).idVariante(), 1);
+        long pedido = Fixtures.pedidoPago(c, Fixtures.criarAcessorio(100.0, 5).id(), 1);
         evento(pedido, "Cedo demais", "2026-11-01T10:00:00", 409);
     }
 

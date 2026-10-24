@@ -24,8 +24,8 @@ import io.restassured.http.ContentType;
 @Tag("issue-22")
 class ListaDesejosResourceTest {
 
-    static void favoritar(String token, long idVariante, int status) {
-        como(token).contentType(ContentType.JSON).body(Map.of("idVariante", idVariante))
+    static void favoritar(String token, long idProduto, int status) {
+        como(token).contentType(ContentType.JSON).body(Map.of("idProduto", idProduto))
                 .when().post("/conta/desejos").then().statusCode(status);
     }
 
@@ -33,32 +33,32 @@ class ListaDesejosResourceTest {
     void adicionaSemDuplicarERemove() {
         Fixtures.Cliente c = Fixtures.novoCliente();
         Fixtures.ProdutoCriado p = Fixtures.criarDrone(1000.0, 1);
-        favoritar(c.token(), p.idVariante(), 204);
-        favoritar(c.token(), p.idVariante(), 204);
+        favoritar(c.token(), p.id(), 204);
+        favoritar(c.token(), p.id(), 204);
         como(c.token()).when().get("/conta/desejos")
                 .then().statusCode(200)
                 .body("$", hasSize(1))
-                .body("[0].variante.id", equalTo((int) p.idVariante()))
+                .body("[0].produto.id", equalTo((int) p.id()))
                 .body("[0].produto.slug", equalTo(p.slug()));
-        como(c.token()).when().delete("/conta/desejos/{id}", p.idVariante()).then().statusCode(204);
+        como(c.token()).when().delete("/conta/desejos/{id}", p.id()).then().statusCode(204);
         como(c.token()).when().get("/conta/desejos").then().statusCode(200).body("$", hasSize(0));
-        como(c.token()).when().delete("/conta/desejos/{id}", p.idVariante()).then().statusCode(404);
+        como(c.token()).when().delete("/conta/desejos/{id}", p.id()).then().statusCode(404);
     }
 
     @Test
     void listaEDoClienteLogado() {
         Fixtures.Cliente dono = Fixtures.novoCliente();
         Fixtures.Cliente outro = Fixtures.novoCliente();
-        favoritar(dono.token(), Fixtures.criarDrone(1000.0, 1).idVariante(), 204);
+        favoritar(dono.token(), Fixtures.criarDrone(1000.0, 1).id(), 204);
         como(outro.token()).when().get("/conta/desejos").then().statusCode(200).body("$", hasSize(0));
         anonimo().when().get("/conta/desejos").then().statusCode(401);
     }
 
     @Test
-    void varianteInexistenteResponde400() {
+    void produtoInexistenteResponde400() {
         Fixtures.Cliente c = Fixtures.novoCliente();
-        como(c.token()).contentType(ContentType.JSON).body(Map.of("idVariante", Dados.ID_INEXISTENTE))
+        como(c.token()).contentType(ContentType.JSON).body(Map.of("idProduto", Dados.ID_INEXISTENTE))
                 .when().post("/conta/desejos")
-                .then().statusCode(400).body("errors.field", hasItem("idVariante"));
+                .then().statusCode(400).body("errors.field", hasItem("idProduto"));
     }
 }

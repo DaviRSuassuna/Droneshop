@@ -1,3 +1,4 @@
+import { STATUS_PRODUTO } from '../../../core/models/status.model';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -6,26 +7,31 @@ import { forkJoin, Observable } from 'rxjs';
 import { Categoria } from '../../../core/models/categoria.model';
 import { Cupom, CupomDTO, TIPO_DESCONTO_CUPOM } from '../../../core/models/cupom.model';
 import { Marca } from '../../../core/models/marca.model';
-import { VarianteListagem } from '../../../core/models/produto.model';
+import { Produto } from '../../../core/models/produto.model';
 import { CategoriaService } from '../../../core/services/categoria.service';
 import { CupomService } from '../../../core/services/cupom.service';
 import { MarcaService } from '../../../core/services/marca.service';
-import { VarianteService } from '../../../core/services/variante.service';
-import { AdminNav } from '../../../layout/admin/admin-nav/admin-nav';
+import { ProdutoService } from '../../../core/services/produto.service';
 
+/** Rascunho e Pausado gravam ativo=false (o cupom não tem status próprio); Ativo grava ativo=true. */
+type StatusCupom = 'RASCUNHO' | 'ATIVO' | 'PAUSADO';
+
+/**
+ * Cadastro de cupom (#15). Restrições por categoria, marca e produto (só ATIVOS, D40).
+ * Descrição interna, "primeiro pedido", "acumula com promoções" e "exibir em Ofertas" do
+ * protótipo ainda não têm API e ficam de fora (ver e2e/conformidade/telas.ts).
+ */
 @Component({
   selector: 'app-cupom-cadastro',
-  standalone: true,
-  imports: [AdminNav, ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './cupom-cadastro.html',
-  styleUrl: './cupom-cadastro.scss',
 })
 export class CupomCadastro implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly cupomService = inject(CupomService);
   private readonly categoriaService = inject(CategoriaService);
   private readonly marcaService = inject(MarcaService);
-  private readonly varianteService = inject(VarianteService);
+  private readonly produtoService = inject(ProdutoService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
@@ -35,26 +41,44 @@ export class CupomCadastro implements OnInit {
   readonly erro = signal<string | null>(null);
   readonly categorias = signal<Categoria[]>([]);
   readonly marcas = signal<Marca[]>([]);
-  readonly variantes = signal<VarianteListagem[]>([]);
+  readonly produtos = signal<Produto[]>([]);
   readonly idsCategorias = signal<number[]>([]);
   readonly idsMarcas = signal<number[]>([]);
-  readonly idsVariantes = signal<number[]>([]);
+  readonly idsProdutos = signal<number[]>([]);
+  // os já salvos no cupom, para o chip aparecer mesmo se o produto saiu do select
+  private readonly produtosSalvos = signal<{ id: number; nome: string; sku: string | null }[]>([]);
+  readonly buscaProduto = signal('');
   readonly modoEdicao = computed(() => this.cupomId() !== null);
+  readonly TIPO = TIPO_DESCONTO_CUPOM;
+
+  readonly categoriasEscolhidas = computed(() => this.categorias().filter((c) => this.idsCategorias().includes(c.id)));
+  readonly marcasEscolhidas = computed(() => this.marcas().filter((m) => this.idsMarcas().includes(m.id)));
+  readonly produtosEscolhidos = computed(() =>
+    this.idsProdutos().map((id) => {
+      const p = this.produtos().find((x) => x.id === id) ?? this.produtosSalvos().find((x) => x.id === id);
+      return { id, nome: p?.nome ?? 'Produto indisponível', sku: p?.sku ?? null };
+    }),
+  );
+  /** Até 8 produtos que batem com a busca (nome ou SKU) e ainda não estão no cupom. */
+  readonly resultadosProduto = computed(() => {
+    const termo = this.buscaProduto().trim().toLowerCase();
+    if (termo.length < 2) return [];
+    return this.produtos()
+      .filter((p) => !this.idsProdutos().includes(p.id))
+      .filter((p) => (p.nome ?? '').toLowerCase().includes(termo) || (p.sku ?? '').toLowerCase().includes(termo))
+      .slice(0, 8);
+  });
 
   readonly form = this.fb.nonNullable.group({
     codigo: ['', Validators.required],
     idTipoDesconto: [TIPO_DESCONTO_CUPOM.PERCENTUAL as number, Validators.required],
     valor: ['', Validators.required],
     valorMinimo: [''],
-    descricao: [''],
     dataInicio: ['', Validators.required],
     dataFim: [''],
     limiteTotalUso: [''],
     limitePorCliente: [''],
-    primeiroPedido: [false],
-    acumulaPromocoes: [false],
-    ativo: [true],
-    exibirOfertas: [false],
+    status: ['RASCUNHO' as StatusCupom],
   });
 
   ngOnInit(): void {
@@ -66,16 +90,16 @@ export class CupomCadastro implements OnInit {
     forkJoin({
       categorias: this.categoriaService.listar(0, 1000),
       marcas: this.marcaService.listar(0, 1000),
-      variantes: this.varianteService.listar({ ativa: true }, 0, 1000),
+      produtos: this.produtoService.listar({ idStatus: STATUS_PRODUTO.ATIVO }, 0, 1000),
     }).subscribe({
-      next: ({ categorias, marcas, variantes }) => {
+      next: ({ categorias, marcas, produtos }) => {
         this.categorias.set(categorias.items ?? []);
         this.marcas.set(marcas.items ?? []);
-        this.variantes.set(variantes.items ?? []);
+        this.produtos.set(produtos.items ?? []);
         if (this.cupomId() !== null) this.carregarCupom(this.cupomId()!);
       },
       error: () => {
-        this.erro.set('Não foi possível carregar as opções de categoria, marca e variante.');
+        this.erro.set('Não foi possível carregar as opções de categoria, marca e produto.');
         this.carregando.set(false);
       },
     });
@@ -90,12 +114,24 @@ export class CupomCadastro implements OnInit {
     return faltantes;
   }
 
-  aoSelecionar(event: Event, destino: 'categorias' | 'marcas' | 'variantes'): void {
+  /** O select adiciona um item por vez; cada escolhido vira um chip removível. */
+  adicionar(event: Event, destino: 'categorias' | 'marcas'): void {
     const select = event.target as HTMLSelectElement;
-    const ids = Array.from(select.selectedOptions).map((option) => Number(option.value));
-    if (destino === 'categorias') this.idsCategorias.set(ids);
-    if (destino === 'marcas') this.idsMarcas.set(ids);
-    if (destino === 'variantes') this.idsVariantes.set(ids);
+    const id = Number(select.value);
+    select.value = '';
+    if (!id) return;
+    const alvo = destino === 'categorias' ? this.idsCategorias : this.idsMarcas;
+    if (!alvo().includes(id)) alvo.update((ids) => [...ids, id]);
+  }
+
+  adicionarProduto(id: number): void {
+    if (!this.idsProdutos().includes(id)) this.idsProdutos.update((ids) => [...ids, id]);
+    this.buscaProduto.set('');
+  }
+
+  remover(destino: 'categorias' | 'marcas' | 'produtos', id: number): void {
+    const alvo = { categorias: this.idsCategorias, marcas: this.idsMarcas, produtos: this.idsProdutos }[destino];
+    alvo.update((ids) => ids.filter((x) => x !== id));
   }
 
   previewDesconto(): string {
@@ -114,14 +150,11 @@ export class CupomCadastro implements OnInit {
     return this.moeda(Math.max(0, subtotal - desconto));
   }
 
-  idsParaSelect(ids: number[]): string[] {
-    return ids.map((id) => String(id));
-  }
-
   moeda(valor: number): string {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
   }
 
+  /** "Salvar rascunho" grava inativo; "Ativar cupom" grava ativo; o status da lateral vale para os outros casos. */
   salvar(ativar = false): void {
     this.erro.set(null);
     const values = this.form.getRawValue();
@@ -163,10 +196,10 @@ export class CupomCadastro implements OnInit {
       valorMinimo,
       limiteTotalUso,
       limitePorCliente,
-      ativo: ativar || values.ativo,
+      ativo: ativar || values.status === 'ATIVO',
       idsCategorias: this.idsCategorias(),
       idsMarcas: this.idsMarcas(),
-      idsVariantes: this.idsVariantes(),
+      idsProdutos: this.idsProdutos(),
     };
     this.salvando.set(true);
     const id = this.cupomId();
@@ -198,11 +231,12 @@ export class CupomCadastro implements OnInit {
           dataFim: cupom.dataFim ? this.dataParaInput(cupom.dataFim) : '',
           limiteTotalUso: cupom.limiteTotalUso == null ? '' : String(cupom.limiteTotalUso),
           limitePorCliente: cupom.limitePorCliente == null ? '' : String(cupom.limitePorCliente),
-          ativo: cupom.ativo,
+          status: cupom.ativo ? 'ATIVO' : 'PAUSADO',
         });
         this.idsCategorias.set(cupom.categorias.map((item) => item.id));
         this.idsMarcas.set(cupom.marcas.map((item) => item.id));
-        this.idsVariantes.set(cupom.variantes.map((item) => item.id));
+        this.produtosSalvos.set(cupom.produtos.map((p) => ({ id: p.id, nome: p.nome ?? 'Produto', sku: p.sku ?? null })));
+        this.idsProdutos.set(cupom.produtos.map((item) => item.id));
         this.carregando.set(false);
       },
       error: () => {

@@ -1,5 +1,7 @@
 package br.com.droneshop.catalogo.service;
 
+import java.util.HashSet;
+import br.com.droneshop.catalogo.dto.CategoriaOrdemRequestDTO;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +32,16 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     @Inject
     ProdutoRepository produtoRepository;
+
+    @Override
+    @Transactional
+    public void reordenar(CategoriaOrdemRequestDTO dto) {
+        if (new HashSet<>(dto.ids()).size() != dto.ids().size())
+            throw ValidationException.of("ids", "A categoria não pode se repetir na ordem (back).");
+        // Resolve tudo antes de alterar: id inexistente não deixa uma ordem parcial.
+        List<Categoria> categorias = dto.ids().stream().map(this::buscarCategoriaOuFalhar).toList();
+        for (int i = 0; i < categorias.size(); i++) categorias.get(i).setOrdemExibicao(i + 1);
+    }
 
     @Override
     @Transactional
@@ -135,6 +147,9 @@ public class CategoriaServiceImpl implements CategoriaService {
         TipoProduto tipo = TipoProduto.valueOf(idTipo);
         if (idTipo != null && tipo == null)
             throw ValidationException.of("idTipo", "Tipo de produto não encontrado.");
+        // kit entra em subcategoria de qualquer tipo; a categoria e so de drones ou de acessorios
+        if (tipo == TipoProduto.KIT)
+            throw ValidationException.of("idTipo", "Escolha se a categoria é de drones ou de acessórios (back).");
         return tipo;
     }
 

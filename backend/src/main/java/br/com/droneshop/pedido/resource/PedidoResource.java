@@ -1,5 +1,8 @@
 package br.com.droneshop.pedido.resource;
 
+import br.com.droneshop.pedido.service.EtiquetaPedidoService;
+import java.util.Arrays;
+import br.com.droneshop.util.Csv;
 import java.util.List;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -44,6 +47,28 @@ public class PedidoResource {
 
     @Inject
     JsonWebToken jwt;
+
+    @Inject
+    EtiquetaPedidoService etiquetaService;
+
+    @GET
+    @Path("/{id}/etiqueta")
+    @Produces("application/pdf")
+    public Response etiqueta(@PathParam("id") Long id) {
+        return Response.ok(etiquetaService.gerar(id), "application/pdf")
+                .header("Content-Disposition", "attachment; filename=\"etiqueta-" + id + ".pdf\"").build();
+    }
+
+    @GET
+    @Path("/exportar")
+    @Produces("text/csv")
+    public Response exportar(@QueryParam("idStatus") String idStatus, @QueryParam("dataInicio") String dataInicio,
+            @QueryParam("dataFim") String dataFim, @QueryParam("busca") String busca) {
+        var pagina = buscarTodos(idStatus, dataInicio, dataFim, busca, 0, Integer.MAX_VALUE);
+        return Csv.resposta("pedidos.csv", List.of("Pedido", "Cliente", "Data", "Itens", "Total", "Status"),
+                pagina.items().stream().map(p -> Arrays.<Object>asList(p.numero(), p.cliente().nome(),
+                        p.dataCadastro(), p.quantidadeItens(), p.valorTotal(), p.status().getNome())));
+    }
 
     // datas sobre dataCadastro, inclusivas (AAAA-MM-DD)
     @GET

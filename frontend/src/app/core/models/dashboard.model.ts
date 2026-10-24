@@ -1,9 +1,8 @@
 import { ItemEstoque } from './estoque.model';
 import { PedidoListagem, ResumoStatusPedido } from './pedido.model';
 
-/** Variante abaixo do estoque mínimo (mesma regra de GET /estoque?situacao=ABAIXO_MINIMO). */
+/** Produto abaixo do estoque mínimo (mesma regra de GET /estoque?situacao=ABAIXO_MINIMO). */
 export interface EstoqueBaixo {
-  variante: ItemEstoque['variante'];
   produto: ItemEstoque['produto'];
   disponivel: number;
   estoqueMinimo: number;

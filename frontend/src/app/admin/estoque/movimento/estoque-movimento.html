@@ -1,210 +1,154 @@
-<app-admin-nav />
-
-<div class="pad cols">
-  <div class="main">
+<main class="gut">
+  <div class="ph">
     <div>
-      <h1 class="h1 big">Novo movimento de estoque</h1>
-      <div class="crumb">
-        Operações · <a routerLink="/admin/estoque">Estoque</a> · Novo movimento
-      </div>
+      <div class="crumb"><a routerLink="/admin/estoque">← Estoque</a><span>·</span><span>Novo movimento</span></div>
+      <h1>Novo movimento de estoque</h1>
     </div>
-
-    @if (erroGeral()) {
-      <div class="card p" style="border-color: var(--warn-b)" role="alert">
-        <span class="warn">{{ erroGeral() }}</span>
-      </div>
-    }
-    @if (sucesso()) {
-      <div class="card p" role="status">
-        <span style="color: var(--ok)">{{ sucesso() }}</span>
-      </div>
-    }
-
-    <section class="card p" [formGroup]="form">
-      <div class="card-h">
-        <span class="card-t">Movimento</span>
-        <span class="card-n">Lançamento manual</span>
-      </div>
-      <div class="g2">
-        <div class="f full">
-          <label for="idVariante">Variante <span class="req">*</span></label>
-          <select id="idVariante" formControlName="idVariante">
-            <option [ngValue]="null">Selecione a variante pelo SKU</option>
-            @for (v of variantes(); track v.variante.id) {
-              <option [ngValue]="v.variante.id">{{ rotuloVariante(v) }}</option>
-            }
-          </select>
-          @if (resolveErrorMessage('idVariante'); as mensagem) {
-            <span class="warn">{{ mensagem }}</span>
-          }
-        </div>
-        <div class="f">
-          <label for="idTipo">Tipo <span class="req">*</span></label>
-          <select id="idTipo" formControlName="idTipo">
-            @for (t of tipos; track t.id) {
-              <option [ngValue]="t.id">{{ t.rotulo }}</option>
-            }
-          </select>
-          @if (resolveErrorMessage('idTipo'); as mensagem) {
-            <span class="warn">{{ mensagem }}</span>
-          }
-        </div>
-        <div class="f">
-          <label for="quantidade">Quantidade <span class="req">*</span></label>
-          <input
-            id="quantidade"
-            type="text"
-            inputmode="numeric"
-            [placeholder]="ehAjuste() ? 'Saldo contado no inventário' : 'Ex: 20'"
-            formControlName="quantidade"
-          />
-          @if (resolveErrorMessage('quantidade'); as mensagem) {
-            <span class="warn">{{ mensagem }}</span>
-          }
-        </div>
-        <div class="f">
-          <label for="notaFiscal">Nota fiscal de entrada</label>
-          <input
-            id="notaFiscal"
-            type="text"
-            maxlength="30"
-            placeholder="Número · opcional"
-            formControlName="notaFiscal"
-          />
-          @if (resolveErrorMessage('notaFiscal'); as mensagem) {
-            <span class="warn">{{ mensagem }}</span>
-          }
-        </div>
-        <div class="f">
-          <label for="idFornecedor">Fornecedor</label>
-          <select id="idFornecedor" formControlName="idFornecedor">
-            <option [ngValue]="null">Não se aplica</option>
-            @for (f of fornecedores(); track f.id) {
-              <option [ngValue]="f.id">{{ f.razaoSocial }}</option>
-            }
-          </select>
-        </div>
-        <div class="f full">
-          <label for="observacao"
-            >Observação
-            @if (observacaoObrigatoria()) {
-              <span class="req">*</span>
-            }
-          </label>
-          <textarea
-            id="observacao"
-            maxlength="500"
-            placeholder="Justificativa do movimento. Obrigatória em ajuste e perda."
-            formControlName="observacao"
-          ></textarea>
-          @if (resolveErrorMessage('observacao'); as mensagem) {
-            <span class="warn">{{ mensagem }}</span>
-          }
-        </div>
-      </div>
-      <p class="legend">
-        Movimento é <strong>append-only</strong>: não existe editar nem excluir. Um lançamento
-        errado se corrige com um novo movimento de ajuste em sentido contrário.
-      </p>
-    </section>
-
-    <section class="card p">
-      <div class="card-h">
-        <span class="card-t">Últimos movimentos desta variante</span>
-        @if (varianteSelecionada(); as v) {
-          <span class="card-n">{{ v.produto.nome }} · {{ v.variante.nome }}</span>
-        }
-      </div>
-      <div class="tbl" [class.is-loading]="carregandoUltimos()">
-        <div class="trow head ult">
-          <span>Data</span>
-          <span>Tipo</span>
-          <span>Qtd.</span>
-          <span>Saldo</span>
-          <span class="m-autor">Autor</span>
-        </div>
-        @for (m of ultimos(); track m.id) {
-          <div class="trow ult">
-            <span class="dim">{{ m.dataCadastro | date: 'dd/MM HH:mm' }}</span>
-            <span class="ink m-tipo">{{ rotuloTipo(m) }}</span>
-            <span class="dim">{{ variacao(m) }}</span>
-            <span class="ink">{{ m.saldoResultante }}</span>
-            <span class="dim m-autor">{{ autor(m) }}</span>
-          </div>
-        } @empty {
-          @if (!carregandoUltimos()) {
-            <div class="empty">
-              @if (form.controls.idVariante.value) {
-                <b>Nenhum movimento desta variante.</b>
-              } @else {
-                <b>Selecione uma variante</b>para ver os últimos movimentos.
-              }
-            </div>
-          }
-        }
-      </div>
-    </section>
+    <div class="acts"><span class="st mute"><span>Lançado com o seu usuário (MANUAL)</span></span></div>
   </div>
 
-  <aside class="rail">
-    <section class="card p2">
-      <div class="eyebrow">Saldo da variante</div>
-      <div class="stack" style="gap: 11px">
-        @let v = varianteSelecionada();
-        <div class="kv">
-          <span class="dim">Físico</span
-          ><span class="ink">{{ v ? (v.estoqueFisico ?? 0) : '-' }}</span>
-        </div>
-        <div class="kv">
-          <span class="dim">Reservado no checkout</span
-          ><span class="ink">{{ v ? v.reservado : '-' }}</span>
-        </div>
-        <div class="kv">
-          <span class="dim">Disponível para venda</span
-          ><span class="ink">{{ v ? v.disponivel : '-' }}</span>
-        </div>
-        <div class="kv">
-          <span class="dim">Estoque mínimo</span
-          ><span class="ink">{{ v ? v.estoqueMinimo : '-' }}</span>
-        </div>
-        <div class="kv" style="border-top: 1px solid var(--line); padding-top: 11px">
-          <span class="ink">Saldo após o movimento</span>
-          @if (saldoApos() !== null && saldoApos()! < 0) {
-            <span class="warn">{{ saldoApos() }}</span>
-          } @else {
-            <span class="ink">{{ saldoApos() ?? '-' }}</span>
-          }
-        </div>
-      </div>
-    </section>
+  @if (erroGeral(); as erro) {
+    <div class="alerta" role="alert">{{ erro }}</div>
+  }
+  @if (sucesso(); as mensagem) {
+    <div class="info" role="status">{{ mensagem }}</div>
+  }
 
-    <section class="card p2">
-      <div class="eyebrow">Autoria</div>
-      <p style="margin: 0; font-size: 12px; line-height: 1.7; color: var(--dim)">
-        Movimento lançado por aqui grava origem <span class="chip">MANUAL</span> com o seu usuário
-        como autor. Movimento gerado por venda, reserva ou devolução grava
-        <span class="chip">SISTEMA</span> e fica sem autor.
-      </p>
-    </section>
-
-    @if (pendencias().length > 0) {
-      <section class="card p2">
-        <div class="eyebrow">Pendências</div>
-        <div style="display: flex; flex-direction: column; gap: 9px">
-          <span class="warn">{{ pendencias().length }} campo(s) obrigatório(s) vazio(s)</span>
-          <span style="font-size: 12px; color: var(--mute)">{{ pendencias().join(' · ') }}</span>
+  <div class="form" [formGroup]="form">
+    <div>
+      <section class="sec">
+        <div class="sh"><h2>Movimento</h2><span>Entidade MovimentoEstoque</span></div>
+        <div class="fg">
+          <div class="f w6">
+            <label for="produto">Produto <span class="req">*</span></label>
+            <select id="produto" formControlName="idProduto" [attr.aria-invalid]="!!resolveErrorMessage('idProduto')">
+              <option [ngValue]="null">Selecione o produto</option>
+              @for (p of produtos(); track p.produto.id) {
+                <option [ngValue]="p.produto.id">{{ rotuloProduto(p) }}</option>
+              }
+            </select>
+            <span class="hint">Só produtos ativos · kits não aparecem aqui</span>
+            @if (resolveErrorMessage('idProduto'); as m) { <span class="erro">{{ m }}</span> }
+          </div>
+          <div class="f w3">
+            <label for="tipo">Tipo <span class="req">*</span></label>
+            <select id="tipo" formControlName="idTipo">
+              @for (t of tipos; track t.id) {
+                <option [ngValue]="t.id">{{ t.rotulo }}</option>
+              }
+            </select>
+          </div>
+          <div class="f w1">
+            <label for="quantidade">{{ ehAjuste() ? 'Saldo novo' : 'Quantidade' }} <span class="req">*</span></label>
+            <div class="unit"><input id="quantidade" type="text" inputmode="numeric" formControlName="quantidade" [attr.aria-invalid]="!!resolveErrorMessage('quantidade')" /><em>un</em></div>
+            @if (resolveErrorMessage('quantidade'); as m) { <span class="erro">{{ m }}</span> }
+          </div>
+          <div class="f">
+            <label for="notaFiscal">Nota fiscal de entrada</label>
+            <input id="notaFiscal" type="text" maxlength="30" placeholder="NF 00.000" formControlName="notaFiscal" />
+            @if (resolveErrorMessage('notaFiscal'); as m) { <span class="erro">{{ m }}</span> }
+          </div>
+          <div class="f w3">
+            <label for="fornecedor">Fornecedor</label>
+            <select id="fornecedor" formControlName="idFornecedor">
+              <option [ngValue]="null">Não se aplica</option>
+              @for (f of fornecedores(); track f.id) {
+                <option [ngValue]="f.id">{{ f.razaoSocial }}</option>
+              }
+            </select>
+          </div>
+          <div class="f w6">
+            <label for="observacao">Observação @if (observacaoObrigatoria()) {<span class="req">*</span>}</label>
+            <textarea id="observacao" placeholder="Motivo do movimento" formControlName="observacao" [attr.aria-invalid]="!!resolveErrorMessage('observacao')"></textarea>
+            <span class="hint">Nota fiscal e fornecedor vão no início da observação</span>
+            @if (resolveErrorMessage('observacao'); as m) { <span class="erro">{{ m }}</span> }
+          </div>
+        </div>
+        <div class="info" style="margin: 14px 0 0">
+          Movimento é <b>append-only</b>: não existe editar nem excluir. Um lançamento errado se corrige com um novo ajuste em sentido contrário.
         </div>
       </section>
-    }
-  </aside>
-</div>
 
-<div class="actionbar">
-  <span class="sub">Kits não recebem movimento: a baixa acontece sempre no componente</span>
-  <div class="actions">
-    <a class="btn" routerLink="/admin/estoque">Cancelar</a>
-    <button class="btn p" type="button" (click)="salvar()" [disabled]="salvando()">
-      {{ salvando() ? 'Lançando…' : 'Lançar movimento' }}
-    </button>
+      <section class="sec">
+        <div class="sh">
+          <h2>Últimos movimentos deste produto</h2>
+          <span>{{ produtoSelecionado() ? rotuloProduto(produtoSelecionado()!) : 'Escolha um produto' }}</span>
+        </div>
+        <div style="overflow-x: auto">
+          <table class="vt" style="min-width: 560px">
+            <thead>
+              <tr><th>Data</th><th>Tipo</th><th class="r">Qtd.</th><th class="r">Saldo</th><th>Autor</th></tr>
+            </thead>
+            <tbody>
+              @if (carregandoUltimos()) {
+                <tr><td colspan="5" style="color: var(--mute)">Carregando…</td></tr>
+              } @else {
+                @for (m of ultimos(); track m.id) {
+                  <tr>
+                    <td data-l="Data" class="mono" style="font-size: 12.5px; color: var(--ink2)">{{ m.dataCadastro | date: 'dd/MM HH:mm' }}</td>
+                    <td data-l="Tipo">{{ rotuloTipo(m) }}</td>
+                    <td data-l="Qtd." class="r mono" [class.pos]="variacao(m).startsWith('+')" [class.neg]="variacao(m).startsWith('-')">{{ variacao(m) }}</td>
+                    <td data-l="Saldo" class="r mono">{{ m.saldoResultante }}</td>
+                    <td data-l="Autor" style="color: var(--ink2)">{{ autor(m) }}</td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="5" style="color: var(--mute)">{{ produtoSelecionado() ? 'Nenhum movimento ainda.' : 'Escolha um produto para ver o histórico.' }}</td></tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <aside class="rail">
+      <section class="card">
+        <div class="bd" style="padding-top: 18px">
+          <span class="lbl">Saldo do produto</span>
+          <div style="margin-top: 12px">
+            <div class="saldo">
+              <div><span>Físico</span><b class="num">{{ produtoSelecionado()?.estoqueFisico ?? '—' }}</b></div>
+              <div><span>Reservado no checkout</span><b class="num">{{ produtoSelecionado()?.reservado ?? '—' }}</b></div>
+              <div class="hl"><span>Disponível para venda</span><b class="num">{{ produtoSelecionado()?.disponivel ?? '—' }}</b></div>
+              <div><span>Estoque mínimo</span><b class="num">{{ produtoSelecionado()?.estoqueMinimo ?? '—' }}</b></div>
+              <div><span>Saldo após o movimento</span><b [class.neg]="(saldoApos() ?? 0) < 0">{{ saldoApos() ?? 'a calcular' }}</b></div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="card">
+        <div class="bd" style="padding-top: 18px">
+          <span class="lbl">Autoria</span>
+          <div style="margin-top: 12px">
+            <p class="note" style="margin: 0">
+              Movimento lançado aqui grava origem <code>MANUAL</code> com o seu usuário como autor. Venda, reserva ou devolução gravam <code>SISTEMA</code>, sem autor.
+            </p>
+          </div>
+        </div>
+      </section>
+      @if (pendencias().length) {
+        <section class="card pend">
+          <div class="bd" style="padding-top: 18px">
+            <div class="t">{{ pendencias().length }} {{ pendencias().length === 1 ? 'campo obrigatório vazio' : 'campos obrigatórios vazios' }}</div>
+            <p>{{ pendencias().join(' · ') }}</p>
+            <small>Kits não recebem movimento: a baixa acontece sempre no componente</small>
+          </div>
+        </section>
+      }
+    </aside>
   </div>
-</div>
+
+  <div class="actionbar">
+    <div class="in gut">
+      <span class="msg">
+        @if (pendencias().length) {
+          {{ pendencias().length === 1 ? 'Falta' : 'Faltam' }} <b>{{ pendencias().length }} {{ pendencias().length === 1 ? 'campo obrigatório' : 'campos obrigatórios' }}</b>.
+        } @else {
+          Pronto para lançar.
+        }
+      </span>
+      <a class="btn" routerLink="/admin/estoque">Cancelar</a>
+      <button class="btn p" type="button" (click)="salvar()" [disabled]="salvando()">{{ salvando() ? 'Lançando…' : 'Lançar movimento' }}</button>
+    </div>
+  </div>
+</main>

@@ -31,12 +31,12 @@ class DevolucaoResourceTest {
             RECEBIDA = 6, REEMBOLSADA = 7, CONCLUIDA = 8;
     static final long REEMBOLSO = 1, TROCA = 2;
 
-    record Entregue(Fixtures.Cliente cliente, long pedido, long item, long variante) {
+    record Entregue(Fixtures.Cliente cliente, long pedido, long item, long produto) {
     }
 
     static Entregue pedidoEntregue() {
         Fixtures.Cliente c = Fixtures.novoCliente();
-        long v = Fixtures.criarAcessorio(200.0, 5).idVariante();
+        long v = Fixtures.criarAcessorio(200.0, 5).id();
         long pedido = Fixtures.pedidoPago(c, v, 1);
         Fixtures.avancarAteEntregue(pedido);
         long item = given().when().get("/pedidos/{id}", pedido).then().statusCode(200)
@@ -69,7 +69,7 @@ class DevolucaoResourceTest {
         given().when().get("/pedidos/{id}", e.pedido()).then().body("status.nome", equalTo("EM_DEVOLUCAO"));
         status(d, POSTAGEM_REVERSA).statusCode(204);
         status(d, RECEBIDA).statusCode(204);
-        given().queryParam("idVariante", e.variante()).queryParam("idTipo", Fixtures.MOV_DEVOLUCAO)
+        given().queryParam("idProduto", e.produto()).queryParam("idTipo", Fixtures.MOV_DEVOLUCAO)
                 .when().get("/estoque/movimentos").then().statusCode(200).body("totalItems", equalTo(1));
         status(d, REEMBOLSADA).statusCode(204);
         given().when().get("/pedidos/{id}/pagamentos", e.pedido()).then().statusCode(200)
@@ -95,7 +95,7 @@ class DevolucaoResourceTest {
     @Test
     void pedidoNaoEntregueResponde409() {
         Fixtures.Cliente c = Fixtures.novoCliente();
-        long pedido = Fixtures.pedidoPago(c, Fixtures.criarAcessorio(200.0, 5).idVariante(), 1);
+        long pedido = Fixtures.pedidoPago(c, Fixtures.criarAcessorio(200.0, 5).id(), 1);
         long item = given().when().get("/pedidos/{id}", pedido).then().extract().jsonPath().getLong("itens[0].id");
         solicitar(c.token(), pedido, item, REEMBOLSO).statusCode(409);
     }

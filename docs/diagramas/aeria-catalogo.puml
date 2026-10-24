@@ -25,7 +25,9 @@ note left of StatusMarca
   {id, nome} (rotas /status-*)
 end note
 
+' quantidadeProdutos: contagem derivada de Produto, sem coluna na carga SQL.
 class Marca {
+  /quantidadeProdutos: long
   -status: StatusMarca
   -nome: String
   -slug: String
@@ -47,6 +49,7 @@ note right of StatusCategoria
 end note
 
 class Categoria {
+  /quantidadeProdutos: long
   -status: StatusCategoria
   -tipo: TipoProduto
   -nome: String
@@ -63,6 +66,7 @@ note right of Categoria
 end note
 
 class Subcategoria {
+  /quantidadeProdutos: long
   -status: StatusCategoria
   -nome: String
   -slug: String
@@ -76,6 +80,7 @@ enum StatusFornecedor {
 }
 
 class Fornecedor {
+  /quantidadeProdutos: long
   -razaoSocial: String
   -cnpj: String
   -nomeContato: String
@@ -158,7 +163,7 @@ abstract class Produto {
   -ordemNoGrupo: int
 }
 note right of Produto
-  Produto é a unidade vendável (D40): cada
+  Produto é a unidade de venda (D40): cada
   versão tem SKU, preço, custo, estoque e
   embalagem próprios. Peso e dimensões da
   EMBALAGEM cotam frete (D16).
@@ -291,7 +296,7 @@ class TermoBuscado {
 Produto <|-- Drone
 Produto <|-- Acessorio
 Produto <|-- Kit
-Subcategoria "*" --> "1" Categoria
+Subcategoria "*" --> "0..1" Categoria : obrigatória ao publicar (D21)
 Produto "*" --> "1" Marca
 Produto "*" --> "1" Subcategoria
 Produto "*" --> "1" Fornecedor

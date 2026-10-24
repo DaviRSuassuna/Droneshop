@@ -3,6 +3,7 @@ import { StatusRef } from './status.model';
 
 /** Espelha o FornecedorResponseDTO devolvido pela API (CNPJ, telefone e CEP só com dígitos). */
 export interface Fornecedor {
+  quantidadeProdutos: number;
   id: number;
   razaoSocial: string;
   cnpj: string;

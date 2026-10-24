@@ -9,17 +9,11 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import br.com.droneshop.testes.Dados;
 import br.com.droneshop.testes.Fixtures;
 import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.http.ContentType;
 
 /**
  * #23 Reserva de estoque no checkout com expiração (RF12, RF13, RN01, RN02, D33).
@@ -29,8 +23,8 @@ import io.restassured.http.ContentType;
 @Tag("issue-23")
 class ReservaResourceTest {
 
-    static int disponivel(long idVariante) {
-        return given().when().get("/variantes/{id}", idVariante).then().statusCode(200)
+    static int disponivel(long idProduto) {
+        return given().when().get("/produtos/{id}", idProduto).then().statusCode(200)
                 .extract().jsonPath().getInt("disponivel");
     }
 
@@ -50,22 +44,22 @@ class ReservaResourceTest {
     void reservaDescontaDoDisponivel() {
         Fixtures.ProdutoCriado p = Fixtures.criarDrone(1000.0, 5);
         String c = Fixtures.novoCarrinho();
-        Fixtures.adicionar(c, p.idVariante(), 2);
+        Fixtures.adicionar(c, p.id(), 2);
         carrinho(c).when().post("/carrinho/reservar")
                 .then().statusCode(200)
                 .body("itens[0].reservas[0].status.nome", equalTo("ATIVA"))
                 .body("itens[0].reservas[0].expiraEm", notNullValue());
-        org.junit.jupiter.api.Assertions.assertEquals(3, disponivel(p.idVariante()));
+        org.junit.jupiter.api.Assertions.assertEquals(3, disponivel(p.id()));
     }
 
     @Test
     void reservarDeNovoNaoDuplica() {
         Fixtures.ProdutoCriado p = Fixtures.criarDrone(1000.0, 5);
         String c = Fixtures.novoCarrinho();
-        Fixtures.adicionar(c, p.idVariante(), 1);
+        Fixtures.adicionar(c, p.id(), 1);
         carrinho(c).when().post("/carrinho/reservar").then().statusCode(200);
         carrinho(c).when().post("/carrinho/reservar").then().statusCode(200);
-        given().queryParam("idVariante", p.idVariante()).when().get("/estoque/reservas")
+        given().queryParam("idProduto", p.id()).when().get("/estoque/reservas")
                 .then().statusCode(200).body("totalItems", equalTo(1));
     }
 
@@ -74,40 +68,30 @@ class ReservaResourceTest {
         Fixtures.ProdutoCriado p = Fixtures.criarDrone(1000.0, 2);
         String primeiro = Fixtures.novoCarrinho();
         String segundo = Fixtures.novoCarrinho();
-        Fixtures.adicionar(primeiro, p.idVariante(), 2);
-        Fixtures.adicionar(segundo, p.idVariante(), 2);
+        Fixtures.adicionar(primeiro, p.id(), 2);
+        Fixtures.adicionar(segundo, p.id(), 2);
         carrinho(primeiro).when().post("/carrinho/reservar").then().statusCode(200);
         carrinho(segundo).when().post("/carrinho/reservar").then().statusCode(409);
-        org.junit.jupiter.api.Assertions.assertEquals(0, disponivel(p.idVariante()));
+        org.junit.jupiter.api.Assertions.assertEquals(0, disponivel(p.id()));
     }
 
     @Test
     void rotinaExpiraEDevolveOSaldo() {
         Fixtures.ProdutoCriado p = Fixtures.criarDrone(1000.0, 5);
         String c = Fixtures.novoCarrinho();
-        Fixtures.adicionar(c, p.idVariante(), 3);
+        Fixtures.adicionar(c, p.id(), 3);
         carrinho(c).when().post("/carrinho/reservar").then().statusCode(200);
         expirarTudo();
-        org.junit.jupiter.api.Assertions.assertEquals(5, disponivel(p.idVariante()));
-        given().queryParam("idVariante", p.idVariante()).when().get("/estoque/reservas")
+        org.junit.jupiter.api.Assertions.assertEquals(5, disponivel(p.id()));
+        given().queryParam("idProduto", p.id()).when().get("/estoque/reservas")
                 .then().statusCode(200).body("totalItems", equalTo(0));
     }
 
     @Test
     void kitReservaOsComponentes() {
-        long drone = Fixtures.criarDrone(1000.0, 5).idVariante();
-        long bateria = Fixtures.criarAcessorio(100.0, 6).idVariante();
-        Map<String, Object> kit = new HashMap<>();
-        kit.put("nome", "Combo");
-        kit.put("sku", "KIT-" + Dados.sufixo().toUpperCase());
-        kit.put("preco", 1150.0);
-        kit.put("ehKit", true);
-        kit.put("ativa", true);
-        kit.put("componentes", List.of(Map.of("idVariante", drone, "quantidade", 1),
-                Map.of("idVariante", bateria, "quantidade", 2)));
-        long idKit = given().contentType(ContentType.JSON)
-                .body(Fixtures.drone("Combo " + Dados.sufixo(), Fixtures.arvore(), Fixtures.lista(kit)))
-                .when().post("/drones").then().statusCode(200).extract().jsonPath().getLong("variantes[0].id");
+        long drone = Fixtures.criarDrone(1000.0, 5).id();
+        long bateria = Fixtures.criarAcessorio(100.0, 6).id();
+        long idKit = Fixtures.criarKit(Fixtures.componente(drone, 1), Fixtures.componente(bateria, 2)).id();
 
         String c = Fixtures.novoCarrinho();
         Fixtures.adicionar(c, idKit, 2);
@@ -115,7 +99,7 @@ class ReservaResourceTest {
                 .body("itens[0].reservas", hasSize(2));
         org.junit.jupiter.api.Assertions.assertEquals(3, disponivel(drone));
         org.junit.jupiter.api.Assertions.assertEquals(2, disponivel(bateria));
-        given().queryParam("idVariante", idKit).when().get("/estoque/reservas")
+        given().queryParam("idProduto", idKit).when().get("/estoque/reservas")
                 .then().statusCode(200).body("totalItems", equalTo(0));
     }
 

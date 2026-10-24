@@ -1,11 +1,13 @@
 package br.com.droneshop.catalogo.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import br.com.droneshop.estoque.model.MovimentoEstoque;
 import br.com.droneshop.model.DefaultEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -18,12 +20,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
-// Heranca JOINED (D27): produto guarda o comum, drone e acessorio guardam o proprio
-// e compartilham o id. A coluna tipo guarda o id de TipoProduto. O preco fica na
-// variante (D26).
+// Heranca JOINED (D27): produto guarda o comum, drone, acessorio e kit guardam o proprio
+// e compartilham o id. A coluna tipo guarda o id de TipoProduto. Cada versao e um
+// produto (D40): SKU, preco, custo, estoque e embalagem ficam aqui.
 @Entity
+@Table(name = "produto", uniqueConstraints = @UniqueConstraint(columnNames = { "id_grupo", "rotulo_no_grupo" }))
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "tipo", discriminatorType = DiscriminatorType.INTEGER)
 public abstract class Produto extends DefaultEntity {
@@ -31,8 +35,9 @@ public abstract class Produto extends DefaultEntity {
     @Column(length = 120)
     private String nome;
 
+    // unico na loja toda
     @Column(length = 40, unique = true)
-    private String modelo;
+    private String sku;
 
     @Column(length = 300, name = "descricao_curta")
     private String descricaoCurta;
@@ -79,10 +84,47 @@ public abstract class Produto extends DefaultEntity {
     @Column(nullable = false)
     private boolean destaque;
 
-    // composicao (1..* no ATIVO): a variante nao existe sem o produto
+    @Column(precision = 12, scale = 2)
+    private BigDecimal preco;
+
+    @Column(precision = 12, scale = 2, name = "custo_aquisicao")
+    private BigDecimal custoAquisicao;
+
+    // So muda na criacao (saldo inicial) ou por movimento (#13). Nulo no kit (D7).
+    @Column(name = "estoque_fisico")
+    private Integer estoqueFisico;
+
+    @Column(nullable = false, name = "estoque_minimo")
+    private int estoqueMinimo;
+
+    // Embalagem, base do frete (D16). No kit, nulo e derivado dos componentes.
+    @Column(precision = 8, scale = 3, name = "peso_embalagem_kg")
+    private BigDecimal pesoEmbalagemKg;
+
+    @Column(name = "altura_embalagem_cm")
+    private Integer alturaEmbalagemCm;
+
+    @Column(name = "largura_embalagem_cm")
+    private Integer larguraEmbalagemCm;
+
+    @Column(name = "comprimento_embalagem_cm")
+    private Integer comprimentoEmbalagemCm;
+
+    // muitos produtos -> um grupo (opcional): versoes numa pagina de venda so (D40)
+    @ManyToOne
+    @JoinColumn(name = "id_grupo")
+    private GrupoProduto grupo;
+
+    // obrigatorio com grupo e unico dentro dele ("Pro", "Standard", "Fly More")
+    @Column(length = 40, name = "rotulo_no_grupo")
+    private String rotuloNoGrupo;
+
+    @Column(nullable = false, name = "ordem_no_grupo")
+    private int ordemNoGrupo;
+
+    // historico do estoque fisico (#13); sai junto com o produto
     @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("id")
-    private List<VarianteProduto> variantes = new ArrayList<>();
+    private List<MovimentoEstoque> movimentos = new ArrayList<>();
 
     // lado reciproco da compatibilidade (D17): so leitura, quem grava e o acessorio
     @ManyToMany(mappedBy = "compativeis")
@@ -98,12 +140,12 @@ public abstract class Produto extends DefaultEntity {
         this.nome = nome;
     }
 
-    public String getModelo() {
-        return modelo;
+    public String getSku() {
+        return sku;
     }
 
-    public void setModelo(String modelo) {
-        this.modelo = modelo;
+    public void setSku(String sku) {
+        this.sku = sku;
     }
 
     public String getDescricaoCurta() {
@@ -210,12 +252,100 @@ public abstract class Produto extends DefaultEntity {
         this.destaque = destaque;
     }
 
-    public List<VarianteProduto> getVariantes() {
-        return variantes;
+    public BigDecimal getPreco() {
+        return preco;
     }
 
-    public void setVariantes(List<VarianteProduto> variantes) {
-        this.variantes = variantes;
+    public void setPreco(BigDecimal preco) {
+        this.preco = preco;
+    }
+
+    public BigDecimal getCustoAquisicao() {
+        return custoAquisicao;
+    }
+
+    public void setCustoAquisicao(BigDecimal custoAquisicao) {
+        this.custoAquisicao = custoAquisicao;
+    }
+
+    public Integer getEstoqueFisico() {
+        return estoqueFisico;
+    }
+
+    public void setEstoqueFisico(Integer estoqueFisico) {
+        this.estoqueFisico = estoqueFisico;
+    }
+
+    public int getEstoqueMinimo() {
+        return estoqueMinimo;
+    }
+
+    public void setEstoqueMinimo(int estoqueMinimo) {
+        this.estoqueMinimo = estoqueMinimo;
+    }
+
+    public BigDecimal getPesoEmbalagemKg() {
+        return pesoEmbalagemKg;
+    }
+
+    public void setPesoEmbalagemKg(BigDecimal pesoEmbalagemKg) {
+        this.pesoEmbalagemKg = pesoEmbalagemKg;
+    }
+
+    public Integer getAlturaEmbalagemCm() {
+        return alturaEmbalagemCm;
+    }
+
+    public void setAlturaEmbalagemCm(Integer alturaEmbalagemCm) {
+        this.alturaEmbalagemCm = alturaEmbalagemCm;
+    }
+
+    public Integer getLarguraEmbalagemCm() {
+        return larguraEmbalagemCm;
+    }
+
+    public void setLarguraEmbalagemCm(Integer larguraEmbalagemCm) {
+        this.larguraEmbalagemCm = larguraEmbalagemCm;
+    }
+
+    public Integer getComprimentoEmbalagemCm() {
+        return comprimentoEmbalagemCm;
+    }
+
+    public void setComprimentoEmbalagemCm(Integer comprimentoEmbalagemCm) {
+        this.comprimentoEmbalagemCm = comprimentoEmbalagemCm;
+    }
+
+    public GrupoProduto getGrupo() {
+        return grupo;
+    }
+
+    public void setGrupo(GrupoProduto grupo) {
+        this.grupo = grupo;
+    }
+
+    public String getRotuloNoGrupo() {
+        return rotuloNoGrupo;
+    }
+
+    public void setRotuloNoGrupo(String rotuloNoGrupo) {
+        this.rotuloNoGrupo = rotuloNoGrupo;
+    }
+
+    public int getOrdemNoGrupo() {
+        return ordemNoGrupo;
+    }
+
+    public void setOrdemNoGrupo(int ordemNoGrupo) {
+        this.ordemNoGrupo = ordemNoGrupo;
+    }
+
+    public List<MovimentoEstoque> getMovimentos() {
+        return movimentos;
+    }
+
+    public void setMovimentos(List<MovimentoEstoque> movimentos) {
+        this.movimentos = movimentos;
     }
 
     public Set<Acessorio> getAcessoriosCompativeis() {

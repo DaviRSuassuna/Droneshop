@@ -41,7 +41,7 @@ class NotaFiscalResourceTest {
     @Test
     void emiteNotaDeVendaComChaveValidaEArquivos() {
         Fixtures.Cliente c = Fixtures.novoCliente();
-        long pedido = Fixtures.pedidoPago(c, Fixtures.criarAcessorio(100.0, 5).idVariante(), 1);
+        long pedido = Fixtures.pedidoPago(c, Fixtures.criarAcessorio(100.0, 5).id(), 1);
         JsonPath nota = given().when().post("/pedidos/{id}/nota-fiscal", pedido)
                 .then().statusCode(200)
                 .body("tipoOrigem.nome", equalTo("VENDA"))
@@ -59,8 +59,8 @@ class NotaFiscalResourceTest {
     @Test
     void numeroSequencial() {
         Fixtures.Cliente c = Fixtures.novoCliente();
-        long p1 = Fixtures.pedidoPago(c, Fixtures.criarAcessorio(100.0, 5).idVariante(), 1);
-        long p2 = Fixtures.pedidoPago(c, Fixtures.criarAcessorio(100.0, 5).idVariante(), 1);
+        long p1 = Fixtures.pedidoPago(c, Fixtures.criarAcessorio(100.0, 5).id(), 1);
+        long p2 = Fixtures.pedidoPago(c, Fixtures.criarAcessorio(100.0, 5).id(), 1);
         long n1 = given().when().post("/pedidos/{id}/nota-fiscal", p1).then().statusCode(200)
                 .extract().jsonPath().getLong("numero");
         long n2 = given().when().post("/pedidos/{id}/nota-fiscal", p2).then().statusCode(200)
@@ -71,9 +71,9 @@ class NotaFiscalResourceTest {
     @Test
     void pedidoPendenteOuComNotaResponde409() {
         Fixtures.Cliente c = Fixtures.novoCliente();
-        long pendente = Fixtures.pedidoPendente(c, Fixtures.criarAcessorio(100.0, 5).idVariante(), 1, Fixtures.PIX);
+        long pendente = Fixtures.pedidoPendente(c, Fixtures.criarAcessorio(100.0, 5).id(), 1, Fixtures.PIX);
         given().when().post("/pedidos/{id}/nota-fiscal", pendente).then().statusCode(409);
-        long pago = Fixtures.pedidoPago(c, Fixtures.criarAcessorio(100.0, 5).idVariante(), 1);
+        long pago = Fixtures.pedidoPago(c, Fixtures.criarAcessorio(100.0, 5).id(), 1);
         given().when().post("/pedidos/{id}/nota-fiscal", pago).then().statusCode(200);
         given().when().post("/pedidos/{id}/nota-fiscal", pago).then().statusCode(409);
     }

@@ -89,14 +89,21 @@ public class SubcategoriaServiceImpl implements SubcategoriaService {
 
     private void aplicarDados(Subcategoria destino, SubcategoriaRequestDTO dto, Long idAtual) {
         StatusCategoria status = buscarStatusOuFalhar(dto.idStatus());
-        String slug = Textos.slug((dto.slug() == null || dto.slug().isBlank()) ? dto.nome() : dto.slug());
+        if (status != StatusCategoria.RASCUNHO) {
+            var erros = new java.util.ArrayList<br.com.droneshop.exception.Problem.FieldError>();
+            if (dto.nome() == null) erros.add(new br.com.droneshop.exception.Problem.FieldError("nome", "Informe o nome (back)."));
+            if (dto.idCategoria() == null) erros.add(new br.com.droneshop.exception.Problem.FieldError("idCategoria", "Selecione a categoria (back)."));
+            if (!erros.isEmpty()) throw new ValidationException("Preencha os campos obrigatórios para publicar a subcategoria.", erros);
+        }
+        String slug = dto.slug() != null ? Textos.slug(dto.slug()) : dto.nome() != null ? Textos.slug(dto.nome())
+                : "rascunho-" + java.util.UUID.randomUUID();
         if (subcategoriaRepository.findBySlugExceptId(slug, idAtual) != null)
             throw ValidationException.of("slug", "Já existe uma subcategoria cadastrada com esse slug.");
 
-        Categoria categoria = buscarCategoriaOuFalhar(dto.idCategoria());
+        Categoria categoria = dto.idCategoria() == null ? null : buscarCategoriaOuFalhar(dto.idCategoria());
         validarTrocaDeTipo(destino, categoria);
 
-        destino.setNome(dto.nome().trim());
+        destino.setNome(dto.nome() == null ? "" : dto.nome().trim());
         destino.setSlug(slug);
         destino.setCategoria(categoria);
         destino.setOrdemExibicao(dto.ordemExibicao() == null ? 0 : dto.ordemExibicao());
@@ -107,7 +114,7 @@ public class SubcategoriaServiceImpl implements SubcategoriaService {
     // Mover para categoria de outro tipo deixaria os produtos dela no tipo errado
     private void validarTrocaDeTipo(Subcategoria subcategoria, Categoria nova) {
         Categoria atual = subcategoria.getCategoria();
-        if (atual == null || atual.getTipo() == null || atual.getTipo() == nova.getTipo())
+        if (atual == null || (nova != null && (atual.getTipo() == null || atual.getTipo() == nova.getTipo())))
             return;
         long produtos = produtoRepository.count("subcategoria.id", subcategoria.getId());
         if (produtos > 0)

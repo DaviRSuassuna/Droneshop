@@ -51,7 +51,7 @@ class PromocaoResourceTest {
         return LocalDateTime.now().plusDays(d).truncatedTo(ChronoUnit.SECONDS).toString();
     }
 
-    static Map<String, Object> promocao(long idVariante, int inicio, int fim) {
+    static Map<String, Object> promocao(long idProduto, int inicio, int fim) {
         Map<String, Object> p = new HashMap<>();
         p.put("nome", "Promo " + Dados.sufixo());
         p.put("idEscopo", PRODUTO);
@@ -61,7 +61,7 @@ class PromocaoResourceTest {
         p.put("valorDesconto", null);
         p.put("valorMinimoCarrinho", null);
         p.put("ativa", true);
-        p.put("idsVariantes", List.of(idVariante));
+        p.put("idsProdutos", List.of(idProduto));
         return p;
     }
 
@@ -77,9 +77,9 @@ class PromocaoResourceTest {
 
     @Test
     void situacaoDerivadaDasDatas() {
-        long v = Fixtures.criarDrone(1000.0, 5).idVariante();
+        long v = Fixtures.criarDrone(1000.0, 5).id();
         post(promocao(v, 5, 10)).statusCode(200).body("situacao", equalTo("AGENDADA"))
-                .body("variantes[0].id", equalTo((int) v));
+                .body("produtos[0].id", equalTo((int) v));
         post(promocao(v, -1, 5)).statusCode(200).body("situacao", equalTo("VIGENTE"));
         post(promocao(v, -10, -5)).statusCode(200).body("situacao", equalTo("ENCERRADA"));
         Map<String, Object> inativa = promocao(v, -1, 5);
@@ -89,7 +89,7 @@ class PromocaoResourceTest {
 
     @Test
     void percentualEValorSaoExclusivos() {
-        long v = Fixtures.criarDrone(1000.0, 5).idVariante();
+        long v = Fixtures.criarDrone(1000.0, 5).id();
         Map<String, Object> dois = promocao(v, -1, 5);
         dois.put("valorDesconto", 50);
         post(dois).statusCode(400).body("errors.field", hasItem("percentualDesconto"));
@@ -105,22 +105,22 @@ class PromocaoResourceTest {
 
     @Test
     void validacoesDeDataEscopo() {
-        long v = Fixtures.criarDrone(1000.0, 5).idVariante();
+        long v = Fixtures.criarDrone(1000.0, 5).id();
         post(promocao(v, 5, 1)).statusCode(400).body("errors.field", hasItem("dataFim"));
 
-        Map<String, Object> semVariantes = promocao(v, -1, 5);
-        semVariantes.put("idsVariantes", List.of());
-        post(semVariantes).statusCode(400).body("errors.field", hasItem("idsVariantes"));
+        Map<String, Object> semProdutos = promocao(v, -1, 5);
+        semProdutos.put("idsProdutos", List.of());
+        post(semProdutos).statusCode(400).body("errors.field", hasItem("idsProdutos"));
 
         Map<String, Object> carrinho = promocao(v, -1, 5);
         carrinho.put("idEscopo", CARRINHO);
-        carrinho.put("idsVariantes", List.of());
+        carrinho.put("idsProdutos", List.of());
         post(carrinho).statusCode(400).body("errors.field", hasItem("valorMinimoCarrinho"));
     }
 
     @Test
     void filtraPorSituacao() {
-        long v = Fixtures.criarDrone(1000.0, 5).idVariante();
+        long v = Fixtures.criarDrone(1000.0, 5).id();
         long id = post(promocao(v, 5, 10)).statusCode(200).extract().jsonPath().getLong("id");
         given().queryParam("situacao", "AGENDADA").queryParam("pageSize", 1000).when().get("/promocoes")
                 .then().statusCode(200).body("items.id", hasItem((int) id));
@@ -130,7 +130,7 @@ class PromocaoResourceTest {
 
     @Test
     void crudCompleto() {
-        long v = Fixtures.criarDrone(1000.0, 5).idVariante();
+        long v = Fixtures.criarDrone(1000.0, 5).id();
         Map<String, Object> p = promocao(v, 1, 5);
         long id = post(p).statusCode(200).extract().jsonPath().getLong("id");
         p.put("nome", "Alterada");
@@ -142,8 +142,8 @@ class PromocaoResourceTest {
 
     @Test
     void promocaoAplicadaEmPedidoNaoPodeSerExcluida() {
-        long variante = Fixtures.criarDrone(1000.0, 5).idVariante();
-        long idPromocao = post(promocao(variante, -1, 5)).statusCode(200).extract().jsonPath().getLong("id");
+        long produto = Fixtures.criarDrone(1000.0, 5).id();
+        long idPromocao = post(promocao(produto, -1, 5)).statusCode(200).extract().jsonPath().getLong("id");
         String sufixo = Dados.sufixo();
         long[] ids = new long[3]; // pedido, perfil, usuario
 

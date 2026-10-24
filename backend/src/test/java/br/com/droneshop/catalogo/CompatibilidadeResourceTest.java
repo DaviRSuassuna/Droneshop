@@ -27,7 +27,7 @@ class CompatibilidadeResourceTest {
 
     static Map<String, Object> acessorioCompativel(Fixtures.Arvore a, List<Long> ids, long idStatus) {
         Map<String, Object> ac = Fixtures.acessorio("Bateria " + Dados.sufixo(), a,
-                Fixtures.lista(Fixtures.variante("AC-" + Dados.sufixo().toUpperCase(), 499.0, 3)));
+                Fixtures.dadosComerciais("AC-" + Dados.sufixo().toUpperCase(), 499.0, 3));
         ac.put("idsCompativeis", ids);
         ac.put("idStatus", idStatus);
         return ac;
@@ -62,14 +62,8 @@ class CompatibilidadeResourceTest {
     void acessorioNaoECompativelConsigoMesmo() {
         Fixtures.Arvore a = Fixtures.arvore();
         Map<String, Object> ac = acessorioCompativel(a, List.of(), Fixtures.PRODUTO_ATIVO);
-        Map<String, Object> v = Fixtures.variante("AC-" + Dados.sufixo().toUpperCase(), 499.0, 3);
-        ac.put("variantes", Fixtures.lista(v));
-        io.restassured.path.json.JsonPath criado = given().contentType(ContentType.JSON).body(ac)
-                .when().post("/acessorios").then().statusCode(200).extract().jsonPath();
-        long id = criado.getLong("id");
-        // ate a #9 o acessorio nao devolve variantes; depois, o PUT reaproveita a variante criada
-        if (criado.getList("variantes") != null && !criado.getList("variantes").isEmpty())
-            v.put("id", criado.getLong("variantes[0].id"));
+        long id = given().contentType(ContentType.JSON).body(ac)
+                .when().post("/acessorios").then().statusCode(200).extract().jsonPath().getLong("id");
         ac.put("idsCompativeis", List.of(id));
         given().contentType(ContentType.JSON).body(ac).when().put("/acessorios/{id}", id)
                 .then().statusCode(400).body("errors.field", hasItem("idsCompativeis"));

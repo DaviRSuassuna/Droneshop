@@ -12,7 +12,7 @@ import { TELAS } from './telas';
  * Para cada tela de e2e/conformidade/telas.ts:
  *  1. estrutura: menu, título, botões, filtros, colunas, seções, rótulos e abas
  *     do protótipo precisam existir na tela real (as colunas, na mesma ordem);
- *  2. estilo: tokens do DESIGN.md (variáveis CSS, temas claro e escuro) e estilo
+ *  2. estilo: tokens do DESIGN.md (variáveis CSS, tema único escuro) e estilo
  *     calculado de elementos-chave iguais aos do protótipo;
  *  3. celular: em 390px a tela real não pode ter rolagem horizontal (D20);
  *  4. imagens das duas versões, desktop e celular, anexadas ao relatório para a
@@ -24,7 +24,6 @@ import { TELAS } from './telas';
 const PROTOTIPO = process.env['PROTOTIPO_URL'] ?? 'http://localhost:4300/';
 
 async function abrir(page: Page, url: string): Promise<void> {
-  await page.addInitScript(() => localStorage.setItem('aeria-theme', 'light'));
   const resp = await page.goto(url, { waitUntil: 'networkidle' });
   expect(resp?.ok(), `não abriu ${url}`).toBeTruthy();
 }
@@ -36,14 +35,15 @@ async function abrirTela(page: Page, rota: string): Promise<void> {
 }
 
 async function semRolagemHorizontal(page: Page): Promise<number> {
-  return page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  return page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
 }
 
 for (const tela of TELAS) {
   test.describe(`${tela.prototipo} -> ${tela.rota}`, { tag: `@${tela.etiqueta}` }, () => {
     let esperado: Esqueleto;
-    let tokensProtoClaro: Record<string, string>;
-    let tokensProtoEscuro: Record<string, string>;
+    let tokensProto: Record<string, string>;
     let estilosProto: Awaited<ReturnType<typeof lerEstilos>>;
 
     test.beforeEach(async ({ browser }, info) => {
@@ -51,29 +51,49 @@ for (const tela of TELAS) {
       const p = await ctx.newPage();
       await abrir(p, new URL(tela.prototipo, PROTOTIPO).href);
       esperado = await lerEsqueleto(p);
-      tokensProtoClaro = await lerTokens(p, 'light');
-      tokensProtoEscuro = await lerTokens(p, 'dark');
+      tokensProto = await lerTokens(p);
       estilosProto = await lerEstilos(p);
-      await info.attach('protótipo (desktop)', { body: await p.screenshot({ fullPage: true }), contentType: 'image/png' });
+      await info.attach('protótipo (desktop)', {
+        body: await p.screenshot({ fullPage: true }),
+        contentType: 'image/png',
+      });
       await p.setViewportSize({ width: 390, height: 844 });
-      await info.attach('protótipo (celular)', { body: await p.screenshot({ fullPage: true }), contentType: 'image/png' });
+      await info.attach('protótipo (celular)', {
+        body: await p.screenshot({ fullPage: true }),
+        contentType: 'image/png',
+      });
       await ctx.close();
     });
 
     test('estrutura igual à do protótipo', async ({ page }, info) => {
       await simularApi(page, tela.api);
       await abrirTela(page, tela.rota);
+      await tela.preparar?.(page);
       const real = await lerEsqueleto(page);
-      await info.attach('tela real (desktop)', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
+      await info.attach('tela real (desktop)', {
+        body: await page.screenshot({ fullPage: true }),
+        contentType: 'image/png',
+      });
 
       for (const { chave, nome } of PARTES) {
         const falta = faltando(esperado[chave], real[chave], tela.ignorar);
         expect.soft(falta, `${nome} do protótipo que não aparecem na tela`).toEqual([]);
         const sobra = faltando(real[chave], esperado[chave]);
         if (sobra.length)
-          info.annotations.push({ type: 'a mais na tela', description: `${nome}: ${sobra.join(' | ')}` });
+          info.annotations.push({
+            type: 'a mais na tela',
+            description: `${nome}: ${sobra.join(' | ')}`,
+          });
       }
-      esperado.colunas.forEach((colunas, i) => {
+      const colunasAtuais = esperado.colunas.filter((colunas) => {
+        const futura = tela.tabelasSemApi?.find(
+          (tabela) => JSON.stringify(tabela.colunas) === JSON.stringify(colunas),
+        );
+        if (futura)
+          info.annotations.push({ type: 'tabela de recurso futuro', description: futura.motivo });
+        return !futura;
+      });
+      colunasAtuais.forEach((colunas, i) => {
         expect.soft(real.colunas[i], `colunas da tabela ${i + 1}`).toEqual(colunas);
       });
     });
@@ -81,16 +101,14 @@ for (const tela of TELAS) {
     test('estilo igual ao do protótipo', async ({ page }) => {
       await simularApi(page, tela.api);
       await abrirTela(page, tela.rota);
-      for (const [tema, proto] of [
-        ['light', tokensProtoClaro],
-        ['dark', tokensProtoEscuro],
-      ] as const) {
-        const real = await lerTokens(page, tema);
-        const diferentes = Object.entries(proto)
-          .filter(([nome, valor]) => valor && real[nome] !== valor)
-          .map(([nome, valor]) => `${nome}: protótipo ${valor}, tela ${real[nome] || '(não definido)'}`);
-        expect.soft(diferentes, `tokens do tema ${tema} diferentes do protótipo`).toEqual([]);
-      }
+      await tela.preparar?.(page);
+      const real = await lerTokens(page);
+      const diferentes = Object.entries(tokensProto)
+        .filter(([nome, valor]) => valor && real[nome] !== valor)
+        .map(
+          ([nome, valor]) => `${nome}: protótipo ${valor}, tela ${real[nome] || '(não definido)'}`,
+        );
+      expect.soft(diferentes, 'tokens diferentes do protótipo').toEqual([]);
       const estilosReal = await lerEstilos(page);
       for (const [seletor, props] of Object.entries(estilosProto)) {
         if (!props || !estilosReal[seletor]) continue;
@@ -102,8 +120,15 @@ for (const tela of TELAS) {
       await page.setViewportSize({ width: 390, height: 844 });
       await simularApi(page, tela.api);
       await abrirTela(page, tela.rota);
-      await info.attach('tela real (celular)', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
-      expect(await semRolagemHorizontal(page), 'pixels de rolagem horizontal em 390px').toBeLessThanOrEqual(1);
+      await tela.preparar?.(page);
+      await info.attach('tela real (celular)', {
+        body: await page.screenshot({ fullPage: true }),
+        contentType: 'image/png',
+      });
+      expect(
+        await semRolagemHorizontal(page),
+        'pixels de rolagem horizontal em 390px',
+      ).toBeLessThanOrEqual(1);
     });
   });
 }

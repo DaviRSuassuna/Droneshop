@@ -29,8 +29,8 @@ public final class CupomResponseMapper {
                         .map(c -> new CupomResponseDTO.ReferenciaCupomDTO(c.getId(), c.getNome())).toList(),
                 cupom.getMarcas().stream()
                         .map(m -> new CupomResponseDTO.ReferenciaCupomDTO(m.getId(), m.getNome())).toList(),
-                cupom.getVariantes().stream()
-                        .map(v -> new CupomResponseDTO.ReferenciaCupomDTO(v.getId(), v.getNome(), v.getSku())).toList());
+                cupom.getProdutos().stream()
+                        .map(p -> new CupomResponseDTO.ReferenciaCupomDTO(p.getId(), p.getNome(), p.getSku())).toList());
     }
 
     public static UsoCupomResponseDTO toUsoResponse(UsoCupom uso) {

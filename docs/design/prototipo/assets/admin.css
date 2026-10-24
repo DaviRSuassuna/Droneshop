@@ -369,7 +369,7 @@ div.info::before{position:absolute;left:13px;top:12px}
   .tw td[data-l]{flex-wrap:wrap;row-gap:2px}
   .tw td[data-l]>*{min-width:0}
   .tw .pc{min-width:0}.tw .pc>div{min-width:0}
-  /* variantes: cada linha vira um bloco de campos */
+  /* tabela de linhas editáveis (.vt): cada linha vira um bloco de campos */
   .vt{min-width:0!important}
   .vt thead{display:none}
   .vt tbody{display:grid;gap:10px}
@@ -393,3 +393,7 @@ div.info::before{position:absolute;left:13px;top:12px}
   .tw td[data-l] .num,.tw td[data-l]:not(:has(.sub2)){white-space:nowrap}
 }
 .li .x{min-width:36px;min-height:36px}
+/* menu com 12 módulos: busca vira ícone e as abas encolhem para caber */
+.tabs a{padding:7px 9px}
+@media (max-width:1700px){.search{width:34px;padding:0;justify-content:center;font-size:0;gap:0}.search kbd{display:none}}
+@media (max-width:1400px){.store{display:none}.tabs a{padding:7px 7px;font-size:13px}}

@@ -58,7 +58,7 @@ public class CupomResourceTest {
         c.put("limitePorCliente", 1);
         c.put("idsCategorias", List.of());
         c.put("idsMarcas", List.of());
-        c.put("idsVariantes", List.of());
+        c.put("idsProdutos", List.of());
         return c;
     }
 

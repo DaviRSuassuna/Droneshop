@@ -34,7 +34,7 @@ public class DroneServiceImpl implements DroneService {
 
     private void aplicarDados(Drone destino, DroneRequestDTO dto, Long idAtual) {
         StatusProduto status = cadastro.status(dto.idStatus());
-        cadastro.validarObrigatorios(dto, status, obrigatoriosDoDrone(dto));
+        cadastro.validarObrigatorios(dto, status, null, obrigatoriosDoDrone(dto));
         cadastro.aplicar(destino, dto, status, idAtual);
 
         destino.setPesoGramas(dto.pesoGramas());

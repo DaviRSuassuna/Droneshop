@@ -1,11 +1,12 @@
 package br.com.droneshop.catalogo.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 import org.hibernate.validator.constraints.Length;
 
 import br.com.droneshop.util.Textos;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 
 public record DroneRequestDTO(
@@ -13,7 +14,7 @@ public record DroneRequestDTO(
     String nome,
 
     @Length(max = 40, message = "O campo deve ter no máximo 40 caracteres (back).")
-    String modelo,
+    String sku,
 
     @Length(max = 300, message = "O campo deve ter no máximo 300 caracteres (back).")
     String descricaoCurta,
@@ -47,6 +48,39 @@ public record DroneRequestDTO(
     Long idStatus,
 
     Boolean destaque,
+
+    @DecimalMin(value = "0.0", inclusive = false, message = "O preço deve ser maior que zero (back).")
+    BigDecimal preco,
+
+    @DecimalMin(value = "0.0", message = "O custo não pode ser negativo (back).")
+    BigDecimal custoAquisicao,
+
+    // so vale na criacao (saldo inicial); depois, so muda por movimento (#13)
+    @Min(value = 0, message = "O estoque não pode ser negativo (back).")
+    Integer estoqueFisico,
+
+    @Min(value = 0, message = "O estoque mínimo não pode ser negativo (back).")
+    Integer estoqueMinimo,
+
+    @DecimalMin(value = "0.0", inclusive = false, message = "O peso deve ser maior que zero (back).")
+    BigDecimal pesoEmbalagemKg,
+
+    @Min(value = 1, message = "A medida deve ser maior que zero (back).")
+    Integer alturaEmbalagemCm,
+
+    @Min(value = 1, message = "A medida deve ser maior que zero (back).")
+    Integer larguraEmbalagemCm,
+
+    @Min(value = 1, message = "A medida deve ser maior que zero (back).")
+    Integer comprimentoEmbalagemCm,
+
+    Long idGrupo,
+
+    @Length(max = 40, message = "O campo deve ter no máximo 40 caracteres (back).")
+    String rotuloNoGrupo,
+
+    @Min(value = 0, message = "A ordem não pode ser negativa (back).")
+    Integer ordemNoGrupo,
 
     @Min(value = 0, message = "O valor não pode ser negativo (back).")
     Integer pesoGramas,
@@ -97,14 +131,12 @@ public record DroneRequestDTO(
     String classeAnac,
 
     @Length(max = 40, message = "O campo deve ter no máximo 40 caracteres (back).")
-    String registroSisant,
-
-    // validadas item a item no ProdutoCadastro, para o erro sair como variantes[i].campo
-    List<VarianteRequestDTO> variantes
+    String registroSisant
 ) implements ProdutoRequestDTO {
     public DroneRequestDTO {
         nome = Textos.nuloSeVazio(nome);
-        modelo = Textos.nuloSeVazio(modelo);
+        sku = Textos.nuloSeVazio(sku);
+        rotuloNoGrupo = Textos.nuloSeVazio(rotuloNoGrupo);
         descricaoCurta = Textos.nuloSeVazio(descricaoCurta);
         descricao = Textos.nuloSeVazio(descricao);
         slug = Textos.nuloSeVazio(slug);

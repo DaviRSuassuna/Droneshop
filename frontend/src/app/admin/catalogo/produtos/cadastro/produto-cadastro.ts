@@ -1,18 +1,19 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Observable } from 'rxjs';
-import { AdminNav } from '../../../../layout/admin/admin-nav/admin-nav';
+import { Observable, startWith } from 'rxjs';
 import { ProdutoService } from '../../../../core/services/produto.service';
 import { DroneService } from '../../../../core/services/drone.service';
 import { AcessorioService } from '../../../../core/services/acessorio.service';
+import { KitService } from '../../../../core/services/kit.service';
 import { MarcaService } from '../../../../core/services/marca.service';
 import { CategoriaService } from '../../../../core/services/categoria.service';
 import { SubcategoriaService } from '../../../../core/services/subcategoria.service';
 import { FornecedorService } from '../../../../core/services/fornecedor.service';
-import { VarianteService } from '../../../../core/services/variante.service';
+import { GrupoProdutoService } from '../../../../core/services/grupo-produto.service';
 import {
   CompativeisAcessorio,
   VinculoCompativel,
@@ -21,14 +22,13 @@ import {
 import {
   AcessorioDTO,
   DroneDTO,
+  KitDTO,
   Produto,
   ProdutoDTO,
   ProdutoResumo,
   TIPO_PRODUTO,
-  Variante,
-  VarianteDTO,
-  VarianteListagem,
 } from '../../../../core/models/produto.model';
+import { GrupoProduto } from '../../../../core/models/grupo-produto.model';
 import { STATUS_FORNECEDOR, STATUS_PRODUTO } from '../../../../core/models/status.model';
 import { Marca } from '../../../../core/models/marca.model';
 import { Categoria } from '../../../../core/models/categoria.model';
@@ -59,16 +59,44 @@ const OPCOES = {
 
 type CampoOpcao = keyof typeof OPCOES;
 
+/** Produto que pode ser componente do kit, com o que a tela mostra e usa para derivar a embalagem. */
+interface OpcaoComponente {
+  id: number;
+  nome: string | null;
+  sku: string | null;
+  tipo: string;
+  disponivel: number;
+  pesoEmbalagemKg: number | null;
+  alturaEmbalagemCm: number | null;
+  larguraEmbalagemCm: number | null;
+  comprimentoEmbalagemCm: number | null;
+}
+
+interface LinhaComponente {
+  produto: OpcaoComponente;
+  quantidade: number;
+}
+
+/** Linha do seletor "Versão" (outras versões do grupo e este produto). */
+interface VersaoTela {
+  id: number | null;
+  nome: string;
+  rotulo: string;
+  tipo: string;
+  preco: number | null;
+  este: boolean;
+}
+
 /**
- * Cadastro de drone e de acessório (D27). A rota diz o tipo (data.tipo): drone mostra
- * as specs e salva em /drones; acessório mostra o tipo de acessório e salva em /acessorios.
+ * Cadastro de drone, acessório e kit (D27, D40). A rota diz o tipo (data.tipo): drone mostra a
+ * ficha técnica e salva em /drones; acessório mostra o tipo e a compatibilidade e salva em
+ * /acessorios; kit mostra os componentes, não tem estoque próprio e salva em /kits.
  */
 @Component({
   selector: 'app-produto-cadastro',
   imports: [
     ReactiveFormsModule,
     RouterLink,
-    AdminNav,
     CompativeisAcessorio,
     ProdutoMidias,
     ProdutoMidiasExtras,
@@ -81,11 +109,12 @@ export class ProdutoCadastro implements OnInit {
   private readonly produtoService = inject(ProdutoService);
   private readonly droneService = inject(DroneService);
   private readonly acessorioService = inject(AcessorioService);
+  private readonly kitService = inject(KitService);
   private readonly marcaService = inject(MarcaService);
   private readonly categoriaService = inject(CategoriaService);
   private readonly subcategoriaService = inject(SubcategoriaService);
   private readonly fornecedorService = inject(FornecedorService);
-  private readonly varianteService = inject(VarianteService);
+  private readonly grupoService = inject(GrupoProdutoService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly location = inject(Location);
@@ -96,24 +125,31 @@ export class ProdutoCadastro implements OnInit {
 
   readonly tipo: number = this.route.snapshot.data['tipo'] ?? TIPO_PRODUTO.DRONE;
   readonly ehDrone = this.tipo === TIPO_PRODUTO.DRONE;
+  readonly ehAcessorio = this.tipo === TIPO_PRODUTO.ACESSORIO;
+  readonly ehKit = this.tipo === TIPO_PRODUTO.KIT;
+  readonly nomeTipo = this.ehDrone ? 'drone' : this.ehKit ? 'kit' : 'acessório';
+  private readonly rotaTipo = this.ehDrone ? 'drones' : this.ehKit ? 'kits' : 'acessorios';
   private readonly rotaListagem = '/admin/produtos';
 
   readonly produtoId = signal<number | null>(null);
   readonly modoEdicao = computed(() => this.produtoId() !== null);
   readonly titulo = computed(
-    () => `${this.modoEdicao() ? 'Editar' : 'Cadastrar'} ${this.ehDrone ? 'drone' : 'acessório'}`,
+    () => `${this.modoEdicao() ? 'Editar' : 'Cadastrar'} ${this.nomeTipo}`,
   );
+  readonly trilha = computed(() =>
+    this.modoEdicao()
+      ? `Editar ${this.nomeTipo}`
+      : this.ehDrone
+        ? 'Novo item'
+        : `Novo ${this.nomeTipo}`,
+  );
+  readonly rotuloPublicar = this.ehDrone ? 'Publicar' : `Publicar ${this.nomeTipo}`;
 
   readonly marcas = signal<Marca[]>([]);
   readonly categorias = signal<Categoria[]>([]);
   readonly subcategorias = signal<Subcategoria[]>([]);
   readonly fornecedores = signal<Fornecedor[]>([]);
-  readonly categoriaSelecionada = signal<number | null>(null);
-
-  /** Subcategorias da categoria escolhida no select de cima. */
-  readonly subcategoriasDisponiveis = computed(() =>
-    this.subcategorias().filter((s) => s.categoria.id === this.categoriaSelecionada()),
-  );
+  readonly grupos = signal<GrupoProduto[]>([]);
 
   readonly carregando = signal(false);
   readonly salvando = signal(false);
@@ -121,13 +157,9 @@ export class ProdutoCadastro implements OnInit {
   readonly erroGeral = signal<string | null>(null);
   readonly errosCampo = signal<Record<string, string>>({});
 
-  readonly erroNoSeo = computed(() =>
-    ['slug', 'metaTitle', 'metaDescription', 'tags'].some((c) => c in this.errosCampo()),
-  );
-
   readonly form = this.fb.group({
     nome: this.fb.nonNullable.control(''),
-    modelo: this.fb.nonNullable.control(''),
+    sku: this.fb.nonNullable.control(''),
     descricaoCurta: this.fb.nonNullable.control(''),
     descricao: this.fb.nonNullable.control(''),
     slug: this.fb.nonNullable.control(''),
@@ -141,8 +173,27 @@ export class ProdutoCadastro implements OnInit {
     idCategoria: this.fb.control<number | null>(null),
     idSubcategoria: this.fb.control<number | null>(null),
     idFornecedor: this.fb.control<number | null>(null),
-    idStatus: this.fb.nonNullable.control<number>(STATUS_PRODUTO.RASCUNHO, Validators.required),
+    idStatus: this.fb.nonNullable.control<number>(STATUS_PRODUTO.RASCUNHO),
     destaque: this.fb.nonNullable.control(false),
+    tipoAcessorio: this.fb.nonNullable.control(''),
+  });
+
+  // preço, estoque e embalagem do próprio produto (D40); a caixa é digitada como A×L×C
+  readonly dadosComerciais = this.fb.group({
+    preco: this.fb.control<number | null>(null),
+    custoAquisicao: this.fb.control<number | null>(null),
+    estoqueFisico: this.fb.control<number | null>(null),
+    estoqueMinimo: this.fb.control<number | null>(null),
+    pesoEmbalagemKg: this.fb.control<number | null>(null),
+    dimensoes: this.fb.nonNullable.control(''),
+    // kit: sem sobrescrita, peso e dimensões vêm dos componentes (D16)
+    sobrescreverEmbalagem: this.fb.nonNullable.control(false),
+  });
+
+  readonly pagina = this.fb.group({
+    idGrupo: this.fb.control<number | null>(null),
+    rotuloNoGrupo: this.fb.nonNullable.control(''),
+    ordemNoGrupo: this.fb.control<number | null>(null),
   });
 
   // specs do drone (D14); alcance é digitado em km e vai em metros para a API
@@ -167,37 +218,166 @@ export class ProdutoCadastro implements OnInit {
     registroSisant: this.fb.nonNullable.control(''),
   });
 
-  readonly tipoAcessorio = this.fb.nonNullable.control('');
+  // valores do form como signal, para o que a tela calcula ao vivo (margem, pendências, versões)
+  private readonly valores = toSignal(
+    this.form.valueChanges.pipe(startWith(this.form.getRawValue())),
+    {
+      requireSync: true,
+    },
+  );
+  private readonly valoresComerciais = toSignal(
+    this.dadosComerciais.valueChanges.pipe(startWith(this.dadosComerciais.getRawValue())),
+    { requireSync: true },
+  );
+  private readonly valoresPagina = toSignal(
+    this.pagina.valueChanges.pipe(startWith(this.pagina.getRawValue())),
+    { requireSync: true },
+  );
+  private readonly valoresSpecs = toSignal(
+    this.specs.valueChanges.pipe(startWith(this.specs.getRawValue())),
+    { requireSync: true },
+  );
 
-  // Variantes na própria tela (D13). Produto novo começa com uma linha "Padrão".
-  readonly variantes = this.fb.array([this.linhaVariante()]);
-  readonly semOpcoes = this.fb.nonNullable.control(false);
-  readonly gridVariantes = '1fr 1.1fr 0.9fr 0.9fr 0.6fr 0.7fr 0.7fr 0.7fr 1fr 32px 32px';
-
-  /** Formata a margem que o backend calculou (D26); linha nova ainda não tem. */
-  readonly formatoPercentual = new Intl.NumberFormat('pt-BR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+  /** Subcategorias da categoria escolhida no select de cima. */
+  readonly subcategoriasDisponiveis = computed(() => {
+    const idCategoria = numero(this.valores().idCategoria ?? null);
+    return this.subcategorias().filter((s) => s.categoria?.id === idCategoria);
   });
 
-  // Kit (D7): variantes que podem ser componente, por id. Vem de GET /variantes (ativas)
-  // mais os componentes já salvos no kit, para o select mostrar mesmo um inativo.
-  readonly variantesConhecidas = signal<Map<number, VarianteListagem>>(new Map());
-  readonly opcoesComponente = computed(() =>
-    [...this.variantesConhecidas().values()]
-      .filter((v) => !v.ehKit)
-      .sort((a, b) => this.rotuloVariante(a).localeCompare(this.rotuloVariante(b), 'pt-BR')),
-  );
-  readonly gridKit = '2.4fr 0.8fr 1.2fr 32px';
-
-  // compatibilidade (D17): o acessório grava a lista; os dois tipos mostram o lado recíproco
+  // compatibilidade (D17): o acessório grava a lista; todos mostram o lado recíproco
   readonly compativeis = signal<VinculoCompativel[]>([]);
   readonly acessoriosCompativeis = signal<ProdutoResumo[]>([]);
   readonly rotuloTipo = rotuloTipo;
 
+  // kit (D7): componentes escolhidos e os produtos que podem entrar (ATIVOS, sem kit)
+  readonly componentes = signal<LinhaComponente[]>([]);
+  readonly opcoesComponente = signal<OpcaoComponente[]>([]);
+  readonly escolhendoComponente = signal(false);
+  readonly opcoesLivres = computed(() => {
+    const escolhidos = new Set(this.componentes().map((c) => c.produto.id));
+    return this.opcoesComponente().filter((o) => !escolhidos.has(o.id));
+  });
+  readonly unidadesNoKit = computed(() =>
+    this.componentes().reduce((t, c) => t + (c.quantidade || 0), 0),
+  );
+  /** Peso e dimensões que o backend derivaria dos componentes (D16); nulo se falta medida. */
+  readonly embalagemDerivada = computed(() => derivarEmbalagem(this.componentes()));
+  /** Mínimo entre (disponível do componente ÷ quantidade), como o backend calcula (D7). */
+  readonly disponivelKit = computed(() => {
+    let menor: number | null = null;
+    for (const c of this.componentes()) {
+      if (!c.quantidade || c.quantidade < 1) continue;
+      const kits = Math.floor(c.produto.disponivel / c.quantidade);
+      menor = menor === null ? kits : Math.min(menor, kits);
+    }
+    return menor ?? 0;
+  });
+  readonly limitante = computed(() => {
+    const disponivel = this.disponivelKit();
+    return this.componentes().find(
+      (c) => c.quantidade > 0 && Math.floor(c.produto.disponivel / c.quantidade) === disponivel,
+    );
+  });
+
+  readonly formatoMoeda = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+  private readonly formatoPercentual = new Intl.NumberFormat('pt-BR', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
+
+  /** Margem ao vivo, com a mesma fórmula do backend (D26): (preço − custo) ÷ preço. */
+  readonly margem = computed(() => {
+    const v = this.valoresComerciais();
+    const preco = numero(v.preco ?? null);
+    const custo = numero(v.custoAquisicao ?? null);
+    if (preco === null || custo === null || preco <= 0) return null;
+    return ((preco - custo) / preco) * 100;
+  });
+  readonly margemTexto = computed(() => {
+    const m = this.margem();
+    return m === null ? '' : this.formatoPercentual.format(m);
+  });
+
+  readonly grupoSelecionado = computed(() => {
+    const id = numero(this.valoresPagina().idGrupo ?? null);
+    return this.grupos().find((g) => g.id === id) ?? null;
+  });
+
+  /** Versões do grupo no seletor da loja, com este produto no lugar dele (ou no fim, se novo). */
+  readonly versoes = computed<VersaoTela[]>(() => {
+    const grupo = this.grupoSelecionado();
+    if (!grupo) return [];
+    const id = this.produtoId();
+    const v = this.valores();
+    const pagina = this.valoresPagina();
+    const outras = grupo.versoes
+      .filter((x) => x.idProduto !== id)
+      .map((x) => ({
+        id: x.idProduto,
+        nome: x.nome ?? 'Sem nome',
+        rotulo: x.rotulo,
+        tipo: tipoTexto(x.tipo.id),
+        preco: x.preco,
+        ordem: x.ordem,
+        este: false,
+      }));
+    const este = {
+      id,
+      nome: v.nome?.trim() || 'Este produto',
+      rotulo: pagina.rotuloNoGrupo?.trim() || '—',
+      tipo: tipoTexto(this.tipo),
+      preco: numero(this.valoresComerciais().preco ?? null),
+      ordem: numero(pagina.ordemNoGrupo ?? null) ?? Number.MAX_SAFE_INTEGER,
+      este: true,
+    };
+    return [...outras, este].sort((a, b) => a.ordem - b.ordem);
+  });
+
+  /**
+   * Obrigatórios para publicar (D28), com os mesmos critérios do backend. Rascunho
+   * aceita tudo vazio; a lista aparece no card de pendências e na barra de ações.
+   */
+  readonly pendencias = computed(() => {
+    const v = this.valores();
+    const vend = this.valoresComerciais();
+    const s = this.valoresSpecs();
+    const p = this.valoresPagina();
+    const faltam: string[] = [];
+    if (!v.nome?.trim()) faltam.push(this.ehKit ? 'Nome do kit' : 'Nome do produto');
+    if (!v.idMarca) faltam.push('Marca');
+    if (!v.sku?.trim()) faltam.push('SKU');
+    if (!v.idSubcategoria) faltam.push('Subcategoria');
+    if (!v.idFornecedor) faltam.push('Fornecedor');
+    if (this.ehDrone && numero(s.pesoGramas ?? null) === null) faltam.push('Peso');
+    if (this.ehDrone && s.exigeRegistroAnac && !s.classeAnac) faltam.push('Classe ANAC');
+    if (this.ehAcessorio && !v.tipoAcessorio) faltam.push('Tipo de acessório');
+    if (this.ehKit && !this.componentes().length) faltam.push('Componentes');
+    if (numero(vend.preco ?? null) === null) faltam.push('Preço de venda');
+    const derivada = this.ehKit && !vend.sobrescreverEmbalagem ? this.embalagemDerivada() : null;
+    if (numero(vend.pesoEmbalagemKg ?? null) === null && derivada?.peso == null)
+      faltam.push('Peso da caixa');
+    if (
+      !lerDimensoes(vend.dimensoes ?? '')?.every((m) => m !== null) &&
+      derivada?.dimensoes == null
+    )
+      faltam.push('Caixa A × L × C');
+    if (p.idGrupo && !p.rotuloNoGrupo?.trim()) faltam.push('Rótulo no grupo');
+    return faltam;
+  });
+
+  readonly statusAtual = computed(() => {
+    const id = numero(this.valores().idStatus ?? null);
+    return id === STATUS_PRODUTO.ATIVO
+      ? 'Ativo'
+      : id === STATUS_PRODUTO.INATIVO
+        ? 'Inativo'
+        : 'Rascunho';
+  });
+
   /** Opções do select, mais o valor salvo quando ele não estiver na lista. */
   opcoes(campo: CampoOpcao): readonly string[] {
-    const atual = campo === 'tipoAcessorio' ? this.tipoAcessorio.value : this.valorSpec(campo);
+    const atual =
+      campo === 'tipoAcessorio' ? this.form.controls.tipoAcessorio.value : this.valorSpec(campo);
     const lista: readonly string[] = OPCOES[campo];
     return atual && !lista.includes(atual) ? [...lista, atual] : lista;
   }
@@ -213,34 +393,43 @@ export class ProdutoCadastro implements OnInit {
     return mapa[campo].value;
   }
 
+  /** Categoria no select: o kit entra em categoria de qualquer tipo, então o tipo vai junto. */
+  rotuloCategoria(c: Categoria): string {
+    return this.ehKit && c.tipo
+      ? `${c.nome} · ${c.tipo.id === TIPO_PRODUTO.DRONE ? 'Drone' : 'Acessório'}`
+      : c.nome;
+  }
+
   ngOnInit(): void {
     this.marcaService
       .listar(0, 1000)
       .subscribe((p) => this.marcas.set(p.items.filter((x) => x.nome)));
-    // só as categorias do tipo desta tela: drone não entra em categoria de acessório
+    // drone e acessório só entram em categoria do próprio tipo (D39); o kit, em qualquer uma
     this.categoriaService
       .listar(0, 1000)
       .subscribe((p) =>
-        this.categorias.set(p.items.filter((x) => x.nome && x.tipo?.id === this.tipo)),
+        this.categorias.set(
+          p.items.filter((x) => x.nome && (this.ehKit || x.tipo?.id === this.tipo)),
+        ),
       );
     this.subcategoriaService
       .listar(null, 0, 1000)
       .subscribe((p) => this.subcategorias.set(p.items));
     this.fornecedorService.listar(0, 1000).subscribe((p) => this.fornecedores.set(p.items));
-    this.varianteService
-      .listar({ ativa: true }, 0, 1000)
-      .subscribe((p) => this.conhecerVariantes(p.items));
-
-    this.semOpcoes.valueChanges.subscribe(() => this.alternarSemOpcoes());
+    this.grupoService.listar({}, 0, 1000).subscribe((p) => this.grupos.set(p.items));
+    if (this.ehKit)
+      this.produtoService
+        .listar({ idStatus: STATUS_PRODUTO.ATIVO, kit: false }, 0, 1000)
+        .subscribe((p) => this.conhecerOpcoes(p.items.map(opcaoDoProduto)));
 
     // ao trocar a categoria, limpa a subcategoria se ela for de outra categoria
     this.form.controls.idCategoria.valueChanges.subscribe((id) => {
       const idCategoria = id ? Number(id) : null;
-      this.categoriaSelecionada.set(idCategoria);
       const sub = this.subcategorias().find(
-        (s) => s.id === this.form.controls.idSubcategoria.value,
+        (s) => s.id === Number(this.form.controls.idSubcategoria.value),
       );
-      if (sub && sub.categoria.id !== idCategoria) this.form.controls.idSubcategoria.setValue(null);
+      if (sub && sub.categoria?.id !== idCategoria)
+        this.form.controls.idSubcategoria.setValue(null);
     });
 
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -258,16 +447,15 @@ export class ProdutoCadastro implements OnInit {
       next: (produto) => {
         if (produto.tipo.id !== this.tipo) {
           this.erroGeral.set(
-            `Este produto é ${produto.tipo.id === TIPO_PRODUTO.DRONE ? 'um drone' : 'um acessório'}; abra pela listagem de produtos.`,
+            `Este produto é ${artigoTipo(produto.tipo.id)}; abra pela listagem de produtos.`,
           );
           this.carregando.set(false);
           return;
         }
         this.preencherTipo(produto);
-        this.preencherVariantes(produto.variantes ?? []);
         this.form.patchValue({
           nome: produto.nome ?? '',
-          modelo: produto.modelo ?? '',
+          sku: produto.sku ?? '',
           descricaoCurta: produto.descricaoCurta ?? '',
           descricao: produto.descricao ?? '',
           slug: produto.slug,
@@ -277,11 +465,29 @@ export class ProdutoCadastro implements OnInit {
           garantiaMeses: produto.garantiaMeses,
           dataLancamento: produto.dataLancamento ?? '',
           idMarca: produto.marca?.id ?? null,
-          idCategoria: produto.subcategoria?.categoria.id ?? null,
+          idCategoria: produto.subcategoria?.categoria?.id ?? null,
           idSubcategoria: produto.subcategoria?.id ?? null,
           idFornecedor: produto.fornecedor?.id ?? null,
           idStatus: produto.status.id,
           destaque: produto.destaque,
+          tipoAcessorio: produto.tipoAcessorio ?? '',
+        });
+        // no kit, peso e dimensões só vão para o campo quando foram informados nele (D16)
+        const sobrescrito =
+          !this.ehKit || !!produto.pesoSobrescrito || !!produto.dimensoesSobrescritas;
+        this.dadosComerciais.patchValue({
+          preco: produto.preco,
+          custoAquisicao: produto.custoAquisicao,
+          estoqueFisico: produto.estoqueFisico,
+          estoqueMinimo: produto.estoqueMinimo ?? null,
+          pesoEmbalagemKg: sobrescrito ? produto.pesoEmbalagemKg : null,
+          dimensoes: sobrescrito ? formatarDimensoes(produto) : '',
+          sobrescreverEmbalagem: this.ehKit && sobrescrito,
+        });
+        this.pagina.patchValue({
+          idGrupo: produto.grupo?.id ?? null,
+          rotuloNoGrupo: produto.rotuloNoGrupo ?? '',
+          ordemNoGrupo: produto.grupo ? produto.ordemNoGrupo : null,
         });
         this.carregando.set(false);
       },
@@ -298,9 +504,27 @@ export class ProdutoCadastro implements OnInit {
 
   private preencherTipo(produto: Produto): void {
     this.acessoriosCompativeis.set(produto.acessoriosCompativeis ?? []);
-    if (!this.ehDrone) {
+    if (this.ehAcessorio) {
       this.compativeis.set((produto.compativeis ?? []).map((p) => ({ produto: p, salvo: true })));
-      this.tipoAcessorio.setValue(produto.tipoAcessorio ?? '');
+      return;
+    }
+    if (this.ehKit) {
+      // o componente salvo pode estar inativo e fora da lista de ativos: entra mesmo assim
+      const salvos = (produto.componentes ?? []).map((c) => ({
+        produto: {
+          id: c.idProduto,
+          nome: c.nome,
+          sku: c.sku,
+          tipo: tipoTexto(c.tipo.id),
+          disponivel: c.status.id === STATUS_PRODUTO.ATIVO ? c.disponivel : 0,
+          pesoEmbalagemKg: null,
+          alturaEmbalagemCm: null,
+          larguraEmbalagemCm: null,
+          comprimentoEmbalagemCm: null,
+        },
+        quantidade: c.quantidade,
+      }));
+      this.componentes.set(salvos.map((s) => ({ ...s, produto: this.opcaoConhecida(s.produto) })));
       return;
     }
     this.specs.patchValue({
@@ -325,10 +549,50 @@ export class ProdutoCadastro implements OnInit {
     });
   }
 
+  /** As medidas da embalagem do componente vêm da lista de ativos; o salvo pode não ter. */
+  private opcaoConhecida(o: OpcaoComponente): OpcaoComponente {
+    return this.opcoesComponente().find((x) => x.id === o.id) ?? o;
+  }
+
+  private conhecerOpcoes(lista: OpcaoComponente[]): void {
+    this.opcoesComponente.set(lista);
+    this.componentes.update((atuais) =>
+      atuais.map((c) => ({ ...c, produto: this.opcaoConhecida(c.produto) })),
+    );
+  }
+
+  adicionarComponente(evento: Event): void {
+    const select = evento.target as HTMLSelectElement;
+    const opcao = this.opcoesComponente().find((o) => o.id === Number(select.value));
+    select.value = '';
+    if (!opcao) return;
+    this.componentes.update((lista) => [...lista, { produto: opcao, quantidade: 1 }]);
+    this.escolhendoComponente.set(false);
+  }
+
+  mudarQuantidade(id: number, evento: Event): void {
+    const quantidade = Number((evento.target as HTMLInputElement).value);
+    this.componentes.update((lista) =>
+      lista.map((c) =>
+        c.produto.id === id
+          ? { ...c, quantidade: Number.isFinite(quantidade) ? quantidade : 0 }
+          : c,
+      ),
+    );
+  }
+
+  removerComponente(id: number): void {
+    this.componentes.update((lista) => lista.filter((c) => c.produto.id !== id));
+  }
+
+  erroComponente(i: number): string | null {
+    const p = `componentes[${i}].`;
+    return this.mensagemErro(p + 'idProduto') ?? this.mensagemErro(p + 'quantidade');
+  }
+
   /** Rota de edição do produto citado, conforme o tipo dele. */
-  rotaEdicao(produto: ProdutoResumo): string {
-    const base = produto.tipo.id === TIPO_PRODUTO.DRONE ? 'drones' : 'acessorios';
-    return `/admin/${base}/${produto.id}/editar`;
+  rotaEdicao(produto: { id: number; tipo: { id: number } }): string {
+    return `/admin/${rotaDoTipo(produto.tipo.id)}/${produto.id}/editar`;
   }
 
   campoInvalido(campo: string): boolean {
@@ -339,14 +603,52 @@ export class ProdutoCadastro implements OnInit {
     return this.errosCampo()[campo] ?? null;
   }
 
-  salvar(): void {
+  /** As três medidas viram um campo só na tela; o erro de qualquer uma aparece nele. */
+  erroDimensoes(): string | null {
+    return (
+      this.mensagemErro('dimensoes') ??
+      this.mensagemErro('alturaEmbalagemCm') ??
+      this.mensagemErro('larguraEmbalagemCm') ??
+      this.mensagemErro('comprimentoEmbalagemCm')
+    );
+  }
+
+  moeda(valor: number | null): string {
+    return valor === null ? '—' : this.formatoMoeda.format(valor);
+  }
+
+  /**
+   * "Salvar rascunho" grava como RASCUNHO; "Publicar" grava com o status escolhido na
+   * coluna lateral, e Rascunho ali vira Ativo (publicar é tirar do rascunho).
+   */
+  salvar(publicar: boolean): void {
     this.erroGeral.set(null);
     this.errosCampo.set({});
 
     const v = this.form.getRawValue();
+    const vend = this.dadosComerciais.getRawValue();
+    const p = this.pagina.getRawValue();
+    const escolhido = Number(v.idStatus);
+    const idStatus = !publicar
+      ? STATUS_PRODUTO.RASCUNHO
+      : escolhido === STATUS_PRODUTO.RASCUNHO
+        ? STATUS_PRODUTO.ATIVO
+        : escolhido;
+
+    // no kit sem sobrescrita, peso e dimensões vão vazios e o backend deriva (D16)
+    const usaEmbalagemPropria = !this.ehKit || vend.sobrescreverEmbalagem;
+    const medidas = usaEmbalagemPropria ? lerDimensoes(vend.dimensoes) : [null, null, null];
+    if (medidas === undefined) {
+      this.errosCampo.set({
+        dimensoes: 'Use altura × largura × comprimento em cm, ex.: 15×28×38.',
+      });
+      this.erroGeral.set('Verifique os campos destacados.');
+      return;
+    }
+    const idGrupo = p.idGrupo ? Number(p.idGrupo) : null;
     const dto: ProdutoDTO = {
       nome: v.nome.trim(),
-      modelo: v.modelo.trim(),
+      sku: v.sku.trim(),
       descricaoCurta: v.descricaoCurta.trim(),
       descricao: v.descricao.trim(),
       slug: v.slug.trim(),
@@ -359,29 +661,44 @@ export class ProdutoCadastro implements OnInit {
       idMarca: v.idMarca ? Number(v.idMarca) : null,
       idSubcategoria: v.idSubcategoria ? Number(v.idSubcategoria) : null,
       idFornecedor: v.idFornecedor ? Number(v.idFornecedor) : null,
-      idStatus: Number(v.idStatus),
+      idStatus,
       destaque: v.destaque,
-      variantes: [],
+      preco: numero(vend.preco),
+      custoAquisicao: numero(vend.custoAquisicao),
+      pesoEmbalagemKg: usaEmbalagemPropria ? numero(vend.pesoEmbalagemKg) : null,
+      alturaEmbalagemCm: medidas[0],
+      larguraEmbalagemCm: medidas[1],
+      comprimentoEmbalagemCm: medidas[2],
+      idGrupo,
+      rotuloNoGrupo: idGrupo ? p.rotuloNoGrupo.trim() : '',
+      ordemNoGrupo: idGrupo ? numero(p.ordemNoGrupo) : null,
     };
-
-    const variantes = this.variantesDTO();
-    if (!variantes) {
-      this.erroGeral.set('Verifique os campos destacados.');
-      return;
-    }
-    dto.variantes = variantes;
 
     this.salvando.set(true);
     const id = this.produtoId();
+    const estoque = {
+      estoqueFisico: numero(vend.estoqueFisico),
+      estoqueMinimo: numero(vend.estoqueMinimo),
+    };
     let request$: Observable<Produto | void>;
     if (this.ehDrone) {
-      const drone = this.droneDTO(dto);
+      const drone: DroneDTO = { ...dto, ...estoque, ...this.specsDTO() };
       request$ = id ? this.droneService.atualizar(id, drone) : this.droneService.criar(drone);
+    } else if (this.ehKit) {
+      const kit: KitDTO = {
+        ...dto,
+        componentes: this.componentes().map((c) => ({
+          idProduto: c.produto.id,
+          quantidade: c.quantidade,
+        })),
+      };
+      request$ = id ? this.kitService.atualizar(id, kit) : this.kitService.criar(kit);
     } else {
       const acessorio: AcessorioDTO = {
         ...dto,
-        tipoAcessorio: this.tipoAcessorio.value,
-        idsCompativeis: this.compativeis().map((v) => v.produto.id),
+        ...estoque,
+        tipoAcessorio: v.tipoAcessorio,
+        idsCompativeis: this.compativeis().map((c) => c.produto.id),
       };
       request$ = id
         ? this.acessorioService.atualizar(id, acessorio)
@@ -405,8 +722,7 @@ export class ProdutoCadastro implements OnInit {
           error: () => {
             this.salvando.set(false);
             this.produtoId.set(criado);
-            const tipoRota = this.ehDrone ? 'drones' : 'acessorios';
-            this.location.replaceState(`/admin/${tipoRota}/${criado}/editar`);
+            this.location.replaceState(`/admin/${this.rotaTipo}/${criado}/editar`);
           },
         });
       },
@@ -414,11 +730,10 @@ export class ProdutoCadastro implements OnInit {
     });
   }
 
-  private droneDTO(comum: ProdutoDTO): DroneDTO {
+  private specsDTO() {
     const s = this.specs.getRawValue();
     const alcanceKm = numero(s.alcanceKm);
     return {
-      ...comum,
       pesoGramas: numero(s.pesoGramas),
       dimensoesDobrado: s.dimensoesDobrado.trim(),
       dimensoesAberto: s.dimensoesAberto.trim(),
@@ -440,228 +755,6 @@ export class ProdutoCadastro implements OnInit {
     };
   }
 
-  /**
-   * Linha da tabela de variantes. A variante já salva tem o estoque só para leitura:
-   * depois da criação ele muda só por movimento de estoque.
-   */
-  private linhaVariante(v?: Variante, nome = 'Padrão', kit = false) {
-    const ehKit = v?.ehKit ?? kit;
-    // no kit, peso e dimensões só vão para o campo quando foram informados nele (D16);
-    // o derivado dos componentes aparece como placeholder
-    const pesoDerivado = ehKit && v && !v.pesoSobrescrito;
-    const dimensoesDerivadas = ehKit && v && !v.dimensoesSobrescritas;
-    return this.fb.group({
-      id: this.fb.control<number | null>(v?.id ?? null),
-      nome: this.fb.nonNullable.control(v ? (v.nome ?? '') : nome),
-      sku: this.fb.nonNullable.control(v?.sku ?? ''),
-      preco: this.fb.control<number | null>(v?.preco ?? null),
-      custoAquisicao: this.fb.control<number | null>(v?.custoAquisicao ?? null),
-      estoqueFisico: this.fb.control<number | null>(v?.estoqueFisico ?? null),
-      estoqueMinimo: this.fb.control<number | null>(v?.estoqueMinimo ?? null),
-      pesoEmbalagemKg: this.fb.control<number | null>(
-        pesoDerivado ? null : (v?.pesoEmbalagemKg ?? null),
-      ),
-      dimensoes: this.fb.nonNullable.control(v && !dimensoesDerivadas ? formatarDimensoes(v) : ''),
-      ativa: this.fb.nonNullable.control(v?.ativa ?? true),
-      margemPercentual: this.fb.control<number | null>(v?.margemPercentual ?? null),
-      ehKit: this.fb.nonNullable.control(ehKit),
-      componentes: this.fb.array(
-        (v?.componentes ?? []).map((c) => this.linhaComponente(c.variante.id, c.quantidade)),
-      ),
-      pesoAuto: this.fb.nonNullable.control(
-        pesoDerivado && v && v.pesoEmbalagemKg !== null
-          ? `${String(v.pesoEmbalagemKg).replace('.', ',')} · auto`
-          : 'auto',
-      ),
-      dimensoesAuto: this.fb.nonNullable.control(
-        dimensoesDerivadas && v && v.alturaEmbalagemCm !== null
-          ? `${formatarDimensoes(v)} · auto`
-          : 'auto',
-      ),
-    });
-  }
-
-  private linhaComponente(idVariante: number | null = null, quantidade: number | null = 1) {
-    return this.fb.group({
-      idVariante: this.fb.control<number | null>(idVariante),
-      quantidade: this.fb.control<number | null>(quantidade),
-    });
-  }
-
-  private preencherVariantes(lista: Variante[]): void {
-    this.variantes.clear();
-    for (const v of lista) this.variantes.push(this.linhaVariante(v));
-    this.semOpcoes.setValue(lista.length === 1 && lista[0].nome === 'Padrão', { emitEvent: false });
-    this.conhecerVariantes(lista.flatMap((v) => v.componentes ?? []).map((c) => c.variante));
-  }
-
-  private conhecerVariantes(lista: VarianteListagem[]): void {
-    const mapa = new Map(this.variantesConhecidas());
-    for (const v of lista) mapa.set(v.id, v);
-    this.variantesConhecidas.set(mapa);
-  }
-
-  rotuloVariante(v: VarianteListagem): string {
-    return `${v.produto.nome ?? 'Produto sem nome'} · ${v.nome ?? v.sku ?? 'Sem nome'}`;
-  }
-
-  ehLinhaKit(i: number): boolean {
-    return this.variantes.at(i).controls.ehKit.value;
-  }
-
-  /** Índices das linhas que são kit, na ordem da tabela de variantes. */
-  indicesKit(): number[] {
-    return this.variantes.controls.flatMap((l, i) => (l.controls.ehKit.value ? [i] : []));
-  }
-
-  /** O checkbox cria a variante kit (D7) ou tira os kits do produto. */
-  alternarKit(evento: Event): void {
-    const caixa = evento.target as HTMLInputElement;
-    if (caixa.checked) {
-      this.criarKit();
-      return;
-    }
-    const kits = this.indicesKit();
-    if (
-      kits.some((i) => this.varianteSalva(i)) &&
-      !confirm('O kit será excluído ao salvar. Continuar?')
-    ) {
-      caixa.checked = true;
-      return;
-    }
-    for (const i of kits.reverse()) this.variantes.removeAt(i);
-  }
-
-  private criarKit(): void {
-    // kit é uma opção a mais, então o produto deixa de ser "sem opções"
-    this.semOpcoes.setValue(false, { emitEvent: false });
-    const linha = this.linhaVariante(undefined, 'Kit', true);
-    linha.controls.componentes.push(this.linhaComponente());
-    this.variantes.push(linha);
-  }
-
-  adicionarComponente(i?: number): void {
-    if (i === undefined) {
-      this.criarKit();
-      return;
-    }
-    this.variantes.at(i).controls.componentes.push(this.linhaComponente());
-  }
-
-  removerComponente(i: number, j: number): void {
-    this.variantes.at(i).controls.componentes.removeAt(j);
-  }
-
-  disponivelDe(idVariante: number | null): number | null {
-    if (idVariante === null) return null;
-    return this.variantesConhecidas().get(Number(idVariante))?.disponivel ?? null;
-  }
-
-  /** Mínimo entre (disponível do componente ÷ quantidade), como o backend calcula. */
-  disponibilidadeKit(i: number): number {
-    const componentes = this.variantes.at(i).controls.componentes.getRawValue();
-    let menor: number | null = null;
-    for (const c of componentes) {
-      const disponivel = this.disponivelDe(c.idVariante);
-      const quantidade = numero(c.quantidade);
-      if (disponivel === null || !quantidade || quantidade < 1) continue;
-      const kits = Math.floor(disponivel / quantidade);
-      menor = menor === null ? kits : Math.min(menor, kits);
-    }
-    return menor ?? 0;
-  }
-
-  erroComponente(i: number, j: number): string | null {
-    const p = `variantes[${i}].componentes[${j}].`;
-    return this.mensagemErro(p + 'idVariante') ?? this.mensagemErro(p + 'quantidade');
-  }
-
-  varianteSalva(i: number): boolean {
-    return this.variantes.at(i).controls.id.value !== null;
-  }
-
-  adicionarVariante(): void {
-    this.variantes.push(this.linhaVariante(undefined, ''));
-  }
-
-  removerVariante(i: number): void {
-    this.variantes.removeAt(i);
-  }
-
-  /** "Sem opções" deixa uma linha só, chamada "Padrão" (D13); kit também sai. */
-  alternarSemOpcoes(): void {
-    if (!this.semOpcoes.value) return;
-    if (
-      this.variantes.length > 1 &&
-      !confirm('Ficará só a primeira variante; as outras serão excluídas ao salvar. Continuar?')
-    ) {
-      this.semOpcoes.setValue(false, { emitEvent: false });
-      return;
-    }
-    const primeira = this.variantes.controls.findIndex((l) => !l.controls.ehKit.value);
-    const manter = primeira === -1 ? null : this.variantes.at(primeira);
-    this.variantes.clear();
-    this.variantes.push(manter ?? this.linhaVariante());
-    this.variantes.at(0).controls.nome.setValue('Padrão');
-  }
-
-  erroVariante(i: number, campo: string): string | null {
-    return this.mensagemErro(`variantes[${i}].${campo}`);
-  }
-
-  formatarMargem(valor: number | null): string {
-    return valor === null ? '—' : `${this.formatoPercentual.format(valor)}%`;
-  }
-
-  /** As três medidas viram um campo só na tela; o erro de qualquer uma aparece nele. */
-  erroDimensoes(i: number): string | null {
-    const p = `variantes[${i}].`;
-    return (
-      this.mensagemErro(p + 'dimensoes') ??
-      this.mensagemErro(p + 'alturaEmbalagemCm') ??
-      this.mensagemErro(p + 'larguraEmbalagemCm') ??
-      this.mensagemErro(p + 'comprimentoEmbalagemCm')
-    );
-  }
-
-  /** Corpo das variantes; null quando alguma dimensão não está no formato A×L×C. */
-  private variantesDTO(): VarianteDTO[] | null {
-    const erros: Record<string, string> = {};
-    const lista = this.variantes.getRawValue().map((v, i) => {
-      const medidas = lerDimensoes(v.dimensoes);
-      if (medidas === undefined)
-        erros[`variantes[${i}].dimensoes`] =
-          'Use altura × largura × comprimento em cm, ex.: 15×28×38.';
-      return {
-        id: v.id,
-        nome: v.nome.trim(),
-        sku: v.sku.trim(),
-        preco: numero(v.preco),
-        custoAquisicao: numero(v.custoAquisicao),
-        // o kit não tem estoque próprio (D7)
-        estoqueFisico: v.ehKit ? null : numero(v.estoqueFisico),
-        estoqueMinimo: v.ehKit ? null : numero(v.estoqueMinimo),
-        pesoEmbalagemKg: numero(v.pesoEmbalagemKg),
-        alturaEmbalagemCm: medidas?.[0] ?? null,
-        larguraEmbalagemCm: medidas?.[1] ?? null,
-        comprimentoEmbalagemCm: medidas?.[2] ?? null,
-        ehKit: v.ehKit,
-        componentes: v.ehKit
-          ? v.componentes.map((c) => ({
-              idVariante: c.idVariante === null ? null : Number(c.idVariante),
-              quantidade: numero(c.quantidade),
-            }))
-          : [],
-        ativa: v.ativa,
-      };
-    });
-    if (Object.keys(erros).length) {
-      this.errosCampo.set(erros);
-      return null;
-    }
-    return lista;
-  }
-
   excluir(): void {
     const id = this.produtoId();
     if (id === null) return;
@@ -672,7 +765,7 @@ export class ProdutoCadastro implements OnInit {
       next: () => this.router.navigate([this.rotaListagem]),
       error: (err: HttpErrorResponse) => {
         this.excluindo.set(false);
-        // 409: produto em uso (D28); o detail explica e sugere inativar
+        // 409: produto em uso, como componente de kit (D24); o detail explica e sugere inativar
         const problem = err.error as ProblemDetail | undefined;
         this.erroGeral.set(problem?.detail ?? 'Não foi possível excluir este produto.');
       },
@@ -693,9 +786,80 @@ export class ProdutoCadastro implements OnInit {
   }
 }
 
+function tipoTexto(idTipo: number): string {
+  return idTipo === TIPO_PRODUTO.DRONE
+    ? 'Drone'
+    : idTipo === TIPO_PRODUTO.KIT
+      ? 'Kit'
+      : 'Acessório';
+}
+
+function artigoTipo(idTipo: number): string {
+  return idTipo === TIPO_PRODUTO.DRONE
+    ? 'um drone'
+    : idTipo === TIPO_PRODUTO.KIT
+      ? 'um kit'
+      : 'um acessório';
+}
+
+function rotaDoTipo(idTipo: number): string {
+  return idTipo === TIPO_PRODUTO.DRONE
+    ? 'drones'
+    : idTipo === TIPO_PRODUTO.KIT
+      ? 'kits'
+      : 'acessorios';
+}
+
+function opcaoDoProduto(p: Produto): OpcaoComponente {
+  return {
+    id: p.id,
+    nome: p.nome,
+    sku: p.sku,
+    tipo: tipoTexto(p.tipo.id),
+    disponivel: p.disponivel,
+    pesoEmbalagemKg: p.pesoEmbalagemKg,
+    alturaEmbalagemCm: p.alturaEmbalagemCm,
+    larguraEmbalagemCm: p.larguraEmbalagemCm,
+    comprimentoEmbalagemCm: p.comprimentoEmbalagemCm,
+  };
+}
+
+/** Mesma regra do KitCalculo: peso e comprimento somados, altura e largura a maior. */
+function derivarEmbalagem(lista: LinhaComponente[]): {
+  peso: number | null;
+  dimensoes: string | null;
+} {
+  if (!lista.length) return { peso: null, dimensoes: null };
+  let peso: number | null = 0;
+  let altura: number | null = 0;
+  let largura: number | null = 0;
+  let comprimento: number | null = 0;
+  for (const { produto: p, quantidade } of lista) {
+    peso =
+      p.pesoEmbalagemKg === null || peso === null ? null : peso + p.pesoEmbalagemKg * quantidade;
+    altura =
+      p.alturaEmbalagemCm === null || altura === null
+        ? null
+        : Math.max(altura, p.alturaEmbalagemCm);
+    largura =
+      p.larguraEmbalagemCm === null || largura === null
+        ? null
+        : Math.max(largura, p.larguraEmbalagemCm);
+    comprimento =
+      p.comprimentoEmbalagemCm === null || comprimento === null
+        ? null
+        : comprimento + p.comprimentoEmbalagemCm * quantidade;
+  }
+  const dimensoes =
+    altura === null || largura === null || comprimento === null
+      ? null
+      : `${altura}×${largura}×${comprimento}`;
+  return { peso: peso === null ? null : Math.round(peso * 1000) / 1000, dimensoes };
+}
+
 /** Altura × largura × comprimento da embalagem, como o protótipo mostra ("15×28×38"). */
-function formatarDimensoes(v: Variante): string {
-  const medidas = [v.alturaEmbalagemCm, v.larguraEmbalagemCm, v.comprimentoEmbalagemCm];
+function formatarDimensoes(p: Produto): string {
+  const medidas = [p.alturaEmbalagemCm, p.larguraEmbalagemCm, p.comprimentoEmbalagemCm];
   return medidas.every((m) => m === null) ? '' : medidas.map((m) => m ?? '').join('×');
 }
 

@@ -1,9 +1,9 @@
+import { toSignal } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Observable } from 'rxjs';
-import { AdminNav } from '../../../../layout/admin/admin-nav/admin-nav';
+import { Observable, map } from 'rxjs';
 import { MarcaService } from '../../../../core/services/marca.service';
 import { MarcaDTO } from '../../../../core/models/marca.model';
 import { STATUS_PUBLICACAO } from '../../../../core/models/status.model';
@@ -11,8 +11,7 @@ import { ProblemDetail } from '../../../../core/models/problem.model';
 
 @Component({
   selector: 'app-marca-cadastro',
-  standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, AdminNav],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './marca-cadastro.html',
   styleUrl: './marca-cadastro.scss',
 })
@@ -43,9 +42,13 @@ export class MarcaCadastro implements OnInit {
     destacarHome: [false],
   });
 
+  private readonly valores = toSignal(
+    this.form.valueChanges.pipe(map(() => this.form.getRawValue())),
+    { initialValue: this.form.getRawValue() },
+  );
+
   readonly pendencias = computed(() => {
-    const v = this.form.getRawValue();
-    if (v.idStatus === STATUS_PUBLICACAO.RASCUNHO) return [];
+    const v = this.valores();
     const faltando: string[] = [];
     if (!v.nome.trim()) faltando.push('Nome da marca');
     if (!v.paisOrigem.trim()) faltando.push('País de origem');
@@ -79,7 +82,11 @@ export class MarcaCadastro implements OnInit {
         this.carregando.set(false);
       },
       error: (err) => {
-        this.erroGeral.set(err.status === 404 ? 'Esta marca não foi encontrada.' : 'Não foi possível carregar esta marca.');
+        this.erroGeral.set(
+          err.status === 404
+            ? 'Esta marca não foi encontrada.'
+            : 'Não foi possível carregar esta marca.',
+        );
         this.carregando.set(false);
       },
     });
@@ -93,7 +100,10 @@ export class MarcaCadastro implements OnInit {
     return this.errosCampo()[campo] ?? null;
   }
 
-  salvar(): void {
+  salvar(publicar = false): void {
+    if (this.salvando()) return;
+    if (publicar && this.form.controls.idStatus.value === STATUS_PUBLICACAO.RASCUNHO)
+      this.form.controls.idStatus.setValue(STATUS_PUBLICACAO.ATIVA);
     this.erroGeral.set(null);
     this.errosCampo.set({});
 

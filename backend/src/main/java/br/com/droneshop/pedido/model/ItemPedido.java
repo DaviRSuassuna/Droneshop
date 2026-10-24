@@ -2,7 +2,7 @@ package br.com.droneshop.pedido.model;
 
 import java.math.BigDecimal;
 
-import br.com.droneshop.catalogo.model.VarianteProduto;
+import br.com.droneshop.catalogo.model.Produto;
 import br.com.droneshop.model.DefaultEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,13 +19,13 @@ public class ItemPedido extends DefaultEntity {
     private Pedido pedido;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "id_variante", nullable = false)
-    private VarianteProduto variante;
+    @JoinColumn(name = "id_produto", nullable = false)
+    private Produto produto;
 
     @Column(nullable = false)
     private int quantidade;
 
-    // RN06: preço da variante no momento da compra; mudar o catálogo depois não altera o pedido
+    // RN06: preço do produto no momento da compra; mudar o catálogo depois não altera o pedido
     @Column(name = "preco_unitario_congelado", nullable = false, precision = 12, scale = 2)
     private BigDecimal precoUnitarioCongelado;
 
@@ -37,12 +37,12 @@ public class ItemPedido extends DefaultEntity {
         this.pedido = pedido;
     }
 
-    public VarianteProduto getVariante() {
-        return variante;
+    public Produto getProduto() {
+        return produto;
     }
 
-    public void setVariante(VarianteProduto variante) {
-        this.variante = variante;
+    public void setProduto(Produto produto) {
+        this.produto = produto;
     }
 
     public int getQuantidade() {

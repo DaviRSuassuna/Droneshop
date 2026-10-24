@@ -39,7 +39,7 @@ Quando a decisão sair, basta tirar o `@Disabled` e ajustar o teste, se preciso.
 | `java/br/com/droneshop/<modulo>/` | Um pacote por módulo, espelhando o `src/main`; um arquivo por recurso da API |
 | `testes/Dados.java` | Sufixo aleatório, CNPJ válido e ids de estado/município. O banco é compartilhado com a carga do `import.sql`, então cada teste cria os próprios registros e nunca depende do total da tabela |
 | `testes/Api.java` | Ponto de partida das requisições: `given()` entra como o admin semente (`admin@aeria.com.br`) e manda o token; antes da #4, manda sem token (D25). Também `anonimo()`, `como(token)` e `carrinho(token)` |
-| `testes/Fixtures.java` | Massa de dados montada só pela API: árvore de catálogo, drone e acessório com variante, cliente logado, carrinho, pedido pendente e pago. Ids dos enums (D31) |
+| `testes/Fixtures.java` | Massa de dados montada só pela API: árvore de catálogo, drone, acessório e kit (produto, D40), cliente logado, carrinho, pedido pendente e pago. Ids dos enums (D31) |
 | `testes/Totp.java` | Código TOTP para os testes de 2FA (#45) |
 | `endereco/ViaCepFalso.java` | ViaCEP falso que só existe nos testes. O `%test` aponta o REST Client para ele, então nenhum teste depende da internet |
 | `pagamento/MercadoPagoFalso.java`, `pedido/FreteFalso.java`, `notificacao/ResendFalso.java`, `identidade/GoogleFalso.java` | Os outros serviços externos, no mesmo esquema do ViaCEP (D34). Cada um documenta como simular recusa ou serviço fora do ar |
@@ -53,14 +53,12 @@ Testes escritos a partir do contrato de cada issue (`docs/issues/NNN.md`), antes
 
 | Etiqueta | Situação no CI | Arquivos | Testes |
 |---|---|---|---:|
-| `base` | bloqueia o merge | `catalogo/CategoriaResourceTest`, `catalogo/FornecedorResourceTest`, `catalogo/MarcaResourceTest`, `catalogo/SubcategoriaResourceTest`, `endereco/CepResourceTest`, `endereco/EstadoMunicipioResourceTest`, `exception/RotaInexistenteTest` | 74 |
+| `base` | bloqueia o merge | `catalogo/CategoriaResourceTest`, `catalogo/FornecedorResourceTest`, `catalogo/MarcaResourceTest`, `catalogo/SubcategoriaResourceTest`, `endereco/CepResourceTest`, `endereco/EstadoMunicipioResourceTest`, `exception/RotaInexistenteTest` | 77 |
 | `issue-4` | bloqueia o merge | `identidade/AutenticacaoResourceTest` | 12 |
 | `issue-5` | bloqueia o merge | `administracao/UsuarioAdministrativoResourceTest` | 14 |
 | `issue-6` | bloqueia o merge | `administracao/ConfiguracaoLojaResourceTest` | 4 |
 | `issue-7` | bloqueia o merge | `catalogo/ProdutoSeoResourceTest` | 7 |
 | `issue-8` | bloqueia o merge | `catalogo/AcessorioResourceTest`, `catalogo/CategoriaResourceTest`, `catalogo/DroneResourceTest`, `catalogo/ExclusaoEmUsoTest`, `catalogo/ProdutoResourceTest`, `catalogo/SubcategoriaResourceTest` | 29 |
-| `issue-9` | bloqueia o merge | `catalogo/VarianteResourceTest` | 9 |
-| `issue-10` | bloqueia o merge | `catalogo/KitResourceTest` | 7 |
 | `issue-11` | bloqueia o merge | `catalogo/CompatibilidadeResourceTest` | 6 |
 | `issue-12` | bloqueia o merge | `catalogo/MidiaProdutoResourceTest` | 14 |
 | `issue-13` | bloqueia o merge | `estoque/MovimentoEstoqueResourceTest` | 9 |
@@ -71,7 +69,7 @@ Testes escritos a partir do contrato de cada issue (`docs/issues/NNN.md`), antes
 | `issue-18` | bloqueia o merge | `administracao/DashboardResourceTest` | 4 |
 | `issue-19` | informativo | `identidade/ClienteResourceTest`, `identidade/EnderecoClienteResourceTest` | 17 |
 | `issue-20` | informativo | `identidade/SessaoResourceTest` | 7 |
-| `issue-21` | informativo | `catalogo/LojaProdutoResourceTest`, `catalogo/LojaVitrineResourceTest` | 11 |
+| `issue-21` | informativo | `catalogo/LojaProdutoResourceTest`, `catalogo/LojaVitrineResourceTest` | 13 |
 | `issue-22` | informativo | `compra/ListaDesejosResourceTest` | 3 |
 | `issue-23` | informativo | `estoque/ReservaResourceTest` | 7 |
 | `issue-24` | informativo | `compra/CarrinhoResourceTest` | 9 |
@@ -98,10 +96,17 @@ Testes escritos a partir do contrato de cada issue (`docs/issues/NNN.md`), antes
 | `issue-45` | informativo | `administracao/DoisFatoresResourceTest` | 4 |
 | `issue-46` | informativo | `identidade/LgpdResourceTest` | 5 |
 | `issue-47` | informativo | `identidade/GoogleResourceTest` | 6 |
+| `issue-61` | informativo | `administracao/AcoesAdminResourceTest`, `administracao/ComplementosAdminResourceTest`, `pedido/service/EtiquetaPedidoServiceTest`, `util/CsvTest` | 20 |
+| `issue-80` | bloqueia o merge | `catalogo/GrupoProdutoResourceTest`, `catalogo/KitResourceTest`, `catalogo/ProdutoDadosComerciaisResourceTest`, `catalogo/SubcategoriaResourceTest` | 37 |
+| `issue-catalogo-complementos` | informativo | `catalogo/CatalogoComplementosResourceTest` | 7 |
+| `issue-dashboard-indicadores` | informativo | `administracao/DashboardIndicadoresResourceTest` | 8 |
 | `issue-empresas` | informativo | `atendimento/LeadEmpresaResourceTest` | 2 |
-| `issue-lote-csv` | informativo | `administracao/AcoesAdminResourceTest` | 6 |
+| `issue-favoritos-compartilhar` | informativo | `compra/FavoritosCompartilharResourceTest` | 6 |
+| `issue-imagem-produto` | informativo | `catalogo/ImagemProdutoResourceTest` | 8 |
+| `issue-meus-drones` | informativo | `estoque/MeusDronesResourceTest` | 6 |
+| `issue-pedidos-painel` | informativo | `pedido/PainelPedidosResourceTest` | 6 |
 
-Total: 394 testes. Gerado por `scripts/vincular_testes_issues.py --matriz`.
+Total: 475 testes. Gerado por `scripts/vincular_testes_issues.py --matriz`.
 
 <!-- matriz:fim -->
 

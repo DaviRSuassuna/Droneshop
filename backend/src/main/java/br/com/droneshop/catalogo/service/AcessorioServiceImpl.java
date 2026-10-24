@@ -45,7 +45,7 @@ public class AcessorioServiceImpl implements AcessorioService {
         List<Problem.FieldError> errosDoTipo = new ArrayList<>();
         if (dto.tipoAcessorio() == null)
             errosDoTipo.add(new Problem.FieldError("tipoAcessorio", ProdutoCadastro.OBRIGATORIO));
-        cadastro.validarObrigatorios(dto, status, errosDoTipo);
+        cadastro.validarObrigatorios(dto, status, null, errosDoTipo);
         Set<Produto> compativeis = buscarCompativeis(dto.idsCompativeis(), idAtual);
         cadastro.aplicar(destino, dto, status, idAtual);
         destino.setTipoAcessorio(dto.tipoAcessorio());

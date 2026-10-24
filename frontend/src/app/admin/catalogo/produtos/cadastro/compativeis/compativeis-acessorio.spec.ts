@@ -52,7 +52,7 @@ describe('CompativeisAcessorio', () => {
     comp.busca.setValue('fal');
     vi.advanceTimersByTime(300);
     const req = http.expectOne((r) => r.url === `${environment.apiUrl}/produtos`);
-    expect(req.request.params.get('nome')).toBe('fal');
+    expect(req.request.params.get('busca')).toBe('fal');
     req.flush({ items: [drone, helice, proprio], page: 0, pageSize: 8, totalItems: 3 });
 
     expect(comp.opcoes().map((p) => p.id)).toEqual([drone.id]);

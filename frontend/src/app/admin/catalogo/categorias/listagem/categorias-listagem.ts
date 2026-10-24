@@ -1,6 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AdminNav } from '../../../../layout/admin/admin-nav/admin-nav';
 import { CategoriaService } from '../../../../core/services/categoria.service';
 import { Categoria } from '../../../../core/models/categoria.model';
 import { STATUS_PUBLICACAO, StatusRef } from '../../../../core/models/status.model';
@@ -10,8 +9,7 @@ const TAMANHO_PAGINA = 10;
 
 @Component({
   selector: 'app-categorias-listagem',
-  standalone: true,
-  imports: [RouterLink, AdminNav],
+  imports: [RouterLink],
   templateUrl: './categorias-listagem.html',
   styleUrl: './categorias-listagem.scss',
 })
@@ -23,6 +21,11 @@ export class CategoriasListagem implements OnInit {
   readonly categorias = signal<Categoria[]>([]);
 
   readonly termoBusca = signal('');
+  readonly filtroTipo = signal<number | null>(null);
+  readonly reordenando = signal(false);
+  readonly salvandoOrdem = signal(false);
+  private ordemOriginal: Categoria[] = [];
+
   readonly STATUS = STATUS_PUBLICACAO;
   readonly TIPO = TIPO_PRODUTO;
   readonly filtroStatus = signal<number | null>(null);
@@ -36,7 +39,9 @@ export class CategoriasListagem implements OnInit {
       const combinaTermo =
         !termo || c.nome.toLowerCase().includes(termo) || c.slug.toLowerCase().includes(termo);
       const combinaStatus = !status || c.status.id === status;
-      return combinaTermo && combinaStatus;
+      return (
+        combinaTermo && combinaStatus && (!this.filtroTipo() || c.tipo?.id === this.filtroTipo())
+      );
     });
   });
 
@@ -66,7 +71,9 @@ export class CategoriasListagem implements OnInit {
     this.erro.set(null);
     this.categoriaService.listar(0, 1000).subscribe({
       next: (pagina) => {
-        this.categorias.set(pagina.items);
+        this.categorias.set(
+          [...pagina.items].sort((a, b) => a.ordemExibicao - b.ordemExibicao || a.id - b.id),
+        );
         this.carregando.set(false);
       },
       error: () => {
@@ -108,6 +115,44 @@ export class CategoriasListagem implements OnInit {
 
   statusLabel(status: StatusRef): string {
     return status.nome;
+  }
+
+  iniciarOrdem(): void {
+    this.ordemOriginal = [...this.categorias()];
+    this.termoBusca.set('');
+    this.filtroStatus.set(null);
+    this.filtroTipo.set(null);
+    this.pagina.set(0);
+    this.reordenando.set(true);
+  }
+
+  mover(categoria: Categoria, delta: number): void {
+    const lista = [...this.categorias()];
+    const i = lista.findIndex((c) => c.id === categoria.id);
+    const destino = i + delta;
+    if (destino < 0 || destino >= lista.length) return;
+    [lista[i], lista[destino]] = [lista[destino], lista[i]];
+    this.categorias.set(lista);
+  }
+
+  cancelarOrdem(): void {
+    this.categorias.set(this.ordemOriginal);
+    this.reordenando.set(false);
+  }
+
+  salvarOrdem(): void {
+    this.salvandoOrdem.set(true);
+    this.categoriaService.reordenar(this.categorias().map((c) => c.id)).subscribe({
+      next: () => {
+        this.salvandoOrdem.set(false);
+        this.reordenando.set(false);
+        this.carregarCategorias();
+      },
+      error: () => {
+        this.salvandoOrdem.set(false);
+        this.erro.set('Não foi possível salvar a ordem.');
+      },
+    });
   }
 
   exportarCsv(): void {

@@ -7,7 +7,6 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.notNullValue;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Tag;
@@ -27,17 +26,17 @@ import io.restassured.response.ValidatableResponse;
 @Tag("issue-13")
 class MovimentoEstoqueResourceTest {
 
-    static ValidatableResponse movimento(long idVariante, long idTipo, int quantidade) {
+    static ValidatableResponse movimento(long idProduto, long idTipo, int quantidade) {
         Map<String, Object> m = new HashMap<>();
-        m.put("idVariante", idVariante);
+        m.put("idProduto", idProduto);
         m.put("idTipo", idTipo);
         m.put("quantidade", quantidade);
         m.put("observacao", "teste");
         return given().contentType(ContentType.JSON).body(m).when().post("/estoque/movimentos").then();
     }
 
-    static int estoque(long idVariante) {
-        return given().when().get("/variantes/{id}", idVariante).then().statusCode(200)
+    static int estoque(long idProduto) {
+        return given().when().get("/produtos/{id}", idProduto).then().statusCode(200)
                 .extract().jsonPath().getInt("estoqueFisico");
     }
 
@@ -50,9 +49,9 @@ class MovimentoEstoqueResourceTest {
     }
 
     @Test
-    void criarVarianteComSaldoGeraEntradaManual() {
+    void criarProdutoComSaldoGeraEntradaManual() {
         Fixtures.ProdutoCriado p = Fixtures.criarDrone(1000.0, 8);
-        given().queryParam("idVariante", p.idVariante()).when().get("/estoque/movimentos")
+        given().queryParam("idProduto", p.id()).when().get("/estoque/movimentos")
                 .then().statusCode(200)
                 .body("totalItems", equalTo(1))
                 .body("items[0].tipo.nome", equalTo("ENTRADA"))
@@ -63,69 +62,61 @@ class MovimentoEstoqueResourceTest {
     @Test
     void entradaESaidaAtualizamOSaldoComAutor() {
         Fixtures.ProdutoCriado p = Fixtures.criarDrone(1000.0, 10);
-        movimento(p.idVariante(), Fixtures.MOV_ENTRADA, 5).statusCode(200)
+        movimento(p.id(), Fixtures.MOV_ENTRADA, 5).statusCode(200)
                 .body("origem.nome", equalTo("MANUAL"))
                 .body("autor.id", notNullValue())
                 .body("saldoResultante", equalTo(15));
-        movimento(p.idVariante(), Fixtures.MOV_SAIDA, 3).statusCode(200)
+        movimento(p.id(), Fixtures.MOV_SAIDA, 3).statusCode(200)
                 .body("saldoResultante", equalTo(12));
-        movimento(p.idVariante(), Fixtures.MOV_PERDA, 2).statusCode(200)
+        movimento(p.id(), Fixtures.MOV_PERDA, 2).statusCode(200)
                 .body("saldoResultante", equalTo(10));
-        org.junit.jupiter.api.Assertions.assertEquals(10, estoque(p.idVariante()));
+        org.junit.jupiter.api.Assertions.assertEquals(10, estoque(p.id()));
     }
 
     @Test
     void ajusteRecebeOSaldoNovo() {
         Fixtures.ProdutoCriado p = Fixtures.criarDrone(1000.0, 10);
-        movimento(p.idVariante(), Fixtures.MOV_AJUSTE, 7).statusCode(200)
+        movimento(p.id(), Fixtures.MOV_AJUSTE, 7).statusCode(200)
                 .body("saldoResultante", equalTo(7));
-        movimento(p.idVariante(), Fixtures.MOV_AJUSTE, 0).statusCode(200)
+        movimento(p.id(), Fixtures.MOV_AJUSTE, 0).statusCode(200)
                 .body("saldoResultante", equalTo(0));
     }
 
     @Test
     void saidaAcimaDoSaldoResponde409ENadaMuda() {
         Fixtures.ProdutoCriado p = Fixtures.criarDrone(1000.0, 2);
-        movimento(p.idVariante(), Fixtures.MOV_SAIDA, 3).statusCode(409);
-        org.junit.jupiter.api.Assertions.assertEquals(2, estoque(p.idVariante()));
+        movimento(p.id(), Fixtures.MOV_SAIDA, 3).statusCode(409);
+        org.junit.jupiter.api.Assertions.assertEquals(2, estoque(p.id()));
     }
 
     @Test
     void quantidadeZeroResponde400() {
         Fixtures.ProdutoCriado p = Fixtures.criarDrone(1000.0, 2);
-        movimento(p.idVariante(), Fixtures.MOV_ENTRADA, 0).statusCode(400)
+        movimento(p.id(), Fixtures.MOV_ENTRADA, 0).statusCode(400)
                 .body("errors.field", hasItem("quantidade"));
     }
 
     @Test
-    void varianteKitNaoRecebeMovimento() {
-        long idComponente = Fixtures.criarDrone(1000.0, 5).idVariante();
-        Map<String, Object> kit = new HashMap<>();
-        kit.put("nome", "Kit");
-        kit.put("sku", "KIT-" + Dados.sufixo().toUpperCase());
-        kit.put("preco", 1500.0);
-        kit.put("ehKit", true);
-        kit.put("ativa", true);
-        kit.put("componentes", List.of(Map.of("idVariante", idComponente, "quantidade", 1)));
-        long idKit = given().contentType(ContentType.JSON)
-                .body(Fixtures.drone("Kit " + Dados.sufixo(), Fixtures.arvore(), Fixtures.lista(kit)))
-                .when().post("/drones").then().statusCode(200).extract().jsonPath().getLong("variantes[0].id");
-        movimento(idKit, Fixtures.MOV_ENTRADA, 1).statusCode(400).body("errors.field", hasItem("idVariante"));
+    void kitNaoRecebeMovimento() {
+        long idComponente = Fixtures.criarDrone(1000.0, 5).id();
+        long idKit = Fixtures.criarKit(Fixtures.componente(idComponente, 1)).id();
+        movimento(idKit, Fixtures.MOV_ENTRADA, 1).statusCode(400).body("errors.field", hasItem("idProduto"));
     }
 
     @Test
-    void varianteInexistenteResponde404() {
+    void produtoInexistenteResponde404() {
         movimento(Dados.ID_INEXISTENTE, Fixtures.MOV_ENTRADA, 1).statusCode(404);
     }
 
     @Test
     void visaoDeEstoqueMarcaAbaixoDoMinimo() {
         Fixtures.ProdutoCriado p = Fixtures.criarDrone(1000.0, 5);
-        movimento(p.idVariante(), Fixtures.MOV_AJUSTE, 0).statusCode(200);
+        movimento(p.id(), Fixtures.MOV_AJUSTE, 0).statusCode(200);
         given().queryParam("situacao", "ABAIXO_MINIMO").queryParam("busca", p.sku())
                 .when().get("/estoque")
                 .then().statusCode(200)
                 .body("totalItems", equalTo(1))
+                .body("items[0].produto.id", equalTo((int) p.id()))
                 .body("items[0].abaixoDoMinimo", equalTo(true))
                 .body("items[0].disponivel", equalTo(0));
     }

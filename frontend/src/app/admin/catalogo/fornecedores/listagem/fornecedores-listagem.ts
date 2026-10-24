@@ -1,19 +1,16 @@
+import { baixarArquivo } from '../../../../shared/arquivo';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AdminNav } from '../../../../layout/admin/admin-nav/admin-nav';
 import { FornecedorService } from '../../../../core/services/fornecedor.service';
 import { Fornecedor } from '../../../../core/models/fornecedor.model';
 import { STATUS_FORNECEDOR, StatusRef } from '../../../../core/models/status.model';
-import { CnpjPipe, formatarCnpj } from '../../../../shared/pipes/cnpj.pipe';
-import { CepPipe } from '../../../../shared/pipes/cep.pipe';
-import { TelefonePipe, formatarTelefone } from '../../../../shared/pipes/telefone.pipe';
+import { CnpjPipe } from '../../../../shared/pipes/cnpj.pipe';
 
 const TAMANHO_PAGINA = 10;
 
 @Component({
   selector: 'app-fornecedores-listagem',
-  standalone: true,
-  imports: [RouterLink, AdminNav, CnpjPipe, CepPipe, TelefonePipe],
+  imports: [RouterLink, CnpjPipe],
   templateUrl: './fornecedores-listagem.html',
   styleUrl: './fornecedores-listagem.scss',
 })
@@ -25,6 +22,16 @@ export class FornecedoresListagem implements OnInit {
   readonly fornecedores = signal<Fornecedor[]>([]);
 
   readonly termoBusca = signal('');
+  readonly filtroUf = signal('');
+  readonly ufs = computed(() =>
+    [
+      ...new Set(
+        this.fornecedores()
+          .map((f) => f.endereco?.municipio.estado.sigla)
+          .filter((uf): uf is string => !!uf),
+      ),
+    ].sort(),
+  );
   readonly STATUS = STATUS_FORNECEDOR;
   readonly filtroStatus = signal<number | null>(null);
   readonly pagina = signal(0);
@@ -39,9 +46,14 @@ export class FornecedoresListagem implements OnInit {
       const combinaTermo =
         !termo ||
         f.razaoSocial.toLowerCase().includes(termo) ||
+        f.emailContato.toLowerCase().includes(termo) ||
         (termoDigitos.length > 0 && f.cnpj.replace(/\D/g, '').includes(termoDigitos));
       const combinaStatus = !status || f.status.id === status;
-      return combinaTermo && combinaStatus;
+      return (
+        combinaTermo &&
+        combinaStatus &&
+        (!this.filtroUf() || f.endereco?.municipio.estado.sigla === this.filtroUf())
+      );
     });
   });
 
@@ -103,15 +115,12 @@ export class FornecedoresListagem implements OnInit {
     evento.preventDefault();
     evento.stopPropagation();
     if (
-      !confirm(
-        `Excluir o fornecedor "${fornecedor.razaoSocial}"? Essa ação não pode ser desfeita.`,
-      )
+      !confirm(`Excluir o fornecedor "${fornecedor.razaoSocial}"? Essa ação não pode ser desfeita.`)
     )
       return;
 
     this.fornecedorService.excluir(fornecedor.id).subscribe({
-      next: () =>
-        this.fornecedores.update((lista) => lista.filter((f) => f.id !== fornecedor.id)),
+      next: () => this.fornecedores.update((lista) => lista.filter((f) => f.id !== fornecedor.id)),
       error: (err) => alert(err.error?.detail ?? 'Não foi possível excluir este fornecedor.'),
     });
   }
@@ -121,37 +130,11 @@ export class FornecedoresListagem implements OnInit {
   }
 
   exportarCsv(): void {
-    const linhas = [
-      [
-        'Razao social',
-        'CNPJ',
-        'Nome do contato',
-        'E-mail do contato',
-        'Telefone do contato',
-        'Municipio',
-        'UF',
-        'Status',
-      ],
-      ...this.fornecedoresFiltrados().map((f) => [
-        f.razaoSocial,
-        formatarCnpj(f.cnpj),
-        f.nomeContato,
-        f.emailContato,
-        formatarTelefone(f.telefoneContato),
-        f.endereco?.municipio.nome ?? '',
-        f.endereco?.municipio.estado.sigla ?? '',
-        this.statusLabel(f.status),
-      ]),
-    ];
-    const csv = linhas
-      .map((linha) => linha.map((v) => `"${v.replace(/"/g, '""')}"`).join(','))
-      .join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'fornecedores.csv';
-    a.click();
-    URL.revokeObjectURL(url);
+    this.fornecedorService
+      .exportar({ busca: this.termoBusca(), idStatus: this.filtroStatus(), uf: this.filtroUf() })
+      .subscribe({
+        next: (blob) => baixarArquivo('fornecedores.csv', blob),
+        error: () => this.erro.set('Não foi possível exportar o CSV.'),
+      });
   }
 }

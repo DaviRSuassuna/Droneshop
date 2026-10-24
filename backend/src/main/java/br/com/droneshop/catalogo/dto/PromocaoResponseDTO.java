@@ -17,6 +17,6 @@ public record PromocaoResponseDTO(
         BigDecimal valorMinimoCarrinho,
         boolean ativa,
         String situacao,
-        List<VariantePromocaoResponseDTO> variantes
+        List<ProdutoPromocaoResponseDTO> produtos
 ) {
 }

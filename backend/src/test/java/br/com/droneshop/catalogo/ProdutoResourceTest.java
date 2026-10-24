@@ -19,7 +19,8 @@ import io.restassured.http.ContentType;
 
 /**
  * Produto: cadastro pelo /drones (D27) e listagem, consulta e exclusão em /produtos
- * com filtros combináveis. Era "base"; a #8 migrou para /drones. Desde a #9 o preço fica na variante.
+ * com filtros combináveis. Era "base"; a #8 migrou para /drones. Desde a D40 o SKU (que era
+ * o modelo), o preço, o estoque e a embalagem ficam no próprio produto.
  */
 @QuarkusTest
 @Tag("issue-8")
@@ -37,10 +38,9 @@ class ProdutoResourceTest {
         return new Arvore(idMarca, idCategoria, idSubcategoria, idFornecedor);
     }
 
-    static Map<String, Object> produto(String nome, String modelo, Arvore a) {
-        Map<String, Object> p = new HashMap<>();
+    static Map<String, Object> produto(String nome, String sku, Arvore a) {
+        Map<String, Object> p = new HashMap<>(Fixtures.dadosComerciais(sku, 4999.90, 5));
         p.put("nome", nome);
-        p.put("modelo", modelo);
         p.put("descricaoCurta", "Produto criado pelo teste.");
         p.put("idMarca", a.idMarca());
         p.put("idSubcategoria", a.idSubcategoria());
@@ -48,7 +48,6 @@ class ProdutoResourceTest {
         p.put("idStatus", Dados.PRODUTO_ATIVO);
         p.put("destaque", false);
         p.put("pesoGramas", 895);
-        p.put("variantes", Fixtures.lista(Fixtures.variante("PR-" + Dados.sufixo().toUpperCase(), 4999.90, 5)));
         return p;
     }
 
@@ -60,13 +59,13 @@ class ProdutoResourceTest {
     }
 
     @Test
-    void criaProdutoComRelacionamentosAninhadosEModeloEmMaiusculas() {
+    void criaProdutoComRelacionamentosAninhadosESkuEmMaiusculas() {
         String s = Dados.sufixo();
         Arvore a = arvore(s);
         given().contentType(ContentType.JSON).body(produto("Hélice " + s, "hel-" + s, a))
                 .when().post("/drones")
                 .then().statusCode(200)
-                .body("modelo", equalTo(("HEL-" + s).toUpperCase()))
+                .body("sku", equalTo(("HEL-" + s).toUpperCase()))
                 .body("marca.id", equalTo((int) a.idMarca()))
                 .body("subcategoria.id", equalTo((int) a.idSubcategoria()))
                 .body("subcategoria.categoria.id", equalTo((int) a.idCategoria()))
@@ -95,7 +94,7 @@ class ProdutoResourceTest {
                 .body("totalItems", equalTo(1))
                 .body("items[0].nome", equalTo("Hélice " + s));
 
-        // nome ignora maiúsculas e acentos e também procura no modelo
+        // nome ignora maiúsculas e acentos e também procura no SKU
         given().queryParam("nome", "HELICE " + s)
                 .when().get("/produtos")
                 .then().statusCode(200)
@@ -107,14 +106,14 @@ class ProdutoResourceTest {
     }
 
     @Test
-    void modeloRepetidoResponde400() {
+    void skuRepetidoResponde400() {
         String s = Dados.sufixo();
         Arvore a = arvore(s);
         criar(produto("Um " + s, "DUP-" + s, a));
         given().contentType(ContentType.JSON).body(produto("Dois " + s, "dup-" + s, a))
                 .when().post("/drones")
                 .then().statusCode(400)
-                .body("errors.field", hasItem("modelo"));
+                .body("errors.field", hasItem("sku"));
     }
 
     @Test
@@ -131,18 +130,19 @@ class ProdutoResourceTest {
         given().contentType(ContentType.JSON).body(Map.of())
                 .when().post("/drones")
                 .then().statusCode(400)
-                .body("errors.field", hasItems("nome", "modelo", "idMarca", "idSubcategoria", "idFornecedor", "idStatus", "pesoGramas"));
+                .body("errors.field", hasItems("nome", "sku", "idMarca", "idSubcategoria", "idFornecedor", "idStatus", "pesoGramas",
+                        "preco", "pesoEmbalagemKg"));
     }
 
     @Test
     void precoNegativoResponde400() {
         String s = Dados.sufixo();
         Map<String, Object> dto = produto("Negativo " + s, "NEG-" + s, arvore(s));
-        dto.put("variantes", Fixtures.lista(Fixtures.variante("NEG-" + s.toUpperCase(), -1, 1)));
+        dto.put("preco", -1);
         given().contentType(ContentType.JSON).body(dto)
                 .when().post("/drones")
                 .then().statusCode(400)
-                .body("errors.field", hasItem("variantes[0].preco"));
+                .body("errors.field", hasItem("preco"));
     }
 
     @Test
@@ -152,14 +152,14 @@ class ProdutoResourceTest {
         long id = criar(produto("Antes " + s, "ALT-" + s, a));
 
         Map<String, Object> dto = produto("Depois " + s, "ALT-" + s, a);
-        dto.put("variantes", Fixtures.lista(Fixtures.variante("ALT-" + s.toUpperCase(), 100, 5)));
+        dto.put("preco", 100);
         given().contentType(ContentType.JSON).body(dto)
                 .when().put("/drones/{id}", id)
                 .then().statusCode(204);
         given().when().get("/produtos/{id}", id)
                 .then().statusCode(200)
                 .body("nome", equalTo("Depois " + s))
-                .body("variantes[0].preco", equalTo(100.0f));
+                .body("preco", equalTo(100.0f));
 
         given().when().delete("/produtos/{id}", id).then().statusCode(204);
         given().when().get("/produtos/{id}", id).then().statusCode(404);

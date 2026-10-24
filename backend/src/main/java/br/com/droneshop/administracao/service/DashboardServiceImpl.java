@@ -62,7 +62,7 @@ public class DashboardServiceImpl implements DashboardService {
 
         // mesma regra do GET /estoque?situacao=ABAIXO_MINIMO (#13): kit fica de fora
         List<DashboardResponseDTO.EstoqueBaixo> estoqueBaixo = estoqueRepository
-                .findComFiltro(SituacaoEstoque.ABAIXO_MINIMO, null).list().stream()
+                .findComFiltro(SituacaoEstoque.ABAIXO_MINIMO, null, null).list().stream()
                 .map(EstoqueResponseMapper::toEstoque)
                 .map(DashboardServiceImpl::estoqueBaixo)
                 .toList();
@@ -93,6 +93,6 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     private static DashboardResponseDTO.EstoqueBaixo estoqueBaixo(EstoqueResponseDTO e) {
-        return new DashboardResponseDTO.EstoqueBaixo(e.variante(), e.produto(), e.disponivel(), e.estoqueMinimo());
+        return new DashboardResponseDTO.EstoqueBaixo(e.produto(), e.disponivel(), e.estoqueMinimo());
     }
 }

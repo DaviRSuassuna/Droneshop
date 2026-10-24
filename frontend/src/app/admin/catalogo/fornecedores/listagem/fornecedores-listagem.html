@@ -1,140 +1,138 @@
-<app-admin-nav />
-
-<div class="pagebar">
-  <div style="display: flex; align-items: baseline; gap: 12px">
-    <h1 class="h1">Fornecedores</h1>
-    <span class="sub">
-      @if (!carregando()) {
-        {{ fornecedoresFiltrados().length }} de {{ fornecedores().length }}
-        {{ fornecedores().length === 1 ? 'fornecedor' : 'fornecedores' }}
-      }
-    </span>
+<main class="gut">
+  <div class="ph">
+    <div>
+      <span class="lbl">Catálogo</span>
+      <h1>Fornecedores</h1>
+      <div class="sub">{{ fornecedoresFiltrados().length }} fornecedores</div>
+    </div>
+    <div class="acts">
+      <button class="btn" type="button" (click)="exportarCsv()" [disabled]="carregando()">
+        Exportar CSV</button
+      ><a class="btn p" routerLink="/admin/fornecedores/novo">Novo fornecedor</a>
+    </div>
   </div>
-  <div class="actions">
-    <button
-      class="btn"
-      type="button"
-      (click)="exportarCsv()"
-      [disabled]="carregando() || fornecedoresFiltrados().length === 0"
-    >
-      Exportar CSV
-    </button>
-    <a class="btn p" routerLink="/admin/fornecedores/novo">Novo fornecedor</a>
-  </div>
-</div>
-
-<div class="pad-t" style="display: flex; flex-direction: column; gap: 16px">
-  <div class="filters">
-    <div class="f grow">
-      <input
-        type="text"
-        placeholder="Buscar por razão social ou CNPJ"
+  <div class="toolbar">
+    <label class="field-s grow"
+      ><input
+        type="search"
+        placeholder="Buscar por razão social, CNPJ ou e-mail"
+        aria-label="Buscar"
         [value]="termoBusca()"
-        (input)="aoDigitarBusca($any($event.target).value)"
-      />
-    </div>
-    <div class="f">
-      <select [value]="filtroStatus() ?? ''" (change)="aoMudarStatus($any($event.target).value)">
-        <option value="">Status</option>
-        <option [value]="STATUS.ATIVO">Ativo</option>
-        <option [value]="STATUS.INATIVO">Inativo</option>
-      </select>
-    </div>
+        (input)="aoDigitarBusca($any($event.target).value)" /></label
+    ><select
+      class="sel"
+      aria-label="UF"
+      [value]="filtroUf()"
+      (change)="filtroUf.set($any($event.target).value); pagina.set(0)"
+    >
+      <option value="">UF</option>
+      @for (uf of ufs(); track uf) {
+        <option [value]="uf">{{ uf }}</option>
+      }</select
+    ><select
+      class="sel"
+      aria-label="Status"
+      [value]="filtroStatus() ?? ''"
+      (change)="aoMudarStatus($any($event.target).value)"
+    >
+      <option value="">Status</option>
+      <option [value]="STATUS.ATIVO">Ativo</option>
+      <option [value]="STATUS.INATIVO">Inativo</option>
+    </select>
   </div>
-
-  <p class="legend" style="margin: 0">
-    Fornecedor é campo obrigatório no cadastro de produto. Sem pelo menos um registro ativo,
-    nenhum produto pode ser publicado.
-  </p>
-
-  @if (carregando()) {
-    <div class="tbl">
-      <div class="pager"><span>Carregando fornecedores…</span></div>
-    </div>
-  } @else if (erro()) {
-    <div class="tbl">
-      <div class="pager">
-        <span class="warn">{{ erro() }}</span>
-        <button class="btn sm" type="button" (click)="carregarFornecedores()">
-          Tentar novamente
-        </button>
-      </div>
-    </div>
-  } @else {
-    <div class="tbl">
-      <div
-        class="trow head"
-        style="grid-template-columns: minmax(0, 1fr) 240px 170px 140px 100px 64px"
-      >
-        <span>Fornecedor</span>
-        <span>Contato comercial</span>
-        <span>Cidade/UF</span>
-        <span>Telefone</span>
-        <span>Status</span>
-        <span></span>
-      </div>
-
-      @for (fornecedor of fornecedoresPagina(); track fornecedor.id) {
-        <a
-          class="trow"
-          style="grid-template-columns: minmax(0, 1fr) 240px 170px 140px 100px 64px"
-          [routerLink]="['/admin/fornecedores', fornecedor.id, 'editar']"
-        >
-          <span class="cell-name">
-            <b>{{ fornecedor.razaoSocial }}</b>
-            <span class="chip">{{ fornecedor.cnpj | cnpj }}</span>
-          </span>
-          <span class="cell-name">
-            <b style="font-size: 12.5px">{{ fornecedor.nomeContato }}</b>
-            <span class="chip">{{ fornecedor.emailContato }}</span>
-          </span>
-          <span class="cell-name">
-            @if (fornecedor.endereco; as end) {
-              <b style="font-size: 12.5px">{{ end.municipio.nome }}/{{ end.municipio.estado.sigla }}</b>
-              <span class="chip">{{ end.cep | cep }}</span>
-            } @else {
-              <span class="dim">—</span>
-            }
-          </span>
-          <span class="dim">{{ (fornecedor.telefoneContato | telefone) || '—' }}</span>
-          <span class="status">
-            <span
-              class="dot"
-              [style.background]="fornecedor.status.id === STATUS.ATIVO ? 'var(--ok)' : 'var(--dim2)'"
-            ></span>
-            {{ statusLabel(fornecedor.status) }}
-          </span>
-          <span style="justify-self: end">
-            <button class="btn sm d" type="button" (click)="excluir($event, fornecedor)">
-              Excluir
-            </button>
-          </span>
-        </a>
-      }
-
-      @if (fornecedoresPagina().length === 0) {
-        <div class="pager"><span>Nenhum fornecedor encontrado com os filtros atuais.</span></div>
-      }
-
-      <div class="pager">
-        <span>Exibindo {{ intervaloExibido() }} de {{ fornecedoresFiltrados().length }}</span>
-        <span class="pages">
-          <a
-            [class.on]="false"
-            (click)="paginaAnterior()"
-            [style.opacity]="pagina() === 0 ? 0.4 : 1"
-            [style.cursor]="pagina() === 0 ? 'default' : 'pointer'"
-            >‹</a
-          >
-          <span>Página {{ pagina() + 1 }} de {{ totalPaginas() }}</span>
-          <a
-            (click)="proximaPagina()"
-            [style.opacity]="pagina() + 1 >= totalPaginas() ? 0.4 : 1"
-            [style.cursor]="pagina() + 1 >= totalPaginas() ? 'default' : 'pointer'"
-            >›</a
-          >
-        </span>
-      </div>
+  <div class="info">
+    Fornecedor é campo obrigatório em Cadastrar produto. Sem pelo menos um registro ativo, nenhum
+    produto pode ser publicado.
+  </div>
+  @if (erro(); as mensagem) {
+    <div class="alerta" role="alert">
+      {{ mensagem }}
+      <button class="btn sm" type="button" (click)="carregarFornecedores()">
+        Tentar novamente
+      </button>
     </div>
   }
-</div>
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th>Fornecedor</th>
+          <th>Contato comercial</th>
+          <th class="r">Produtos</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (carregando()) {
+          <tr>
+            <td colspan="5">Carregando…</td>
+          </tr>
+        } @else {
+          @for (item of fornecedoresPagina(); track item.id) {
+            <tr>
+              <td>
+                <div class="pc">
+                  <div>
+                    <b
+                      ><a [routerLink]="['/admin/fornecedores', item.id, 'editar']">{{
+                        item.razaoSocial
+                      }}</a></b
+                    ><span class="slug">{{ item.cnpj | cnpj }}</span>
+                  </div>
+                </div>
+              </td>
+              <td data-l="Contato comercial">
+                {{ item.nomeContato }}<span class="slug">{{ item.emailContato }}</span>
+              </td>
+              <td data-l="Produtos" class="r num mono">{{ item.quantidadeProdutos }}</td>
+              <td data-l="Status">
+                <span
+                  class="st"
+                  [class.ok]="item.status.id === STATUS.ATIVO"
+                  [class.mute]="item.status.id !== STATUS.ATIVO"
+                  ><span>{{ item.status.nome }}</span></span
+                >
+              </td>
+              <td class="r">
+                <a
+                  class="more"
+                  [routerLink]="['/admin/fornecedores', item.id, 'editar']"
+                  [attr.aria-label]="'Editar ' + item.razaoSocial"
+                  >⋯</a
+                >
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5">Nenhum registro encontrado.</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  <div class="pager">
+    <span>Exibindo {{ intervaloExibido() }} de {{ fornecedoresFiltrados().length }}</span>
+    <div class="pages">
+      <button
+        class="btn sm"
+        type="button"
+        aria-label="Página anterior"
+        (click)="paginaAnterior()"
+        [disabled]="pagina() === 0"
+      >
+        ‹</button
+      ><span>{{ pagina() + 1 }}</span
+      ><button
+        class="btn sm"
+        type="button"
+        aria-label="Próxima página"
+        (click)="proximaPagina()"
+        [disabled]="pagina() + 1 >= totalPaginas()"
+      >
+        ›
+      </button>
+    </div>
+  </div>
+</main>

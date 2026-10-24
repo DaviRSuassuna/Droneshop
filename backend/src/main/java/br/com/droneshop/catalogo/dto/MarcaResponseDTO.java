@@ -11,6 +11,7 @@ public record MarcaResponseDTO(
     String descricao,
     String logoUrl,
     StatusMarca status,
-    boolean destacarHome
+    boolean destacarHome,
+    long quantidadeProdutos
 ) {
 }

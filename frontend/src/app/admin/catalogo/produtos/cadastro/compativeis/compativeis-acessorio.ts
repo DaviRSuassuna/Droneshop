@@ -21,18 +21,18 @@ export interface VinculoCompativel {
 }
 
 export function rotuloTipo(produto: ProdutoResumo): string {
-  return produto.tipo.id === TIPO_PRODUTO.DRONE ? 'Drone' : 'Acessório';
+  if (produto.tipo.id === TIPO_PRODUTO.DRONE) return 'Drone';
+  return produto.tipo.id === TIPO_PRODUTO.KIT ? 'Kit' : 'Acessório';
 }
 
 /**
- * Bloco "Compatível com" do cadastro de acessório (D17): busca produtos (drone ou
- * acessório) por nome ou SKU e monta a lista que vai em idsCompativeis.
+ * Seção "Compatível com" do cadastro de acessório (D17): busca produtos por nome ou SKU
+ * e monta a lista que vai em idsCompativeis.
  */
 @Component({
   selector: 'app-compativeis-acessorio',
   imports: [ReactiveFormsModule],
   templateUrl: './compativeis-acessorio.html',
-  styleUrl: './compativeis-acessorio.scss',
 })
 export class CompativeisAcessorio {
   private readonly produtoService = inject(ProdutoService);
@@ -44,10 +44,10 @@ export class CompativeisAcessorio {
 
   readonly busca = new FormControl('', { nonNullable: true });
   readonly buscou = signal(false);
+  /** A busca aparece ao clicar em "Vincular produto", como no protótipo. */
+  readonly buscando = signal(false);
   private readonly resultados = signal<ProdutoResumo[]>([]);
-  private readonly campoBusca = viewChild.required<ElementRef<HTMLInputElement>>('campoBusca');
-
-  readonly grid = 'minmax(0, 2.2fr) minmax(0, 1.2fr) minmax(0, 1.1fr) 32px';
+  private readonly campoBusca = viewChild<ElementRef<HTMLInputElement>>('campoBusca');
   readonly rotuloTipo = rotuloTipo;
 
   /** Resultado da busca sem o próprio acessório e sem o que já está na lista. */
@@ -65,7 +65,7 @@ export class CompativeisAcessorio {
         switchMap((termo) =>
           termo.length < 2
             ? of(null)
-            : this.produtoService.listar({ nome: termo }, 0, 8).pipe(
+            : this.produtoService.listar({ busca: termo }, 0, 8).pipe(
                 map((pagina) =>
                   pagina.items.map((p) => ({ id: p.id, nome: p.nome, tipo: p.tipo })),
                 ),
@@ -93,7 +93,13 @@ export class CompativeisAcessorio {
     this.vinculos.update((lista) => lista.filter((v) => v.produto.id !== id));
   }
 
-  focarBusca(): void {
-    this.campoBusca().nativeElement.focus();
+  abrirBusca(): void {
+    this.buscando.set(true);
+    // o campo só existe depois que a busca abre
+    setTimeout(() => this.campoBusca()?.nativeElement.focus());
+  }
+
+  private focarBusca(): void {
+    this.campoBusca()?.nativeElement.focus();
   }
 }

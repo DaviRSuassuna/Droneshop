@@ -34,13 +34,13 @@ public class MovimentoEstoqueResource {
     MovimentoEstoqueService service;
 
     @GET
-    public PageResponse<MovimentoEstoqueResponseDTO> buscarTodos(@QueryParam("idVariante") Long idVariante,
+    public PageResponse<MovimentoEstoqueResponseDTO> buscarTodos(@QueryParam("idProduto") Long idProduto,
             @QueryParam("idTipo") String idTipo,
             @QueryParam("page") @DefaultValue("0") int page,
             @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
         TipoMovimento tipo = service.tipo(idTipo);
-        List<MovimentoEstoque> movimentos = service.findComFiltro(idVariante, tipo, page, pageSize);
-        long totalItems = service.countComFiltro(idVariante, tipo);
+        List<MovimentoEstoque> movimentos = service.findComFiltro(idProduto, tipo, page, pageSize);
+        long totalItems = service.countComFiltro(idProduto, tipo);
 
         return PageResponse.of(movimentos, page, pageSize, totalItems, EstoqueResponseMapper::toResponse);
     }

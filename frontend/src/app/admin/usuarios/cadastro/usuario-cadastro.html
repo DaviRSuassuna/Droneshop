@@ -1,101 +1,198 @@
-<app-admin-nav />
-
-@if (carregando()) {
-  <div class="pad"><span class="sub">Carregando usuário…</span></div>
-} @else {
-  <div class="pad cols">
-    <div class="main">
+<main class="gut">
+  @if (carregando()) {
+    <p role="status">Carregando usuário…</p>
+  } @else {
+    <div class="ph">
       <div>
-        <h1 class="h1 big">{{ modoEdicao() ? 'Editar usuário administrativo' : 'Novo usuário administrativo' }}</h1>
-        <div class="crumb"><a routerLink="/admin/usuarios">Usuários</a> · {{ modoEdicao() ? 'Editar usuário' : 'Novo usuário' }}</div>
+        <div class="crumb">
+          <a routerLink="/admin/usuarios">← Usuários</a><span>·</span
+          ><span>{{ modoEdicao() ? 'Editar usuário' : 'Novo usuário' }}</span>
+        </div>
+        <h1>
+          {{ modoEdicao() ? 'Editar usuário administrativo' : 'Novo usuário administrativo' }}
+        </h1>
       </div>
-
-      @if (erroGeral()) {
-        <div class="card p" style="border-color: var(--warn-b)"><span class="warn">{{ erroGeral() }}</span></div>
-      }
-
-      <section class="card p" [formGroup]="form">
-        <div class="card-t" style="margin-bottom: 20px">Dados do usuário</div>
-        <div class="g2">
-          <div class="f full">
-            <label for="nome">Nome completo <span class="req">*</span></label>
-            <input id="nome" type="text" placeholder="Ex: Marcos Rocha" formControlName="nome" />
-            @if (errosCampo()['nome']) { <span class="warn">{{ errosCampo()['nome'] }}</span> }
-          </div>
-          <div class="f">
-            <label for="email">E-mail corporativo <span class="req">*</span></label>
-            <input id="email" type="email" placeholder="nome@empresa.com.br" formControlName="email" />
-            @if (errosCampo()['email']) { <span class="warn">{{ errosCampo()['email'] }}</span> }
-          </div>
-          <div class="f">
-            <label for="papel">Papel / permissão <span class="req">*</span></label>
-            <select id="papel" [value]="form.controls.idPapel.value" (change)="aoMudarPapel($any($event.target).value)">
-              <option value="0">Selecione o papel</option>
-              @for (papel of papeis(); track papel.id) {
-                <option [value]="papel.id">{{ nomePapel(papel.nome) }}</option>
-              }
-            </select>
-            @if (errosCampo()['idPapel']) { <span class="warn">{{ errosCampo()['idPapel'] }}</span> }
-          </div>
-          @if (!modoEdicao()) {
-            <div class="f">
-              <label for="senha">Senha provisória <span class="req">*</span></label>
-              <input id="senha" type="password" placeholder="Mínimo 8 caracteres" formControlName="senha" />
-              @if (errosCampo()['senha']) { <span class="warn">{{ errosCampo()['senha'] }}</span> }
-            </div>
-          }
-        </div>
-        <p class="legend">Campos com <span class="req">*</span> são obrigatórios</p>
-      </section>
-
-      <section class="card p">
-        <div class="card-h"><span class="card-t">Permissões por módulo</span><span class="card-n">Herdadas do papel · editáveis</span></div>
-        <div class="perm">
-          <span></span><span class="hd">Ver</span><span class="hd">Editar</span><span class="hd">Excluir</span>
-          @for (permissao of permissoes(); track permissao.modulo.id) {
-            <label [for]="'ver-' + permissao.modulo.id">{{ nomeModulo(permissao.modulo) }}</label>
-            <input [id]="'ver-' + permissao.modulo.id" type="checkbox" [checked]="permissao.podeVer" (change)="atualizarPermissao(permissao.modulo.id, 'podeVer', $any($event.target).checked)" />
-            <input [attr.aria-label]="'Editar: ' + nomeModulo(permissao.modulo)" type="checkbox" [checked]="permissao.podeEditar" (change)="atualizarPermissao(permissao.modulo.id, 'podeEditar', $any($event.target).checked)" />
-            <input [attr.aria-label]="'Excluir: ' + nomeModulo(permissao.modulo)" type="checkbox" [checked]="permissao.podeExcluir" (change)="atualizarPermissao(permissao.modulo.id, 'podeExcluir', $any($event.target).checked)" />
-          } @empty {
-            <span class="dim full">Selecione um papel para carregar as permissões padrão.</span>
-          }
-        </div>
-      </section>
     </div>
-
-    <aside class="rail" [formGroup]="form">
-      <section class="card p2">
-        <div class="eyebrow">Acesso</div>
-        <div class="stack">
-          <div class="f">
-            <label for="ativo">Status <span class="req">*</span></label>
-            <select id="ativo" formControlName="ativo">
-              <option [ngValue]="true">Ativo</option>
-              <option [ngValue]="false">Inativo</option>
-            </select>
+    @if (erroGeral()) {
+      <div class="info" role="alert">{{ erroGeral() }}</div>
+    }
+    <div class="form">
+      <div>
+        <section class="sec" [formGroup]="form">
+          <div class="sh">
+            <h2>Dados do usuário</h2>
+            <span>{{ modoEdicao() ? '3' : '4' }} campos obrigatórios</span>
           </div>
-          <label class="ck full"><input type="checkbox" checked disabled /> Enviar convite ao criar</label>
-        </div>
-      </section>
-      @if (camposObrigatoriosPendentes().length > 0) {
-        <section class="card p2">
-          <div class="eyebrow">Pendências</div>
-          <div style="display:flex;flex-direction:column;gap:9px">
-            <span class="warn">{{ camposObrigatoriosPendentes().length }} campo obrigatório vazio</span>
-            <span style="font-size:12px;color:var(--mute)">{{ camposObrigatoriosPendentes().join(' · ') }}</span>
+          <div class="fg">
+            <div class="f w3">
+              <label for="nome">Nome completo <span class="req">*</span></label>
+              <input
+                id="nome"
+                type="text"
+                placeholder="Ex: Marcos Rocha"
+                formControlName="nome"
+                [attr.aria-invalid]="errosCampo()['nome'] ? true : null"
+              />
+              @if (errosCampo()['nome']) {
+                <span class="warn">{{ errosCampo()['nome'] }}</span>
+              }
+            </div>
+            <div class="f w3">
+              <label for="email">E-mail corporativo <span class="req">*</span></label>
+              <input
+                id="email"
+                type="email"
+                placeholder="nome@empresa.com.br"
+                formControlName="email"
+                [attr.aria-invalid]="errosCampo()['email'] ? true : null"
+              />
+              @if (errosCampo()['email']) {
+                <span class="warn">{{ errosCampo()['email'] }}</span>
+              }
+            </div>
+            <div class="f w3">
+              <label for="papel">Papel <span class="req">*</span></label>
+              <select
+                id="papel"
+                [value]="form.controls.idPapel.value"
+                (change)="aoMudarPapel($any($event.target).value)"
+              >
+                <option value="0">Selecione o papel</option>
+                @for (papel of papeis(); track papel.id) {
+                  <option [value]="papel.id">{{ nomePapel(papel.nome) }}</option>
+                }
+              </select>
+              @if (errosCampo()['idPapel']) {
+                <span class="warn">{{ errosCampo()['idPapel'] }}</span>
+              }
+            </div>
+            @if (!modoEdicao()) {
+              <div class="f w3">
+                <label for="senha">Senha provisória <span class="req">*</span></label>
+                <input
+                  id="senha"
+                  type="password"
+                  placeholder="Mínimo 8 caracteres"
+                  formControlName="senha"
+                  [attr.aria-invalid]="errosCampo()['senha'] ? true : null"
+                />
+                @if (errosCampo()['senha']) {
+                  <span class="warn">{{ errosCampo()['senha'] }}</span>
+                }
+              </div>
+            }
           </div>
         </section>
-      }
-    </aside>
-  </div>
-
-  <div class="actionbar">
-    <a class="btn" routerLink="/admin/usuarios">Cancelar</a>
-    <div class="actions">
-      <button class="btn p" type="button" (click)="salvar()" [disabled]="salvando()">
-        {{ salvando() ? 'Salvando…' : modoEdicao() ? 'Salvar alterações' : 'Criar usuário' }}
-      </button>
+        <section class="sec">
+          <div class="sh">
+            <h2>Permissões por módulo</h2>
+            <span>Herdadas do papel · editáveis</span>
+          </div>
+          <div class="permissoes">
+            <table class="perm">
+              <thead>
+                <tr>
+                  <th>Módulo</th>
+                  <th>Ver</th>
+                  <th>Editar</th>
+                  <th>Excluir</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (permissao of permissoes(); track permissao.modulo.id) {
+                  <tr>
+                    <td>{{ nomeModulo(permissao.modulo) }}</td>
+                    <td>
+                      <input
+                        class="ck"
+                        type="checkbox"
+                        [attr.aria-label]="'Ver: ' + nomeModulo(permissao.modulo)"
+                        [checked]="permissao.podeVer"
+                        (change)="
+                          atualizarPermissao(
+                            permissao.modulo.id,
+                            'podeVer',
+                            $any($event.target).checked
+                          )
+                        "
+                      />
+                    </td>
+                    <td>
+                      <input
+                        class="ck"
+                        type="checkbox"
+                        [attr.aria-label]="'Editar: ' + nomeModulo(permissao.modulo)"
+                        [checked]="permissao.podeEditar"
+                        (change)="
+                          atualizarPermissao(
+                            permissao.modulo.id,
+                            'podeEditar',
+                            $any($event.target).checked
+                          )
+                        "
+                      />
+                    </td>
+                    <td>
+                      <input
+                        class="ck"
+                        type="checkbox"
+                        [attr.aria-label]="'Excluir: ' + nomeModulo(permissao.modulo)"
+                        [checked]="permissao.podeExcluir"
+                        (change)="
+                          atualizarPermissao(
+                            permissao.modulo.id,
+                            'podeExcluir',
+                            $any($event.target).checked
+                          )
+                        "
+                      />
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="4">Selecione um papel para carregar as permissões padrão.</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+      <aside class="rail" [formGroup]="form">
+        <section class="card">
+          <div class="bd">
+            <span class="lbl">Publicação</span>
+            <div class="f acesso">
+              <label>Status <span class="req">*</span></label>
+              <div class="rad">
+                <label><input type="radio" formControlName="ativo" [value]="true" />Ativo</label
+                ><label
+                  ><input type="radio" formControlName="ativo" [value]="false" />Inativo</label
+                >
+              </div>
+            </div>
+          </div>
+        </section>
+        @if (camposObrigatoriosPendentes().length > 0) {
+          <section class="card pend">
+            <div class="bd">
+              <div class="t">
+                {{ camposObrigatoriosPendentes().length }} campo(s) obrigatório(s) pendente(s)
+              </div>
+              <p>{{ camposObrigatoriosPendentes().join(' · ') }}</p>
+            </div>
+          </section>
+        }
+      </aside>
     </div>
-  </div>
-}
+    <div class="actionbar">
+      <div class="in gut">
+        <span class="msg">Campos com <span class="req">*</span> são obrigatórios.</span
+        ><a class="btn" routerLink="/admin/usuarios">Cancelar</a
+        ><button class="btn p" type="button" (click)="salvar()" [disabled]="salvando()">
+          {{ salvando() ? 'Salvando…' : modoEdicao() ? 'Salvar alterações' : 'Criar usuário' }}
+        </button>
+      </div>
+    </div>
+  }
+</main>

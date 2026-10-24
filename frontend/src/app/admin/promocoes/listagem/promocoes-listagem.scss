@@ -2,52 +2,32 @@
   display: block;
   min-width: 0;
 }
-
-.page-title {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  min-width: 0;
+.identificacao b {
+  font-weight: 500;
 }
-
-.promo-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  min-width: 0;
+.desconto {
+  font: 300 15px var(--display);
 }
-
-.promo-row {
-  grid-template-columns: minmax(0, 1fr) 220px 200px 128px 44px;
+.vigencia {
+  font-size: 12.5px;
+  color: var(--ink2);
 }
-
-.row-menu {
-  justify-self: end;
+.stabs a b {
   color: var(--mute);
 }
-
-.underlined {
+.stabs a[aria-current] b {
+  color: var(--amber);
+}
+.info a {
   text-decoration: underline;
 }
-
-@media (max-width: 640px) {
-  .page-title {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 5px;
+@media (max-width: 800px) {
+  .tw td.vigencia {
+    white-space: normal;
   }
-
-  .tabs {
-    flex-wrap: wrap;
-    gap: 0 2px;
-  }
-
-  .tabs a {
-    padding-right: 8px;
-    padding-left: 8px;
-  }
-
-  .promo-row {
-    min-width: 0;
+  .tw td.identificacao {
+    grid-column: 1 / -1;
+    padding-right: 44px !important;
+    margin-bottom: 6px !important;
   }
 }

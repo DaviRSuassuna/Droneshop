@@ -3,92 +3,42 @@ import { Marca } from './marca.model';
 import { StatusRef } from './status.model';
 import { Subcategoria } from './subcategoria.model';
 
-/** Ids de TipoProduto (GET /tipos-produto). */
-export const TIPO_PRODUTO = { DRONE: 1, ACESSORIO: 2 } as const;
+/** Ids de TipoProduto (GET /tipos-produto). KIT é o terceiro tipo (D40). */
+export const TIPO_PRODUTO = { DRONE: 1, ACESSORIO: 2, KIT: 3 } as const;
 
-/**
- * Variante da resposta (D26): o preço é dela; a margem vem calculada do backend.
- * No kit (D7) não há estoque físico, disponivel vem dos componentes, e peso/dimensões
- * já chegam derivados deles, salvo quando pesoSobrescrito/dimensoesSobrescritas (D16).
- */
-export interface Variante {
+/** Grupo citado no produto (D40). */
+export interface GrupoResumo {
   id: number;
-  nome: string | null;
-  sku: string | null;
-  preco: number | null;
-  custoAquisicao: number | null;
-  margemPercentual: number | null;
-  estoqueFisico: number | null;
-  disponivel: number;
-  estoqueMinimo: number;
-  pesoEmbalagemKg: number | null;
-  alturaEmbalagemCm: number | null;
-  larguraEmbalagemCm: number | null;
-  comprimentoEmbalagemCm: number | null;
-  pesoSobrescrito: boolean;
-  dimensoesSobrescritas: boolean;
-  ehKit: boolean;
-  ativa: boolean;
-  componentes: ComponenteKit[];
+  nome: string;
 }
 
-/** Item de GET /variantes: usado nos selects de variante (kit, estoque, promoção). */
-export interface VarianteListagem {
-  id: number;
-  sku: string | null;
-  nome: string | null;
-  preco: number | null;
-  estoqueFisico: number | null;
-  disponivel: number;
-  ehKit: boolean;
-  produto: { id: number; nome: string | null; tipo: StatusRef };
-}
-
-/** Filtros aceitos por GET /variantes. Campos vazios são ignorados. */
-export interface FiltroVariante {
-  busca?: string;
-  ativa?: boolean | null;
-}
-
-/** Item do kit na resposta: a variante componente e quantas o kit leva. */
+/** Item do kit na resposta: o produto componente e quantas unidades o kit leva (D7). */
 export interface ComponenteKit {
-  variante: VarianteListagem;
+  idProduto: number;
+  sku: string | null;
+  nome: string | null;
+  tipo: StatusRef;
+  status: StatusRef;
+  estoqueFisico: number | null;
+  disponivel: number;
   quantidade: number;
 }
 
-/** Item do kit no corpo da variante. */
+/** Item do kit no corpo de /kits: qualquer produto que não seja outro kit. */
 export interface ComponenteKitDTO {
-  idVariante: number | null;
+  idProduto: number | null;
   quantidade: number | null;
 }
 
 /**
- * Linha da tabela de variantes no corpo do drone/acessório (D13). Com id altera,
- * sem id cria; a que sai da lista é excluída. estoqueFisico só vale na criação.
- * Kit: sem estoqueFisico; peso e dimensões vazios são derivados dos componentes.
+ * Campos comuns da resposta de /produtos (relacionamentos aninhados). Cada versão é um
+ * produto (D40): SKU, preço, custo, estoque e embalagem são dele; a margem vem
+ * calculada do backend (D26). No kit, estoqueFisico é nulo e disponivel vem dos componentes.
  */
-export interface VarianteDTO {
-  id: number | null;
-  nome: string;
-  sku: string;
-  preco: number | null;
-  custoAquisicao: number | null;
-  estoqueFisico: number | null;
-  estoqueMinimo: number | null;
-  pesoEmbalagemKg: number | null;
-  alturaEmbalagemCm: number | null;
-  larguraEmbalagemCm: number | null;
-  comprimentoEmbalagemCm: number | null;
-  ehKit: boolean;
-  componentes: ComponenteKitDTO[];
-  ativa: boolean;
-}
-
-/** Campos comuns da resposta de /produtos (relacionamentos aninhados). */
 interface ProdutoBase {
   id: number;
   nome: string | null;
-  modelo: string | null;
+  sku: string | null;
   descricaoCurta: string | null;
   descricao: string | null;
   slug: string;
@@ -102,7 +52,18 @@ interface ProdutoBase {
   fornecedor: Fornecedor | null;
   status: StatusRef;
   destaque: boolean;
-  variantes: Variante[];
+  preco: number | null;
+  custoAquisicao: number | null;
+  margemPercentual: number | null;
+  estoqueFisico: number | null;
+  disponivel: number;
+  pesoEmbalagemKg: number | null;
+  alturaEmbalagemCm: number | null;
+  larguraEmbalagemCm: number | null;
+  comprimentoEmbalagemCm: number | null;
+  grupo: GrupoResumo | null;
+  rotuloNoGrupo: string | null;
+  ordemNoGrupo: number;
 }
 
 /** Specs do drone, colunas fixas (D14). */
@@ -136,21 +97,31 @@ export interface ProdutoResumo {
 
 /**
  * Item de GET /produtos e resposta de GET /produtos/{id}. O tipo diz quais campos
- * vêm: drone traz as specs, acessório traz tipoAcessorio.
+ * vêm: drone traz as specs, acessório traz tipoAcessorio, kit traz os componentes.
  */
 export interface Produto extends ProdutoBase, Partial<DroneSpecs> {
   tipo: StatusRef;
+  /** Drone e acessório; o kit não tem (o mínimo é do componente). */
+  estoqueMinimo?: number;
   tipoAcessorio?: string | null;
   /** Só no acessório: produtos com que ele é compatível (D17). */
   compativeis?: ProdutoResumo[];
   /** Em todo produto: acessórios que se declararam compatíveis com ele (lado recíproco). */
   acessoriosCompativeis?: ProdutoResumo[];
+  /** Só no kit. */
+  componentes?: ComponenteKit[];
+  /** Só no kit: peso ou dimensões informados no próprio kit, em vez dos derivados (D16). */
+  pesoSobrescrito?: boolean;
+  dimensoesSobrescritas?: boolean;
 }
 
-/** Campos comuns do corpo de POST/PUT em /drones e /acessorios. */
+/**
+ * Campos comuns do corpo de POST/PUT em /drones, /acessorios e /kits. Preço, estoque e
+ * embalagem vão no próprio produto (D40); estoqueFisico só vale na criação.
+ */
 export interface ProdutoDTO {
   nome: string;
-  modelo: string;
+  sku: string;
   descricaoCurta: string;
   descricao: string;
   slug: string;
@@ -164,24 +135,61 @@ export interface ProdutoDTO {
   idFornecedor: number | null;
   idStatus: number;
   destaque: boolean;
-  variantes: VarianteDTO[];
+  preco: number | null;
+  custoAquisicao: number | null;
+  pesoEmbalagemKg: number | null;
+  alturaEmbalagemCm: number | null;
+  larguraEmbalagemCm: number | null;
+  comprimentoEmbalagemCm: number | null;
+  idGrupo: number | null;
+  rotuloNoGrupo: string;
+  ordemNoGrupo: number | null;
+}
+
+/** Estoque de drone e acessório: estoqueFisico só na criação (saldo inicial). */
+export interface EstoqueDTO {
+  estoqueFisico: number | null;
+  estoqueMinimo: number | null;
 }
 
 /** Corpo de POST /drones e PUT /drones/{id}. */
-export type DroneDTO = ProdutoDTO & DroneSpecs;
+export type DroneDTO = ProdutoDTO & EstoqueDTO & DroneSpecs;
 
 /** Corpo de POST /acessorios e PUT /acessorios/{id}. */
-export interface AcessorioDTO extends ProdutoDTO {
+export interface AcessorioDTO extends ProdutoDTO, EstoqueDTO {
   tipoAcessorio: string;
   idsCompativeis: number[];
 }
 
-/** Filtros aceitos por GET /produtos. Campos vazios são ignorados. */
+/** Corpo de POST /kits e PUT /kits/{id}: sem estoque próprio; peso e dimensões vazios vêm dos componentes. */
+export interface KitDTO extends ProdutoDTO {
+  componentes: ComponenteKitDTO[];
+}
+
+/**
+ * Filtros aceitos por GET /produtos. Campos vazios são ignorados. busca procura no nome
+ * e no SKU; idStatus filtra pelo status do produto e kit=false tira os kits (select de produto, D40).
+ */
 export interface FiltroProduto {
   idTipo?: number | null;
-  nome?: string;
+  busca?: string;
   idMarca?: number | null;
   idCategoria?: number | null;
   idSubcategoria?: number | null;
   idStatus?: number | null;
+  idGrupo?: number | null;
+  kit?: boolean | null;
+  /** Mesma regra do GET /estoque?situacao= (kit fica de fora). */
+  estoque?: 'ABAIXO_MINIMO' | 'ZERADO' | null;
+}
+
+export interface ProdutoLoteRequest {
+  ids: number[];
+  acao: 'ATIVAR' | 'INATIVAR' | 'MOVER_SUBCATEGORIA' | 'REAJUSTAR_PRECO';
+  idSubcategoria?: number;
+  percentual?: number;
+}
+export interface ProdutoLoteResponse {
+  processados: number;
+  falhas: { id: number; motivo: string }[];
 }

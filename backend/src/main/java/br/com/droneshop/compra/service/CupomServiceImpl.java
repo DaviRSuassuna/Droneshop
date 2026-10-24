@@ -8,10 +8,9 @@ import java.util.Locale;
 
 import br.com.droneshop.catalogo.model.Categoria;
 import br.com.droneshop.catalogo.model.Marca;
-import br.com.droneshop.catalogo.model.VarianteProduto;
 import br.com.droneshop.catalogo.repository.CategoriaRepository;
 import br.com.droneshop.catalogo.repository.MarcaRepository;
-import br.com.droneshop.catalogo.repository.VarianteProdutoRepository;
+import br.com.droneshop.catalogo.repository.ProdutoRepository;
 import br.com.droneshop.compra.dto.CupomRequestDTO;
 import br.com.droneshop.compra.model.Cupom;
 import br.com.droneshop.compra.model.TipoDescontoCupom;
@@ -33,7 +32,7 @@ public class CupomServiceImpl implements CupomService {
     @Inject UsoCupomRepository usoRepository;
     @Inject CategoriaRepository categoriaRepository;
     @Inject MarcaRepository marcaRepository;
-    @Inject VarianteProdutoRepository varianteRepository;
+    @Inject ProdutoRepository produtoRepository;
 
     @Override
     @Transactional
@@ -109,7 +108,7 @@ public class CupomServiceImpl implements CupomService {
         cupom.setAtivo(dto.ativo() == null || dto.ativo());
         cupom.setCategorias(buscar(categoriaRepository, dto.idsCategorias(), "idsCategorias"));
         cupom.setMarcas(buscar(marcaRepository, dto.idsMarcas(), "idsMarcas"));
-        cupom.setVariantes(buscar(varianteRepository, dto.idsVariantes(), "idsVariantes"));
+        cupom.setProdutos(buscar(produtoRepository, dto.idsProdutos(), "idsProdutos"));
     }
 
     private void validar(CupomRequestDTO dto, TipoDescontoCupom tipo) {

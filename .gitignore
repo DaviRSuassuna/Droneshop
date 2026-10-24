@@ -29,6 +29,8 @@ frontend/e2e/.resultados/
 frontend/e2e/.relatorio/
 playwright-report/
 test-results/
+# logs do MCP do Playwright (sessões com agentes)
+.playwright-mcp/
 
 # ------------------------------------------------------------------ editores
 # Eclipse

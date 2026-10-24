@@ -1,6 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AdminNav } from '../../../layout/admin/admin-nav/admin-nav';
 import { ESCOPO_PROMOCAO, Promocao } from '../../../core/models/promocao.model';
 import { PromocaoService } from '../../../core/services/promocao.service';
 
@@ -8,8 +7,7 @@ type FiltroSituacao = 'TODAS' | 'VIGENTE' | 'AGENDADA' | 'ENCERRADA';
 
 @Component({
   selector: 'app-promocoes-listagem',
-  standalone: true,
-  imports: [AdminNav, RouterLink],
+  imports: [RouterLink],
   templateUrl: './promocoes-listagem.html',
   styleUrl: './promocoes-listagem.scss',
 })
@@ -59,11 +57,10 @@ export class PromocoesListagem implements OnInit {
   readonly quantidadeEncerradas = computed(
     () => this.promocoes().filter((p) => this.situacao(p) === 'ENCERRADA').length,
   );
-  readonly variantesEmOferta = computed(
-    () =>
-      this.promocoes()
-        .filter((p) => this.situacao(p) === 'VIGENTE')
-        .reduce((total, promocao) => total + (promocao.variantes?.length ?? 0), 0),
+  readonly produtosEmOferta = computed(() =>
+    this.promocoes()
+      .filter((p) => this.situacao(p) === 'VIGENTE')
+      .reduce((total, promocao) => total + (promocao.produtos?.length ?? 0), 0),
   );
 
   ngOnInit(): void {
@@ -110,8 +107,8 @@ export class PromocoesListagem implements OnInit {
     return status === 'VIGENTE'
       ? 'var(--ok)'
       : status === 'AGENDADA'
-        ? 'var(--acc)'
-        : 'var(--dim2)';
+        ? 'var(--info)'
+        : 'var(--mute)';
   }
 
   rotuloEscopo(id: number): string {
@@ -119,11 +116,22 @@ export class PromocoesListagem implements OnInit {
   }
 
   descontoRotulo(promocao: Promocao): string {
-    if (promocao.escopo.id === ESCOPO_PROMOCAO.FRETE && !promocao.percentualDesconto && !promocao.valorDesconto) {
+    if (
+      promocao.escopo.id === ESCOPO_PROMOCAO.FRETE &&
+      !promocao.percentualDesconto &&
+      !promocao.valorDesconto
+    ) {
       return 'Frete zerado';
     }
     if (promocao.percentualDesconto != null) {
-      return `−${promocao.percentualDesconto}% em ${promocao.variantes?.length ?? 0} ${promocao.variantes?.length === 1 ? 'item' : 'itens'}`;
+      const desconto = `−${promocao.percentualDesconto}%`;
+      if (promocao.escopo.id === ESCOPO_PROMOCAO.CARRINHO) {
+        return promocao.valorMinimoCarrinho != null
+          ? `${desconto} acima de ${this.moeda(promocao.valorMinimoCarrinho)}`
+          : `${desconto} no carrinho`;
+      }
+      if (promocao.escopo.id === ESCOPO_PROMOCAO.FRETE) return `${desconto} no frete`;
+      return `${desconto} em ${promocao.produtos?.length ?? 0} ${promocao.produtos?.length === 1 ? 'item' : 'itens'}`;
     }
     if (promocao.valorDesconto != null) {
       return `${this.moeda(promocao.valorDesconto)} de desconto`;
@@ -143,9 +151,11 @@ export class PromocoesListagem implements OnInit {
     const data = new Date(valor);
     return Number.isNaN(data.getTime())
       ? '—'
-      : new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(
-          data,
-        );
+      : new Intl.DateTimeFormat('pt-BR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        }).format(data);
   }
 
   private moeda(valor: number): string {

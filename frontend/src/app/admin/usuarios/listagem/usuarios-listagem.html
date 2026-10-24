@@ -1,110 +1,130 @@
-<app-admin-nav />
-
-<div class="pagebar">
-  <div style="display:flex;align-items:baseline;gap:12px">
-    <h1 class="h1">Usuários</h1>
-    <span class="sub">{{ totalItens() }} usuários administrativos · {{ totalAtivos() }} ativos nesta página</span>
+<main class="gut">
+  <div class="ph">
+    <div>
+      <span class="lbl">Acesso</span>
+      <h1>Usuários</h1>
+      <div class="sub">
+        {{ totalItens() }} usuários administrativos · {{ totalAtivos() }} ativos nesta página
+      </div>
+    </div>
+    <div class="acts"><a class="btn p" routerLink="/admin/usuarios/novo">Novo usuário</a></div>
   </div>
-  <div class="actions">
-    <button class="btn" type="button">Ver log de auditoria</button>
-    <a class="btn p" routerLink="/admin/usuarios/novo">Novo usuário</a>
-  </div>
-</div>
-
-<div class="pad-t" style="display:flex;flex-direction:column;gap:16px">
-  <div class="filters">
-    <div class="f grow">
-      <input
-        type="text"
+  <div class="toolbar">
+    <label class="field-s grow"
+      ><input
+        type="search"
         placeholder="Buscar por nome ou e-mail"
+        aria-label="Buscar por nome ou e-mail"
         [value]="termoBusca()"
         (input)="aoDigitarBusca($any($event.target).value)"
-      />
-    </div>
-    <div class="f">
-      <select [value]="filtroPapel()" (change)="aoMudarPapel($any($event.target).value)">
-        <option value="">Papel</option>
-        @for (papel of papeis(); track papel.id) {
-          <option [value]="papel.id">{{ nomePapelExibicao(papel.nome) }}</option>
-        }
-      </select>
-    </div>
-    <div class="f">
-      <select [value]="filtroStatus()" (change)="aoMudarStatus($any($event.target).value)">
-        <option value="">Status</option>
-        <option value="true">Ativo</option>
-        <option value="false">Inativo</option>
-      </select>
-    </div>
+    /></label>
+    <select
+      class="sel"
+      aria-label="Papel"
+      [value]="filtroPapel()"
+      (change)="aoMudarPapel($any($event.target).value)"
+    >
+      <option value="">Papel</option>
+      @for (papel of papeis(); track papel.id) {
+        <option [value]="papel.id">{{ nomePapelExibicao(papel.nome) }}</option>
+      }
+    </select>
+    <select
+      class="sel"
+      aria-label="Status"
+      [value]="filtroStatus()"
+      (change)="aoMudarStatus($any($event.target).value)"
+    >
+      <option value="">Status</option>
+      <option value="true">Ativo</option>
+      <option value="false">Inativo</option>
+    </select>
   </div>
-
-  <p class="legend" style="margin:0">
-    Um <span class="chip">Usuario</span> pode ter perfil de cliente e perfil administrativo ao mesmo tempo. Esta lista mostra apenas quem tem <span class="chip">PerfilAdministrativo</span>.
-  </p>
-
   @if (carregando()) {
-    <div class="tbl">
-      <div class="pager"><span>Carregando usuários…</span></div>
-    </div>
+    <p role="status">Carregando usuários…</p>
   } @else if (erro()) {
-    <div class="tbl">
-      <div class="pager">
-        <span class="warn">{{ erro() }}</span>
-        <button class="btn sm" type="button" (click)="carregar()">Tentar novamente</button>
-      </div>
+    <div class="info" role="alert">
+      {{ erro() }}
+      <button class="btn sm" type="button" (click)="ngOnInit()">Tentar novamente</button>
     </div>
   } @else {
-    <div class="tbl">
-      <div class="trow head" style="grid-template-columns:minmax(0,1fr) 170px 90px 150px 118px 44px">
-        <span>Usuário</span>
-        <span>Papel</span>
-        <span>2FA</span>
-        <span>Último acesso</span>
-        <span>Status</span>
-        <span></span>
-      </div>
-
-      @for (u of usuariosPagina(); track u.id) {
-        <a
-          class="trow"
-          style="grid-template-columns:minmax(0,1fr) 170px 90px 150px 118px 44px"
-          [routerLink]="['/admin/usuarios', u.id, 'editar']"
+    <div class="tw">
+      <table>
+        <thead>
+          <tr>
+            <th>Usuário</th>
+            <th>Papel</th>
+            <th>2FA</th>
+            <th>Último acesso</th>
+            <th>Status</th>
+            <th aria-label="Ações"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of usuariosPagina(); track u.id) {
+            <tr>
+              <td>
+                <a class="pc" [routerLink]="['/admin/usuarios', u.id, 'editar']"
+                  ><span class="av" aria-hidden="true">{{ u.nome.slice(0, 2).toUpperCase() }}</span>
+                  <div>
+                    <b>{{ u.nome }}</b
+                    ><span class="sub2 mono">{{ u.email }}</span>
+                  </div></a
+                >
+              </td>
+              <td data-l="Papel">
+                <span class="chip">{{ nomePapelExibicao(u.papel?.nome) }}</span>
+              </td>
+              <td data-l="2FA">
+                <span class="st" [class.ok]="u.twoFAHabilitado" [class.mute]="!u.twoFAHabilitado"
+                  ><span>{{ u.twoFAHabilitado ? 'Ativo' : 'Inativo' }}</span></span
+                >
+              </td>
+              <td data-l="Último acesso">—</td>
+              <td data-l="Status">
+                <span class="st" [class.ok]="u.ativo" [class.mute]="!u.ativo"
+                  ><span>{{ u.ativo ? 'Ativo' : 'Inativo' }}</span></span
+                >
+              </td>
+              <td class="r">
+                <a
+                  class="more"
+                  [routerLink]="['/admin/usuarios', u.id, 'editar']"
+                  [attr.aria-label]="'Editar ' + u.nome"
+                  >⋯</a
+                >
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6">Nenhum usuário encontrado.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="pager">
+      <span>Exibindo {{ intervaloExibido() }} de {{ totalItens() }}</span>
+      <div class="pages">
+        <button
+          class="btn sm"
+          type="button"
+          aria-label="Página anterior"
+          (click)="paginaAnterior()"
+          [disabled]="pagina() === 0"
         >
-          <span class="cell-name">
-            <b>{{ u.nome }}</b>
-            <span class="chip">{{ u.email }}</span>
-          </span>
-          <span class="dim" style="color:var(--ink2)">{{ nomePapelExibicao(u.papel?.nome) }}</span>
-          <span class="dim">{{ u.twoFAHabilitado ? 'Ativo' : 'Inativo' }}</span>
-          <span class="dim">-</span>
-          <span class="status">
-            <span class="dot" [style.background]="u.ativo ? 'var(--ok)' : 'var(--dim2)'"></span>
-            {{ u.ativo ? 'Ativo' : 'Inativo' }}
-          </span>
-          <span style="justify-self:end;color:var(--mute)">⋯</span>
-        </a>
-      } @empty {
-        <div class="pager"><span>Nenhum usuário encontrado.</span></div>
-      }
-
-      <div class="pager">
-        <span>Exibindo {{ intervaloExibido() }} de {{ totalItens() }}</span>
-        <span class="pages">
-          <a
-            (click)="paginaAnterior()"
-            [style.opacity]="pagina() === 0 ? 0.4 : 1"
-            [style.cursor]="pagina() === 0 ? 'default' : 'pointer'"
-            >‹</a
-          >
-          <span>Página {{ pagina() + 1 }} de {{ totalPaginas() }}</span>
-          <a
-            (click)="proximaPagina()"
-            [style.opacity]="pagina() + 1 >= totalPaginas() ? 0.4 : 1"
-            [style.cursor]="pagina() + 1 >= totalPaginas() ? 'default' : 'pointer'"
-            >›</a
-          >
-        </span>
+          ‹</button
+        ><span>Página {{ pagina() + 1 }} de {{ totalPaginas() }}</span
+        ><button
+          class="btn sm"
+          type="button"
+          aria-label="Próxima página"
+          (click)="proximaPagina()"
+          [disabled]="pagina() + 1 >= totalPaginas()"
+        >
+          ›
+        </button>
       </div>
     </div>
   }
-</div>
+</main>

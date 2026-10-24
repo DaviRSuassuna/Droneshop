@@ -112,4 +112,26 @@ describe('PedidoService', () => {
       },
     ]);
   });
+  it('exporta todos os resultados com os filtros e resposta binária', () => {
+    service
+      .exportar({ busca: '  AER ', idStatus: 2, dataInicio: '2026-10-01', dataFim: '2026-10-31' })
+      .subscribe();
+    const req = http.expectOne((r) => r.url === url + '/exportar');
+    expect(req.request.method).toBe('GET');
+    expect(req.request.responseType).toBe('blob');
+    expect(req.request.params.has('page')).toBe(false);
+    expect(req.request.params.has('pageSize')).toBe(false);
+    expect(req.request.params.get('busca')).toBe('AER');
+    expect(req.request.params.get('idStatus')).toBe('2');
+    expect(req.request.params.get('dataInicio')).toBe('2026-10-01');
+    expect(req.request.params.get('dataFim')).toBe('2026-10-31');
+    req.flush(new Blob(['csv'], { type: 'text/csv' }));
+  });
+  it('baixa a etiqueta PDF do pedido por GET', () => {
+    service.etiqueta(7).subscribe();
+    const req = http.expectOne(url + '/7/etiqueta');
+    expect(req.request.method).toBe('GET');
+    expect(req.request.responseType).toBe('blob');
+    req.flush(new Blob(['%PDF-1.4'], { type: 'application/pdf' }));
+  });
 });

@@ -19,6 +19,15 @@ import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class MarcaServiceImpl implements MarcaService {
+    @Override
+    public List<Marca> findComFiltro(String busca, Long idStatus, String paisOrigem, int page, int pageSize) {
+        return marcaRepository.findComFiltro(busca, idStatus, paisOrigem).page(page, pageSize).list();
+    }
+    @Override
+    public long countComFiltro(String busca, Long idStatus, String paisOrigem) {
+        return marcaRepository.findComFiltro(busca, idStatus, paisOrigem).count();
+    }
+
 
     @Inject
     MarcaRepository marcaRepository;

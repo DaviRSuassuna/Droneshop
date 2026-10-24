@@ -4,37 +4,39 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.function.Function;
 
-import br.com.droneshop.catalogo.model.VarianteProduto;
+import br.com.droneshop.catalogo.model.Kit;
+import br.com.droneshop.catalogo.model.Produto;
+import br.com.droneshop.catalogo.model.StatusProduto;
 
-// Valores derivados da variante (D7, D16). O kit nao tem estoque nem embalagem propria:
+// Valores derivados do produto (D7, D16). O kit nao tem estoque nem embalagem propria:
 // tudo vem dos componentes, salvo peso/dimensoes informados no proprio kit.
 public final class KitCalculo {
 
-    public record Parte(VarianteProduto variante, int quantidade) {
+    public record Parte(Produto produto, int quantidade) {
     }
 
     private KitCalculo() {
     }
 
-    public static List<Parte> partes(VarianteProduto kit) {
+    public static List<Parte> partes(Kit kit) {
         return kit.getComponentes().stream()
-                .map(c -> new Parte(c.getComponente(), c.getQuantidade()))
+                .map(c -> new Parte(c.getProduto(), c.getQuantidade()))
                 .toList();
     }
 
     // Fisico menos reservas ativas; as reservas chegam com a #23, ate la e o fisico.
     // No kit: o menor (disponivel do componente / quantidade exigida), arredondado para
-    // baixo. Componente inativo nao se vende, entao conta como zero.
-    public static int disponivel(VarianteProduto v) {
-        if (!v.isEhKit())
-            return (v.getEstoqueFisico() == null) ? 0 : Math.max(v.getEstoqueFisico(), 0);
-        List<Parte> partes = partes(v);
+    // baixo. Componente que nao esta ATIVO nao se vende, entao conta como zero.
+    public static int disponivel(Produto p) {
+        if (!(p instanceof Kit kit))
+            return (p.getEstoqueFisico() == null) ? 0 : Math.max(p.getEstoqueFisico(), 0);
+        List<Parte> partes = partes(kit);
         if (partes.isEmpty())
             return 0;
         int menor = Integer.MAX_VALUE;
-        for (Parte p : partes) {
-            int disponivel = p.variante().isAtiva() ? disponivel(p.variante()) : 0;
-            menor = Math.min(menor, disponivel / p.quantidade());
+        for (Parte parte : partes) {
+            int disponivel = parte.produto().getStatus() == StatusProduto.ATIVO ? disponivel(parte.produto()) : 0;
+            menor = Math.min(menor, disponivel / parte.quantidade());
         }
         return menor;
     }
@@ -46,7 +48,7 @@ public final class KitCalculo {
             return null;
         BigDecimal total = BigDecimal.ZERO;
         for (Parte p : partes) {
-            BigDecimal peso = p.variante().getPesoEmbalagemKg();
+            BigDecimal peso = p.produto().getPesoEmbalagemKg();
             if (peso == null)
                 return null;
             total = total.add(peso.multiply(BigDecimal.valueOf(p.quantidade())));
@@ -55,11 +57,11 @@ public final class KitCalculo {
     }
 
     public static Integer alturaDerivada(List<Parte> partes) {
-        return maior(partes, VarianteProduto::getAlturaEmbalagemCm);
+        return maior(partes, Produto::getAlturaEmbalagemCm);
     }
 
     public static Integer larguraDerivada(List<Parte> partes) {
-        return maior(partes, VarianteProduto::getLarguraEmbalagemCm);
+        return maior(partes, Produto::getLarguraEmbalagemCm);
     }
 
     public static Integer comprimentoDerivado(List<Parte> partes) {
@@ -67,7 +69,7 @@ public final class KitCalculo {
             return null;
         int total = 0;
         for (Parte p : partes) {
-            Integer medida = p.variante().getComprimentoEmbalagemCm();
+            Integer medida = p.produto().getComprimentoEmbalagemCm();
             if (medida == null)
                 return null;
             total += medida * p.quantidade();
@@ -75,37 +77,37 @@ public final class KitCalculo {
         return total;
     }
 
-    // Efetivos: o informado na variante; no kit sem valor informado, o derivado
-    public static BigDecimal peso(VarianteProduto v) {
-        if (!v.isEhKit() || v.getPesoEmbalagemKg() != null)
-            return v.getPesoEmbalagemKg();
-        return pesoDerivado(partes(v));
+    // Efetivos: o informado no produto; no kit sem valor informado, o derivado
+    public static BigDecimal peso(Produto p) {
+        if (!(p instanceof Kit kit) || p.getPesoEmbalagemKg() != null)
+            return p.getPesoEmbalagemKg();
+        return pesoDerivado(partes(kit));
     }
 
-    public static Integer altura(VarianteProduto v) {
-        if (!v.isEhKit() || v.getAlturaEmbalagemCm() != null)
-            return v.getAlturaEmbalagemCm();
-        return alturaDerivada(partes(v));
+    public static Integer altura(Produto p) {
+        if (!(p instanceof Kit kit) || p.getAlturaEmbalagemCm() != null)
+            return p.getAlturaEmbalagemCm();
+        return alturaDerivada(partes(kit));
     }
 
-    public static Integer largura(VarianteProduto v) {
-        if (!v.isEhKit() || v.getLarguraEmbalagemCm() != null)
-            return v.getLarguraEmbalagemCm();
-        return larguraDerivada(partes(v));
+    public static Integer largura(Produto p) {
+        if (!(p instanceof Kit kit) || p.getLarguraEmbalagemCm() != null)
+            return p.getLarguraEmbalagemCm();
+        return larguraDerivada(partes(kit));
     }
 
-    public static Integer comprimento(VarianteProduto v) {
-        if (!v.isEhKit() || v.getComprimentoEmbalagemCm() != null)
-            return v.getComprimentoEmbalagemCm();
-        return comprimentoDerivado(partes(v));
+    public static Integer comprimento(Produto p) {
+        if (!(p instanceof Kit kit) || p.getComprimentoEmbalagemCm() != null)
+            return p.getComprimentoEmbalagemCm();
+        return comprimentoDerivado(partes(kit));
     }
 
-    private static Integer maior(List<Parte> partes, Function<VarianteProduto, Integer> medida) {
+    private static Integer maior(List<Parte> partes, Function<Produto, Integer> medida) {
         if (partes.isEmpty())
             return null;
         int maior = 0;
         for (Parte p : partes) {
-            Integer valor = medida.apply(p.variante());
+            Integer valor = medida.apply(p.produto());
             if (valor == null)
                 return null;
             maior = Math.max(maior, valor);

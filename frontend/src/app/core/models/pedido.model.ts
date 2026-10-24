@@ -14,13 +14,13 @@ export const STATUS_PEDIDO = {
 
 /** Rótulo e cor do ponto de cada status, como no protótipo. */
 export const EXIBICAO_STATUS_PEDIDO: Record<number, { rotulo: string; cor: string }> = {
-  [STATUS_PEDIDO.PENDENTE]: { rotulo: 'Aguardando pagamento', cor: 'var(--dim2)' },
+  [STATUS_PEDIDO.PENDENTE]: { rotulo: 'Aguardando pagamento', cor: 'var(--amber)' },
   [STATUS_PEDIDO.PAGO]: { rotulo: 'Pago', cor: 'var(--ok)' },
-  [STATUS_PEDIDO.SEPARACAO]: { rotulo: 'Em separação', cor: 'var(--ok)' },
-  [STATUS_PEDIDO.ENVIADO]: { rotulo: 'Enviado', cor: 'var(--ok)' },
+  [STATUS_PEDIDO.SEPARACAO]: { rotulo: 'Em separação', cor: 'var(--info)' },
+  [STATUS_PEDIDO.ENVIADO]: { rotulo: 'Enviado', cor: 'var(--info)' },
   [STATUS_PEDIDO.ENTREGUE]: { rotulo: 'Entregue', cor: 'var(--ok)' },
   [STATUS_PEDIDO.EM_DEVOLUCAO]: { rotulo: 'Em devolução', cor: 'var(--warn)' },
-  [STATUS_PEDIDO.DEVOLVIDO]: { rotulo: 'Devolvido', cor: 'var(--dim2)' },
+  [STATUS_PEDIDO.DEVOLVIDO]: { rotulo: 'Devolvido', cor: 'var(--mute)' },
   [STATUS_PEDIDO.CANCELADO]: { rotulo: 'Cancelado', cor: 'var(--warn)' },
 };
 
@@ -59,8 +59,7 @@ export interface PedidoListagem {
 
 export interface ItemPedido {
   id: number;
-  variante: { id: number; sku: string; nome: string };
-  produto: { id: number; nome: string };
+  produto: { id: number; sku: string; nome: string };
   quantidade: number;
   precoUnitarioCongelado: number;
   subtotal: number;

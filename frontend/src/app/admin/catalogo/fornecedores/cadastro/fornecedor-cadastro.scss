@@ -5,7 +5,7 @@
 /* campo com erro (validação do front ou erro "api" vindo do back) */
 .f.erro input,
 .f.erro select {
-  border-color: var(--warn-b);
+  border-color: var(--warn);
 }
 
 .cep-row {
@@ -18,7 +18,6 @@
 }
 
 .aviso-cep {
-  font-size: 12px;
   line-height: 1.5;
 }
 .aviso-cep.ok {

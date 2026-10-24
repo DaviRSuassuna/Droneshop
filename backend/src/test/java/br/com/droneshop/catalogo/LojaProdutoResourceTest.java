@@ -30,11 +30,28 @@ class LojaProdutoResourceTest {
     static Fixtures.ProdutoCriado rascunho(Fixtures.Arvore a) {
         String s = Dados.sufixo();
         Map<String, Object> d = Fixtures.drone("Rascunho " + s, a,
-                Fixtures.lista(Fixtures.variante("RS-" + s.toUpperCase(), 100.0, 1)));
+                Fixtures.dadosComerciais("RS-" + s.toUpperCase(), 100.0, 1));
         d.put("idStatus", Fixtures.PRODUTO_RASCUNHO);
         io.restassured.path.json.JsonPath j = given().contentType(ContentType.JSON).body(d).when().post("/drones")
                 .then().statusCode(200).extract().jsonPath();
-        return new Fixtures.ProdutoCriado(j.getLong("id"), j.getString("slug"), j.getLong("variantes[0].id"), "");
+        return new Fixtures.ProdutoCriado(j.getLong("id"), j.getString("slug"), j.getString("sku"));
+    }
+
+    /** Grupo ativo e uma versão dele (drone ATIVO) com o rótulo e o preço informados. */
+    static long grupo() {
+        String s = Dados.sufixo();
+        return Fixtures.criar("/grupos-produto", Map.of("nome", "Grupo " + s, "ativo", true));
+    }
+
+    static Fixtures.ProdutoCriado versao(Fixtures.Arvore a, long idGrupo, String rotulo, double preco, long idStatus) {
+        String s = Dados.sufixo();
+        Map<String, Object> d = Fixtures.drone("Versao " + s, a, Fixtures.dadosComerciais("VS-" + s.toUpperCase(), preco, 2));
+        d.put("idGrupo", idGrupo);
+        d.put("rotuloNoGrupo", rotulo);
+        d.put("idStatus", idStatus);
+        io.restassured.path.json.JsonPath j = given().contentType(ContentType.JSON).body(d).when().post("/drones")
+                .then().statusCode(200).extract().jsonPath();
+        return new Fixtures.ProdutoCriado(j.getLong("id"), j.getString("slug"), j.getString("sku"));
     }
 
     @Test
@@ -51,7 +68,7 @@ class LojaProdutoResourceTest {
     }
 
     @Test
-    void filtroDePrecoUsaOPrecoDaVariante() {
+    void filtroDePrecoUsaOPrecoDoProduto() {
         Fixtures.Arvore a = Fixtures.arvore();
         Fixtures.criarDrone(a, 1000.0, 2);
         Fixtures.ProdutoCriado caro = Fixtures.criarDrone(a, 9000.0, 2);
@@ -90,7 +107,7 @@ class LojaProdutoResourceTest {
         Fixtures.Arvore a = Fixtures.arvore();
         String s = Dados.sufixo();
         Map<String, Object> d = Fixtures.drone("Águia " + s, a,
-                Fixtures.lista(Fixtures.variante("AG-" + s.toUpperCase(), 100.0, 1)));
+                Fixtures.dadosComerciais("AG-" + s.toUpperCase(), 100.0, 1));
         Fixtures.criar("/drones", d);
         anonimo().queryParam("nome", "AGUIA " + s.toUpperCase()).when().get("/loja/produtos")
                 .then().statusCode(200).body("totalItems", equalTo(1));
@@ -104,11 +121,42 @@ class LojaProdutoResourceTest {
                 .body("id", equalTo((int) p.id()))
                 .body("tipo.nome", equalTo("DRONE"))
                 .body("autonomiaMinutos", equalTo(46))
-                .body("variantes", hasSize(1))
-                .body("variantes[0].preco", equalTo(4500.0f))
-                .body("variantes[0].disponivel", equalTo(3))
-                .body("variantes[0].custoAquisicao", org.hamcrest.Matchers.nullValue());
+                .body("sku", equalTo(p.sku()))
+                .body("preco", equalTo(4500.0f))
+                .body("disponivel", equalTo(3))
+                .body("custoAquisicao", org.hamcrest.Matchers.nullValue())
+                .body("grupo", org.hamcrest.Matchers.nullValue());
         anonimo().when().get("/loja/produtos/{slug}", "nao-existe-" + Dados.sufixo()).then().statusCode(404);
+    }
+
+    @Test
+    void grupoViraUmItemSoAPartirDoMenorPrecoAtivo() {
+        Fixtures.Arvore a = Fixtures.arvore();
+        long idGrupo = grupo();
+        versao(a, idGrupo, "Pro", 9000.0, Fixtures.PRODUTO_ATIVO);
+        versao(a, idGrupo, "Standard", 6000.0, Fixtures.PRODUTO_ATIVO);
+        versao(a, idGrupo, "Lite", 3000.0, Fixtures.PRODUTO_RASCUNHO);
+        anonimo().queryParam("marca", a.slugMarca()).when().get("/loja/produtos")
+                .then().statusCode(200)
+                .body("totalItems", equalTo(1))
+                .body("items[0].precoMinimo", equalTo(6000.0f));
+    }
+
+    @Test
+    void paginaDaVersaoTrazAsOutrasVersoesAtivasDoGrupo() {
+        Fixtures.Arvore a = Fixtures.arvore();
+        long idGrupo = grupo();
+        Fixtures.ProdutoCriado pro = versao(a, idGrupo, "Pro", 9000.0, Fixtures.PRODUTO_ATIVO);
+        Fixtures.ProdutoCriado standard = versao(a, idGrupo, "Standard", 6000.0, Fixtures.PRODUTO_ATIVO);
+        Fixtures.ProdutoCriado lite = versao(a, idGrupo, "Lite", 3000.0, Fixtures.PRODUTO_RASCUNHO);
+        anonimo().when().get("/loja/produtos/{slug}", pro.slug())
+                .then().statusCode(200)
+                .body("grupo.versoes", hasSize(2))
+                .body("grupo.versoes.id", hasItem((int) standard.id()))
+                .body("grupo.versoes.id", not(hasItem((int) lite.id())))
+                .body("grupo.versoes.find { it.id == " + standard.id() + " }.rotulo", equalTo("Standard"))
+                .body("grupo.versoes.find { it.id == " + standard.id() + " }.preco", equalTo(6000.0f))
+                .body("grupo.versoes.find { it.id == " + standard.id() + " }.disponivel", equalTo(2));
     }
 
     @Test

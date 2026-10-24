@@ -1,154 +1,100 @@
 :host {
   display: block;
-}
-
-.painel {
-  padding-bottom: 36px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.painel.carregando .card,
-.painel.carregando .kpi {
-  opacity: 0.6;
-}
-
-.topo {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 20px;
-}
-
-.periodo {
-  width: 190px;
-}
-
-.erro {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.kpi b {
-  overflow-wrap: anywhere;
-}
-
-.kpi b.em-construcao {
-  font-size: 17px;
-  color: var(--mute);
-}
-
-.linha {
-  display: grid;
-  gap: 20px;
-}
-
-.linha.a {
-  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
-}
-
-.linha.b {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.55fr);
-}
-
-.list-row {
   min-width: 0;
 }
-
-.st {
-  flex: none;
-  width: 170px;
+.painel {
+  padding-bottom: 36px;
 }
-
+.kpis {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.kpi strong {
+  overflow-wrap: anywhere;
+}
+.bloco {
+  margin-top: 18px;
+}
+.status-linha {
+  display: grid;
+  grid-template-columns: minmax(0, 170px) minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+.status-linha:first-child {
+  border-top: 0;
+}
 .barra {
-  flex: 1;
   height: 4px;
+  background: var(--surf2);
   border-radius: 2px;
-  background: var(--line-s);
   overflow: hidden;
 }
-
 .barra i {
   display: block;
   height: 100%;
   background: var(--ink2);
 }
-
 .qtd {
-  flex: none;
-  min-width: 28px;
   text-align: right;
 }
-
+.produto {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.pedido {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+.pedido > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
 .saldo {
-  flex: none;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
+  text-align: right;
 }
-
-.numero {
-  font-size: 11px;
-  color: var(--ink2);
+.valor {
+  font: 300 16px var(--display);
 }
-
-.cliente {
-  font-size: 11.5px;
-  color: var(--dim2);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .mais {
-  justify-content: flex-start;
-  font-size: 12px;
+  display: block;
+  padding-top: 12px;
+  font-size: 12.5px;
   color: var(--mute);
 }
-
-.trow.vendidos {
-  grid-template-columns: 26px minmax(0, 1fr) 90px 110px 120px;
-  padding: 0 0 10px;
-}
-
-@media (max-width: 900px) {
-  .linha.a,
-  .linha.b {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-// Celular (D20): uma coluna; a tabela de mais vendidos fica só com produto e unidades
 @media (max-width: 640px) {
-  .topo {
-    flex-direction: column;
-    align-items: stretch;
+  .kpis {
+    grid-template-columns: 1fr;
   }
-  .topo .actions {
+  .kpi {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .kpi + .kpi {
+    border-top: 1px solid var(--line);
+  }
+  .pedido {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pedido .saldo {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
     flex-wrap: wrap;
+    text-align: left;
   }
-  .periodo {
-    width: auto;
-    flex: 1 1 160px;
+  .status-linha {
+    grid-template-columns: minmax(0, 1fr) auto;
   }
-  .st {
-    width: 140px;
-  }
-  .trow.vendidos {
-    grid-template-columns: 26px minmax(0, 1fr) 80px;
-  }
-  .trow.vendidos > :nth-child(4),
-  .trow.vendidos > :nth-child(5) {
-    display: none;
+  .status-linha .barra {
+    grid-column: 1 / -1;
+    grid-row: 2;
   }
 }
 
-@media (max-width: 480px) {
-  .g4 {
-    grid-template-columns: minmax(0, 1fr);
-  }
+.thumb.ph {
+  padding: 0;
+  margin: 0;
+  place-content: center;
 }
