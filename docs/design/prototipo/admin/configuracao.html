@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Aeria Admin Configuração da loja</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&family=DM+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/admin.css">
+</head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></symbol>
+<symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
+<symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V4h10v5M7 17H5v-6h14v6h-2M7 14h10v6H7z"/></symbol>
+<symbol id="i-up" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></symbol>
+</svg>
+<header class="tb"><div class="in gut">
+  <a class="brand" href="index.html">AERIA <span>ADMIN</span></a>
+  <nav class="tabs" aria-label="Painel"><a href="index.html">Dashboard</a><a href="produtos.html">Produtos</a><a href="marcas.html">Marcas</a><a href="categorias.html">Categorias</a><a href="subcategorias.html">Subcategorias</a><a href="fornecedores.html">Fornecedores</a><a href="promocoes.html">Promoções</a><a href="cupons.html">Cupons</a><a href="estoque.html">Estoque</a><a href="pedidos.html">Pedidos</a><a href="usuarios.html">Usuários</a><a href="configuracao.html" aria-current="page">Configuração</a></nav>
+  <div class="r"><div class="search"><svg class="ico"><use href="#i-search"/></svg>Buscar no painel<kbd>/</kbd></div><a class="store" href="../index.html">Ver loja ↗</a><span class="avatar" title="Marina Ribeiro">MR</span></div>
+</div><nav class="mnav" aria-label="Painel (celular)"><a href="index.html">Dashboard</a><a href="produtos.html">Produtos</a><a href="marcas.html">Marcas</a><a href="categorias.html">Categorias</a><a href="subcategorias.html">Subcategorias</a><a href="fornecedores.html">Fornecedores</a><a href="promocoes.html">Promoções</a><a href="cupons.html">Cupons</a><a href="estoque.html">Estoque</a><a href="pedidos.html">Pedidos</a><a href="usuarios.html">Usuários</a><a href="configuracao.html" aria-current="page">Configuração</a></nav></header>
+<main class="gut">
+<div class="ph"><div><div class="crumb"><span>Administração</span><span>·</span><span>Parâmetros gerais da loja</span></div><h1>Configuração da loja</h1></div><div class="acts"><span class="st mute"><span>Alterada em 18/10/2026</span></span></div></div>
+<div class="info">Registro único da loja. O prazo de garantia é o padrão do cadastro de produto (D15); cada produto pode ter o seu.</div><div class="form"><div><section class="sec"><div class="sh"><h2>Dados fiscais e de envio</h2><span>Usados na nota e na etiqueta</span></div><div class="fg"><div class="f w6"><label>Dados fiscais <span class="req">*</span></label><textarea id="cfd">Aeria Drones Comércio Ltda. · CNPJ 00.000.000/0001-00 · IE 29.000.000-0 · Palmas / TO</textarea><span class="hint">Razão social, CNPJ, inscrição estadual · até 2.000 caracteres</span></div><div class="f "><label>CEP de origem do frete <span class="req">*</span></label><input id="cfc" class="mono" value="77001-000" inputmode="numeric"><span class="hint">8 dígitos</span></div><div class="f w4"><label>Remetente padrão <span class="req">*</span></label><input id="cfr" type="text" value="Aeria Drones" placeholder=""><span class="hint">Aparece na etiqueta de envio · até 150 caracteres</span></div></div></section><section class="sec"><div class="sh"><h2>Prazos e devoluções</h2><span>Valem para a política de devolução (RN09)</span></div><div class="fg"><div class="f "><label>Prazo de arrependimento <span class="req">*</span></label><div class="unit"><input id="cfa" value="7" inputmode="decimal"><em>dias</em></div><span class="hint">O prazo mínimo permitido é 7 dias.</span></div><div class="f "><label>Prazo de garantia padrão <span class="req">*</span></label><div class="unit"><input id="cfg" value="365" inputmode="decimal"><em>dias</em></div><span class="hint">Padrão do cadastro de produto, em meses (D15)</span></div><div class="f "><label>Prazo de análise da devolução <span class="req">*</span></label><div class="unit"><input id="cfn" value="5" inputmode="decimal"><em>dias úteis</em></div><span class="hint">Mínimo 1</span></div><label class="toggle" style="grid-column:span 6"><input type="checkbox" checked>Frete reverso por conta da loja</label></div></section></div><aside class="rail"><section class="card "><div class="bd" style="padding-top:18px"><span class="lbl">O cliente vê na loja</span><div style="margin-top:12px"><div class="rl"><div><span>Arrependimento</span><b>7 dias</b></div><div><span>Frete da devolução</span><b>por conta da Aeria</b></div><div><span>Garantia padrão</span><b>12 meses</b></div><div><span>Análise da devolução</span><b>5 dias úteis</b></div></div><p class="note" style="margin:12px 0 0">É o que a loja mostra na política de trocas e na página do produto.</p></div></div></section></aside></div>
+<div class="actionbar"><div class="in gut"><span class="msg">Alterações valem para os próximos pedidos.</span><a class="btn " href="index.html">Cancelar</a><button class="btn p" type="button">Salvar configuração</button></div></div>
+<p class="foot-note">Protótipo acadêmico · dados fictícios · Aeria 2026</p>
+</main>
+
+<script>document.querySelectorAll('.tabs a[aria-current],.mnav a[aria-current]').forEach(a=>{const p=a.parentElement;p.scrollLeft=a.offsetLeft-(p.clientWidth-a.offsetWidth)/2})</script>
+</body></html>

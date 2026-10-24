@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Aeria Admin Cadastrar subcategoria</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&family=DM+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/admin.css">
+</head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></symbol>
+<symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
+<symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V4h10v5M7 17H5v-6h14v6h-2M7 14h10v6H7z"/></symbol>
+<symbol id="i-up" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></symbol>
+</svg>
+<header class="tb"><div class="in gut">
+  <a class="brand" href="index.html">AERIA <span>ADMIN</span></a>
+  <nav class="tabs" aria-label="Painel"><a href="index.html">Dashboard</a><a href="produtos.html">Produtos</a><a href="marcas.html">Marcas</a><a href="categorias.html">Categorias</a><a href="subcategorias.html" aria-current="page">Subcategorias</a><a href="fornecedores.html">Fornecedores</a><a href="promocoes.html">Promoções</a><a href="cupons.html">Cupons</a><a href="estoque.html">Estoque</a><a href="pedidos.html">Pedidos</a><a href="usuarios.html">Usuários</a><a href="configuracao.html">Configuração</a></nav>
+  <div class="r"><div class="search"><svg class="ico"><use href="#i-search"/></svg>Buscar no painel<kbd>/</kbd></div><a class="store" href="../index.html">Ver loja ↗</a><span class="avatar" title="Marina Ribeiro">MR</span></div>
+</div><nav class="mnav" aria-label="Painel (celular)"><a href="index.html">Dashboard</a><a href="produtos.html">Produtos</a><a href="marcas.html">Marcas</a><a href="categorias.html">Categorias</a><a href="subcategorias.html" aria-current="page">Subcategorias</a><a href="fornecedores.html">Fornecedores</a><a href="promocoes.html">Promoções</a><a href="cupons.html">Cupons</a><a href="estoque.html">Estoque</a><a href="pedidos.html">Pedidos</a><a href="usuarios.html">Usuários</a><a href="configuracao.html">Configuração</a></nav></header>
+<main class="gut">
+<div class="ph"><div><div class="crumb"><a href="subcategorias.html">← Subcategorias</a><span>·</span><span>Nova subcategoria</span></div><h1>Cadastrar subcategoria</h1></div><div class="acts"><span class="st mute"><span>Rascunho salvo há 1 min</span></span></div></div>
+<div class="form"><div><section class="sec"><div class="sh"><h2>Dados da subcategoria</h2><span>2 campos obrigatórios</span></div><div class="fg"><div class="f w3"><label>Nome da subcategoria <span class="req">*</span></label><input id="sn" type="text" value="" placeholder="Ex.: Inspeção industrial"><span class="hint">2 a 100 caracteres</span></div><div class="f w3"><label>Categoria <span class="req">*</span></label><select id="sc"><option>Selecione a categoria</option><option>Profissionais · Drone</option><option>Lazer e criação · Drone</option><option>Peças e energia · Acessório</option><option>Transporte e proteção · Acessório</option></select><span class="hint">A subcategoria herda o tipo da categoria</span></div><div class="f w1"><label>Ordem de exibição</label><input id="so" type="text" value="1" placeholder=""></div><div class="f w6"><label>Descrição</label><textarea id="sd" placeholder="Até 2.000 caracteres"></textarea></div></div><p class="note">Subcategoria com produtos não passa para categoria de outro tipo (D39) e não se exclui: inative (D24).</p></section></div><aside class="rail"><section class="card "><div class="bd" style="padding-top:18px"><span class="lbl">Publicação</span><div style="margin-top:12px"><div class="f" style="grid-column:auto"><label>Status <span class="req">*</span></label><div class="rad"><label><input type="radio" name="pubst" checked>Rascunho</label><label><input type="radio" name="pubst">Ativa</label><label><input type="radio" name="pubst">Inativa</label></div></div></div></div></section><section class="card "><div class="bd" style="padding-top:18px"><span class="lbl">Endereço</span><div style="margin-top:12px"><div class="f" style="grid-column:auto"><label>Slug</label><input value="nova-subcategoria" class="mono" aria-label="Slug"><span class="hint">Gerado do nome, até 110 caracteres · aeria.com.br/drones/nova-subcategoria</span></div></div></div></section><section class="card pend"><div class="bd" style="padding-top:18px"><div class="t">2 campos obrigatórios vazios</div><p>Nome da subcategoria · Categoria</p><small>Rascunho aceita campos vazios (D21)</small></div></section></aside></div>
+<div class="actionbar"><div class="in gut"><span class="msg">Faltam <b>2 campos obrigatórios</b>.</span><a class="btn " href="subcategorias.html">Cancelar</a><button class="btn " type="button">Salvar rascunho</button><button class="btn p" type="button">Publicar subcategoria</button></div></div>
+<p class="foot-note">Protótipo acadêmico · dados fictícios · Aeria 2026</p>
+</main>
+
+<script>document.querySelectorAll('.tabs a[aria-current],.mnav a[aria-current]').forEach(a=>{const p=a.parentElement;p.scrollLeft=a.offsetLeft-(p.clientWidth-a.offsetWidth)/2})</script>
+</body></html>

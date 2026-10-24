@@ -4,7 +4,7 @@ Referência visual da Aeria. O protótipo é a fonte da verdade das telas: quem 
 
 | Arquivo | Conteúdo |
 |---|---|
-| [`prototipo/`](prototipo/) | Protótipo navegável em HTML puro: 16 telas do storefront e 23 do admin |
+| [`prototipo/`](prototipo/) | Protótipo navegável em HTML puro: 16 telas do storefront e 26 do admin |
 | [`DESIGN.md`](DESIGN.md) | Tokens, tipografia, layout e componentes. Os tokens são os mesmos do `frontend/src/styles.scss` |
 | [`PRODUCT.md`](PRODUCT.md) | Usuários, propósito, contexto e princípios do produto |
 
@@ -72,6 +72,8 @@ Use estes links na seção "Protótipo" das issues. Eles sempre abrem a versão 
 | Cadastrar marca | [`admin/marca-nova.html`](https://davirsuassuna.github.io/droneshop/prototipo/admin/marca-nova.html) |
 | Categorias | [`admin/categorias.html`](https://davirsuassuna.github.io/droneshop/prototipo/admin/categorias.html) |
 | Cadastrar categoria | [`admin/categoria-nova.html`](https://davirsuassuna.github.io/droneshop/prototipo/admin/categoria-nova.html) |
+| Subcategorias | [`admin/subcategorias.html`](https://davirsuassuna.github.io/droneshop/prototipo/admin/subcategorias.html) |
+| Cadastrar subcategoria | [`admin/subcategoria-nova.html`](https://davirsuassuna.github.io/droneshop/prototipo/admin/subcategoria-nova.html) |
 | Fornecedores | [`admin/fornecedores.html`](https://davirsuassuna.github.io/droneshop/prototipo/admin/fornecedores.html) |
 | Cadastrar fornecedor | [`admin/fornecedor-novo.html`](https://davirsuassuna.github.io/droneshop/prototipo/admin/fornecedor-novo.html) |
 | Estoque | [`admin/estoque.html`](https://davirsuassuna.github.io/droneshop/prototipo/admin/estoque.html) |
@@ -84,12 +86,7 @@ Use estes links na seção "Protótipo" das issues. Eles sempre abrem a versão 
 | Detalhe do pedido | [`admin/pedido.html`](https://davirsuassuna.github.io/droneshop/prototipo/admin/pedido.html) |
 | Usuários | [`admin/usuarios.html`](https://davirsuassuna.github.io/droneshop/prototipo/admin/usuarios.html) |
 | Novo usuário | [`admin/usuario-novo.html`](https://davirsuassuna.github.io/droneshop/prototipo/admin/usuario-novo.html) |
-
-### O que ainda não está no protótipo
-
-| Falta | Situação |
-|---|---|
-| Listagem e cadastro de subcategoria | já implementados no admin; a tela segue o padrão de Categorias |
+| Configuração da loja | [`admin/configuracao.html`](https://davirsuassuna.github.io/droneshop/prototipo/admin/configuracao.html) |
 
 ## Como alterar o protótipo
 
