@@ -39,8 +39,8 @@ Organizado por módulo de domínio em `br.com.droneshop`, cada um com as camadas
 
 | Módulo | Responsabilidade |
 |---|---|
-| `catalogo` | Marca, categoria, subcategoria, fornecedor, produto (drone e acessório), variantes e kits |
-| `estoque` | Estoque por variante, reservas, movimentos, unidades serializadas |
+| `catalogo` | Marca, categoria, subcategoria, fornecedor, produto (drone, acessório e kit) e grupo de produto |
+| `estoque` | Estoque por produto, reservas, movimentos, unidades serializadas |
 | `compra` | Carrinho, cupons, lista de desejos |
 | `pedido` | Pedido, histórico de status, entrega e rastreio, nota fiscal |
 | `pagamento` | Tentativas de pagamento, estorno, cartões salvos (token) |
@@ -135,7 +135,7 @@ Criados pela carga de dados (`import.sql`) a cada subida em modo dev. Só para d
 O fluxo é issue → branch a partir da `develop` → PR para a `develop` → PR `develop` → `main`, com commits em Conventional Commits em português.
 
 1. **Branch:** na issue, "Development → Create a branch" com origem na `develop`. O nome sugerido pelo GitHub (`<numero>-<resumo>`) já serve.
-2. **Commits:** `tipo(escopo): resumo`, ex.: `feat(catalogo): cria VarianteProduto com dados de embalagem`.
+2. **Commits:** `tipo(escopo): resumo`, ex.: `feat(catalogo): cria GrupoProduto com rótulo e ordem das versões`.
 3. **PR para a `develop`** com `Closes #<numero>` na descrição; a issue fecha sozinha no merge.
 4. **Revisão:** 1 aprovação de qualquer colaborador com escrita. O autor não aprova o próprio PR; o admin pode usar o bypass ("Merge without waiting for requirements to be met").
 5. **CI:** os checks `backend` e `frontend` precisam passar. Os testes da issue já existem (etiqueta `issue-<numero>`); no PR que a entrega, acrescente a etiqueta em `backend/src/test/issues-entregues.txt` e, se a issue tem tela, em `frontend/e2e/telas-entregues.txt`.

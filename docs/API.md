@@ -51,10 +51,10 @@ As telas citadas são as do [protótipo](design/README.md).
 | GET | `/produtos/slug/{slug}` · `/tipos-produto` (+ `/{id}`) | busca por slug, select de tipo | #7, #8 | pronto |
 | POST · PUT | `/drones` · `/drones/{id}` | Cadastrar drone (specs fixas, D14) | #8 | pronto |
 | POST · PUT | `/acessorios` · `/acessorios/{id}` | Cadastrar acessório | #8 | pronto |
-| (corpo) | `sku`, `preco`, `custoAquisicao`, `estoqueFisico`, `estoqueMinimo` e embalagem no próprio drone/acessório/kit; resposta com `margemPercentual` e `disponivel` | Preço, estoque e embalagem (D26, D40) | nova-produto-sem-variante | a fazer (substitui a #9) |
-| GET | `/produtos?busca=&vendavel=true` | select de produto (estoque, promoção, cupom, componente de kit) | nova-produto-sem-variante | a fazer; `/variantes` sai (D40) |
-| POST · PUT | `/kits` · `/kits/{id}` com `componentes[]` (`idProduto`, `quantidade`); resposta com `disponivel`, `pesoSobrescrito`/`dimensoesSobrescritas` | Cadastrar kit (D7, D16, D40) | nova-produto-sem-variante | a fazer (substitui o kit da #10) |
-| GET POST · GET PUT DELETE | `/grupos-produto?nome=` · `/grupos-produto/{id}` | Grupos de produto; no produto, `idGrupo`, `rotuloNoGrupo`, `ordemNoGrupo` | nova-produto-sem-variante | a fazer |
+| (corpo) | `sku`, `preco`, `custoAquisicao`, `estoqueFisico`, `estoqueMinimo` e embalagem no próprio drone/acessório/kit; resposta com `margemPercentual` e `disponivel` | Preço, estoque e embalagem (D26, D40) | #80 | pronto (substitui a #9) |
+| GET | `/produtos?busca=&idStatus=2&kit=false&idGrupo=&estoque=` | select de produto (estoque, promoção, cupom, componente de kit): `idStatus=2` lista só ATIVO, `kit=false` tira os kits; `estoque=ABAIXO_MINIMO\|ZERADO` na listagem | #80 | pronto; `/variantes` saiu (D40) |
+| POST · PUT | `/kits` · `/kits/{id}` com `componentes[]` (`idProduto`, `quantidade`); resposta com `disponivel`, `pesoSobrescrito`/`dimensoesSobrescritas` | Cadastrar kit (D7, D16, D40) | #80 | pronto (substitui o kit da #10) |
+| GET POST · GET PUT DELETE | `/grupos-produto?nome=&ativo=` · `/grupos-produto/{id}` | Grupos de produto (resposta com `versoes[]` e `precoAPartirDe`); no produto, `idGrupo`, `rotuloNoGrupo`, `ordemNoGrupo` | #80 | pronto |
 | (corpo) | `idsCompativeis[]` no acessório; resposta com `compativeis[]` e, em todo produto, `acessoriosCompativeis[]` (lado recíproco) | Compatível com (D17) | #11 | pronto |
 | GET · GET POST · PATCH · DELETE | `/tipos-midia` · `/produtos/{id}/midias` (multipart) · `/midias/{id}` · `/produtos/{id}/midias/ordem` · `/midias/arquivos/{nome}` | imagem e manual por upload, vídeo por URL (D29) | #12 | pronto |
 | GET POST · GET PUT DELETE | `/promocoes?situacao=` · `/promocoes/{id}` | Promoções (abas Vigentes/Agendadas/Encerradas), Criar promoção | #14 | pronto |
@@ -65,7 +65,7 @@ As telas citadas são as do [protótipo](design/README.md).
 
 | Método | Rota | Uso | Issue | Situação |
 |---|---|---|---|---|
-| GET | `/estoque?situacao=&busca=` | Estoque: saldo por produto (físico, reservado, disponível, mínimo) | #13 | a fazer |
+| GET | `/estoque?situacao=&busca=&idMarca=` | Estoque: saldo por produto (físico, reservado, disponível, mínimo) | #13 | a fazer |
 | GET POST | `/estoque/movimentos?idProduto=&idTipo=` | aba Movimentos; Novo movimento (origem e autor, D11) | #13 | a fazer |
 | GET | `/estoque/reservas?idProduto=` | aba Reservas ativas | #23 | a fazer |
 | POST | `/admin/rotinas/expirar-reservas` · `/admin/rotinas/carrinhos-abandonados` | rotinas sob demanda (D33) | #23, #24 | a fazer |
@@ -161,17 +161,33 @@ As telas citadas são as do [protótipo](design/README.md).
 
 ## Rotas que as telas pedem (issues novas, D36)
 
-Estas rotas não tinham issue. Viraram duas issues novas, com contrato em `docs/issues/nova-lote-csv.md` e `docs/issues/nova-empresas.md`.
+Estas rotas não tinham issue. Viraram duas issues novas, com contrato em `docs/issues/061.md` (#61) e `docs/issues/nova-empresas.md`.
 
 | Tela / ação | Rota | Issue |
 |---|---|---|
-| Contagem de produtos nas listagens de marca, categoria e fornecedor | campo `quantidadeProdutos` na resposta | lote-csv |
-| Produtos: Ativar, Inativar, Reajustar preço, Mover subcategoria (em lote) | `PATCH /produtos/lote` | lote-csv |
-| Categorias: Reordenar | `PATCH /categorias/ordem` | lote-csv |
-| Exportar CSV (marcas, fornecedores, produtos, estoque, pedidos) | `GET .../exportar` | lote-csv |
-| Pedidos: Imprimir etiqueta | `GET /pedidos/{id}/etiqueta` | lote-csv |
+| Contagem de produtos nas listagens de marca, categoria e fornecedor | campo derivado `quantidadeProdutos` na resposta (implementado) | #61 |
+| Produtos: Ativar, Inativar, Reajustar preço, Mover subcategoria (em lote) | `PATCH /produtos/lote` (implementado) | #61 |
+| Categorias: Reordenar | `PATCH /categorias/ordem` (implementado) | #61 |
+| Exportar CSV (marcas, fornecedores, produtos, estoque, pedidos) | `GET .../exportar` (implementado) | #61 |
+| Pedidos: Imprimir etiqueta | `GET /pedidos/{id}/etiqueta` (PDF local; 409 sem endereço congelado) | #61 |
 | Empresas: Solicitar proposta | `POST /leads-empresas` | empresas |
+| Dashboard: comparação, vendas por dia, aguardando ação, mais vendidos | campos novos em `GET /admin/dashboard` | dashboard-indicadores |
+| Dashboard: Exportar relatório | `GET /admin/dashboard/exportar` | dashboard-indicadores |
+| Pedidos: indicadores do topo | `GET /pedidos/indicadores` | pedidos-painel |
+| Pedidos: busca por CPF/CNPJ, filtro e coluna de pagamento | `GET /pedidos?busca=&idMetodoPagamento=` | pedidos-painel |
+| Pedidos: Imprimir etiquetas (em lote) | `POST /pedidos/etiquetas` | pedidos-painel |
+| Marca: logo por arquivo | `POST /marcas/{id}/logo` | catalogo-complementos |
+| Acessório: peso do item, sugerir nos compatíveis; Kit: exibir em Ofertas | campos `pesoItemG`, `sugerirNosCompativeis`, `exibirEmOfertas` | catalogo-complementos |
+| Perfil: Drones registrados | `GET /conta/drones` · `PATCH /conta/drones/{idUnidade}` | meus-drones |
+| Favoritos: queda de preço, mover tudo para o carrinho, compartilhar | `POST /conta/desejos/mover-para-carrinho` · `POST DELETE /conta/desejos/compartilhar` · `GET /loja/listas/{token}` | favoritos-compartilhar |
+| Suporte: temas e perguntas frequentes | nenhuma (texto fixo no front) | suporte-faq |
+
+As linhas a partir do dashboard vieram da revisão do protótipo novo (D38) contra as issues; contratos em `docs/issues/nova-*.md`.
 
 ## Protótipo × modelo
 
 Resolvido pela D36 (o modelo vence): "Categoria pai" saiu das telas de categoria; "Inscrição estadual", "Observações internas" e "Disponível para vincular" saíram do cadastro de fornecedor; telefone, equipe, observações, foto e o status "Suspenso" saíram do cadastro de usuário (D35).
+
+Pendente (`docs/issues/nova-ajuste-prototipo.md`): permissões por tela e "Salvar rascunho" no cadastro de usuário, filtro "Canal" e parcelas na listagem de pedidos e o card "Conversão" do dashboard saem do protótipo, porque o modelo não tem módulos por tela, rascunho de usuário, canal, parcelamento nem registro de visitas.
+
+Subcategoria em RASCUNHO aceita nome e categoria vazios (D21); a resposta traz `categoria: null` enquanto não houver vínculo. ATIVA/INATIVA exige nome e `idCategoria`. Produto só seleciona subcategoria com categoria definida.

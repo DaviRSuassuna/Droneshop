@@ -32,7 +32,7 @@ body:
     attributes:
       label: Classes do diagrama
       description: Classes e enums que esta tarefa cria ou altera.
-      placeholder: "VarianteProduto"
+      placeholder: "GrupoProduto"
     validations:
       required: true
 
