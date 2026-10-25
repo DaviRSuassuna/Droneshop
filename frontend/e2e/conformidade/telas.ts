@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 
 /**
  * Mapa tela do protótipo -> rota do Angular -> issue.
@@ -245,6 +245,7 @@ export const TELAS: Tela[] = [
     },
     preparar: async (page) => {
       await page.getByRole('checkbox', { name: 'Selecionar ' + produto.nome, exact: true }).check();
+      await expect(page.getByRole('button', { name: 'Ativar', exact: true })).toBeVisible();
     },
     // Exclusão em lote ainda não faz parte do contrato.
     ignorar: ['Excluir'],
