@@ -1,0 +1,512 @@
+@startuml modelo
+' =============================================================================
+' Aeria Drones: modelo de dados IMPLEMENTADO no backend (br.com.droneshop)
+'
+' Reflete as entidades JPA que existem hoje em backend/src/main/java.
+' O modelo-alvo completo (inclusive o que ainda não foi implementado) está nos
+' diagramas por contexto em docs/diagramas/aeria-*.puml.
+'
+' Mantenha sincronizado: mudou entidade, atributo, enum ou relacionamento,
+' atualize este arquivo, o .puml do contexto e o import.sql no mesmo PR.
+'
+' Convenções:
+'   - Toda entidade herda de DefaultEntity (id, dataCadastro, dataAlteracao).
+'   - Enums são persistidos pelo id (conversor JPA) e expostos como {id, nome} (D31).
+'   - <<embeddable>> = valor embutido na tabela da entidade dona.
+'   - "derivado" = calculado (@Formula ou no service), sem coluna própria.
+' Última atualização: 31/10/2026
+' =============================================================================
+
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam shadowing false
+hide empty methods
+
+' -----------------------------------------------------------------------------
+' Base
+' -----------------------------------------------------------------------------
+abstract class DefaultEntity <<MappedSuperclass>> {
+  - id : Long <<PK, identity>>
+  - dataCadastro : LocalDateTime
+  - dataAlteracao : LocalDateTime
+}
+
+enum OrigemRegistro {
+  MANUAL = 1
+  SISTEMA = 2
+  INTEGRACAO = 3
+}
+
+' -----------------------------------------------------------------------------
+' Endereço (IBGE)
+' -----------------------------------------------------------------------------
+package endereco {
+  class Estado {
+    - nome : String(60)
+    - sigla : String(2) <<unique>>
+    - codigoIbge : Integer <<unique>>
+  }
+
+  class Municipio {
+    - nome : String(60)
+    - codigoIbge : Integer <<unique>>
+  }
+
+  class Endereco <<embeddable>> {
+    - cep : String(8)
+    - logradouro : String(150)
+    - numero : String(10)
+    - complemento : String(60) [0..1]
+    - bairro : String(80)
+  }
+}
+
+' -----------------------------------------------------------------------------
+' Identidade e administração
+' -----------------------------------------------------------------------------
+package identidade {
+  class Usuario {
+    - nome : String(120)
+    - email : String(254) <<unique>>
+    - senhaHash : String(60) [0..1]
+    - emailVerificado : boolean
+    - ativo : boolean
+  }
+
+  class PerfilCliente {
+    - tipoPessoa : TipoPessoa
+    - nome : String(150)
+    - documento : String(14) <<unique>>
+    - telefone : String(11) [0..1]
+  }
+
+  enum TipoPessoa {
+    PF = 1
+    PJ = 2
+  }
+}
+
+package administracao {
+  class PerfilAdministrativo {
+    - papel : PapelAdministrativo
+    - twoFAHabilitado : boolean
+    - twoFASecret : String [0..1]
+  }
+
+  class PermissaoModulo {
+    - modulo : ModuloSistema
+    - podeVer : boolean
+    - podeEditar : boolean
+    - podeExcluir : boolean
+  }
+
+  class ConfiguracaoLoja <<registro único>> {
+    - dadosFiscais : String(2000)
+    - cepOrigemFrete : String(8)
+    - remetentePadrao : String(150)
+    - prazoArrependimentoDias : int
+    - prazoGarantiaDias : int
+    - prazoAnaliseDevolucaoDiasUteis : int
+    - freteReversoPorContaLoja : boolean
+  }
+
+  enum PapelAdministrativo {
+    ADMIN = 1
+    OPERADOR = 2
+    CATALOGO = 3
+    ATENDIMENTO = 4
+    SOMENTE_LEITURA = 5
+  }
+
+  enum ModuloSistema {
+    CATALOGO = 1
+    ESTOQUE = 2
+    PEDIDO = 3
+    PAGAMENTO = 4
+    DEVOLUCAO = 5
+    ATENDIMENTO = 6
+    NOTIFICACAO = 7
+    ADMINISTRACAO = 8
+  }
+}
+
+' -----------------------------------------------------------------------------
+' Catálogo
+' -----------------------------------------------------------------------------
+package catalogo {
+  class Marca {
+    - nome : String(80)
+    - slug : String(90) <<unique>>
+    - paisOrigem : String(60)
+    - siteOficial : String(255) [0..1]
+    - descricao : String(2000) [0..1]
+    - logoUrl : String(255)
+    - status : StatusMarca
+    - destacarHome : boolean
+    - quantidadeProdutos : long <<derivado>>
+  }
+
+  class Categoria {
+    - nome : String(100)
+    - slug : String(110) <<unique>>
+    - ordemExibicao : Integer
+    - descricao : String(2000) [0..1]
+    - status : StatusCategoria
+    - exibirMenu : boolean
+    - iconeUrl : String(255) [0..1]
+    - tipo : TipoProduto [0..1]
+    - quantidadeProdutos : long <<derivado>>
+  }
+
+  class Subcategoria {
+    - nome : String(100)
+    - slug : String(110) <<unique>>
+    - ordemExibicao : Integer
+    - descricao : String(2000) [0..1]
+    - status : StatusCategoria
+    - quantidadeProdutos : long <<derivado>>
+  }
+
+  class Fornecedor {
+    - razaoSocial : String(150)
+    - cnpj : String(14) <<unique>>
+    - nomeContato : String(100)
+    - emailContato : String(150)
+    - telefoneContato : String(11) [0..1]
+    - endereco : Endereco <<embedded>>
+    - status : StatusFornecedor
+    - quantidadeProdutos : long <<derivado>>
+  }
+
+  class GrupoProduto {
+    - nome : String(120)
+    - slug : String(140) <<unique>>
+    - descricaoCurta : String(300) [0..1]
+    - ativo : boolean
+  }
+
+  abstract class Produto <<JOINED, discriminador tipo>> {
+    - nome : String(120) [0..1]
+    - sku : String(40) <<unique>> [0..1]
+    - slug : String(140) <<unique>>
+    - descricaoCurta : String(300) [0..1]
+    - descricao : String(5000) [0..1]
+    - metaTitle : String(70) [0..1]
+    - metaDescription : String(160) [0..1]
+    - tags : String(255) [0..1]
+    - garantiaMeses : int
+    - dataLancamento : LocalDate [0..1]
+    - status : StatusProduto
+    - destaque : boolean
+    - preco : BigDecimal(12,2) [0..1]
+    - custoAquisicao : BigDecimal(12,2) [0..1]
+    - estoqueFisico : Integer [0..1]
+    - estoqueMinimo : int
+    - pesoEmbalagemKg : BigDecimal(8,3) [0..1]
+    - alturaEmbalagemCm : Integer [0..1]
+    - larguraEmbalagemCm : Integer [0..1]
+    - comprimentoEmbalagemCm : Integer [0..1]
+    - rotuloNoGrupo : String(40) [0..1]
+    - ordemNoGrupo : int
+    --
+    unique (grupo, rotuloNoGrupo)
+    margemPercentual <<derivado>>
+    disponivel <<derivado>>
+  }
+
+  class Drone {
+    - pesoGramas : Integer [0..1]
+    - dimensoesDobrado : String(30) [0..1]
+    - dimensoesAberto : String(30) [0..1]
+    - autonomiaMinutos : Integer [0..1]
+    - alcanceMetros : Integer [0..1]
+    - velocidadeMaximaKmh : Integer [0..1]
+    - resolucaoFotoMp : Integer [0..1]
+    - tipoSensor : String(60) [0..1]
+    - resolucaoVideo : String(30) [0..1]
+    - estabilizacao : String(60) [0..1]
+    - tipoBateria : String(40) [0..1]
+    - capacidadeBateriaMah : Integer [0..1]
+    - tempoCarregamentoMinutos : Integer [0..1]
+    - gpsIntegrado : boolean
+    - sensoresAnticolisao : boolean
+    - exigeRegistroAnac : boolean
+    - classeAnac : String(30) [0..1]
+    - registroSisant : String(40) [0..1]
+  }
+
+  class Acessorio {
+    - tipoAcessorio : String(60) [0..1]
+  }
+
+  class Kit {
+    .. sem estoque próprio (D7) ..
+  }
+
+  class ComponenteKit {
+    - quantidade : int
+    --
+    unique (kit, produto)
+  }
+
+  class MidiaProduto {
+    - tipo : TipoMidia
+    - url : String(2048)
+    - principal : boolean
+    - ordem : int
+    - altText : String(160) [0..1]
+  }
+
+  class Promocao {
+    - nome : String(120)
+    - escopo : EscopoPromocao
+    - dataInicio : LocalDateTime
+    - dataFim : LocalDateTime
+    - percentualDesconto : BigDecimal(5,2) [0..1]
+    - valorDesconto : BigDecimal(12,2) [0..1]
+    - valorMinimoCarrinho : BigDecimal(12,2) [0..1]
+    - ativa : boolean
+  }
+
+  enum TipoProduto {
+    DRONE = 1
+    ACESSORIO = 2
+    KIT = 3
+  }
+
+  enum StatusProduto {
+    RASCUNHO = 1
+    ATIVO = 2
+    INATIVO = 3
+  }
+
+  enum StatusMarca {
+    RASCUNHO = 1
+    ATIVA = 2
+    INATIVA = 3
+  }
+
+  enum StatusCategoria {
+    RASCUNHO = 1
+    ATIVA = 2
+    INATIVA = 3
+  }
+
+  enum StatusFornecedor {
+    ATIVO = 1
+    INATIVO = 2
+  }
+
+  enum TipoMidia {
+    IMAGEM = 1
+    VIDEO = 2
+    MANUAL_PDF = 3
+  }
+
+  enum EscopoPromocao {
+    PRODUTO = 1
+    CARRINHO = 2
+    FRETE = 3
+  }
+}
+
+' -----------------------------------------------------------------------------
+' Estoque
+' -----------------------------------------------------------------------------
+package estoque {
+  class MovimentoEstoque {
+    - tipo : TipoMovimento
+    - origem : OrigemRegistro
+    - quantidade : int
+    - saldoResultante : int
+    - observacao : String(500) [0..1]
+  }
+
+  enum TipoMovimento {
+    ENTRADA = 1
+    SAIDA = 2
+    AJUSTE = 3
+    DEVOLUCAO = 4
+    PERDA = 5
+  }
+}
+
+' -----------------------------------------------------------------------------
+' Compra
+' -----------------------------------------------------------------------------
+package compra {
+  class Cupom {
+    - codigo : String(40) <<unique>>
+    - tipoDesconto : TipoDescontoCupom
+    - valor : BigDecimal(12,2)
+    - dataInicio : LocalDateTime
+    - dataFim : LocalDateTime [0..1]
+    - valorMinimo : BigDecimal(12,2) [0..1]
+    - limiteTotalUso : Integer [0..1]
+    - limitePorCliente : Integer [0..1]
+    - ativo : boolean
+  }
+
+  class UsoCupom {
+    - dataUso : LocalDateTime
+  }
+
+  enum TipoDescontoCupom {
+    PERCENTUAL = 1
+    VALOR_FIXO = 2
+  }
+}
+
+' -----------------------------------------------------------------------------
+' Pedido
+' -----------------------------------------------------------------------------
+package pedido {
+  class Pedido {
+    - status : StatusPedido
+    - valorTotal : BigDecimal(12,2)
+    - valorFrete : BigDecimal(12,2)
+    - valorDesconto : BigDecimal(12,2)
+    - enderecoEntrega : EnderecoPedido <<embedded>> [0..1]
+  }
+
+  class EnderecoPedido <<embeddable>> {
+    - destinatario : String(150)
+    - logradouro : String(150)
+    - numero : String(10)
+    - complemento : String(60)
+    - bairro : String(80)
+    - cidade : String(100)
+    - uf : String(2)
+    - cep : String(8)
+  }
+
+  class ItemPedido {
+    - quantidade : int
+    - precoUnitarioCongelado : BigDecimal(12,2)
+  }
+
+  class HistoricoStatusPedido {
+    - statusAnterior : StatusPedido [0..1]
+    - statusNovo : StatusPedido
+    - origem : OrigemRegistro
+    - observacao : String(500) [0..1]
+  }
+
+  class DescontoPedido {
+    - origem : OrigemDesconto
+    - descricao : String(200)
+    - valor : BigDecimal(12,2)
+  }
+
+  enum StatusPedido {
+    PENDENTE = 1
+    PAGO = 2
+    SEPARACAO = 3
+    ENVIADO = 4
+    ENTREGUE = 5
+    EM_DEVOLUCAO = 6
+    DEVOLVIDO = 7
+    CANCELADO = 8
+  }
+
+  enum OrigemDesconto {
+    CUPOM = 1
+    PROMOCAO = 2
+  }
+}
+
+' -----------------------------------------------------------------------------
+' Herança de DefaultEntity (todas as entidades)
+' -----------------------------------------------------------------------------
+DefaultEntity <|-- Estado
+DefaultEntity <|-- Municipio
+DefaultEntity <|-- Usuario
+DefaultEntity <|-- PerfilCliente
+DefaultEntity <|-- PerfilAdministrativo
+DefaultEntity <|-- PermissaoModulo
+DefaultEntity <|-- ConfiguracaoLoja
+DefaultEntity <|-- Marca
+DefaultEntity <|-- Categoria
+DefaultEntity <|-- Subcategoria
+DefaultEntity <|-- Fornecedor
+DefaultEntity <|-- GrupoProduto
+DefaultEntity <|-- Produto
+DefaultEntity <|-- ComponenteKit
+DefaultEntity <|-- MidiaProduto
+DefaultEntity <|-- Promocao
+DefaultEntity <|-- MovimentoEstoque
+DefaultEntity <|-- Cupom
+DefaultEntity <|-- UsoCupom
+DefaultEntity <|-- Pedido
+DefaultEntity <|-- ItemPedido
+DefaultEntity <|-- HistoricoStatusPedido
+DefaultEntity <|-- DescontoPedido
+
+' -----------------------------------------------------------------------------
+' Herança de Produto (JOINED, D27 / D40)
+' -----------------------------------------------------------------------------
+Produto <|-- Drone
+Produto <|-- Acessorio
+Produto <|-- Kit
+
+' -----------------------------------------------------------------------------
+' Relacionamentos
+' -----------------------------------------------------------------------------
+' endereço
+Municipio "0..*" --> "1" Estado : estado
+Endereco "0..*" --> "1" Municipio : municipio
+Fornecedor *-- "1" Endereco : endereco
+
+' identidade / administração
+Usuario "1" -- "0..1" PerfilAdministrativo : perfilAdministrativo >
+Usuario "1" -- "0..1" PerfilCliente : < usuario
+PerfilAdministrativo "1" *-- "0..*" PermissaoModulo : permissoes
+
+' catálogo
+Subcategoria "0..*" --> "0..1" Categoria : categoria
+Produto "0..*" --> "0..1" Marca : marca
+Produto "0..*" --> "0..1" Subcategoria : subcategoria
+Produto "0..*" --> "0..1" Fornecedor : fornecedor
+Produto "0..*" --> "0..1" GrupoProduto : grupo
+Kit "1" *-- "0..*" ComponenteKit : componentes
+ComponenteKit "0..*" --> "1" Produto : produto\n(nunca Kit)
+Acessorio "0..*" -- "0..*" Produto : compativeis\n(acessorio_compativel, D17)
+MidiaProduto "0..*" --> "1" Produto : produto
+Promocao "0..*" -- "0..*" Produto : produtos\n(promocao_produto)
+
+' estoque
+Produto "1" *-- "0..*" MovimentoEstoque : movimentos
+MovimentoEstoque "0..*" --> "0..1" Usuario : autor\n(só MANUAL, D11)
+
+' compra
+Cupom "0..*" -- "0..*" Produto : produtos\n(cupom_produto)
+Cupom "0..*" -- "0..*" Categoria : categorias\n(cupom_categoria)
+Cupom "0..*" -- "0..*" Marca : marcas\n(cupom_marca)
+UsoCupom "0..*" --> "1" Cupom : cupom
+UsoCupom "0..*" --> "1" PerfilCliente : cliente
+UsoCupom "0..*" --> "1" Pedido : pedido\n(D9)
+
+' pedido
+Pedido "0..*" --> "1" PerfilCliente : cliente
+Pedido *-- "0..1" EnderecoPedido : enderecoEntrega\n(congelado, D12)
+Pedido "1" *-- "0..*" ItemPedido : itens
+ItemPedido "0..*" --> "1" Produto : produto
+Pedido "1" *-- "0..*" HistoricoStatusPedido : historico
+HistoricoStatusPedido "0..*" --> "0..1" Usuario : autor\n(só MANUAL, D11)
+Pedido "1" *-- "0..*" DescontoPedido : descontos
+DescontoPedido "0..*" --> "0..1" Promocao : promocao
+
+' -----------------------------------------------------------------------------
+' Ainda não implementado (ver docs/diagramas e REGRAS_NEGOCIO.md):
+'   identidade: SessaoUsuario, ContaSocial, Endereco do cliente, Consentimento, TokenEmail
+'   estoque: ReservaEstoque, UnidadeIndividual
+'   compra: Carrinho, ItemCarrinho, ListaDesejos
+'   pedido: Entrega, EventoRastreio, RegraFrete, NotaFiscal
+'   pagamento: Pagamento, Estorno, CartaoSalvo
+'   devolucao: Devolucao, HistoricoDevolucao
+'   atendimento: Chamado, MensagemChamado, Avaliacao, Pergunta
+'   notificacao: Notificacao, TemplateEmail, PreferenciaNotificacao
+'   administracao: LogAuditoria
+' -----------------------------------------------------------------------------
+
+@enduml

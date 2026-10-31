@@ -1,78 +1,96 @@
-# AGENTS.md
+# AGENTS.md (Raiz)
 
-Guia para agentes de IA que trabalham neste repositório, principalmente na **revisão de pull requests**. Escreva comentários e sugestões em **português**.
+Guia geral para agentes de IA que trabalham neste repositório (implementação de issues e revisão de pull requests). Sempre escreva código, commits, comentários e sugestões em **português**, sem usar travessão nem emojis.
 
-## Contexto
+Para regras específicas de cada camada, consulte também:
+- [`backend/AGENTS.md`](backend/AGENTS.md): Java 25, Quarkus 3, padrão SGA, segurança da API e testes RestAssured.
+- [`frontend/AGENTS.md`](frontend/AGENTS.md): Angular 22, conformidade com o protótipo, tokens de design e testes Vitest/Playwright.
 
-Aeria Drones: e-commerce de drones e acessórios, com loja (storefront) e painel administrativo. Projeto de estudo: pagamento em sandbox e NF-e simulada.
+## Leitura obrigatória antes de implementar
+
+Antes de iniciar **qualquer** implementação, revisão ou plano, consulte os três documentos de contexto em `docs/`:
+
+| Documento | Para quê |
+|---|---|
+| [`docs/CONTEXTO_PROJETO.md`](docs/CONTEXTO_PROJETO.md) | Visão, stack, decisões arquiteturais, **estado atual** (o que já está entregue) e **pendências** por fase |
+| [`docs/REGRAS_NEGOCIO.md`](docs/REGRAS_NEGOCIO.md) | Entidades, fluxos, validações, máquinas de estado e regras de domínio, marcadas como `[IMPLEMENTADO]` ou `[PENDENTE]` |
+| [`docs/modelo.plantuml`](docs/modelo.plantuml) | Modelo de dados **implementado** no backend (entidades, atributos, tipos, enums e relacionamentos) |
+
+Use-os para saber o que já existe (não duplique entidade, rota ou regra), o que a issue em mãos precisa respeitar e onde ela se encaixa no faseamento. Se um deles divergir do código ou do PRD, o PRD e o contrato da issue prevalecem: corrija o documento no mesmo PR.
+
+### Manter os documentos sincronizados
+
+Atualizar esses arquivos faz parte da entrega, **no mesmo PR** da mudança:
+
+- **Mudou o progresso** (issue entregue, etiqueta adicionada em `issues-entregues.txt` ou `telas-entregues.txt`): atualize "Estado atual" e "Pendências" em `docs/CONTEXTO_PROJETO.md`.
+- **Mudou o domínio** (nova regra, validação, transição de status, conflito 409, decisão `Dn` registrada ou alterada): atualize `docs/REGRAS_NEGOCIO.md` (troque `[PENDENTE]` por `[IMPLEMENTADO]` quando a regra for implementada) e, se for decisão, a seção de decisões de `docs/CONTEXTO_PROJETO.md`.
+- **Mudou o modelo de dados** (entidade, atributo, tipo, enum ou relacionamento): atualize `docs/modelo.plantuml`, o `.puml` do contexto em `docs/diagramas/` e o `backend/src/main/resources/import.sql`.
+- **Mudou a stack** (versão de framework, banco, biblioteca ou ferramenta de CI): atualize a seção "Stack" de `docs/CONTEXTO_PROJETO.md`.
+
+Em revisão de PR, documento de contexto desatualizado em relação à mudança é **bloqueante**.
+
+## Contexto do projeto
+
+**Aeria Drones**: e-commerce de drones e acessórios, composto por **loja** (storefront) e **painel administrativo**. Projeto de estudo: pagamento roda permanentemente em **sandbox** (Mercado Pago, D2), a **NF-e é simulada** (D3) e o **e-mail tem envio real** (Resend, D5).
 
 | Onde | O que tem |
 |---|---|
-| `docs/PRD-Aeria.md` | Requisitos (RF), regras de negócio (RN) e decisões (D1, D2...). **As decisões valem como regra**: se o PR contraria uma, aponte |
-| `docs/issues/NNN.md` | Corpo de cada issue, com o **contrato de API** e os critérios de aceite |
-| `docs/API.md` | Mapa de endpoints e convenções (paginação, `idXxx`, status `{id, nome}`, erros Problem) |
-| `docs/diagramas/*.puml` | Diagramas de classes por módulo; o código segue o diagrama |
-| `docs/design/` | Protótipo navegável e `DESIGN.md` (tokens, componentes). O protótipo é a referência das telas (D38) |
-| `backend/` | Java 25, Quarkus 3, Hibernate ORM com Panache, PostgreSQL 16 |
-| `frontend/` | Angular 22 (standalone, lazy loading), SCSS, Vitest, Playwright |
+| `docs/PRD-Aeria.md` | Requisitos (`RF`), regras de negócio (`RN`) e decisões (`D1` a `D40`). **As decisões valem como regra**: se o código ou PR contraria uma, é bloqueante |
+| `docs/issues/NNN.md` | Corpo de cada issue, com o **Contrato de API** e os **Critérios de aceite** |
+| `docs/API.md` | Mapa de endpoints e convenções gerais (paginação, `idXxx`, enums `{id, nome}`, erros `Problem`, status `200`/`204`) |
+| `docs/diagramas/*.puml` | 8 diagramas de classes PlantUML por contexto delimitado; o código deve refletir o diagrama |
+| `docs/design/` | Protótipo navegável (`prototipo/`), `DESIGN.md` (tokens e componentes) e `PRODUCT.md`. O protótipo é a referência visual e estrutural das telas (D38) |
+| `SECURITY.md` | Checklist de segurança para backend, frontend e CI. Qualquer violação é **bloqueante** |
+| `backend/` | API REST em Java 25, Quarkus 3, Hibernate ORM com Panache, PostgreSQL 16 (ver [`backend/AGENTS.md`](backend/AGENTS.md)) |
+| `frontend/` | Aplicação Angular 22 standalone, SCSS, Vitest e Playwright (ver [`frontend/AGENTS.md`](frontend/AGENTS.md)) |
+
+## Regras globais de domínio e arquitetura
+
+- **O modelo vence o protótipo (D36)**: se um campo visual do protótipo não existe no modelo/contrato da issue, ele não deve ser inventado.
+- **Unidade de venda é o Produto (D40)**: **não existe `VarianteProduto`**. Cada versão é um `Produto` com `sku`, `preco`, `custoAquisicao`, `estoqueFisico`, `estoqueMinimo` e dimensões de embalagem; versões se agrupam opcionalmente em `GrupoProduto`. Qualquer retorno de `VarianteProduto` é **bloqueante**.
+- **Tipo × Categoria (D39)**: o tipo (`DRONE`, `ACESSORIO`, `KIT`) define a estrutura e as rotas (`/drones`, `/acessorios`, `/kits`); a categoria organiza a vitrine dentro de um tipo.
+- **Rascunho e exclusão (D21, D24, D28)**: cadastros em `RASCUNHO` (id `1`) aceitam campos vazios; campos obrigatórios só são cobrados ao publicar (`ATIVA`/`INATIVA`). Registros em uso nunca são excluídos em cascata: respondem `409 Conflict` orientando a inativação.
+- **Conflito e validação (D22, D30)**: erros seguem a RFC 7807/9457 (`Problem`). A API **não usa 422**: validação é `400`, não encontrado é `404` e conflito de uso ou transição de status inválida é `409`.
 
 ## Como revisar um PR
 
-1. Leia a issue ligada ao PR (`Closes #N`) e o `docs/issues/NNN.md` correspondente. Revise **contra o contrato e os critérios de aceite**, não contra o seu gosto.
-2. Confira se o PR faz só o que a issue pede. Refatoração de código vizinho, arquivo ou dependência que a issue não pediu: aponte.
+1. Leia a issue vinculada ao PR (`Closes #N`) e o arquivo `docs/issues/NNN.md` correspondente. Revise **contra o contrato de API, os critérios de aceite, o PRD e o protótipo**, não contra preferências pessoais.
+2. Confira se o PR faz **apenas** o que a issue pede. Refatoração de código vizinho, formatação fora do escopo, arquivo ou dependência que a issue não pediu: aponte.
 3. Classifique cada comentário:
-   - **Bloqueante**: bug, contrato de API quebrado, regra do PRD violada, falha de segurança (ver `SECURITY.md`), teste ajustado para passar.
-   - **Sugestão**: legibilidade, nome, simplificação.
-   - **Pergunta**: ambiguidade que só o autor resolve.
-4. Não comente formatação que o projeto não padroniza nem peça reescrita de algo que já segue o padrão.
-5. Se não houver nada bloqueante, diga isso claramente.
+   - **Bloqueante**: bug, contrato de API quebrado, decisão/regra do PRD violada, falha de segurança (`SECURITY.md`), teste afrouxado para passar, divergência de estrutura/tokens em relação ao protótipo.
+   - **Sugestão**: legibilidade, nomenclatura, simplificação pontual.
+   - **Pergunta**: ambiguidade que só o autor ou mantenedor pode esclarecer.
+4. Não comente estilo de formatação que o projeto não padroniza nem peça reescrita de código que já segue o padrão do repositório.
+5. Se não houver nenhum item bloqueante, declare isso explicitamente no resumo da revisão.
 
-## Backend (padrão SGA)
+## Fluxo de entrega, commits e PR
 
-Confira em todo PR de backend:
+- **Branches e PRs**: branch criada a partir de `develop` (`<numero>-<resumo>` ou `feat/<numero>-...`), PR apontando para `develop` seguindo `.github/pull_request_template.md` com `Closes #N`.
+- **Commits**: Conventional Commits em português com escopo do módulo (`feat(catalogo): ...`, `fix(estoque): ...`, `docs(issues): ...`).
+- **Travas de regressão no CI**:
+  - Ao entregar uma issue de backend, adicione a etiqueta `issue-N` em `backend/src/test/issues-entregues.txt`.
+  - Ao entregar uma tela de frontend, adicione a etiqueta `issue-N` em `frontend/e2e/telas-entregues.txt`.
+  - Se o modelo mudou, atualize `docs/modelo.plantuml`, o `.puml` correspondente em `docs/diagramas/` e a carga `backend/src/main/resources/import.sql`.
+  - Atualize `docs/CONTEXTO_PROJETO.md` e `docs/REGRAS_NEGOCIO.md` conforme a seção "Manter os documentos sincronizados".
 
-- Entidade herda `DefaultEntity`; enums de domínio têm `id` e `nome`, gravados pelo id com `converterjpa` e expostos em uma rota de listagem (D31).
-- DTO de entrada é `record XxxRequestDTO` com Bean Validation e mensagens terminadas em `(back)`; texto em branco vira `null` (`Textos.nuloSeVazio`) quando o cadastro aceita rascunho.
-- Camadas: `model`, `dto`, `mapper`, `repository` (Panache), `service` (interface + `Impl`, `@Transactional` nas escritas) e `resource`.
-- Listagens devolvem `PageResponse`; filtros vazios são ignorados.
-- Erros no formato Problem: 400 com `errors[].field` igual ao nome do campo do contrato, 404 para recurso inexistente, 409 para "em uso" (D24: o que está em uso não se exclui, se inativa).
-- Rascunho aceita campos vazios; ATIVO/INATIVO exige os obrigatórios (D21, D28).
-- Desde a D40 não existe variante: o produto é a unidade de venda (`sku`, `preco`, estoque, embalagem), o kit é o tipo `KIT` e versões se juntam em `GrupoProduto`. Qualquer volta de `VarianteProduto` é bloqueante.
-- Estoque físico só muda na criação (saldo inicial) ou por `MovimentoEstoque` (RF14).
-- Mudou o modelo: o `.puml` do módulo e o `import.sql` acompanham.
-
-### Testes do backend
-
-- Testes de API com RestAssured (`@QuarkusTest`), etiquetados com `@Tag("issue-N")`. As etiquetas em `backend/src/test/issues-entregues.txt` bloqueiam o merge.
-- Massa de dados só pela API, com `testes/Fixtures.java`; cada teste cria os próprios registros e não depende do total das tabelas.
-- Teste que foi afrouxado para passar (asserção removida, status trocado sem mudança no contrato) é bloqueante: a correção é no código.
-- Serviços externos usam os falsos de teste (`ViaCepFalso`, `MercadoPagoFalso`, `FreteFalso`, `ResendFalso`, `GoogleFalso`); nenhum teste depende da internet.
-
-## Frontend
-
-- Tela nova ou alterada segue a página correspondente do protótipo (`docs/design/prototipo`) e os tokens do `DESIGN.md`. Cor, fonte ou espaçamento fixo fora dos tokens: aponte.
-- Toda tela funciona no desktop e no celular de 360 a 480px, sem rolagem horizontal (D20).
-- Conformidade com o protótipo: `frontend/e2e/conformidade` (Playwright). Etiquetas em `frontend/e2e/telas-entregues.txt` bloqueiam o merge.
-- Services em `core/services` têm `*.spec.ts` cobrindo método, URL, parâmetros e corpo de cada chamada.
-- Models em `core/models` batem com o contrato de API da issue.
-
-## Commits e PR
-
-- Conventional Commits em português, com escopo do módulo: `feat(catalogo): ...`, `fix(estoque): ...`, `docs(issues): ...`.
-- O PR segue `.github/pull_request_template.md` e liga a issue com `Closes #N`.
-
-## Comandos
+## Comandos rápidos
 
 ```bash
-cd backend && ./mvnw verify                      # backend inteiro (precisa do Docker)
-cd backend && ./mvnw test -Dgroups=issue-80      # testes de uma issue
-cd frontend && npx ng test --watch=false         # specs do frontend
-cd frontend && npx ng build                      # build
-cd frontend && npx playwright test e2e/conformidade
+# Backend (requer Docker para PostgreSQL)
+cd backend && ./mvnw verify
+cd backend && ./mvnw test -Dgroups=issue-80
+
+# Frontend
+cd frontend && npx ng test --watch=false
+cd frontend && npm run build
+cd frontend && npm run prototipo:verificar
+cd frontend && npm run e2e
 ```
 
 ## O que agentes não fazem
 
 - Não executam `git commit`, `git push`, merge nem rebase sem pedido explícito do mantenedor.
 - Não aprovam o próprio PR nem alteram regras de proteção (`.github/rulesets`).
-- Não incluem segredo, token ou dado pessoal real em código, teste, log ou comentário.
+- Não afrouxam testes existentes (`src/test` ou `e2e/conformidade`) para fazer a build passar: a correção é no código da aplicação.
+- Não incluem segredo, token ou dado pessoal real em código, teste, carga de dados, log ou comentário.
+- Não usam travessão nem emojis em documentação, código, commits ou respostas.
