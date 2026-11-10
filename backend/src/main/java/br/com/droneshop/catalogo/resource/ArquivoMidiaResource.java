@@ -19,11 +19,15 @@ public class ArquivoMidiaResource {
 
     @GET
     @Path("/{nome}")
-    @Produces({ "image/png", "image/jpeg", "application/pdf" })
+    @Produces({ "image/png", "image/jpeg", "image/svg+xml", "application/pdf" })
     public Response arquivo(@PathParam("nome") String nome) throws IOException {
         MidiaProdutoService.ArquivoMidia arquivo = service.buscarArquivo(nome);
-        return Response.ok(arquivo.conteudo(), arquivo.contentType())
-                .header("X-Content-Type-Options", "nosniff")
-                .build();
+        Response.ResponseBuilder resposta = Response.ok(arquivo.conteudo(), arquivo.contentType())
+                .header("X-Content-Type-Options", "nosniff");
+        // O SVG do logo da marca (#84) pode conter script: a CSP impede que ele rode
+        // quando o arquivo e aberto direto no navegador (no <img> script nunca roda)
+        if (arquivo.contentType().equals("image/svg+xml"))
+            resposta.header("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; sandbox");
+        return resposta.build();
     }
 }

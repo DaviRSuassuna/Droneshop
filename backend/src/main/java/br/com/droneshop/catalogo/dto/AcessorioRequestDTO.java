@@ -86,6 +86,12 @@ public record AcessorioRequestDTO(
     @Length(max = 60, message = "O campo deve ter no máximo 60 caracteres (back).")
     String tipoAcessorio,
 
+    @Min(value = 0, message = "O peso do item não pode ser negativo (back).")
+    Integer pesoItemG,
+
+    // sem valor, vale false
+    Boolean sugerirNosCompativeis,
+
     // produtos (drone ou acessorio) com que este acessorio e compativel (D17)
     List<Long> idsCompativeis
 ) implements ProdutoRequestDTO {

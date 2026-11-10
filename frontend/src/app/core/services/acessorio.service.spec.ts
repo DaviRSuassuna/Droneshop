@@ -29,6 +29,15 @@ describe('AcessorioService', () => {
     req.flush({ id: 1 });
   });
 
+  it('envia peso do item e sugestão nos compatíveis no corpo (#84)', () => {
+    const dto = { nome: 'Bateria', idStatus: 1, pesoItemG: 85, sugerirNosCompativeis: true } as AcessorioDTO;
+    service.criar(dto).subscribe();
+    const req = http.expectOne(url);
+    expect(req.request.body.pesoItemG).toBe(85);
+    expect(req.request.body.sugerirNosCompativeis).toBe(true);
+    req.flush({ id: 1 });
+  });
+
   it('altera com PUT em /acessorios/{id}', () => {
     const dto = { nome: 'Exemplo', idStatus: 2, idsCompativeis: [10, 12] } as AcessorioDTO;
     service.atualizar(7, dto).subscribe();

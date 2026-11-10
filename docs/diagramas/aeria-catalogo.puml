@@ -219,6 +219,8 @@ end note
 
 class Acessorio {
   -tipoAcessorio: String
+  -pesoItemG: Integer
+  -sugerirNosCompativeis: boolean
 }
 note right of Acessorio
   Compatibilidade é relação N:N com Produto (D17),
@@ -228,6 +230,7 @@ note right of Acessorio
 end note
 
 class Kit {
+  -exibirEmOfertas: boolean
 }
 note right of Kit
   Kit ou combo (D7, D40): produto sem estoque

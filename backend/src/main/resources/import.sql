@@ -118,8 +118,19 @@ from produto p join (values
     ('DRN-HSP-0015', 1390, '25x14x10', '40x35x14', 55, 15000, 72, 45, 'CMOS 4/3', '5.1K', 'Gimbal 3 eixos', 'LiPo 4S', 6000, 100, true, true, true, 'Classe 3'),
     ('DRN-SKD-0009', 120, null, '15x15x4', 7, 80, 20, 2, null, '720p', 'Eletrônica', 'LiPo 1S', 600, 40, false, false, false, null)
 ) as v(sku, peso, dobrado, aberto, autonomia, alcance, velocidade, foto, sensor, video, estabilizacao, bateria, mah, carga, gps, anticolisao, anac, classe) on v.sku = p.sku;
-insert into acessorio (id, tipo_acessorio)
-select p.id, case when p.sku like 'ACC-B%' then 'Bateria' else 'Hélice' end from produto p where p.tipo = 2;
+-- peso do item em gramas (#84, diferente do peso da embalagem, RN18) e se o acessorio e
+-- sugerido na pagina dos drones compativeis
+insert into acessorio (id, tipo_acessorio, peso_item_g, sugerir_nos_compativeis)
+select p.id, case when p.sku like 'ACC-B%' then 'Bateria' else 'Hélice' end, v.peso, v.sugerir
+from produto p join (values
+    ('ACC-BFX2-0101', 335, true),
+    ('ACC-BNMP-0102', 80, true),
+    ('ACC-BAA-0103', 8500, true),
+    ('ACC-HFX2-0201', 20, true),
+    ('ACC-HNM-0202', 9, true),
+    ('ACC-HFPV-0203', 4, false)
+) as v(sku, peso, sugerir) on v.sku = p.sku
+where p.tipo = 2;
 
 -- preco, custo, estoque e embalagem ficam no proprio produto (D26, D40); custo de exemplo
 -- em 65% do preco; peso (kg) e altura x largura x comprimento (cm) da embalagem
@@ -158,10 +169,11 @@ from produto a join produto p on (a.sku, p.sku) in (
     ('ACC-BFX2-0101', 'ACC-HFX2-0201'));
 
 -- kit (D7, D40): o Fly More e o produto KIT "Falcon X2 Pro Fly More" = 1 drone + 2 baterias,
--- sem estoque proprio; peso e dimensoes ficam nulos e saem dos componentes (D16)
+-- sem estoque proprio; peso e dimensoes ficam nulos e saem dos componentes (D16).
+-- Aparece na pagina Ofertas com o preco dos componentes riscado (#84)
 insert into produto (tipo, nome, sku, descricao_curta, id_marca, id_subcategoria, id_fornecedor, status, destaque, slug, garantia_meses, estoque_minimo, ordem_no_grupo, preco, custo_aquisicao) values
     (3, 'Falcon X2 Pro Fly More', 'DRN-FX2P-0042-FLY', 'Falcon X2 Pro com duas baterias extras.', 1, 1, 1, 2, false, 'falcon-x2-pro-fly-more', 12, 0, 0, 13999.00, round(13999.00 * 0.65, 2));
-insert into kit (id) select id from produto where sku = 'DRN-FX2P-0042-FLY';
+insert into kit (id, exibir_em_ofertas) select id, true from produto where sku = 'DRN-FX2P-0042-FLY';
 insert into componente_kit (id_kit, id_produto, quantidade)
 select k.id, c.id, v.quantidade
 from produto k

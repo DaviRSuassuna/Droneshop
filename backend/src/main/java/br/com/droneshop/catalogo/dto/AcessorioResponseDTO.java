@@ -39,6 +39,8 @@ public record AcessorioResponseDTO(
     String rotuloNoGrupo,
     int ordemNoGrupo,
     String tipoAcessorio,
+    Integer pesoItemG,
+    boolean sugerirNosCompativeis,
     List<ProdutoResumoDTO> compativeis,
     List<ProdutoResumoDTO> acessoriosCompativeis
 ) implements ProdutoResponseDTO {

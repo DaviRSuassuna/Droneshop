@@ -42,6 +42,7 @@ public record KitResponseDTO(
     int ordemNoGrupo,
     boolean pesoSobrescrito,
     boolean dimensoesSobrescritas,
+    boolean exibirEmOfertas,
     List<ComponenteKitResponseDTO> componentes,
     List<ProdutoResumoDTO> acessoriosCompativeis
 ) implements ProdutoResponseDTO {

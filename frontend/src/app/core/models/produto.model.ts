@@ -104,6 +104,10 @@ export interface Produto extends ProdutoBase, Partial<DroneSpecs> {
   /** Drone e acessório; o kit não tem (o mínimo é do componente). */
   estoqueMinimo?: number;
   tipoAcessorio?: string | null;
+  /** Só no acessório: peso do item em gramas, diferente do peso da embalagem (RN18). */
+  pesoItemG?: number | null;
+  /** Só no acessório: aparece na página dos drones compatíveis. */
+  sugerirNosCompativeis?: boolean;
   /** Só no acessório: produtos com que ele é compatível (D17). */
   compativeis?: ProdutoResumo[];
   /** Em todo produto: acessórios que se declararam compatíveis com ele (lado recíproco). */
@@ -113,6 +117,8 @@ export interface Produto extends ProdutoBase, Partial<DroneSpecs> {
   /** Só no kit: peso ou dimensões informados no próprio kit, em vez dos derivados (D16). */
   pesoSobrescrito?: boolean;
   dimensoesSobrescritas?: boolean;
+  /** Só no kit: aparece na página Ofertas. */
+  exibirEmOfertas?: boolean;
 }
 
 /**
@@ -158,11 +164,14 @@ export type DroneDTO = ProdutoDTO & EstoqueDTO & DroneSpecs;
 /** Corpo de POST /acessorios e PUT /acessorios/{id}. */
 export interface AcessorioDTO extends ProdutoDTO, EstoqueDTO {
   tipoAcessorio: string;
+  pesoItemG: number | null;
+  sugerirNosCompativeis: boolean;
   idsCompativeis: number[];
 }
 
 /** Corpo de POST /kits e PUT /kits/{id}: sem estoque próprio; peso e dimensões vazios vêm dos componentes. */
 export interface KitDTO extends ProdutoDTO {
+  exibirEmOfertas: boolean;
   componentes: ComponenteKitDTO[];
 }
 

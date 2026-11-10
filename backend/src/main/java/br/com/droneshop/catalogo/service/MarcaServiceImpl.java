@@ -1,7 +1,11 @@
 package br.com.droneshop.catalogo.service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
+import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import br.com.droneshop.catalogo.dto.MarcaRequestDTO;
 import br.com.droneshop.catalogo.model.Marca;
@@ -34,6 +38,12 @@ public class MarcaServiceImpl implements MarcaService {
 
     @Inject
     ProdutoRepository produtoRepository;
+
+    @Inject
+    ArmazenamentoMidia armazenamento;
+
+    private static final long TAMANHO_MAXIMO_LOGO = 2L * 1024 * 1024;
+    private static final byte[] ASSINATURA_PNG = { (byte) 0x89, 'P', 'N', 'G', 13, 10, 26, 10 };
 
     @Override
     @Transactional
@@ -70,6 +80,20 @@ public class MarcaServiceImpl implements MarcaService {
                     + ". Inative a marca em vez de excluir.");
         if (!marcaRepository.deleteById(id))
             throw new ResourceNotFoundException("Marca não encontrada.");
+    }
+
+    // Logo por arquivo (#84): grava no disco das midias (#12) e troca o logoUrl.
+    // O logo antigo so e apagado se tambem tiver sido enviado por upload.
+    @Override
+    @Transactional
+    public Marca enviarLogo(long id, FileUpload arquivo) {
+        Marca marca = buscarMarcaOuFalhar(id);
+        String extensao = validarLogo(arquivo);
+        String anterior = marca.getLogoUrl();
+        marca.setLogoUrl(armazenamento.gravar(arquivo, extensao));
+        if (armazenamento.ehArquivoEnviado(anterior))
+            armazenamento.apagar(anterior);
+        return marca;
     }
 
     @Override
@@ -120,6 +144,40 @@ public class MarcaServiceImpl implements MarcaService {
 
         if (!erros.isEmpty())
             throw new ValidationException("Preencha os campos obrigatórios para publicar a marca.", erros);
+    }
+
+    // So PNG ou SVG ate 2 MB, conferindo o conteudo e nao so a extensao
+    private String validarLogo(FileUpload arquivo) {
+        if (arquivo == null)
+            throw ValidationException.of("arquivo", "Envie o arquivo do logo (back).");
+        if (arquivo.size() > TAMANHO_MAXIMO_LOGO)
+            throw ValidationException.of("arquivo", "O logo deve ter no máximo 2 MB (back).");
+        String nome = arquivo.fileName() == null ? "" : arquivo.fileName().toLowerCase(Locale.ROOT);
+        String extensao = nome.substring(nome.lastIndexOf('.') + 1);
+        byte[] inicio = armazenamento.inicio(arquivo.filePath(), 1024);
+        boolean valido = switch (extensao) {
+            case "png" -> comecaCom(inicio, ASSINATURA_PNG);
+            case "svg" -> ehSvg(inicio);
+            default -> false;
+        };
+        if (!valido)
+            throw ValidationException.of("arquivo", "O logo deve ser um arquivo PNG ou SVG (back).");
+        return extensao;
+    }
+
+    private boolean comecaCom(byte[] valor, byte[] assinatura) {
+        if (valor.length < assinatura.length)
+            return false;
+        for (int i = 0; i < assinatura.length; i++)
+            if (valor[i] != assinatura[i])
+                return false;
+        return true;
+    }
+
+    // SVG e texto: comeca pela declaracao XML ou pela tag e tem <svg logo no inicio
+    private boolean ehSvg(byte[] inicio) {
+        String texto = new String(inicio, StandardCharsets.UTF_8).replace("\uFEFF", "").stripLeading();
+        return (texto.startsWith("<?xml") || texto.startsWith("<svg")) && texto.contains("<svg");
     }
 
     private void validarSlugUnico(String slug, Long id) {

@@ -38,6 +38,7 @@ public class KitServiceImpl implements KitService {
         cadastro.validarObrigatorios(dto, status, partes, obrigatoriosDoKit(partes));
         cadastro.aplicar(destino, dto, status, idAtual);
         cadastro.sincronizarComponentes(destino, partes);
+        destino.setExibirEmOfertas(Boolean.TRUE.equals(dto.exibirEmOfertas()));
     }
 
     // So vale fora do rascunho (validarObrigatorios ignora a lista no RASCUNHO)

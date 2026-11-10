@@ -1,19 +1,13 @@
 package br.com.droneshop.catalogo.service;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.UUID;
-import java.util.regex.Pattern;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import br.com.droneshop.catalogo.dto.MidiaProdutoAlteracaoRequestDTO;
@@ -29,10 +23,6 @@ import br.com.droneshop.exception.ValidationException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.LockModeType;
-import io.quarkus.logging.Log;
-import jakarta.transaction.Status;
-import jakarta.transaction.Synchronization;
-import jakarta.transaction.TransactionSynchronizationRegistry;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -41,8 +31,6 @@ import jakarta.validation.Validator;
 public class MidiaProdutoServiceImpl implements MidiaProdutoService {
 
     private static final long TAMANHO_MAXIMO = 20L * 1024 * 1024;
-    private static final Pattern NOME_ARQUIVO = Pattern.compile(
-            "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.(png|jpe?g|pdf)$");
 
     @Inject
     MidiaProdutoRepository midiaRepository;
@@ -54,10 +42,7 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
     Validator validator;
 
     @Inject
-    TransactionSynchronizationRegistry transacao;
-
-    @ConfigProperty(name = "aeria.midias.diretorio")
-    String diretorio;
+    ArmazenamentoMidia armazenamento;
 
     @Override
     @Transactional
@@ -179,13 +164,8 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
 
     @Override
     public ArquivoMidia buscarArquivo(String nome) throws IOException {
-        if (nome == null || !NOME_ARQUIVO.matcher(nome).matches())
-            throw new ResourceNotFoundException("Arquivo de mídia não encontrado.");
-        Path raiz = diretorio().toAbsolutePath().normalize();
-        Path arquivo = raiz.resolve(nome).normalize();
-        if (!raiz.equals(arquivo.getParent()) || !Files.isRegularFile(arquivo))
-            throw new ResourceNotFoundException("Arquivo de mídia não encontrado.");
-        return new ArquivoMidia(Files.readAllBytes(arquivo), contentType(nome));
+        ArmazenamentoMidia.Arquivo arquivo = armazenamento.buscar(nome);
+        return new ArquivoMidia(arquivo.conteudo(), arquivo.contentType());
     }
 
     private void validar(MidiaProdutoRequestDTO dto) {
@@ -272,19 +252,15 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
     }
 
     private boolean conteudoValido(String extensao, Path caminho) {
-        try (InputStream input = Files.newInputStream(caminho)) {
-            byte[] inicio = input.readNBytes(8);
-            return switch (extensao) {
-                case "png" -> assinatura(inicio,
-                        new byte[] { (byte) 0x89, 'P', 'N', 'G', 13, 10, 26, 10 });
-                case "jpg", "jpeg" -> assinatura(inicio, new byte[] { (byte) 0xff, (byte) 0xd8, (byte) 0xff });
-                case "pdf" -> inicio.length >= 5 && inicio[0] == '%'
-                        && inicio[1] == 'P' && inicio[2] == 'D' && inicio[3] == 'F' && inicio[4] == '-';
-                default -> false;
-            };
-        } catch (IOException e) {
-            throw new IllegalStateException("Não foi possível ler o arquivo enviado.", e);
-        }
+        byte[] inicio = armazenamento.inicio(caminho, 8);
+        return switch (extensao) {
+            case "png" -> assinatura(inicio,
+                    new byte[] { (byte) 0x89, 'P', 'N', 'G', 13, 10, 26, 10 });
+            case "jpg", "jpeg" -> assinatura(inicio, new byte[] { (byte) 0xff, (byte) 0xd8, (byte) 0xff });
+            case "pdf" -> inicio.length >= 5 && inicio[0] == '%'
+                    && inicio[1] == 'P' && inicio[2] == 'D' && inicio[3] == 'F' && inicio[4] == '-';
+            default -> false;
+        };
     }
 
     private boolean assinatura(byte[] valor, byte[] assinatura) {
@@ -299,58 +275,12 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
 
     private String gravarArquivo(FileUpload upload) {
         String nome = upload.fileName().toLowerCase(Locale.ROOT);
-        String extensao = nome.substring(nome.lastIndexOf('.') + 1);
-        String salvo = UUID.randomUUID() + "." + extensao;
-        Path destino = diretorio().resolve(salvo).normalize();
-        try {
-            Files.createDirectories(destino.getParent());
-            Files.copy(upload.filePath(), destino, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            throw new IllegalStateException("Não foi possível gravar o arquivo de mídia.", e);
-        }
-        apagarAoTerminar(destino, false);
-        return "/midias/arquivos/" + salvo;
+        return armazenamento.gravar(upload, nome.substring(nome.lastIndexOf('.') + 1));
     }
 
     private void removerArquivo(MidiaProduto midia) {
         if (midia.getTipo() == TipoMidia.VIDEO)
             return;
-        String nome = midia.getUrl().substring(midia.getUrl().lastIndexOf('/') + 1);
-        if (!NOME_ARQUIVO.matcher(nome).matches())
-            throw new IllegalStateException("A mídia contém um caminho de arquivo inválido.");
-        apagarAoTerminar(diretorio().resolve(nome).normalize(), true);
-    }
-
-    // O disco nao participa da transacao: o arquivo so e apagado depois que o banco decide.
-    // aposCommit = true apaga se confirmou (exclusao); false apaga se desfez (upload que nao foi salvo).
-    private void apagarAoTerminar(Path arquivo, boolean aposCommit) {
-        transacao.registerInterposedSynchronization(new Synchronization() {
-            @Override
-            public void beforeCompletion() {
-            }
-
-            @Override
-            public void afterCompletion(int status) {
-                if ((status == Status.STATUS_COMMITTED) != aposCommit)
-                    return;
-                try {
-                    Files.deleteIfExists(arquivo);
-                } catch (IOException e) {
-                    Log.warnf(e, "Não foi possível apagar o arquivo de mídia %s", arquivo);
-                }
-            }
-        });
-    }
-
-    private Path diretorio() {
-        return Path.of(diretorio).toAbsolutePath().normalize();
-    }
-
-    private String contentType(String nome) {
-        if (nome.endsWith(".png"))
-            return "image/png";
-        if (nome.endsWith(".jpg") || nome.endsWith(".jpeg"))
-            return "image/jpeg";
-        return "application/pdf";
+        armazenamento.apagar(midia.getUrl());
     }
 }
