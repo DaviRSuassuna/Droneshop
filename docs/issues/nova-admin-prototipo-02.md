@@ -29,7 +29,7 @@ A D41 trocou a referência pelo protótipo 02, que muda a casca de todas as tela
 2. **Largura:** conteúdo e barra limitados a 1320px e centralizados, como na loja.
 3. **Efeitos do admin** em `frontend/src/styles` e `shared/directives`, um por arquivo: entrada em cascata dos cards, medidores crescendo do zero, status "aguardando" pulsando, linhas de tabela entrando e acendendo no hover, borda do card acendendo sob o mouse, indicador "ao vivo".
 4. **Reduzir movimento** respeitado (`DESIGN.md`, seção Movimento).
-5. **Conformidade:** etiquetas das telas do admin que tenham saído de `frontend/e2e/telas-entregues.txt` com a troca do protótipo voltam neste PR.
+5. **Conformidade:** as etiquetas que saíram de `frontend/e2e/telas-entregues.txt` com a troca do protótipo voltam neste PR: `base`, `issue-5`, `issue-6`, `issue-8`, `issue-13`, `issue-14`, `issue-15`, `issue-16`, `issue-18` e `issue-80`. Todas falharam só no estilo de `.tb .tabs a` (cor e tamanho do link da barra). A `issue-18` falha também na estrutura: "ATUALIZADO AGORA" (indicador "ao vivo", que é desta issue) e "Receita por categoria" (que é da #85; até ela, entra no `ignorar` da tela `admin/index.html` em `frontend/e2e/conformidade/telas.ts`, com o motivo).
 
 Fica fora: card de receita por categoria e gráfico desenhado e lido no hover do dashboard (vão para a #85, que tem os dados).
 
@@ -47,7 +47,7 @@ Todas as telas de [`admin/`](https://davirsuassuna.github.io/droneshop/prototipo
 - [ ] Largura máxima de 1320px
 - [ ] Um efeito por arquivo, desligável sem quebrar a tela
 - [ ] "Reduzir movimento" respeitado
-- [ ] Etiquetas do admin de volta em `telas-entregues.txt`
+- [ ] As 10 etiquetas do admin de volta em `telas-entregues.txt`, abaixo da linha da trilha B
 
 ### Critérios de aceite
 

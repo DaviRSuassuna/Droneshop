@@ -36,7 +36,7 @@ Mesma regra de faturamento da #18: pedidos PAGO, SEPARACAO, ENVIADO ou ENTREGUE 
 O card "Conversão" não entra: não existe registro de visitas no modelo. Ele sai do protótipo na issue `nova-ajuste-prototipo`.
 
 
-**Protótipo 02 (D41):** entram também o card de receita por categoria (rosca com legenda e valores) e o gráfico de vendas desenhado na entrada e lido no hover (linha guia, ponto e balão), blocos B, C e H de `assets/admin-fx.*`. O contrato abaixo ganha a receita por categoria no período, no mesmo formato dos outros indicadores.
+**Protótipo 02 (D41):** entram também o card de receita por categoria (rosca com legenda e valores) e o gráfico de vendas desenhado na entrada e lido no hover (linha guia, ponto e balão), blocos B, C e H de `assets/admin-fx.*`. O contrato abaixo ganha a receita por categoria no período, no mesmo formato dos outros indicadores. Ao entregar, tire "Receita por categoria" do `ignorar` da tela `admin/index.html` em `frontend/e2e/conformidade/telas.ts`.
 
 ### Contrato de API
 
