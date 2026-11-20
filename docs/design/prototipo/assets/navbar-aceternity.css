@@ -94,3 +94,17 @@ html body .ac-pill{transition:left .3s cubic-bezier(.2,.7,.2,1),width .3s cubic-
 
 /* Celular: "×" da faixa de promoção com área de toque de 40px */
 .ac-ann button{display:grid;place-items:center;width:40px;height:40px;padding:0;right:4px}
+
+/* Celular: faixa de promoção numa linha só, com o essencial; depoimentos legíveis */
+@media (max-width:640px){
+  .ac-ann{justify-content:flex-start;padding:8px 44px 8px 16px;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ac-ann>span{overflow:hidden;text-overflow:ellipsis}
+  .ac-ann .ac-ann-x{display:none}
+  /* depoimentos: uma fileira parada, rolando com o dedo, cards inteiros */
+  .ac-test{padding-top:56px}
+  .ac-test .mask{-webkit-mask:none;mask:none;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:0 20px}
+  .ac-test .mask::-webkit-scrollbar{display:none}
+  .ac-test .row{animation:none;padding:0;gap:12px}
+  .ac-test .row.r2,.ac-test .row>span[aria-hidden]{display:none}
+  .ac-test .t{width:min(84vw,340px);scroll-snap-align:center}
+}

@@ -19,7 +19,7 @@ function anuncio(){
   const nw=$('.navwrap');if(!nw||pre)return;
   try{if(sessionStorage.getItem('ac-ann'))return}catch(e){}
   const d=document.createElement('div');d.className='ac-ann';
-  d.innerHTML=`<span><b>Frete grátis</b> acima de R$ 999 · 10% off na primeira compra com <code>PILOTO10</code> · <a href="ofertas.html">Ver ofertas</a></span><button type="button" aria-label="Fechar aviso">×</button>`;
+  d.innerHTML=`<span><b>Frete grátis</b> acima de R$ 999<span class="ac-ann-x"> · 10% off na primeira compra com <code>PILOTO10</code></span> · <a href="ofertas.html">Ver ofertas</a></span><button type="button" aria-label="Fechar aviso">×</button>`;
   nw.before(d);$('button',d).onclick=()=>{d.remove();try{sessionStorage.setItem('ac-ann',1)}catch(e){}};
 }
 
