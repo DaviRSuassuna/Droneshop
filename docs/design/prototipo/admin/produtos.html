@@ -48,4 +48,5 @@ up();
 <script>document.querySelectorAll('.tabs a[aria-current],.mnav a[aria-current]').forEach(a=>{const p=a.parentElement;p.scrollLeft=a.offsetLeft-(p.clientWidth-a.offsetWidth)/2})</script>
 <script src="../assets/spell.js"></script>
 <script src="../assets/admin-fx.js"></script>
+<script>/* etiquetas de filtro: o "×" tira o filtro; "Limpar" tira todos */document.addEventListener('click',e=>{const x=e.target.closest('.tag button');if(x){e.preventDefault();x.closest('.tag').remove();return}const l=e.target.closest('a');if(l&&l.textContent.trim()==='Limpar'){e.preventDefault();document.querySelectorAll('.tag').forEach(t=>{if(t.querySelector('button'))t.remove()})}});</script>
 </body></html>

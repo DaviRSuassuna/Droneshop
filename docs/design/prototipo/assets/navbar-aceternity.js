@@ -19,7 +19,7 @@ function anuncio(){
   const nw=$('.navwrap');if(!nw||pre)return;
   try{if(sessionStorage.getItem('ac-ann'))return}catch(e){}
   const d=document.createElement('div');d.className='ac-ann';
-  d.innerHTML=`<span><b>Frete grátis</b> acima de R$ 999 · 10% off na primeira compra com <code>PILOTO10</code> · <a href="ofertas.html">Ver ofertas</a></span><button type="button" aria-label="Fechar aviso">×</button>`;
+  d.innerHTML=`<span><b>Frete grátis</b> acima de R$ 999<span class="ac-ann-x"> · 10% off na primeira compra com <code>PILOTO10</code></span> · <a href="ofertas.html">Ver ofertas</a></span><button type="button" aria-label="Fechar aviso">×</button>`;
   nw.before(d);$('button',d).onclick=()=>{d.remove();try{sessionStorage.setItem('ac-ann',1)}catch(e){}};
 }
 
@@ -33,15 +33,6 @@ function rolagem(){
       nw.classList.toggle('ac-hide',!aberto&&y>200&&y>ult+4);if(y<ult-4)nw.classList.remove('ac-hide')}
     ult=y};
   addEventListener('scroll',f,{passive:true});f();
-}
-
-/* C. Indicador que desliza entre os links */
-function pilula(){
-  const L=$('.links');if(!L)return;const p=document.createElement('span');p.className='ac-pill';L.prepend(p);
-  const ir=a=>{if(!a){p.style.opacity=0;return}p.style.left=(a.offsetLeft-10)+'px';p.style.width=(a.offsetWidth+20)+'px';p.style.opacity=1};
-  const atual=$('a[aria-current]',L);
-  $$('a',L).forEach(a=>a.addEventListener('mouseenter',()=>ir(a)));
-  L.addEventListener('mouseleave',()=>ir(atual));setTimeout(()=>ir(atual),50);
 }
 
 /* D. Mega menus de Drones e Acessórios (abrem no hover, um de cada vez) */
@@ -130,11 +121,20 @@ function depoimentos(){
   s.innerHTML=`<div class="wrap"><span class="lbl">Quem já voa com a gente</span><h2 id="acTestT">Pilotos que recomendam.</h2></div>
    <div class="mask"><div class="row">${a}<span aria-hidden="true" style="display:contents">${a}</span></div><div class="row r2">${b}<span aria-hidden="true" style="display:contents">${b}</span></div></div>`;
   alvo.before(s);
+  /* celular: um card por vez, troca sozinho a cada 4 s e volta ao primeiro no fim; setas também dão a volta */
+  const m=$('.mask',s),seta=document.createElement('div');seta.className='ac-test-setas';
+  seta.innerHTML='<button type="button" aria-label="Depoimento anterior">‹</button><button type="button" aria-label="Próximo depoimento">›</button>';
+  m.after(seta);const [ant,prox]=seta.children,cel=matchMedia('(max-width:640px)');
+  const cards=()=>$$('.row:not(.r2)>.t',m);
+  const atual=()=>{const c=cards(),x=m.scrollLeft+m.clientWidth/2;let i=0,d=1e9;c.forEach((e,k)=>{const dd=Math.abs(e.offsetLeft+e.offsetWidth/2-x);if(dd<d){d=dd;i=k}});return i};
+  const vai=i=>{const c=cards(),n=c.length,e=c[(i+n)%n];m.scrollTo({left:e.offsetLeft-(m.clientWidth-e.offsetWidth)/2,behavior:'smooth'})};
+  let timer;const reinicia=()=>{clearInterval(timer);timer=setInterval(()=>{if(cel.matches&&!document.hidden)vai(atual()+1)},4000)};
+  ant.onclick=()=>{vai(atual()-1);reinicia()};prox.onclick=()=>{vai(atual()+1);reinicia()};
+  m.addEventListener('touchstart',reinicia,{passive:true});reinicia();
 }
 
 anuncio();
 rolagem();
-pilula();
 mega();
 sugestoes();
 spotlight();

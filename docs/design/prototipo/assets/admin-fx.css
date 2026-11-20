@@ -136,3 +136,9 @@ main.gut{padding-top:8px;padding-bottom:40px}
 .fx-menu .quick .num small{font:400 11px var(--mono);color:var(--mute);margin-left:6px}
 @media (max-width:800px){.fx-menu{display:none}}
 @media (prefers-reduced-motion:reduce){html body .fx-menu{transition:.22s cubic-bezier(.2,.7,.2,1)!important}html body .fx-pill{transition:left .3s cubic-bezier(.2,.7,.2,1),width .3s cubic-bezier(.2,.7,.2,1),opacity .2s!important}}
+
+/* L. Celular: a faixa de abas ganha o mesmo painel flutuante da barra (sem ele, o conteúdo aparecia por trás das abas ao rolar) */
+@media (max-width:800px){
+  .tb{background:rgba(14,15,17,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding-bottom:8px}
+  .tb .mnav{margin-top:8px;padding:6px;background:rgba(26,28,32,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:14px}
+}

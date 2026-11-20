@@ -1,0 +1,16 @@
+/* Folha da conta no celular (assets/conta-folha.js) */
+.cs{position:fixed;inset:auto 0 0 0;width:100%;max-width:none;max-height:none;margin:0;padding:10px 18px calc(18px + env(safe-area-inset-bottom));border:0;border-top:1px solid var(--line2);border-radius:22px 22px 0 0;background:#17191C;color:var(--ink);box-shadow:0 -20px 50px rgba(0,0,0,.5);transform:translateY(100%);transition:transform .32s cubic-bezier(.2,.7,.2,1)}
+.cs[open]{display:block}
+.cs.on{transform:none}
+.cs::backdrop{background:rgba(0,0,0,0);transition:background .32s}
+.cs.on::backdrop{background:rgba(0,0,0,.6)}
+.cs .bar{display:block;width:40px;height:4px;border-radius:2px;background:var(--line2);margin:0 auto 16px;border:0;padding:0}
+.cs .quem{display:flex;align-items:center;gap:12px;padding:0 4px 14px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.cs .av{width:44px;height:44px;border-radius:50%;background:var(--surf2,#23272C);display:grid;place-items:center;font:500 14px var(--mono);color:var(--amber)}
+.cs .quem b{display:block;font:400 17px var(--display)}.cs .quem small{color:var(--mute);font-size:12.5px}
+.cs a{display:flex;align-items:center;gap:14px;min-height:54px;padding:0 6px;border-radius:12px;color:var(--ink);font-size:15.5px}
+.cs a[aria-current]{background:var(--surf2,#23272C)}
+.cs a .d{margin-left:auto;display:flex;align-items:center;gap:10px;color:var(--mute)}
+.cs a em{font:normal 500 11px var(--mono);color:#1a1205;background:var(--amber);padding:1px 7px;border-radius:999px}
+.cs svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.6;flex:none}
+.cs a.sair{color:var(--mute);font-size:14px;border-top:1px solid var(--line);border-radius:0;margin-top:6px}

@@ -3,6 +3,13 @@
   const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
   const m=$('#menuBtn');if(m)m.addEventListener('click',()=>{const o=$('#links').classList.toggle('open');m.setAttribute('aria-expanded',o)});
   const fb=$('#filtBtn');if(fb)fb.addEventListener('click',()=>{const o=$('.filters').classList.toggle('open');fb.setAttribute('aria-expanded',o)});
+  // etiquetas de filtro: o "×" tira o filtro; "Limpar" tira todos e desmarca o painel
+  document.addEventListener('click',e=>{
+    const x=e.target.closest('.tag button');if(x){e.preventDefault();x.closest('.tag').remove();return}
+    const l=e.target.closest('a');if(l&&/^\s*Limpar\s*$/.test(l.textContent)){e.preventDefault();
+      $$('.tag').forEach(t=>{if(t.querySelector('button'))t.remove()});
+      $$('.filters input[type=checkbox],.filters input[type=radio]').forEach(i=>i.checked=false)}});
+  // menu da conta no celular: a aba atual fica visível
   // quantidade
   $$('.qty').forEach(q=>{const o=$('output',q),[a,b]=$$('button',q);
     a.onclick=()=>{o.value=Math.max(1,+o.value-1);q.dispatchEvent(new Event('change',{bubbles:true}))};

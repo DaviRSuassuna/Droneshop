@@ -95,7 +95,7 @@ O protótipo tem uma camada de efeitos separada da estrutura: cada efeito é um 
 | Arquivo | Onde | Efeitos |
 |---|---|---|
 | `assets/spell.css` e `spell.js` | loja e admin | título revelado palavra por palavra, brilho nos selos (NOVO, OFERTA) e no preço promocional, faixa de marcas rolando, brilho que percorre o botão principal, sacola com "pop", check desenhado, rótulo do campo reagindo ao foco, spinner em botão que processa, raios de luz na capa |
-| `assets/navbar-aceternity.css` e `.js` | loja | faixa de promoção acima do menu, menu que some ao descer e encolhe depois do topo, indicador que desliza entre os links, mega menu de Drones, busca com sugestões, barra de progresso de leitura, luz que segue o mouse na capa, borda girando no botão da capa, borda do card acendendo sob o mouse, depoimentos rolando |
+| `assets/navbar-aceternity.css` e `.js` | loja | faixa de promoção acima do menu, menu que some ao descer e encolhe depois do topo, mega menu de Drones, busca com sugestões, barra de progresso de leitura, luz que segue o mouse na capa, borda girando no botão da capa, borda do card acendendo sob o mouse, depoimentos rolando |
 | `assets/admin-fx.css` e `.js` | admin | entrada em cascata, gráfico desenhado e lido no hover, medidores crescendo do zero, status "aguardando" pulsando, linhas de tabela acendendo, card de receita por categoria, indicador "ao vivo", conteúdo limitado a 1320px e barra flutuante com menus agrupados |
 
 Regras:
