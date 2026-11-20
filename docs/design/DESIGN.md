@@ -84,7 +84,27 @@ Sem sombra de caixa. A separação é por borda e tom de fundo; o drone recortad
 
 ## Imagens
 
-Só renders fictícios (`prototipo/assets/img/*.webp`, fundo transparente) e desenhos de linha. Nada de foto de produto real ou logotipo de marca real.
+Só renders fictícios (`prototipo/assets/img/*.webp`, fundo transparente). Cada produto tem a foto principal `<slug>.webp` e, quando houver, fotos extras `<slug>-2.webp` a `<slug>-4.webp`, que viram a galeria da página do produto. Nada de foto de produto real ou logotipo de marca real.
+
+No sistema, as fotos são enviadas pelo cadastro do produto no admin e guardadas no armazenamento de objetos (ver PRD, D29).
+
+## Movimento
+
+O protótipo tem uma camada de efeitos separada da estrutura: cada efeito é um bloco no CSS e uma função no JS, e dá para desligar um sem afetar os outros.
+
+| Arquivo | Onde | Efeitos |
+|---|---|---|
+| `assets/spell.css` e `spell.js` | loja e admin | título revelado palavra por palavra, brilho nos selos (NOVO, OFERTA) e no preço promocional, faixa de marcas rolando, brilho que percorre o botão principal, sacola com "pop", check desenhado, rótulo do campo reagindo ao foco, spinner em botão que processa, raios de luz na capa |
+| `assets/navbar-aceternity.css` e `.js` | loja | faixa de promoção acima do menu, menu que some ao descer e encolhe depois do topo, indicador que desliza entre os links, mega menu de Drones, busca com sugestões, barra de progresso de leitura, luz que segue o mouse na capa, borda girando no botão da capa, borda do card acendendo sob o mouse, depoimentos rolando |
+| `assets/admin-fx.css` e `.js` | admin | entrada em cascata, gráfico desenhado e lido no hover, medidores crescendo do zero, status "aguardando" pulsando, linhas de tabela acendendo, card de receita por categoria, indicador "ao vivo", conteúdo limitado a 1320px e barra flutuante com menus agrupados |
+
+Regras:
+
+- Duração entre 150 e 700 ms para entrada e resposta a ação; laço contínuo (faixa rolando, borda girando) só em elemento decorativo.
+- Curva padrão `cubic-bezier(.2,.7,.2,1)`.
+- Anime só `transform`, `opacity` e `filter`.
+- **Reduzir movimento:** no protótipo, `spell.js` desliga as regras `prefers-reduced-motion` para a vitrine mostrar os efeitos. No sistema é o contrário: com "reduzir movimento" ligado, laços param, entradas aparecem prontas e só ficam as transições de estado.
+- Efeito não carrega informação: sem ele, a tela continua completa.
 
 ## Responsivo
 
@@ -92,6 +112,6 @@ Toda tela foi desenhada também para 390px (D20). Pontos de quebra: 1100px (menu
 
 ## Faça / não faça
 
-**Faça:** use token em vez de cor; mantenha o âmbar raro; número grande e leve com unidade em mono; status com texto além da cor; só dados fictícios.
+**Faça:** use token em vez de cor; respeite "reduzir movimento"; mantenha o âmbar raro; número grande e leve com unidade em mono; status com texto além da cor; só dados fictícios.
 
-**Não faça:** negrito acima de 500; sombra de caixa; gradiente ou âmbar em botão primário; foto de produto real; desenho de drone feito em CSS.
+**Não faça:** negrito acima de 500; sombra em card ou bloco da página (sombra só em camada flutuante: menu, mega menu, sugestões da busca, barra do admin); gradiente ou âmbar em botão primário; foto de produto real; desenho de drone feito em CSS.

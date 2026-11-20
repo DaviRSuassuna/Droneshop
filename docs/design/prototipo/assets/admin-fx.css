@@ -1,0 +1,138 @@
+/* =====================================================================
+   Painel do administrador: animações e interações dos gráficos
+   (protótipo 02). Cada bloco é independente.
+   ===================================================================== */
+
+/* A. Cards e indicadores entram em sequência ao abrir a página */
+.fx-in{opacity:0;transform:translateY(14px);animation:fx-up .7s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:calc(var(--d,0)*80ms)}
+@keyframes fx-up{to{opacity:1;transform:none}}
+
+/* B. Linhas dos gráficos são desenhadas; área sobe junto */
+.fx-draw{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:fx-draw 1.6s cubic-bezier(.4,.1,.2,1) forwards;animation-delay:var(--dl,.2s)}
+@keyframes fx-draw{to{stroke-dashoffset:0}}
+.chart .area{opacity:0;animation:fx-fade 1s ease 1.1s forwards}
+.chart .ln2{opacity:0;animation:fx-fade .8s ease .4s forwards}
+.chart .pt{opacity:0;transform-box:fill-box;transform-origin:center;animation:fx-pop .5s cubic-bezier(.3,1.6,.5,1) 1.7s forwards}
+@keyframes fx-fade{to{opacity:1}}
+@keyframes fx-pop{from{opacity:0;transform:scale(0)}to{opacity:1;transform:scale(1)}}
+.chart .pt.fx-pulse{animation:fx-pop .5s cubic-bezier(.3,1.6,.5,1) 1.7s forwards,fx-ring 2.4s ease-out 2.4s infinite}
+@keyframes fx-ring{0%{stroke-width:2}50%{stroke-width:6;stroke-opacity:.35}100%{stroke-width:2;stroke-opacity:1}}
+.chart .area,.chart .ln,.chart .ln2{transition:d .7s cubic-bezier(.2,.7,.2,1)}
+.chart .ax{transition:opacity .3s}
+
+/* C. Leitura do gráfico ao passar o mouse: linha guia, ponto e balão */
+.fx-wrap{position:relative}
+.fx-guide{stroke:var(--line2);stroke-width:1;stroke-dasharray:2 3;opacity:0;transition:opacity .15s}
+.fx-dot{fill:var(--amber);stroke:var(--bg);stroke-width:2;opacity:0;transition:opacity .15s}
+.fx-dot2{fill:var(--faint);opacity:0;transition:opacity .15s}
+.fx-on .fx-guide,.fx-on .fx-dot,.fx-on .fx-dot2{opacity:1}
+.fx-tip{position:absolute;top:0;pointer-events:none;padding:8px 10px;border-radius:8px;background:rgba(22,24,27,.96);border:1px solid var(--line2);box-shadow:0 12px 30px rgba(0,0,0,.45);font:400 12px var(--body);color:var(--ink2);white-space:nowrap;opacity:0;transform:translate(-50%,-6px);transition:opacity .15s,left .08s linear}
+.fx-on .fx-tip{opacity:1}
+.fx-tip b{display:block;font:500 15px var(--display);color:var(--ink);margin:2px 0}
+.fx-tip .d{font:400 10.5px var(--mono);color:var(--mute);letter-spacing:.06em}
+.fx-tip .v{color:var(--ok)}.fx-tip .v.n{color:var(--warn)}
+
+/* D. Medidores de estoque e barras de participação crescem do zero */
+.meter i,.fx-bar{transform-origin:0 50%;transform:scaleX(0);animation:fx-grow 1.1s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:calc(.5s + var(--d,0)*90ms)}
+@keyframes fx-grow{to{transform:scaleX(1)}}
+.stock.low{position:relative}
+.stock.fx-zero{animation:fx-blink 1.6s ease-in-out infinite}
+@keyframes fx-blink{50%{opacity:.45}}
+
+/* E. Status "aguardando": bolinha pulsa */
+.st.amber::before,.st.warn::before{animation:fx-dotp 1.8s ease-out infinite}
+@keyframes fx-dotp{0%{box-shadow:0 0 0 0 currentColor}70%,100%{box-shadow:0 0 0 6px transparent}}
+
+/* F. Linhas de tabela: entram em cascata e acendem no hover */
+tbody tr.fx-row{opacity:0;animation:fx-up .5s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:calc(.3s + var(--d,0)*50ms)}
+tbody tr{transition:background .2s}
+tbody tr:hover{background:rgba(255,255,255,.025)}
+
+/* G. Cards: borda acende onde o mouse está */
+.card{position:relative}
+.card.fx-glow::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;pointer-events:none;opacity:0;transition:opacity .3s;z-index:2;background:radial-gradient(260px circle at var(--x) var(--y),rgba(232,168,107,.55),transparent 60%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.card.fx-glow:hover::before{opacity:1}
+
+/* H. Novo card: receita por categoria (rosca + legenda com valores) */
+.fx-card-cat{grid-column:1/-1}
+.fx-donut{display:grid;grid-template-columns:200px minmax(0,1fr);gap:48px;align-items:center;padding:6px 8px}
+.fx-donut .mid{position:relative;width:200px;height:200px}
+.fx-donut svg{width:200px;height:200px;transform:rotate(-90deg)}
+.fx-donut circle{fill:none;stroke-width:12;stroke-linecap:round;transition:stroke-width .2s,opacity .2s}
+.fx-donut circle.trk{stroke:var(--surf2);stroke-linecap:butt}
+.fx-donut .seg-a{stroke-dasharray:0 999;animation:fx-seg 1.2s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:calc(.6s + var(--d)*150ms)}
+@keyframes fx-seg{to{stroke-dasharray:var(--l) 999}}
+.fx-donut .ctr{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:4px;text-align:center}
+.fx-donut .ctr span{font:400 10px var(--mono);color:var(--mute);letter-spacing:.12em}
+.fx-donut .ctr b{font:300 22px var(--display);white-space:nowrap;letter-spacing:-.01em}
+.fx-donut .ctr em{font:400 11px var(--mono);font-style:normal;color:var(--ok)}
+.fx-donut ul{list-style:none;margin:0;padding:0;display:grid;gap:6px;max-width:640px}
+.fx-donut li{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 14px;border-radius:10px;border:1px solid transparent;transition:background .2s,border-color .2s}
+.fx-donut li:hover{background:rgba(255,255,255,.03);border-color:var(--line)}
+.fx-donut li>i{width:10px;height:10px;border-radius:3px}
+.fx-donut .nm{display:grid;gap:8px;font-size:14px}
+.fx-donut .br{height:4px;border-radius:2px;background:var(--surf2);overflow:hidden}
+.fx-donut .br b{display:block;height:100%;width:var(--w);border-radius:2px;transform-origin:0 50%;transform:scaleX(0);animation:fx-grow 1.1s cubic-bezier(.2,.7,.2,1) .8s forwards}
+.fx-donut .vl{text-align:right;display:grid;gap:2px}
+.fx-donut .vl strong{font:400 14px var(--body)}
+.fx-donut .vl small{font:400 11px var(--mono);color:var(--mute)}
+.fx-donut.hl circle.seg-a{opacity:.25}.fx-donut.hl circle.seg-a.on{opacity:1;stroke-width:16}
+@media (max-width:700px){.fx-donut{grid-template-columns:1fr;justify-items:center;gap:20px}.fx-donut ul{width:100%}}
+
+/* I. Indicador "ao vivo" no cabeçalho */
+.fx-live{display:inline-flex;align-items:center;gap:7px;font:400 11px var(--mono);color:var(--mute);letter-spacing:.06em;margin-left:10px}
+.fx-live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ok);animation:fx-dotp 1.8s ease-out infinite;color:var(--ok)}
+
+/* Com "reduzir movimento" ligado o admin.css não zera nada, mas o spell.css da loja sim: voltam aqui */
+@media (prefers-reduced-motion:reduce){
+html body .fx-in{animation:fx-up .7s cubic-bezier(.2,.7,.2,1) forwards!important;animation-delay:calc(var(--d,0)*80ms)!important}
+html body .fx-draw{animation:fx-draw 1.6s cubic-bezier(.4,.1,.2,1) forwards!important;animation-delay:var(--dl,.2s)!important}
+html body .meter i,html body .fx-bar{animation:fx-grow 1.1s cubic-bezier(.2,.7,.2,1) forwards!important;animation-delay:calc(.5s + var(--d,0)*90ms)!important}
+html body tbody tr.fx-row{animation:fx-up .5s cubic-bezier(.2,.7,.2,1) forwards!important;animation-delay:calc(.3s + var(--d,0)*50ms)!important}
+html body .chart .area{animation:fx-fade 1s ease 1.1s forwards!important}
+html body .chart .ln2{animation:fx-fade .8s ease .4s forwards!important}
+html body .chart .pt{animation:fx-pop .5s cubic-bezier(.3,1.6,.5,1) 1.7s forwards,fx-ring 2.4s ease-out 2.4s infinite!important}
+html body .fx-donut .br b{animation:fx-grow 1.1s cubic-bezier(.2,.7,.2,1) .8s forwards!important}
+html body .fx-donut .seg-a{animation:fx-seg 1.2s cubic-bezier(.2,.7,.2,1) forwards!important;animation-delay:calc(.6s + var(--d)*150ms)!important}
+html body .st.amber::before,html body .st.warn::before,html body .fx-live::before{animation:fx-dotp 1.8s ease-out infinite!important}
+html body .stock.fx-zero{animation:fx-blink 1.6s ease-in-out infinite!important}
+html body .chart .area,html body .chart .ln,html body .chart .ln2{transition:d .7s cubic-bezier(.2,.7,.2,1)!important}
+html body .fx-tip,html body .fx-guide,html body .fx-dot,html body .fx-dot2{transition:opacity .15s!important}
+}
+
+/* J. Margens iguais às da loja: conteúdo e barra limitados a 1320px e centralizados */
+.gut{max-width:1320px;margin-inline:auto}
+main.gut{padding-top:8px;padding-bottom:40px}
+@media (min-width:1100px){.gut{padding-left:max(40px,env(safe-area-inset-left,0px));padding-right:max(40px,env(safe-area-inset-right,0px))}}
+
+/* K. Barra do admin no estilo da loja: flutuante, arredondada, com menus agrupados */
+.tb{background:transparent;border-bottom:0;backdrop-filter:none;-webkit-backdrop-filter:none;padding-top:10px}
+.tb .in{position:relative;height:56px;padding-inline:22px 10px;background:rgba(26,28,32,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:14px;max-width:calc(1320px - 32px)}
+@media (min-width:1100px){.tb .in{max-width:calc(1320px - 80px)}}
+.tb .in.gut{margin-inline:auto}
+@media (min-width:1100px){.tb{padding-inline:40px}}
+@media (max-width:1099px){.tb{padding-inline:16px}}
+.tabs.fx-groups{position:static;overflow:visible;gap:4px}
+.tabs.fx-groups>a,.tabs.fx-groups>button{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:9px;color:var(--ink2);font-size:14px;white-space:nowrap;position:relative;z-index:1;transition:color .2s}
+.tabs.fx-groups>a:hover,.tabs.fx-groups>button:hover,.tabs.fx-groups>[aria-current],.tabs.fx-groups>.on{color:var(--ink)}
+.tabs.fx-groups>button::after{content:"";width:6px;height:6px;border-right:1.4px solid currentColor;border-bottom:1.4px solid currentColor;transform:translateY(-2px) rotate(45deg);opacity:.6;transition:transform .2s}
+.tabs.fx-groups>button.open::after{transform:translateY(1px) rotate(-135deg)}
+.tabs.fx-groups>button:focus-visible,.tabs.fx-groups>a:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.fx-pill{position:absolute;top:50%;height:34px;transform:translateY(-50%);border-radius:9px;background:rgba(255,255,255,.07);border:1px solid var(--line);pointer-events:none;opacity:0;transition:left .3s cubic-bezier(.2,.7,.2,1),width .3s cubic-bezier(.2,.7,.2,1),opacity .2s;z-index:0}
+.fx-menu{position:absolute;left:0;right:0;top:calc(100% + 10px);display:grid;grid-template-columns:repeat(var(--cols,2),minmax(0,1fr)) 260px;gap:8px;padding:16px;background:rgba(22,24,27,.97);backdrop-filter:blur(18px);border:1px solid var(--line2);border-radius:16px;box-shadow:0 30px 70px rgba(0,0,0,.55);opacity:0;visibility:hidden;transform:translateY(-8px);transition:.22s cubic-bezier(.2,.7,.2,1);z-index:40}
+.fx-menu.on{opacity:1;visibility:visible;transform:none}
+.fx-menu .col{display:grid;gap:2px;align-content:start}
+.fx-menu .col .lbl{margin:2px 10px 8px}
+.fx-menu .col a{display:grid;gap:2px;padding:10px;border-radius:10px;color:var(--ink);font-size:14px}
+.fx-menu .col a small{color:var(--mute);font-size:12px}
+.fx-menu .col a:hover{background:rgba(255,255,255,.05)}
+.fx-menu .col a[aria-current]{background:rgba(232,168,107,.1)}
+.fx-menu .col a[aria-current] small{color:var(--amber)}
+.fx-menu .quick{border-radius:12px;padding:14px;background:radial-gradient(90% 90% at 70% 20%,#24272c,#141619);border:1px solid var(--line);display:grid;gap:8px;align-content:start}
+.fx-menu .quick a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;border:1px solid var(--line);color:var(--ink);font-size:13.5px;transition:border-color .2s,background .2s}
+.fx-menu .quick a::before{content:"+";display:grid;place-items:center;width:20px;height:20px;border-radius:6px;background:rgba(232,168,107,.16);color:var(--amber);font-weight:600}
+.fx-menu .quick a:hover{border-color:var(--line2);background:rgba(255,255,255,.03)}
+.fx-menu .quick .num{font:200 30px var(--display);margin:2px 0 0}
+.fx-menu .quick .num small{font:400 11px var(--mono);color:var(--mute);margin-left:6px}
+@media (max-width:800px){.fx-menu{display:none}}
+@media (prefers-reduced-motion:reduce){html body .fx-menu{transition:.22s cubic-bezier(.2,.7,.2,1)!important}html body .fx-pill{transition:left .3s cubic-bezier(.2,.7,.2,1),width .3s cubic-bezier(.2,.7,.2,1),opacity .2s!important}}
