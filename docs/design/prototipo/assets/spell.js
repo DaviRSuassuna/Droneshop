@@ -144,7 +144,7 @@ function helices(){
     wrap.append(s);
     const o=document.createElement('img');o.className='sp-parado';o.alt='';o.src=img.src.replace('-sem-pas','');wrap.append(o);
     /* depois que as pás param, a camada das hélices sai da página: nada fica girando escondido */
-    s.addEventListener('animationend',()=>s.remove(),{once:true});setTimeout(()=>s.remove(),3200)});
+    s.addEventListener('animationend',()=>s.remove(),{once:true});setTimeout(()=>s.remove(),4200)});
 }
 
 /* 16. Números da faixa de ofertas (22%, 48, 7 dias) contam a partir de zero ao aparecer */

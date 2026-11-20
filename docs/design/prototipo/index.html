@@ -525,10 +525,10 @@ document.getElementById('menuBtn').addEventListener('click',e=>{const o=document
 <script src="assets/desenhos.js"></script>
 <style>
 /* hero: drone em voo, hélices (disco + pás) em SVG sobre assets/img/falcon-sem-pas.webp */
-.hero.bleed .art .flt{position:relative;animation:decola 2.4s cubic-bezier(.2,.7,.2,1) both;transform-origin:50% 45%}
+.hero.bleed .art .flt{position:relative;animation:sp-chega 2s cubic-bezier(.25,.8,.35,1) .3s both,sp-assenta 1.6s ease-in-out 2.3s forwards;transform-origin:50% 45%}
 /* chega e para: depois do pouso as pás param (a foto com as pás aparece) e a camada das hélices sai da página */
-.hero.bleed .art .flt .parado{position:absolute;inset:0;width:100%;height:auto;opacity:0;filter:none;animation:hero-aparece .6s ease 2.2s forwards}
-.hero.bleed .art .rotors{animation:hero-some .6s ease 2.2s forwards}
+.hero.bleed .art .flt .parado{position:absolute;inset:0;width:100%;height:auto;opacity:0;filter:none;animation:hero-aparece 1.2s ease-in-out 2.5s forwards}
+.hero.bleed .art .rotors{animation:hero-some 1.2s ease-in-out 2.5s forwards}
 @keyframes hero-aparece{to{opacity:1}}
 @keyframes hero-some{to{opacity:0}}
 /* desempenho: a sombra fica só na foto (calculada uma vez); hélices sem filtro de desfoque, o borrão vem do disco translúcido */
@@ -546,11 +546,10 @@ document.getElementById('menuBtn').addEventListener('click',e=>{const o=document
 
 .hero.bleed .art{perspective:1400px}
 .hero.bleed .art .sombra{position:absolute;left:22%;right:18%;bottom:-14%;height:16%;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.55),transparent);filter:blur(10px);pointer-events:none;will-change:transform,opacity}
-@keyframes decola{0%{transform:translate(0,220px) rotate(4deg) scale(.9);opacity:0}25%{opacity:1}70%{transform:translate(0,-18px) rotate(-1.5deg)}100%{transform:translate(0,0) rotate(0)}}
 @media (prefers-reduced-motion:reduce){
-.hero.bleed .art .flt{animation:decola 2.4s cubic-bezier(.2,.7,.2,1) both!important}
-.hero.bleed .art .flt .parado{animation:hero-aparece .6s ease 2.2s forwards!important}
-.hero.bleed .art .rotors{animation:hero-some .6s ease 2.2s forwards!important}}
+.hero.bleed .art .flt{animation:sp-chega 2s cubic-bezier(.25,.8,.35,1) .3s both,sp-assenta 1.6s ease-in-out 2.3s forwards!important}
+.hero.bleed .art .flt .parado{animation:hero-aparece 1.2s ease-in-out 2.5s forwards!important}
+.hero.bleed .art .rotors{animation:hero-some 1.2s ease-in-out 2.5s forwards!important}}
 
 /* celular: setas também no comparativo; pares de botões lado a lado com a mesma largura */
 .arrows.so-cel{display:none}
@@ -567,7 +566,7 @@ document.getElementById('menuBtn').addEventListener('click',e=>{const o=document
 <script>
 /* hero: depois que as pás param, a camada das hélices sai da página (nada fica girando escondido) */
 (()=>{const r=document.querySelector('.hero.bleed .art .rotors');if(!r)return;
-const tira=()=>r.remove();r.addEventListener('animationend',tira,{once:true});setTimeout(tira,3400)})();
+const tira=()=>r.remove();r.addEventListener('animationend',tira,{once:true});setTimeout(tira,4200)})();
 </script>
 <script src="assets/spell.js"></script>
 <script src="assets/navbar-aceternity.js"></script>
