@@ -130,6 +130,20 @@ function depoimentos(){
   s.innerHTML=`<div class="wrap"><span class="lbl">Quem já voa com a gente</span><h2 id="acTestT">Pilotos que recomendam.</h2></div>
    <div class="mask"><div class="row">${a}<span aria-hidden="true" style="display:contents">${a}</span></div><div class="row r2">${b}<span aria-hidden="true" style="display:contents">${b}</span></div></div>`;
   alvo.before(s);
+  /* celular: setas e troca automática a cada 30 s (para quando a pessoa mexe) */
+  const m=$('.mask',s),seta=document.createElement('div');seta.className='ac-test-setas';
+  seta.innerHTML='<button type="button" aria-label="Depoimento anterior">‹</button><button type="button" aria-label="Próximo depoimento">›</button>';
+  m.after(seta);const [ant,prox]=seta.children;
+  const passo=()=>{const c=$('.t',m);return c?c.getBoundingClientRect().width+12:m.clientWidth};
+  const fim=()=>m.scrollLeft>=m.scrollWidth-m.clientWidth-2;
+  const estado=()=>{ant.disabled=m.scrollLeft<=2;prox.disabled=fim()};
+  ant.onclick=()=>{m.scrollBy({left:-passo(),behavior:'smooth'});reinicia()};
+  prox.onclick=()=>{m.scrollBy({left:passo(),behavior:'smooth'});reinicia()};
+  m.addEventListener('scroll',estado,{passive:true});estado();
+  let timer;const celular=matchMedia('(max-width:640px)');
+  const avanca=()=>{if(!celular.matches)return;m.scrollTo({left:fim()?0:m.scrollLeft+passo(),behavior:'smooth'})};
+  const reinicia=()=>{clearInterval(timer);timer=setInterval(avanca,30000)};
+  m.addEventListener('touchstart',reinicia,{passive:true});reinicia();
 }
 
 anuncio();

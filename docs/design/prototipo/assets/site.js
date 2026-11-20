@@ -10,7 +10,6 @@
       $$('.tag').forEach(t=>{if(t.querySelector('button'))t.remove()});
       $$('.filters input[type=checkbox],.filters input[type=radio]').forEach(i=>i.checked=false)}});
   // menu da conta no celular: a aba atual fica visível
-  $$('.side a[aria-current]').forEach(a=>{const s=a.parentElement;if(s.scrollWidth>s.clientWidth)s.scrollLeft=a.offsetLeft-16});
   // quantidade
   $$('.qty').forEach(q=>{const o=$('output',q),[a,b]=$$('button',q);
     a.onclick=()=>{o.value=Math.max(1,+o.value-1);q.dispatchEvent(new Event('change',{bubbles:true}))};

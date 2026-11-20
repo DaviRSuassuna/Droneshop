@@ -551,6 +551,18 @@ document.getElementById('menuBtn').addEventListener('click',e=>{const o=document
 .hero.bleed .art .flt{animation:decola 2.4s cubic-bezier(.2,.7,.2,1) both!important}
 .hero.bleed .art .flt .parado{animation:hero-aparece .6s ease 2.2s forwards!important}
 .hero.bleed .art .rotors{animation:hero-some .6s ease 2.2s forwards!important}}
+
+/* celular: setas também no comparativo; pares de botões lado a lado com a mesma largura */
+.arrows.so-cel{display:none}
+.arrows button[disabled]{opacity:.3;cursor:default}
+@media (max-width:900px){
+  .arrows.so-cel{display:flex;justify-content:center;gap:14px;margin-top:20px}
+  .arrows.so-cel button{width:48px;height:48px}
+}
+@media (max-width:640px){
+  .biz .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+  .biz .actions .btn{justify-content:center;padding:0 8px;white-space:nowrap;font-size:14px}
+}
 </style>
 <script>
 /* hero: depois que as pás param, a camada das hélices sai da página (nada fica girando escondido) */
@@ -559,4 +571,20 @@ const tira=()=>r.remove();r.addEventListener('animationend',tira,{once:true});se
 </script>
 <script src="assets/spell.js"></script>
 <script src="assets/navbar-aceternity.js"></script>
+<script>
+/* carrosséis: setas passam um card por vez e ficam apagadas no começo e no fim */
+(()=>{
+function carrossel(trilho,ant,prox){if(!trilho||!ant||!prox)return;
+  const passo=()=>{const c=trilho.firstElementChild;const g=parseFloat(getComputedStyle(trilho).columnGap)||0;return c?c.getBoundingClientRect().width+g:trilho.clientWidth};
+  const estado=()=>{const max=trilho.scrollWidth-trilho.clientWidth-2;ant.disabled=trilho.scrollLeft<=2;prox.disabled=trilho.scrollLeft>=max};
+  ant.addEventListener('click',()=>trilho.scrollBy({left:-passo(),behavior:'smooth'}));
+  prox.addEventListener('click',()=>trilho.scrollBy({left:passo(),behavior:'smooth'}));
+  trilho.addEventListener('scroll',estado,{passive:true});addEventListener('resize',estado);estado()}
+carrossel(document.getElementById('rail'),document.getElementById('prev'),document.getElementById('next'));
+const cmp=document.querySelector('.cmp');
+if(cmp){const a=document.createElement('div');a.className='arrows so-cel';
+  a.innerHTML='<button type="button" aria-label="Modelo anterior">‹</button><button type="button" aria-label="Próximo modelo">›</button>';
+  cmp.after(a);carrossel(cmp,a.children[0],a.children[1])}
+})();
+</script>
 </body></html>
