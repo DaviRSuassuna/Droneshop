@@ -121,6 +121,16 @@ function depoimentos(){
   s.innerHTML=`<div class="wrap"><span class="lbl">Quem já voa com a gente</span><h2 id="acTestT">Pilotos que recomendam.</h2></div>
    <div class="mask"><div class="row">${a}<span aria-hidden="true" style="display:contents">${a}</span></div><div class="row r2">${b}<span aria-hidden="true" style="display:contents">${b}</span></div></div>`;
   alvo.before(s);
+  /* celular: um card por vez, troca sozinho a cada 4 s e volta ao primeiro no fim; setas também dão a volta */
+  const m=$('.mask',s),seta=document.createElement('div');seta.className='ac-test-setas';
+  seta.innerHTML='<button type="button" aria-label="Depoimento anterior">‹</button><button type="button" aria-label="Próximo depoimento">›</button>';
+  m.after(seta);const [ant,prox]=seta.children,cel=matchMedia('(max-width:640px)');
+  const cards=()=>$$('.row:not(.r2)>.t',m);
+  const atual=()=>{const c=cards(),x=m.scrollLeft+m.clientWidth/2;let i=0,d=1e9;c.forEach((e,k)=>{const dd=Math.abs(e.offsetLeft+e.offsetWidth/2-x);if(dd<d){d=dd;i=k}});return i};
+  const vai=i=>{const c=cards(),n=c.length,e=c[(i+n)%n];m.scrollTo({left:e.offsetLeft-(m.clientWidth-e.offsetWidth)/2,behavior:'smooth'})};
+  let timer;const reinicia=()=>{clearInterval(timer);timer=setInterval(()=>{if(cel.matches&&!document.hidden)vai(atual()+1)},4000)};
+  ant.onclick=()=>{vai(atual()-1);reinicia()};prox.onclick=()=>{vai(atual()+1);reinicia()};
+  m.addEventListener('touchstart',reinicia,{passive:true});reinicia();
 }
 
 anuncio();
