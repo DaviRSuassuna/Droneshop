@@ -452,3 +452,6 @@ button,a,label{-webkit-tap-highlight-color:transparent}
   .dlg.wide .dlgfoot{position:sticky;bottom:calc(-16px - env(safe-area-inset-bottom,0px));background:var(--bg2);padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));margin-bottom:calc(-16px - env(safe-area-inset-bottom,0px))}
 }
 .pcard .pr .from{display:block;font:400 10.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-bottom:2px}
+
+/* "×" dos filtros: área de toque de 32px sem mudar o tamanho visual da etiqueta */
+.tag button{display:inline-grid;place-items:center;min-width:32px;min-height:32px;margin:-9px -11px -9px -6px;font-size:15px}

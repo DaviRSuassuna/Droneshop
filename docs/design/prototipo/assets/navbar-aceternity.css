@@ -91,3 +91,6 @@ html body .ac-mega{transition:.25s cubic-bezier(.2,.7,.2,1)!important}
 html body .navwrap{transition:transform .35s cubic-bezier(.2,.7,.2,1)!important}
 html body .ac-pill{transition:left .3s cubic-bezier(.2,.7,.2,1),width .3s cubic-bezier(.2,.7,.2,1),opacity .2s!important}
 }
+
+/* Celular: "×" da faixa de promoção com área de toque de 40px */
+.ac-ann button{display:grid;place-items:center;width:40px;height:40px;padding:0;right:4px}
