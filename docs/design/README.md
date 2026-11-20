@@ -109,9 +109,13 @@ Abra `prototipo/index.html` (storefront) ou `prototipo/admin/index.html` (admin)
 | `assets/admin.css` | tokens e componentes do painel |
 | `assets/site.js` | interações do storefront: menu, quantidade, abas, galeria, formas de pagamento |
 | `assets/desenhos.js` | desenhos de linha da seção "O que você vai voar?" e dos setores de Empresas |
-| `assets/img/*.webp` | renders fictícios dos drones Falcon, Nimbus e Heron, com fundo transparente |
+| `assets/produtos.js` | dados dos 17 produtos fictícios; `produto.html?p=<slug>` monta a página de cada um |
+| `assets/spell.css` / `spell.js` | efeitos da loja e do admin |
+| `assets/navbar-aceternity.css` / `.js` | menu da loja (faixa de promoção, mega menu, busca com sugestões) e efeitos da capa e dos cards |
+| `assets/admin-fx.css` / `.js` | efeitos do painel, card de receita por categoria e barra flutuante do admin |
+| `assets/img/*.webp` | renders fictícios de todos os produtos, com fundo transparente; `<slug>-2.webp` é a segunda foto da galeria |
 
-Produtos sem foto (acessórios, FPV, agrícola, infantil) usam desenho de linha em SVG no mesmo traço, nunca foto de produto real.
+Os efeitos estão descritos na seção "Movimento" do `DESIGN.md`.
 
 ## Cuidados
 

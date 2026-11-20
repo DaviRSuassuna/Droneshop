@@ -1,7 +1,7 @@
 ---
-numero: null
+numero: 87
 titulo: "[catalogo] Imagem principal do produto nas listagens e fotos na carga de dados"
-labels: ["tipo:feature", "camada:backend", "camada:frontend", "modulo:catalogo"]
+labels: ["tipo:feature", "camada:backend", "camada:frontend", "modulo:catalogo", "trilha:b"]
 fase: 1
 ---
 
@@ -90,3 +90,7 @@ Frontend: specs dos services e conformidade das telas citadas.
 ### Depende de
 
 #12, #80
+
+### Trilha
+
+**B**, posição 3 de 20. Anterior: admin no protótipo 02 (`nova-admin-prototipo-02.md`). Próxima: armazenamento S3 (`nova-armazenamento-s3.md`). Guia: [`docs/agentes/README.md`](https://github.com/DaviRSuassuna/droneshop/blob/develop/docs/agentes/README.md).

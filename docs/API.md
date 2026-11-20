@@ -56,7 +56,7 @@ As telas citadas são as do [protótipo](design/README.md).
 | POST · PUT | `/kits` · `/kits/{id}` com `componentes[]` (`idProduto`, `quantidade`); resposta com `disponivel`, `pesoSobrescrito`/`dimensoesSobrescritas` | Cadastrar kit (D7, D16, D40) | #80 | pronto (substitui o kit da #10) |
 | GET POST · GET PUT DELETE | `/grupos-produto?nome=&ativo=` · `/grupos-produto/{id}` | Grupos de produto (resposta com `versoes[]` e `precoAPartirDe`); no produto, `idGrupo`, `rotuloNoGrupo`, `ordemNoGrupo` | #80 | pronto |
 | (corpo) | `idsCompativeis[]` no acessório; resposta com `compativeis[]` e, em todo produto, `acessoriosCompativeis[]` (lado recíproco) | Compatível com (D17) | #11 | pronto |
-| GET · GET POST · PATCH · DELETE | `/tipos-midia` · `/produtos/{id}/midias` (multipart) · `/midias/{id}` · `/produtos/{id}/midias/ordem` · `/midias/arquivos/{nome}` | imagem e manual por upload, vídeo por URL (D29) | #12 | pronto |
+| GET · GET POST · PATCH · DELETE | `/tipos-midia` · `/produtos/{id}/midias` (multipart) · `/midias/{id}` · `/produtos/{id}/midias/ordem` · `/midias/arquivos/{nome}` | imagem e manual por upload, vídeo por URL (D29); arquivo no armazenamento S3 e download por `?download=true` (D42) | #12, armazenamento S3 | pronto; S3 a fazer |
 | GET POST · GET PUT DELETE | `/promocoes?situacao=` · `/promocoes/{id}` | Promoções (abas Vigentes/Agendadas/Encerradas), Criar promoção | #14 | pronto |
 | GET POST · GET PUT DELETE | `/cupons?situacao=&codigo=` · `/cupons/{id}` | Cupons, Criar cupom | #15 | a fazer |
 | GET | `/cupons/{id}/usos` | Exportar usos | #15 | a fazer |

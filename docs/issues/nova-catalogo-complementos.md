@@ -1,7 +1,7 @@
 ---
-numero: null
+numero: 84
 titulo: "[catalogo] Logo da marca por upload, peso do acessório, sugestão nos compatíveis e kit em Ofertas"
-labels: ["tipo:feature", "camada:backend", "camada:frontend", "modulo:catalogo"]
+labels: ["tipo:feature", "camada:backend", "camada:frontend", "modulo:catalogo", "trilha:b"]
 fase: 1
 ---
 
@@ -91,3 +91,7 @@ Frontend: conformidade das telas de marca, acessório e kit.
 ### Depende de
 
 #80, #12, #11
+
+### Trilha
+
+**B**, posição 5 de 20. Anterior: armazenamento S3 (`nova-armazenamento-s3.md`). Próxima: #83. Guia: [`docs/agentes/README.md`](https://github.com/DaviRSuassuna/droneshop/blob/develop/docs/agentes/README.md).

@@ -8,7 +8,11 @@ import { defineConfig, devices } from '@playwright/test';
  * já publicada no Pages: PROTOTIPO_URL=https://davirsuassuna.github.io/droneshop/prototipo/
  * A API não precisa estar de pé: as respostas são simuladas (e2e/conformidade/api-falsa.ts).
  */
-const prototipoUrl = process.env['PROTOTIPO_URL'] ?? 'http://localhost:4300/';
+// Portas por variável para as duas trilhas rodarem ao mesmo tempo (docs/agentes/README.md):
+// trilha B usa PORTA_APP=4211 e PORTA_PROTOTIPO=4311.
+const portaApp = process.env['PORTA_APP'] ?? '4200';
+const portaPrototipo = process.env['PORTA_PROTOTIPO'] ?? '4300';
+const prototipoUrl = process.env['PROTOTIPO_URL'] ?? `http://localhost:${portaPrototipo}/`;
 
 export default defineConfig({
   testDir: './e2e',
@@ -19,7 +23,7 @@ export default defineConfig({
   retries: 0,
   reporter: [['list'], ['html', { outputFolder: 'e2e/.relatorio', open: 'never' }]],
   use: {
-    baseURL: 'http://localhost:4200',
+    baseURL: `http://localhost:${portaApp}`,
     viewport: { width: 1280, height: 800 },
     locale: 'pt-BR',
     trace: 'retain-on-failure',
@@ -37,8 +41,8 @@ export default defineConfig({
   metadata: { prototipoUrl },
   webServer: [
     {
-      command: 'npx ng serve --port 4200',
-      url: 'http://localhost:4200',
+      command: `npx ng serve --port ${portaApp}`,
+      url: `http://localhost:${portaApp}`,
       reuseExistingServer: !process.env['CI'],
       timeout: 180_000,
     },
@@ -47,9 +51,9 @@ export default defineConfig({
       : [
           {
             command: 'node scripts/servir-prototipo.mjs',
-            url: 'http://localhost:4300/',
+            url: `http://localhost:${portaPrototipo}/`,
             reuseExistingServer: !process.env['CI'],
-            env: { PORTA: '4300' },
+            env: { PORTA: portaPrototipo },
           },
         ]),
   ],

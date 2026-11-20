@@ -1,0 +1,7 @@
+-- Carga de dados da trilha B (catalogo, administracao, atendimento e notificacao). Ver docs/agentes/README.md.
+-- Carregada depois de import.sql e import-b.sql (ordem: localidades, import, import-b, import-a).
+-- Regras para as duas trilhas não colidirem:
+--   * sem id fixo: deixe a sequence gerar;
+--   * referência a outro registro por chave natural, com subconsulta
+--     (ex.: (select id from produto where sku = 'DRN-FX2P')), nunca pelo número do id;
+--   * só referencie dados do import.sql ou deste arquivo.

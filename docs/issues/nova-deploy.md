@@ -1,7 +1,7 @@
 ---
-numero: null
+numero: 59
 titulo: "[infra] Deploy de produção"
-labels: ["tipo:chore"]
+labels: ["tipo:chore", "trilha:b"]
 fase: null
 ---
 
@@ -23,3 +23,7 @@ Saiu do escopo da #57. Publicar a API e o frontend num servidor, com banco próp
 
 ## Fora do escopo
 - Escala, alta disponibilidade e monitoramento
+
+### Trilha
+
+**B**, posição 20 de 20. Anterior: #60. Próxima: nenhuma (é a última). Guia: [`docs/agentes/README.md`](https://github.com/DaviRSuassuna/droneshop/blob/develop/docs/agentes/README.md).

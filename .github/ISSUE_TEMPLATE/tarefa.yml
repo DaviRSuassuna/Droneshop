@@ -8,6 +8,7 @@ body:
       value: |
         Uma issue = uma branch = um PR para a `develop`.
         Branch: botão "Create a branch" desta issue, com origem na `develop`.
+        Trabalho em paralelo: escolha a trilha pelo dono do módulo (`docs/agentes/README.md`) e acrescente a etiqueta `trilha:a` ou `trilha:b`.
 
   - type: dropdown
     id: modulo
@@ -103,7 +104,7 @@ body:
         - label: Service com `@Transactional` e validações de negócio
         - label: Resource REST com `page`/`pageSize` e resposta `PageResponse`
         - label: Erros no formato Problem (400, 404, 409, 503)
-        - label: Carga de dados (`import.sql`) atualizada
+        - label: Carga de dados no arquivo da trilha (`import-a.sql` ou `import-b.sql`), sem id fixo
         - label: Diagrama `.puml` atualizado, se o modelo mudou
         - label: 'Testes de API com `@Tag("issue-<numero>")` e etiqueta em `backend/src/test/issues-entregues.txt`'
 

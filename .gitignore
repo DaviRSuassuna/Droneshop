@@ -63,3 +63,7 @@ desktop.ini
 *.rej
 # rascunhos do Python dos scripts
 __pycache__/
+graphify-out/
+# trabalho em paralelo (docs/agentes/README.md): worktrees das trilhas e quadro do supervisor
+.worktrees/
+.agentes/

@@ -5,6 +5,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500&family=DM+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="assets/site.css">
+<style>
+/* tilt card nos cartões (ref. spell.sh/docs/tilt-card): limite 10°, escala 1.03, perspectiva 1100 (mais forte que o padrão 15°/1.05/1200), "evade", spotlight */
+@media (hover:hover) and (pointer:fine){
+.cc.tilt{transform:perspective(1100px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) scale(var(--s,1));transition:transform .5s cubic-bezier(.2,.7,.2,1),box-shadow .5s;will-change:transform}
+.cc.tilt.on{transition:transform .12s ease-out,box-shadow .5s;box-shadow:0 16px 34px rgba(0,0,0,.35);z-index:2}
+.cc.tilt::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:var(--sp,0);transition:opacity .4s;background:radial-gradient(360px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.12),transparent 50%)}
+}
+@media (prefers-reduced-motion:reduce){.cc.tilt{transform:none!important}}
+</style>
+<link rel="stylesheet" href="assets/spell.css">
+<link rel="stylesheet" href="assets/navbar-aceternity.css">
 </head><body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
 <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
@@ -68,4 +79,16 @@
   </div>
 </footer>
 <script src="assets/site.js"></script>
+<script>
+/* tilt card: só com mouse; "evade" = o lado sob o cursor afunda */
+(()=>{if(!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
+const LIM=10,ESC=1.03;
+document.querySelectorAll('.cc').forEach(c=>{c.classList.add('tilt');
+ c.addEventListener('pointermove',e=>{const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+  c.classList.add('on');c.style.setProperty('--ry',`${(x-.5)*2*LIM}deg`);c.style.setProperty('--rx',`${(.5-y)*2*LIM}deg`);
+  c.style.setProperty('--s',ESC);c.style.setProperty('--mx',`${x*100}%`);c.style.setProperty('--my',`${y*100}%`);c.style.setProperty('--sp',1)});
+ c.addEventListener('pointerleave',()=>{c.classList.remove('on');['--rx','--ry','--s','--sp'].forEach(v=>c.style.removeProperty(v))});});})();
+</script>
+<script src="assets/spell.js"></script>
+<script src="assets/navbar-aceternity.js"></script>
 </body></html>
