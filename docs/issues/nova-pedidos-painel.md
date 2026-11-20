@@ -1,7 +1,7 @@
 ---
-numero: null
+numero: 89
 titulo: "[pedido] Painel de pedidos: indicadores, busca por CPF/CNPJ, filtro por pagamento e etiquetas em lote"
-labels: ["tipo:feature", "camada:backend", "camada:frontend", "modulo:pedido"]
+labels: ["tipo:feature", "camada:backend", "camada:frontend", "modulo:pedido", "trilha:a"]
 fase: 4
 ---
 
@@ -93,3 +93,9 @@ Frontend: conformidade de `admin/pedidos.html` (`npm run e2e -- --grep @issue-16
 ### Depende de
 
 #16, #61, #27, #37
+
+### Trilha
+
+**A**, posição 23 de 23. Anterior: #88. Próxima: nenhuma (é a última). Guia: [`docs/agentes/README.md`](https://github.com/DaviRSuassuna/droneshop/blob/develop/docs/agentes/README.md).
+
+Portão (depende da outra trilha): #61 já na `develop` (as etiquetas em lote reaproveitam a etiqueta de pedido da #61). Se ainda não estiver, o supervisor troca a ordem com a próxima issue.

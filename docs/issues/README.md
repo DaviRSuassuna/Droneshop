@@ -5,7 +5,7 @@ Corpo de cada issue do backlog, versionado. É aqui que o **contrato de API** de
 | Arquivo | Issue |
 |---|---|
 | `NNN.md` | Issue existente de número NNN |
-| `nova-<nome>.md` | Issue que ainda não existe no GitHub; é criada pelo título na primeira sincronização. Os testes dela usam a etiqueta `issue-<nome>` |
+| `nova-<nome>.md` | Issue criada a partir do arquivo. Antes da primeira sincronização tem `numero: null` e é criada pelo título; depois, o número entra no cabeçalho e **o nome do arquivo fica**, porque os testes dela usam a etiqueta `issue-<nome>` |
 
 Cada arquivo começa com um cabeçalho entre `---`, um valor JSON por linha:
 
@@ -17,6 +17,10 @@ labels: ["tipo:feature", "camada:backend", "modulo:catalogo"]
 fase: 1                        # milestone cujo título contém "Fase 1"
 ---
 ```
+
+## Trilha
+
+Toda issue aberta tem a etiqueta `trilha:a` ou `trilha:b` e termina com a seção `### Trilha`: posição na ordem, issue anterior e próxima, e o **portão** quando depende de uma issue da outra trilha. Quem define e muda a ordem é o supervisor (`docs/agentes/README.md`); ao mudar, refaça a seção das issues afetadas.
 
 ## Como mudar uma issue
 

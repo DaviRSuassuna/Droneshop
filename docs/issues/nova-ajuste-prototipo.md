@@ -1,7 +1,7 @@
 ---
-numero: null
+numero: 83
 titulo: "[design] Tirar do protótipo o que contradiz o modelo: permissões por tela, rascunho de usuário, canal, conversão e parcelas"
-labels: ["tipo:docs", "camada:frontend"]
+labels: ["tipo:docs", "camada:frontend", "trilha:b"]
 fase: null
 ---
 
@@ -64,3 +64,7 @@ Sem teste de backend. Conformidade das três telas: `npm run e2e -- --grep "@iss
 ### Depende de
 
 Nenhuma
+
+### Trilha
+
+**B**, posição 6 de 20. Anterior: #84. Próxima: #21. Guia: [`docs/agentes/README.md`](https://github.com/DaviRSuassuna/droneshop/blob/develop/docs/agentes/README.md).

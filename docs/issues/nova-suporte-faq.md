@@ -1,7 +1,7 @@
 ---
-numero: null
+numero: 90
 titulo: "[atendimento] Suporte: temas e perguntas frequentes com texto fixo"
-labels: ["tipo:feature", "camada:frontend", "modulo:atendimento"]
+labels: ["tipo:feature", "camada:frontend", "modulo:atendimento", "trilha:b"]
 fase: 4
 ---
 
@@ -56,3 +56,7 @@ Sem teste de backend: não há rota nova. A estrutura da página (temas, "Respos
 ### Depende de
 
 #38, #21
+
+### Trilha
+
+**B**, posição 17 de 20. Anterior: #39. Próxima: #42. Guia: [`docs/agentes/README.md`](https://github.com/DaviRSuassuna/droneshop/blob/develop/docs/agentes/README.md).

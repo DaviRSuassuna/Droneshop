@@ -1,7 +1,7 @@
 ---
-numero: null
+numero: 85
 titulo: "[administracao] Dashboard: comparação com o período anterior, vendas por dia e mais vendidos"
-labels: ["tipo:feature", "camada:backend", "camada:frontend", "modulo:administracao"]
+labels: ["tipo:feature", "camada:backend", "camada:frontend", "modulo:administracao", "trilha:b"]
 fase: 1
 ---
 
@@ -34,6 +34,9 @@ O dashboard do protótipo novo (`admin/index.html`) mostra mais do que a #18 ent
 Mesma regra de faturamento da #18: pedidos PAGO, SEPARACAO, ENVIADO ou ENTREGUE criados no período (datas inclusivas). O seletor de período da tela ("Últimos 30 dias", "Últimos 7 dias", "Este ano") só calcula `dataInicio` e `dataFim` no front.
 
 O card "Conversão" não entra: não existe registro de visitas no modelo. Ele sai do protótipo na issue `nova-ajuste-prototipo`.
+
+
+**Protótipo 02 (D41):** entram também o card de receita por categoria (rosca com legenda e valores) e o gráfico de vendas desenhado na entrada e lido no hover (linha guia, ponto e balão), blocos B, C e H de `assets/admin-fx.*`. O contrato abaixo ganha a receita por categoria no período, no mesmo formato dos outros indicadores.
 
 ### Contrato de API
 
@@ -99,3 +102,7 @@ Frontend: conformidade de `admin/index.html` (`npm run e2e -- --grep @issue-18`)
 ### Depende de
 
 #18, #61
+
+### Trilha
+
+**B**, posição 12 de 20. Anterior: #44. Próxima: #41. Guia: [`docs/agentes/README.md`](https://github.com/DaviRSuassuna/droneshop/blob/develop/docs/agentes/README.md).

@@ -1,7 +1,7 @@
 ---
-numero: null
+numero: 88
 titulo: "[estoque] Drones registrados na conta do cliente, com série, garantia e registro ANAC"
-labels: ["tipo:feature", "camada:backend", "camada:frontend", "modulo:estoque"]
+labels: ["tipo:feature", "camada:backend", "camada:frontend", "modulo:estoque", "trilha:a"]
 fase: 4
 ---
 
@@ -77,3 +77,7 @@ Frontend: conformidade de `conta-perfil.html` (`npm run e2e -- --grep @issue-19`
 ### Depende de
 
 #19, #29, #34
+
+### Trilha
+
+**A**, posição 22 de 23. Anterior: #86. Próxima: #89. Guia: [`docs/agentes/README.md`](https://github.com/DaviRSuassuna/droneshop/blob/develop/docs/agentes/README.md).

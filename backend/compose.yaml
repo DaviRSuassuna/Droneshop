@@ -12,5 +12,21 @@ services:
     volumes:
       - droneshop-postgres-data:/var/lib/postgresql/data
 
+  # Banco da trilha B (docs/agentes/README.md): o dev recria o schema a cada subida,
+  # então cada trilha precisa do próprio banco.
+  postgres-b:
+    image: docker.io/postgres:16
+    container_name: droneshop-postgres-b
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: droneshopdb
+      POSTGRES_USER: droneshop_user
+      POSTGRES_PASSWORD: "123456"
+    ports:
+      - "5433:5432"
+    volumes:
+      - droneshop-postgres-b-data:/var/lib/postgresql/data
+
 volumes:
   droneshop-postgres-data:
+  droneshop-postgres-b-data:

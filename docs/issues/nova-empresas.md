@@ -1,7 +1,7 @@
 ---
-numero: null
+numero: 60
 titulo: "[atendimento] Proposta comercial para empresas"
-labels: ["tipo:feature", "camada:backend", "camada:frontend", "modulo:atendimento"]
+labels: ["tipo:feature", "camada:backend", "camada:frontend", "modulo:atendimento", "trilha:b"]
 fase: 5
 ---
 
@@ -49,7 +49,7 @@ GET /admin/leads-empresas?idStatus= -> PageResponse ; PATCH /admin/leads-empresa
 - [ ] Service com `@Transactional` e validações de negócio
 - [ ] Resource REST com `page`/`pageSize` e resposta `PageResponse`
 - [ ] Erros no formato Problem (400, 404, 409, 503), como no `exception/`
-- [ ] Carga de dados (`import.sql`) atualizada
+- [ ] Carga de dados em `import-b.sql` (sem id fixo; nunca no `import.sql`)
 - [ ] Diagrama `.puml` atualizado, se o modelo mudou
 - [ ] Testes `@Tag("issue-empresas")` passando e `issue-empresas` acrescentada em `backend/src/test/issues-entregues.txt`
 
@@ -75,3 +75,7 @@ Frontend: conformidade das telas com o protótipo em `frontend/e2e` (D38). Rodar
 ### Depende de
 
 Nenhuma
+
+### Trilha
+
+**B**, posição 19 de 20. Anterior: #42. Próxima: #59. Guia: [`docs/agentes/README.md`](https://github.com/DaviRSuassuna/droneshop/blob/develop/docs/agentes/README.md).

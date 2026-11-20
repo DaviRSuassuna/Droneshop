@@ -1,7 +1,7 @@
 ---
-numero: null
+numero: 86
 titulo: "[compra] Favoritos: queda de preço, mover tudo para o carrinho e lista compartilhada"
-labels: ["tipo:feature", "camada:backend", "camada:frontend", "modulo:compra"]
+labels: ["tipo:feature", "camada:backend", "camada:frontend", "modulo:compra", "trilha:a"]
 fase: 3
 ---
 
@@ -90,3 +90,7 @@ Frontend: conformidade de `conta-favoritos.html` (`npm run e2e -- --grep @issue-
 ### Depende de
 
 #22, #24
+
+### Trilha
+
+**A**, posição 21 de 23. Anterior: #45. Próxima: #88. Guia: [`docs/agentes/README.md`](https://github.com/DaviRSuassuna/droneshop/blob/develop/docs/agentes/README.md).

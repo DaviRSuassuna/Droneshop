@@ -21,7 +21,7 @@ import { TELAS } from './telas';
  * Etiqueta de cada teste: @<etiqueta da issue> (ex.: @issue-21, @base).
  * Rodar uma issue: npm run e2e -- --grep @issue-21
  */
-const PROTOTIPO = process.env['PROTOTIPO_URL'] ?? 'http://localhost:4300/';
+const PROTOTIPO = process.env['PROTOTIPO_URL'] ?? `http://localhost:${process.env['PORTA_PROTOTIPO'] ?? '4300'}/`;
 
 async function abrir(page: Page, url: string): Promise<void> {
   const resp = await page.goto(url, { waitUntil: 'networkidle' });

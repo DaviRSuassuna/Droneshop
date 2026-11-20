@@ -30,7 +30,9 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.scss"]
+            "styles": [
+              "src/styles.scss"
+            ]
           },
           "configurations": {
             "production": {
@@ -58,6 +60,17 @@
                   "with": "src/environments/environment.development.ts"
                 }
               ]
+            },
+            "trilha-b": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.trilha-b.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -70,6 +83,10 @@
             },
             "development": {
               "buildTarget": "droneshop-web:build:development"
+            },
+            "trilha-b": {
+              "buildTarget": "droneshop-web:build:trilha-b",
+              "port": 4210
             }
           },
           "defaultConfiguration": "development"
