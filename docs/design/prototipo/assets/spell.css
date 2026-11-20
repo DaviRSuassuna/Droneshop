@@ -100,21 +100,21 @@ html body .ck:checked::after{animation:sp-ckd .28s ease-out .05s both!important}
 html body .f>label:not(.check):not(.opt){transition:color .25s,transform .25s!important}
 html body .cc.tilt{transition:transform .5s cubic-bezier(.2,.7,.2,1),box-shadow .5s!important}
 html body .cc.tilt.on{transition:transform .12s ease-out,box-shadow .5s!important}
-html body .hero.bleed .art .flt{animation:decola 2.4s cubic-bezier(.2,.7,.2,1) both,voo 11s ease-in-out 2.4s infinite!important}
+html body .hero.bleed .art .flt{animation:decola 2.4s cubic-bezier(.2,.7,.2,1) both!important}
 }
 
-/* 13. Drones de empresas (Heron) e da oferta relâmpago (Nimbus): entram voando, freiam e ficam pairando.
-   As hélices giram (ver helices() em spell.js). */
+/* 13. Drones de empresas (Heron) e da oferta relâmpago (Nimbus): entram voando, freiam e param no lugar.
+   As hélices giram durante a chegada e depois param: a foto com as pás aparece e a camada das hélices sai (ver helices() em spell.js). */
 .sp-drone{position:relative}
 .sp-drone img{display:block;width:100%;margin:0;filter:none}
 .sp-drone .sp-rot{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
-.bhero .sp-drone{width:118%;margin-left:-6%;filter:drop-shadow(0 40px 40px rgba(0,0,0,.6));animation:sp-chega 1.3s cubic-bezier(.2,.8,.25,1.15) .35s both,sp-voo2 10s ease-in-out 1.65s infinite}
+.bhero .sp-drone{width:118%;margin-left:-6%;filter:drop-shadow(0 40px 40px rgba(0,0,0,.6));animation:sp-chega 1.3s cubic-bezier(.2,.8,.25,1.15) .35s both}
 @media (max-width:900px){.bhero .sp-drone{width:100%;margin:0}}
 .deal .stage{overflow:visible;display:grid;place-items:center}
 .deal .stage .sp-drone{width:84%;margin:4% auto 0;animation:sp-chega 1.3s cubic-bezier(.2,.8,.25,1.15) .35s both}
-/* oferta: depois de pousar no lugar, as hélices param (o disco some e a foto com as pás volta) */
-.deal .sp-drone .sp-parado{position:absolute;inset:0;opacity:0;animation:sp-aparece .6s ease 1.9s forwards}
-.deal .sp-drone .sp-rot{animation:sp-some .6s ease 1.9s forwards}
+/* depois de parar no lugar, as hélices param (o disco some e a foto com as pás volta) */
+.sp-drone .sp-parado{position:absolute;inset:0;opacity:0;animation:sp-aparece .6s ease 1.9s forwards}
+.sp-drone .sp-rot{animation:sp-some .6s ease 1.9s forwards}
 @keyframes sp-aparece{to{opacity:1}}
 @keyframes sp-some{to{opacity:0}}
 @keyframes sp-voo2{
@@ -131,10 +131,10 @@ html body .hero.bleed .art .flt{animation:decola 2.4s cubic-bezier(.2,.7,.2,1) b
 100%{transform:none;opacity:1;filter:none}}
 @keyframes sp-paira{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-10px) rotate(-1deg)}}
 @media (prefers-reduced-motion:reduce){
-html body .bhero .sp-drone{animation:sp-chega 1.3s cubic-bezier(.2,.8,.25,1.15) .35s both,sp-voo2 10s ease-in-out 1.65s infinite!important}
+html body .bhero .sp-drone{animation:sp-chega 1.3s cubic-bezier(.2,.8,.25,1.15) .35s both!important}
 html body .deal .stage .sp-drone{animation:sp-chega 1.3s cubic-bezier(.2,.8,.25,1.15) .35s both!important}
-html body .deal .sp-drone .sp-parado{animation:sp-aparece .6s ease 1.9s forwards!important}
-html body .deal .sp-drone .sp-rot{animation:sp-some .6s ease 1.9s forwards!important}
+html body .sp-drone .sp-parado{animation:sp-aparece .6s ease 1.9s forwards!important}
+html body .sp-drone .sp-rot{animation:sp-some .6s ease 1.9s forwards!important}
 }
 
 /* 17. Fotos de produto no lugar dos desenhos (ver prototipos/aplicar-imagens.py) */

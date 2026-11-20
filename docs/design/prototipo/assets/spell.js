@@ -142,7 +142,9 @@ function helices(){
       hub.append(sv('ellipse',{rx:rx*.06,ry:rx*.06*k*1.6,style:'fill:#2a2c30;stroke:#55585e;stroke-width:2'}));
       g.append(hub);s.append(g)});
     wrap.append(s);
-    if(nome==='nimbus'){const o=document.createElement('img');o.className='sp-parado';o.alt='';o.src=img.src.replace('-sem-pas','');wrap.append(o)}});
+    const o=document.createElement('img');o.className='sp-parado';o.alt='';o.src=img.src.replace('-sem-pas','');wrap.append(o);
+    /* depois que as pás param, a camada das hélices sai da página: nada fica girando escondido */
+    s.addEventListener('animationend',()=>s.remove(),{once:true});setTimeout(()=>s.remove(),3200)});
 }
 
 /* 16. Números da faixa de ofertas (22%, 48, 7 dias) contam a partir de zero ao aparecer */
