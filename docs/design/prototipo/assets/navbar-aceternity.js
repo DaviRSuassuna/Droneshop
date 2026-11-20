@@ -35,15 +35,6 @@ function rolagem(){
   addEventListener('scroll',f,{passive:true});f();
 }
 
-/* C. Indicador que desliza entre os links */
-function pilula(){
-  const L=$('.links');if(!L)return;const p=document.createElement('span');p.className='ac-pill';L.prepend(p);
-  const ir=a=>{if(!a){p.style.opacity=0;return}p.style.left=(a.offsetLeft-10)+'px';p.style.width=(a.offsetWidth+20)+'px';p.style.opacity=1};
-  const atual=$('a[aria-current]',L);
-  $$('a',L).forEach(a=>a.addEventListener('mouseenter',()=>ir(a)));
-  L.addEventListener('mouseleave',()=>ir(atual));setTimeout(()=>ir(atual),50);
-}
-
 /* D. Mega menus de Drones e Acessórios (abrem no hover, um de cada vez) */
 function megaMenu(href,html){
   const nav=$('.nav'),gat=$(`.links a[href$="${href}"]`);if(!nav||!gat)return;
@@ -148,7 +139,6 @@ function depoimentos(){
 
 anuncio();
 rolagem();
-pilula();
 mega();
 sugestoes();
 spotlight();

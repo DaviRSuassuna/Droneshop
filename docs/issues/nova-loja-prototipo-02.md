@@ -25,7 +25,7 @@ D20, D38, D41, RNF08
 
 A D41 trocou a referência das telas pelo protótipo 02. Esta issue leva para o Angular a parte da loja que **todas** as telas usam, para as duas trilhas construírem as telas da loja já em cima dela:
 
-1. **Menu** (`storefront-nav`): some ao descer, volta ao subir e encolhe depois do topo; indicador deslizando entre os links; mega menu de Drones com as categorias ativas (`GET /categorias`); busca que leva para `/drones?q=<termo>` (as sugestões enquanto digita ficam para a #43).
+1. **Menu** (`storefront-nav`): some ao descer, volta ao subir e encolhe depois do topo; mega menu de Drones com as categorias ativas (`GET /categorias`); busca que leva para `/drones?q=<termo>` (as sugestões enquanto digita ficam para a #43).
 2. **Faixa de promoção** acima do menu, com texto e cupom fixos no próprio componente e botão de fechar que vale para a sessão. Texto vindo da configuração da loja fica para uma issue futura.
 3. **Rodapé** (`storefront-footer`) e menu da conta (`account-menu`) iguais ao protótipo 02.
 4. **Camada de efeitos** em `frontend/src/styles` e em diretivas de `shared/directives`, um efeito por arquivo: revelação de título, brilho de selo, faixa de marcas, brilho do botão principal, "pop" da sacola, check animado, rótulo de campo, spinner de botão, borda do card acendendo sob o mouse. Efeitos só da capa (luz, raios, borda girando, depoimentos) ficam para a #21.
