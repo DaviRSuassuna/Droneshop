@@ -93,4 +93,25 @@ describe('AuthService', () => {
 
     expect(service.autenticado()).toBe(false);
   });
+
+  it('escolhe o perfil ativo com POST /auth/perfil-ativo e guarda o novo token (#20)', () => {
+    const novo = token(Math.floor(Date.now() / 1000) + 3600);
+    service.escolherPerfil(2).subscribe();
+    const req = http!.expectOne(`${environment.apiUrl}/auth/perfil-ativo`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ idPerfilAtivo: 2 });
+    req.flush({ token: novo, perfilAtivo: 'ADMINISTRATIVO', escolherPerfil: false, perfis: [] });
+    expect(sessionStorage.getItem(CHAVE_TOKEN)).toBe(novo);
+  });
+
+  it('lista e revoga as sessões da conta (#20)', () => {
+    service.sessoes().subscribe();
+    const lista = http!.expectOne(`${environment.apiUrl}/conta/sessoes`);
+    expect(lista.request.method).toBe('GET');
+    lista.flush([]);
+    service.revogarSessao(7).subscribe();
+    const del = http!.expectOne(`${environment.apiUrl}/conta/sessoes/7`);
+    expect(del.request.method).toBe('DELETE');
+    del.flush(null);
+  });
 });

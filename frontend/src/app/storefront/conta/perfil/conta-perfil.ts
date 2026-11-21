@@ -1,3 +1,5 @@
+import { DatePipe } from '@angular/common';
+import { AuthService, SessaoUsuario } from '../../../core/services/auth.service';
 import { AccountMenu } from '../../../layout/storefront/account-menu/account-menu';
 import { ContaSessao } from '../conta-sessao';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -13,7 +15,7 @@ import { somenteDigitos } from '../../../core/utils/documentos';
 /** "Minha conta > Perfil e dados" (protótipo 02, conta-perfil.html). */
 @Component({
   selector: 'app-conta-perfil',
-  imports: [AccountMenu, ReactiveFormsModule, RouterLink, MascaraDirective],
+  imports: [AccountMenu, DatePipe, ReactiveFormsModule, RouterLink, MascaraDirective],
   providers: [ContaSessao],
   templateUrl: './conta-perfil.html',
   styleUrl: './conta-perfil.scss',
@@ -24,7 +26,9 @@ export class ContaPerfil implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly dialogoSenha = viewChild.required<ElementRef<HTMLDialogElement>>('dlgSenha');
 
+  private readonly auth = inject(AuthService);
   readonly perfil = signal<PerfilCliente | null>(null);
+  readonly sessoes = signal<SessaoUsuario[]>([]);
   readonly salvando = signal(false);
   readonly mensagem = signal<{ texto: string; ok: boolean } | null>(null);
   readonly mensagemSenha = signal<{ texto: string; ok: boolean } | null>(null);
@@ -41,6 +45,7 @@ export class ContaPerfil implements OnInit {
   });
 
   ngOnInit(): void {
+    this.auth.sessoes().subscribe((s) => this.sessoes.set(s));
     this.clientes.perfil().subscribe((p) => {
       this.perfil.set(p);
       this.sessao.resumo.set({ nome: p.nome, detalhe: p.email });
@@ -75,6 +80,13 @@ export class ContaPerfil implements OnInit {
           this.mensagem.set({ texto: this.textoErro(e), ok: false });
         },
       });
+  }
+
+  /** Encerra outra sessão da conta (#20): o token dela deixa de valer. */
+  encerrarSessao(id: number): void {
+    this.auth
+      .revogarSessao(id)
+      .subscribe(() => this.sessoes.update((lista) => lista.filter((s) => s.id !== id)));
   }
 
   abrirSenha(): void {

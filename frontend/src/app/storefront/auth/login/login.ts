@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { switchMap } from 'rxjs';
-import { AuthService, LoginResponse } from '../../../core/services/auth.service';
+import { AuthService, LoginResponse, PERFIL_ATIVO } from '../../../core/services/auth.service';
 import { ClienteService } from '../../../core/services/cliente.service';
 import { TIPO_PESSOA } from '../../../core/models/cliente.model';
 import { ProblemDetail } from '../../../core/models/problem.model';
@@ -29,6 +29,9 @@ export class Login {
   manterConectado = false;
   readonly carregando = signal(false);
   readonly erro = signal<string | null>(null);
+  /** Quem tem os dois perfis escolhe com qual entrar (#20). */
+  readonly escolhendoPerfil = signal(false);
+  protected readonly PERFIL_ATIVO = PERFIL_ATIVO;
 
   novo = { nome: '', email: '', documento: '', senha: '', confirmar: '' };
   readonly erroCriar = signal<string | null>(null);
@@ -50,6 +53,22 @@ export class Login {
             ? 'E-mail ou senha inválidos.'
             : (resposta.error?.detail ?? 'Não foi possível entrar. Tente novamente.'),
         );
+      },
+    });
+  }
+
+  escolher(idPerfilAtivo: number): void {
+    if (this.carregando()) return;
+    this.carregando.set(true);
+    this.auth.escolherPerfil(idPerfilAtivo).subscribe({
+      next: (resposta) => {
+        this.carregando.set(false);
+        this.escolhendoPerfil.set(false);
+        this.irParaDestino(resposta);
+      },
+      error: () => {
+        this.carregando.set(false);
+        this.erro.set('Não foi possível entrar com esse perfil. Tente novamente.');
       },
     });
   }
@@ -108,8 +127,12 @@ export class Login {
 
   /** Volta para onde estava; sem destino, cliente vai para a conta e admin para o painel. */
   private irParaDestino(resposta: LoginResponse): void {
+    if (resposta.escolherPerfil) {
+      this.escolhendoPerfil.set(true);
+      return;
+    }
     const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
-    const padrao = resposta.perfis.includes('ADMINISTRATIVO') ? '/admin/marcas' : '/conta/perfil';
+    const padrao = (resposta.perfilAtivo ?? resposta.perfis[0]) === 'ADMINISTRATIVO' ? '/admin/marcas' : '/conta/perfil';
     const destino = returnUrl?.startsWith('/') && !returnUrl.startsWith('//') ? returnUrl : padrao;
     void this.router.navigateByUrl(destino);
   }

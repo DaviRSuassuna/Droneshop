@@ -65,6 +65,20 @@
           <div><b>Senha</b><span>Use pelo menos 8 caracteres</span></div>
           <button class="btn sm" type="button" (click)="abrirSenha()">Trocar senha</button>
         </div>
+        @for (s of sessoes(); track s.id) {
+          <div class="secrow">
+            <span class="secic" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="12" rx="2" /><path d="M8 21h8" /></svg>
+            </span>
+            <div>
+              <b>{{ s.atual ? 'Esta sessão' : 'Sessão ativa' }}</b
+              ><span>Desde {{ s.dataCadastro | date: 'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+            @if (!s.atual) {
+              <button class="btn sm" type="button" (click)="encerrarSessao(s.id)">Encerrar</button>
+            }
+          </div>
+        }
       </div>
 
       <dialog class="dlg" #dlgSenha aria-labelledby="dlgSenhaT">

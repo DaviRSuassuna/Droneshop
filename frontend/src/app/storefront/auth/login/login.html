@@ -38,48 +38,74 @@
           </button>
         </div>
         <div id="entrar" role="tabpanel" aria-labelledby="aba-entrar" [hidden]="aba() !== 'entrar'">
-          <h2>Bem-vindo de volta</h2>
-          <p class="formnote intro">Entre para acompanhar pedidos, garantia e registro ANAC.</p>
-          <form class="fg" (ngSubmit)="entrar()">
-            <div class="f w6">
-              <label for="email">E-mail <span class="req">*</span></label
-              ><input
-                id="email"
-                name="email"
-                type="email"
-                autocomplete="username"
-                [(ngModel)]="email"
-                required
-              />
+          @if (escolhendoPerfil()) {
+            <h2>Com qual perfil entrar?</h2>
+            <p class="formnote intro">Sua conta tem acesso de cliente e ao painel administrativo.</p>
+            <div class="fg">
+              <button
+                class="btn p check"
+                type="button"
+                [disabled]="carregando()"
+                (click)="escolher(PERFIL_ATIVO.CLIENTE)"
+              >
+                Entrar como cliente
+              </button>
+              <button
+                class="btn check"
+                type="button"
+                [disabled]="carregando()"
+                (click)="escolher(PERFIL_ATIVO.ADMINISTRATIVO)"
+              >
+                Entrar no painel administrativo
+              </button>
+              @if (erro()) {
+                <p class="login-error check" role="alert">{{ erro() }}</p>
+              }
             </div>
-            <div class="f w6">
-              <label for="senha">Senha <span class="req">*</span></label
-              ><input
-                id="senha"
-                name="senha"
-                type="password"
-                autocomplete="current-password"
-                [(ngModel)]="senha"
-                required
-              />
-            </div>
-            <div class="check login-options">
-              <label
+          } @else {
+            <h2>Bem-vindo de volta</h2>
+            <p class="formnote intro">Entre para acompanhar pedidos, garantia e registro ANAC.</p>
+            <form class="fg" (ngSubmit)="entrar()">
+              <div class="f w6">
+                <label for="email">E-mail <span class="req">*</span></label
                 ><input
-                  class="ck"
-                  name="manterConectado"
-                  type="checkbox"
-                  [(ngModel)]="manterConectado"
-                />Manter conectado</label
-              ><span class="formnote">Recuperação de senha em breve.</span>
-            </div>
-            @if (erro()) {
-              <p class="login-error check" role="alert">{{ erro() }}</p>
-            }
-            <button class="btn p check" type="submit" [disabled]="carregando()">
-              {{ carregando() ? 'Entrando…' : 'Entrar' }}
-            </button>
-          </form>
+                  id="email"
+                  name="email"
+                  type="email"
+                  autocomplete="username"
+                  [(ngModel)]="email"
+                  required
+                />
+              </div>
+              <div class="f w6">
+                <label for="senha">Senha <span class="req">*</span></label
+                ><input
+                  id="senha"
+                  name="senha"
+                  type="password"
+                  autocomplete="current-password"
+                  [(ngModel)]="senha"
+                  required
+                />
+              </div>
+              <div class="check login-options">
+                <label
+                  ><input
+                    class="ck"
+                    name="manterConectado"
+                    type="checkbox"
+                    [(ngModel)]="manterConectado"
+                  />Manter conectado</label
+                ><span class="formnote">Recuperação de senha em breve.</span>
+              </div>
+              @if (erro()) {
+                <p class="login-error check" role="alert">{{ erro() }}</p>
+              }
+              <button class="btn p check" type="submit" [disabled]="carregando()">
+                {{ carregando() ? 'Entrando…' : 'Entrar' }}
+              </button>
+            </form>
+          }
         </div>
         <div id="criar" role="tabpanel" aria-labelledby="aba-criar" [hidden]="aba() !== 'criar'">
           <h2>Criar conta</h2>

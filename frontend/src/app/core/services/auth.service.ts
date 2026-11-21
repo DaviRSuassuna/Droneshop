@@ -15,6 +15,21 @@ export interface LoginResponse {
   expiraEm: string;
   usuario: UsuarioAutenticado;
   perfis: string[];
+  /** Perfil com que a sessão entrou; null enquanto quem tem os dois perfis não escolhe (#20). */
+  perfilAtivo: 'CLIENTE' | 'ADMINISTRATIVO' | null;
+  escolherPerfil: boolean;
+}
+
+/** Ids do enum PerfilAtivo (GET /perfis-ativos). */
+export const PERFIL_ATIVO = { CLIENTE: 1, ADMINISTRATIVO: 2 } as const;
+
+/** GET /conta/sessoes. */
+export interface SessaoUsuario {
+  id: number;
+  perfilAtivo: { id: number; nome: string } | null;
+  dataCadastro: string;
+  expiraEm: string;
+  atual: boolean;
 }
 
 export const CHAVE_TOKEN = 'aeria-auth-token';
@@ -28,6 +43,22 @@ export class AuthService {
     return this.http
       .post<LoginResponse>(`${this.baseUrl}/login`, { email, senha })
       .pipe(tap((resposta) => this.salvarToken(resposta.token, manterConectado)));
+  }
+
+  /** Troca o token parcial pelo do perfil escolhido, no mesmo armazenamento do login. */
+  escolherPerfil(idPerfilAtivo: number): Observable<LoginResponse> {
+    const manter = localStorage.getItem(CHAVE_TOKEN) !== null;
+    return this.http
+      .post<LoginResponse>(`${this.baseUrl}/perfil-ativo`, { idPerfilAtivo })
+      .pipe(tap((resposta) => this.salvarToken(resposta.token, manter)));
+  }
+
+  sessoes(): Observable<SessaoUsuario[]> {
+    return this.http.get<SessaoUsuario[]>(`${environment.apiUrl}/conta/sessoes`);
+  }
+
+  revogarSessao(id: number): Observable<void> {
+    return this.http.delete<void>(`${environment.apiUrl}/conta/sessoes/${id}`);
   }
 
   logout(): Observable<void> {
