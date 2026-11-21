@@ -184,6 +184,11 @@ export class AdminNav {
               descricao: 'Perguntas e avaliações',
             },
             {
+              rotulo: 'Propostas de empresas',
+              rota: 'C:/Program Files/Git/admin/leads-empresas',
+              descricao: 'Vendas corporativas',
+            },
+            {
               rotulo: 'E-mails',
               rota: '/admin/templates-email',
               descricao: 'Templates e envios',

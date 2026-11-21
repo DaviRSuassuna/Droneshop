@@ -216,6 +216,11 @@ export const routes: Routes = [
           import('./admin/atendimento/moderacao/moderacao').then((m) => m.ModeracaoPage),
       },
       {
+        path: 'leads-empresas',
+        loadComponent: () =>
+          import('./admin/atendimento/leads/leads-empresas').then((m) => m.LeadsEmpresasPage),
+      },
+      {
         path: 'templates-email',
         loadComponent: () =>
           import('./admin/notificacoes/templates-email').then((m) => m.TemplatesEmailPage),
@@ -276,6 +281,11 @@ export const routes: Routes = [
         path: 'suporte',
         loadComponent: () =>
           import('./storefront/suporte/suporte').then((m) => m.Suporte),
+      },
+      {
+        path: 'empresas',
+        loadComponent: () =>
+          import('./storefront/empresas/empresas').then((m) => m.Empresas),
       },
       {
         path: 'busca',

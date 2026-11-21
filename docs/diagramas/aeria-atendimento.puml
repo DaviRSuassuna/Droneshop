@@ -36,6 +36,29 @@ package "Atendimento" {
     -tipoAutor: TipoAutorMensagem
     -texto: String
   }
+
+  enum StatusLead {
+    NOVO
+    EM_CONTATO
+    FECHADO
+    DESCARTADO
+  }
+
+  class LeadEmpresa {
+    -razaoSocial: String
+    -cnpj: String
+    -nomeContato: String
+    -emailContato: String
+    -telefoneContato: String
+    -segmento: String
+    -quantidadeEstimada: Integer
+    -mensagem: String
+    -status: StatusLead
+  }
+  note bottom of LeadEmpresa
+    Proposta comercial da página
+    Empresas, sem login (D36)
+  end note
 }
 
 package "Avaliações" {
