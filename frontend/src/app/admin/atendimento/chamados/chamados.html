@@ -1,0 +1,83 @@
+<main class="gut">
+  <div class="ph">
+    <div>
+      <span class="lbl">Atendimento</span>
+      <h1>Chamados</h1>
+      <div class="sub">Responder põe o chamado em andamento e avisa o cliente por e-mail.</div>
+    </div>
+  </div>
+  <div class="toolbar">
+    <select class="sel" aria-label="Status" (change)="filtrar($any($event.target).value)">
+      <option value="">Status</option>
+      @for (s of status; track s.id) {
+        <option [value]="s.id">{{ s.nome }}</option>
+      }
+    </select>
+  </div>
+  @if (erro(); as e) {
+    <div class="alerta" role="alert">{{ e }}</div>
+  }
+  <div class="grade">
+    @if (resultado(); as r) {
+      <div class="tw">
+        <table>
+          <thead>
+            <tr>
+              <th>Protocolo</th>
+              <th>Assunto</th>
+              <th>Cliente</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (c of r.items; track c.id) {
+              <tr [class.on]="selecionado()?.id === c.id">
+                <td>
+                  <button class="link mono" type="button" (click)="abrir(c.id)">{{ c.protocolo }}</button>
+                </td>
+                <td data-l="Assunto">{{ c.assunto }}</td>
+                <td data-l="Cliente">{{ c.cliente?.nome ?? '—' }}</td>
+                <td data-l="Status"><span class="chip">{{ c.status.nome }}</span></td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4">Nenhum chamado.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+    @if (selecionado(); as c) {
+      <section class="sec">
+        <div class="sh">
+          <h2>{{ c.protocolo }} · {{ c.assunto }}</h2>
+          <span>{{ c.status.nome }}</span>
+        </div>
+        @if (c.pedido) {
+          <p class="note">Pedido relacionado: #{{ c.pedido.id }}</p>
+        }
+        <div class="mensagens">
+          @for (m of c.mensagens; track m.id) {
+            <div class="msg" [class.atendente]="m.tipoAutor.nome === 'ATENDENTE'">
+              <span class="note">{{ m.tipoAutor.nome }} · {{ m.dataCadastro | date: 'dd/MM/yyyy HH:mm' }}</span>
+              <p>{{ m.texto }}</p>
+            </div>
+          }
+        </div>
+        @if (c.status.id !== ENCERRADO) {
+          <div class="f w6">
+            <label for="resposta">Resposta</label>
+            <textarea id="resposta" rows="4" [formControl]="resposta"></textarea>
+          </div>
+          <div class="acoes">
+            <button class="btn" type="button" (click)="mudarStatus(ENCERRADO)">Encerrar</button>
+            <button class="btn p" type="button" [disabled]="resposta.invalid" (click)="responder()">
+              Responder
+            </button>
+          </div>
+        }
+      </section>
+    }
+  </div>
+</main>

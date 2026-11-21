@@ -206,6 +206,11 @@ export const routes: Routes = [
           import('./admin/auditoria/auditoria').then((m) => m.AuditoriaPage),
       },
       {
+        path: 'chamados',
+        loadComponent: () =>
+          import('./admin/atendimento/chamados/chamados').then((m) => m.ChamadosPage),
+      },
+      {
         path: 'templates-email',
         loadComponent: () =>
           import('./admin/notificacoes/templates-email').then((m) => m.TemplatesEmailPage),
@@ -261,6 +266,11 @@ export const routes: Routes = [
         path: '',
         pathMatch: 'full',
         loadComponent: () => import('./storefront/home/home').then((m) => m.Home),
+      },
+      {
+        path: 'suporte',
+        loadComponent: () =>
+          import('./storefront/suporte/suporte').then((m) => m.Suporte),
       },
       {
         path: 'busca',

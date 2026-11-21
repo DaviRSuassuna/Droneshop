@@ -174,6 +174,11 @@ export class AdminNav {
               descricao: 'Log das ações do painel',
             },
             {
+              rotulo: 'Chamados',
+              rota: 'C:/Program Files/Git/admin/chamados',
+              descricao: 'Suporte ao cliente',
+            },
+            {
               rotulo: 'E-mails',
               rota: '/admin/templates-email',
               descricao: 'Templates e envios',

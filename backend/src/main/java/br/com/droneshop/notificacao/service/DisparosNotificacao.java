@@ -2,6 +2,8 @@ package br.com.droneshop.notificacao.service;
 
 import java.util.Map;
 
+import br.com.droneshop.atendimento.model.Chamado;
+import br.com.droneshop.atendimento.service.ChamadoRespondido;
 import br.com.droneshop.identidade.model.Usuario;
 import br.com.droneshop.pedido.model.Pedido;
 import br.com.droneshop.pedido.model.StatusPedido;
@@ -36,6 +38,18 @@ public class DisparosNotificacao {
             doPedido(e.pedido().getId(), "PAGAMENTO_APROVADO");
         else if (e.novo() == StatusPedido.ENVIADO)
             doPedido(e.pedido().getId(), "PEDIDO_ENVIADO");
+    }
+
+    void aoResponderChamado(@Observes(during = TransactionPhase.AFTER_SUCCESS) ChamadoRespondido e) {
+        Object[] d = QuarkusTransaction.requiringNew().call(() -> {
+            Chamado c = em.find(Chamado.class, e.idChamado());
+            Usuario u = c.getCliente().getUsuario();
+            return new Object[] { u.getId(), u.getEmail(), c.getCliente().getNome(), c.getProtocolo(), c.getAssunto() };
+        });
+        notificacoes.enviar("CHAMADO_RESPONDIDO", (String) d[1], (Long) d[0], Map.of(
+                "nome", d[2] == null ? "" : (String) d[2],
+                "protocolo", (String) d[3],
+                "assunto", (String) d[4]));
     }
 
     private void doPedido(Long idPedido, String codigo) {
