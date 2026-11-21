@@ -50,6 +50,23 @@ describe('LojaService', () => {
     req.flush({ items: [], page: 2, pageSize: 12, totalItems: 0, totalPages: 0 });
   });
 
+  it('compara pelo grupo e ids avulsos (#44)', () => {
+    service.comparar('falcon-x2', [15, 16]).subscribe();
+    const req = http.expectOne((r) => r.url === `${url}/comparar`);
+    expect(req.request.method).toBe('GET');
+    expect(req.request.params.get('grupo')).toBe('falcon-x2');
+    expect(req.request.params.get('ids')).toBe('15,16');
+    req.flush({ produtos: [], specs: [] });
+  });
+
+  it('compara só por ids, sem grupo', () => {
+    service.comparar(null, [10, 12]).subscribe();
+    const req = http.expectOne((r) => r.url === `${url}/comparar`);
+    expect(req.request.params.has('grupo')).toBe(false);
+    expect(req.request.params.get('ids')).toBe('10,12');
+    req.flush({ produtos: [], specs: [] });
+  });
+
   it('lista produtos paginados sem mandar filtro vazio', () => {
     service
       .listarProdutos(
