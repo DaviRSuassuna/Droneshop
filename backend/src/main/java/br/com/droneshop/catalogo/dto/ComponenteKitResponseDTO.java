@@ -12,6 +12,7 @@ public record ComponenteKitResponseDTO(
     StatusProduto status,
     Integer estoqueFisico,
     int disponivel,
-    int quantidade
+    int quantidade,
+    String imagemPrincipal
 ) {
 }

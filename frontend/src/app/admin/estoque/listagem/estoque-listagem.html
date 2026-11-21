@@ -78,7 +78,7 @@
               <tr>
                 <td>
                   <div class="pc">
-                    <span class="thumb ph"></span>
+                    <span class="thumb" [class.ph]="!item.produto.imagemPrincipal">@if (item.produto.imagemPrincipal) {<img [src]="item.produto.imagemPrincipal" alt="" />}</span>
                     <div><b>{{ nomeProduto(item) }}</b>@if (item.produto.sku) {<span class="chip">{{ item.produto.sku }}</span>}</div>
                   </div>
                 </td>

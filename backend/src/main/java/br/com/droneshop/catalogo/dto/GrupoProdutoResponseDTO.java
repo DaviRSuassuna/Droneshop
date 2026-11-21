@@ -18,6 +18,8 @@ public record GrupoProdutoResponseDTO(
     List<Versao> versoes
 ) {
     public record Versao(Long idProduto, String nome, String sku, TipoProduto tipo, StatusProduto status,
-            String rotulo, int ordem, BigDecimal preco) {
+            String rotulo, int ordem, BigDecimal preco,
+    String imagemPrincipal
+) {
     }
 }

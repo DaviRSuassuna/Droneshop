@@ -249,7 +249,7 @@
               </td>
               <td>
                 <div class="pc">
-                  <span class="thumb ph"></span>
+                  <span class="thumb" [class.ph]="!produto.imagemPrincipal">@if (produto.imagemPrincipal) {<img [src]="produto.imagemPrincipal" alt="" />}</span>
                   <div>
                     <b
                       ><a [routerLink]="rotaEdicao(produto)" (click)="$event.stopPropagation()">{{

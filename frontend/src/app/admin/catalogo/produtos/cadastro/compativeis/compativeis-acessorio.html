@@ -6,7 +6,7 @@
   <div class="list">
     @for (vinculo of vinculos(); track vinculo.produto.id) {
       <div class="li">
-        <span class="thumb ph"></span>
+        <span class="thumb" [class.ph]="!vinculo.produto.imagemPrincipal">@if (vinculo.produto.imagemPrincipal) {<img [src]="vinculo.produto.imagemPrincipal" alt="" />}</span>
         <div>
           <div class="t">{{ vinculo.produto.nome || 'Sem nome (rascunho)' }}</div>
           <div class="s">{{ rotuloTipo(vinculo.produto) }}</div>
@@ -52,7 +52,7 @@
               style="width: 100%; border-left: 0; border-right: 0; border-bottom: 0; background: none; text-align: left; cursor: pointer"
               (click)="vincular(produto)"
             >
-              <span class="thumb ph"></span>
+              <span class="thumb" [class.ph]="!produto.imagemPrincipal">@if (produto.imagemPrincipal) {<img [src]="produto.imagemPrincipal" alt="" />}</span>
               <span><span class="t" style="display: block">{{ produto.nome || 'Sem nome (rascunho)' }}</span
                 ><span class="s">{{ rotuloTipo(produto) }}</span></span
               >

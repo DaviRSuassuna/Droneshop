@@ -84,7 +84,7 @@
                 routerLink="/admin/estoque/movimento"
                 [queryParams]="{ idProduto: e.produto.id }"
                 title="Registrar movimento"
-                ><span class="thumb ph" aria-hidden="true"></span>
+                ><span class="thumb" aria-hidden="true" [class.ph]="!e.produto.imagemPrincipal">@if (e.produto.imagemPrincipal) {<img [src]="e.produto.imagemPrincipal" alt="" />}</span>
                 <div class="produto">
                   <div class="t">{{ e.produto.nome ?? 'Produto sem nome' }}</div>
                   <span class="chip">{{ e.produto.sku }}</span>

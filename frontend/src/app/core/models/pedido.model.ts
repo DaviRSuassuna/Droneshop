@@ -59,7 +59,8 @@ export interface PedidoListagem {
 
 export interface ItemPedido {
   id: number;
-  produto: { id: number; sku: string; nome: string };
+  /** imagemPrincipal é a imagem atual do produto, não congelada (#87). */
+  produto: { id: number; sku: string; nome: string; imagemPrincipal?: string | null };
   quantidade: number;
   precoUnitarioCongelado: number;
   subtotal: number;

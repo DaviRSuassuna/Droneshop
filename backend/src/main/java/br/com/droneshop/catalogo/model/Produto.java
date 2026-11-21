@@ -9,6 +9,8 @@ import java.util.Set;
 
 import br.com.droneshop.estoque.model.MovimentoEstoque;
 import br.com.droneshop.model.DefaultEntity;
+import org.hibernate.annotations.Formula;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
@@ -31,6 +33,16 @@ import jakarta.persistence.UniqueConstraint;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "tipo", discriminatorType = DiscriminatorType.INTEGER)
 public abstract class Produto extends DefaultEntity {
+
+    // #87: url da imagem principal, lida na mesma consulta do produto (sem N+1).
+    // tipo = 1 e TipoMidia.IMAGEM. Só leitura: muda quando a mídia muda.
+    // So existe uma principal por produto (MidiaProdutoServiceImpl desmarca as outras).
+    @Formula("(select min(m.url) from midia_produto m where m.id_produto = id and m.principal and m.tipo = 1)")
+    private String imagemPrincipal;
+
+    public String getImagemPrincipal() {
+        return imagemPrincipal;
+    }
 
     @Column(length = 120)
     private String nome;

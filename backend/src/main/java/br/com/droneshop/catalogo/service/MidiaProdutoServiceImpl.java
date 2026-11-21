@@ -42,7 +42,7 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
 
     private static final long TAMANHO_MAXIMO = 20L * 1024 * 1024;
     private static final Pattern NOME_ARQUIVO = Pattern.compile(
-            "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.(png|jpe?g|pdf)$");
+            "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.(png|jpe?g|webp|pdf)$");
 
     @Inject
     MidiaProdutoRepository midiaRepository;
@@ -188,6 +188,22 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
         return new ArquivoMidia(Files.readAllBytes(arquivo), contentType(nome));
     }
 
+    @Override
+    public boolean gravarCargaSeAusente(String nome, byte[] conteudo) {
+        if (nome == null || !NOME_ARQUIVO.matcher(nome).matches())
+            throw new IllegalArgumentException("Nome de arquivo da carga inválido: " + nome);
+        Path destino = diretorio().resolve(nome).normalize();
+        if (Files.exists(destino))
+            return false;
+        try {
+            Files.createDirectories(destino.getParent());
+            Files.write(destino, conteudo);
+        } catch (IOException e) {
+            throw new IllegalStateException("Não foi possível gravar o arquivo da carga " + nome, e);
+        }
+        return true;
+    }
+
     private void validar(MidiaProdutoRequestDTO dto) {
         if (dto == null)
             throw ValidationException.of("midia", "Informe os dados da mídia.");
@@ -262,7 +278,7 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
         String nome = upload.fileName() == null ? "" : upload.fileName().toLowerCase(Locale.ROOT);
         String extensao = nome.substring(nome.lastIndexOf('.') + 1);
         boolean formatoValido = switch (tipo) {
-            case IMAGEM -> Set.of("png", "jpg", "jpeg").contains(extensao)
+            case IMAGEM -> Set.of("png", "jpg", "jpeg", "webp").contains(extensao)
                     && conteudoValido(extensao, upload.filePath());
             case MANUAL_PDF -> extensao.equals("pdf") && conteudoValido(extensao, upload.filePath());
             case VIDEO -> false;
@@ -273,11 +289,14 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
 
     private boolean conteudoValido(String extensao, Path caminho) {
         try (InputStream input = Files.newInputStream(caminho)) {
-            byte[] inicio = input.readNBytes(8);
+            byte[] inicio = input.readNBytes(12);
             return switch (extensao) {
                 case "png" -> assinatura(inicio,
                         new byte[] { (byte) 0x89, 'P', 'N', 'G', 13, 10, 26, 10 });
                 case "jpg", "jpeg" -> assinatura(inicio, new byte[] { (byte) 0xff, (byte) 0xd8, (byte) 0xff });
+                // WebP: "RIFF", 4 bytes de tamanho, "WEBP"
+                case "webp" -> inicio.length >= 12 && assinatura(inicio, new byte[] { 'R', 'I', 'F', 'F' })
+                        && inicio[8] == 'W' && inicio[9] == 'E' && inicio[10] == 'B' && inicio[11] == 'P';
                 case "pdf" -> inicio.length >= 5 && inicio[0] == '%'
                         && inicio[1] == 'P' && inicio[2] == 'D' && inicio[3] == 'F' && inicio[4] == '-';
                 default -> false;
@@ -351,6 +370,8 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
             return "image/png";
         if (nome.endsWith(".jpg") || nome.endsWith(".jpeg"))
             return "image/jpeg";
+        if (nome.endsWith(".webp"))
+            return "image/webp";
         return "application/pdf";
     }
 }

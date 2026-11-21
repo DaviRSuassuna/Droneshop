@@ -101,7 +101,7 @@
             <div class="list" style="margin-top: 8px" aria-label="Produtos encontrados">
               @for (p of resultadosProduto(); track p.id) {
                 <button type="button" class="li" style="width: 100%; border-left: 0; border-right: 0; border-bottom: 0; background: none; text-align: left; cursor: pointer" (click)="adicionarProduto(p.id)">
-                  <span class="thumb ph"></span>
+                  <span class="thumb" [class.ph]="!p.imagemPrincipal">@if (p.imagemPrincipal) {<img [src]="p.imagemPrincipal" alt="" />}</span>
                   <span><span class="t" style="display: block">{{ p.nome || 'Sem nome' }}</span><span class="s mono">{{ p.sku || 'sem SKU' }}</span></span>
                   <span class="s">Adicionar</span>
                 </button>

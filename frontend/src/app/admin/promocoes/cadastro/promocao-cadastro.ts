@@ -21,6 +21,7 @@ interface ProdutoEmPromocao {
   nome: string | null;
   sku: string | null;
   preco: number | null;
+  imagemPrincipal?: string | null;
 }
 
 /**

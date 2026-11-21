@@ -60,7 +60,7 @@
                     <td data-l="Ordem" class="num">{{ v.ordem }}</td>
                     <td>
                       <div class="pc">
-                        <span class="thumb ph"></span>
+                        <span class="thumb" [class.ph]="!v.imagemPrincipal">@if (v.imagemPrincipal) {<img [src]="v.imagemPrincipal" alt="" />}</span>
                         <div><b style="font-weight: 500">{{ v.nome || 'Sem nome' }}</b>@if (v.sku) {<span class="chip">{{ v.sku }}</span>}</div>
                       </div>
                     </td>
@@ -122,7 +122,7 @@
             <div style="margin-top: 12px">
               <div class="preview-card">
                 <div style="display: flex; justify-content: flex-end"><span class="lbl">{{ versoesAtivas().length }} {{ versoesAtivas().length === 1 ? 'versão' : 'versões' }}</span></div>
-                <div class="imgb"><span class="thumb ph" style="width: 72px; height: 72px"></span></div>
+                <div class="imgb"><span class="thumb" style="width: 72px; height: 72px" [class.ph]="!versoesAtivas()[0]?.imagemPrincipal">@if (versoesAtivas()[0]?.imagemPrincipal) {<img [src]="versoesAtivas()[0]?.imagemPrincipal" alt="" />}</span></div>
                 <b>{{ nomePrevia() }}</b>
                 <span class="slug">@for (v of versoesAtivas(); track v.idProduto; let ultimo = $last) {{{ v.rotulo }}@if (!ultimo) { · }}</span>
                 <div class="pp">

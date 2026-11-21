@@ -6,6 +6,7 @@ import br.com.droneshop.catalogo.model.TipoProduto;
 public record ProdutoResumoDTO(
     Long id,
     String nome,
-    TipoProduto tipo
+    TipoProduto tipo,
+    String imagemPrincipal
 ) {
 }

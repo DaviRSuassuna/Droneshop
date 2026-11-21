@@ -16,6 +16,8 @@ export interface GrupoResumo {
 export interface ComponenteKit {
   idProduto: number;
   sku: string | null;
+  /** URL da imagem principal (#87) ou null sem imagem. */
+  imagemPrincipal?: string | null;
   nome: string | null;
   tipo: StatusRef;
   status: StatusRef;
@@ -39,6 +41,8 @@ interface ProdutoBase {
   id: number;
   nome: string | null;
   sku: string | null;
+  /** URL da imagem principal (#87) ou null sem imagem. */
+  imagemPrincipal?: string | null;
   descricaoCurta: string | null;
   descricao: string | null;
   slug: string;
@@ -93,6 +97,8 @@ export interface ProdutoResumo {
   id: number;
   nome: string | null;
   tipo: StatusRef;
+  /** URL da imagem principal (#87) ou null sem imagem. */
+  imagemPrincipal?: string | null;
 }
 
 /**

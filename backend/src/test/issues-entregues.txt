@@ -25,3 +25,4 @@ issue-80
 issue-19
 
 # ---- trilha B: acrescente abaixo desta linha
+issue-imagem-produto

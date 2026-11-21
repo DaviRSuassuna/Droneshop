@@ -13,6 +13,6 @@ public record EstoqueResponseDTO(
     int estoqueMinimo,
     boolean abaixoDoMinimo
 ) {
-    public record Produto(Long id, String sku, String nome, TipoProduto tipo, StatusProduto status) {
+    public record Produto(Long id, String sku, String nome, TipoProduto tipo, StatusProduto status, String imagemPrincipal) {
     }
 }

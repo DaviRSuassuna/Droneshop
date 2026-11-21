@@ -11,6 +11,8 @@ export interface ReferenciaCupom {
   id: number;
   nome: string | null;
   sku?: string | null;
+  /** URL da imagem principal (#87) ou null sem imagem. */
+  imagemPrincipal?: string | null;
 }
 
 export interface Cupom {

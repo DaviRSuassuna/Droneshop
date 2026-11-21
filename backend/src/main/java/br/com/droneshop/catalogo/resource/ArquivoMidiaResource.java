@@ -19,7 +19,7 @@ public class ArquivoMidiaResource {
 
     @GET
     @Path("/{nome}")
-    @Produces({ "image/png", "image/jpeg", "application/pdf" })
+    @Produces({ "image/png", "image/jpeg", "image/webp", "application/pdf" })
     public Response arquivo(@PathParam("nome") String nome) throws IOException {
         MidiaProdutoService.ArquivoMidia arquivo = service.buscarArquivo(nome);
         return Response.ok(arquivo.conteudo(), arquivo.contentType())

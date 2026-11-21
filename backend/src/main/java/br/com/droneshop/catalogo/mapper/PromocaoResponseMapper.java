@@ -24,7 +24,7 @@ public final class PromocaoResponseMapper {
                 promocao.isAtiva(),
                 situacao(promocao, LocalDateTime.now()),
                 promocao.getProdutos().stream()
-                        .map(p -> new ProdutoPromocaoResponseDTO(p.getId(), p.getSku(), p.getNome()))
+                        .map(p -> new ProdutoPromocaoResponseDTO(p.getId(), p.getSku(), p.getNome(), p.getImagemPrincipal()))
                         .toList());
     }
 

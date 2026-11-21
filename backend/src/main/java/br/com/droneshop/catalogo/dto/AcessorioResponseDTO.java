@@ -40,6 +40,7 @@ public record AcessorioResponseDTO(
     int ordemNoGrupo,
     String tipoAcessorio,
     List<ProdutoResumoDTO> compativeis,
-    List<ProdutoResumoDTO> acessoriosCompativeis
+    List<ProdutoResumoDTO> acessoriosCompativeis,
+    String imagemPrincipal
 ) implements ProdutoResponseDTO {
 }

@@ -84,7 +84,7 @@
                 <tbody>
                   @for (p of produtosSelecionados(); track p.id) {
                     <tr>
-                      <td><div class="pc"><span class="thumb ph"></span><b style="font-weight: 500">{{ p.nome || 'Produto sem nome' }}</b></div></td>
+                      <td><div class="pc"><span class="thumb" [class.ph]="!p.imagemPrincipal">@if (p.imagemPrincipal) {<img [src]="p.imagemPrincipal" alt="" />}</span><b style="font-weight: 500">{{ p.nome || 'Produto sem nome' }}</b></div></td>
                       <td data-l="SKU">@if (p.sku) {<span class="chip">{{ p.sku }}</span>}</td>
                       <td data-l="Preço cheio" class="r num" style="color: var(--mute)"><s>{{ moeda(p.preco) }}</s></td>
                       <td data-l="Com desconto" class="r num" style="color: var(--amber); font-family: var(--display); font-weight: 300; font-size: 15px">{{ moeda(precoPromocional(p)) }}</td>

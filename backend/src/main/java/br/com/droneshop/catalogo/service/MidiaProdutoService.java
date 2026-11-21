@@ -25,6 +25,9 @@ public interface MidiaProdutoService {
 
     ArquivoMidia buscarArquivo(String nome) throws IOException;
 
+    /** Grava um arquivo da carga de dados (#87) só se ainda não existe; devolve se gravou. */
+    boolean gravarCargaSeAusente(String nome, byte[] conteudo);
+
     record ArquivoMidia(byte[] conteudo, String contentType) {
     }
 }

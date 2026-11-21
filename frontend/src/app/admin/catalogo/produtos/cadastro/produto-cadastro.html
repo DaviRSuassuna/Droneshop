@@ -217,7 +217,7 @@
             <div class="list">
               @for (c of componentes(); track c.produto.id; let i = $index) {
                 <div class="li">
-                  <span class="thumb ph"></span>
+                  <span class="thumb" [class.ph]="!c.produto.imagemPrincipal">@if (c.produto.imagemPrincipal) {<img [src]="c.produto.imagemPrincipal" alt="" />}</span>
                   <div>
                     <div class="t">{{ c.produto.nome || 'Produto sem nome' }}</div>
                     <div class="s mono">{{ c.produto.sku || 'sem SKU' }} · {{ c.produto.disponivel }} em estoque</div>
@@ -363,7 +363,7 @@
             <div class="list" style="margin-top: 14px">
               @for (v of versoes(); track v.id ?? 'este') {
                 <div class="li">
-                  <span class="thumb ph"></span>
+                  <span class="thumb" [class.ph]="!v.imagemPrincipal">@if (v.imagemPrincipal) {<img [src]="v.imagemPrincipal" alt="" />}</span>
                   <div>
                     <div class="t">{{ v.nome }} @if (v.este) {<span class="chip" style="margin-left: 6px">ESTE</span>}</div>
                     <div class="s">rótulo “{{ v.rotulo }}” · {{ v.tipo }}</div>
@@ -420,7 +420,7 @@
             <div class="list">
               @for (a of acessoriosCompativeis(); track a.id) {
                 <div class="li">
-                  <span class="thumb ph"></span>
+                  <span class="thumb" [class.ph]="!a.imagemPrincipal">@if (a.imagemPrincipal) {<img [src]="a.imagemPrincipal" alt="" />}</span>
                   <div>
                     <div class="t"><a [routerLink]="rotaEdicao(a)">{{ a.nome || 'Sem nome (rascunho)' }}</a></div>
                     <div class="s">{{ rotuloTipo(a) }}</div>

@@ -43,6 +43,7 @@ public record KitResponseDTO(
     boolean pesoSobrescrito,
     boolean dimensoesSobrescritas,
     List<ComponenteKitResponseDTO> componentes,
-    List<ProdutoResumoDTO> acessoriosCompativeis
+    List<ProdutoResumoDTO> acessoriosCompativeis,
+    String imagemPrincipal
 ) implements ProdutoResponseDTO {
 }
