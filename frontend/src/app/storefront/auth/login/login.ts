@@ -85,7 +85,9 @@ export class Login implements OnInit {
     this.conta.termos().subscribe({
       next: (t) =>
         this.termos.set(
-          t.filter((x) => x.obrigatorio).map(({ tipo, versao }) => ({ tipo, versao })),
+          (Array.isArray(t) ? t : [])
+            .filter((x) => x.obrigatorio)
+            .map(({ tipo, versao }) => ({ tipo, versao })),
         ),
       error: () => this.termos.set([]),
     });
