@@ -163,6 +163,11 @@ export class AdminNav {
               rota: '/admin/configuracao',
               descricao: 'Parâmetros gerais',
             },
+            {
+              rotulo: 'E-mails',
+              rota: '/admin/templates-email',
+              descricao: 'Templates e envios',
+            },
           ],
         },
       ],

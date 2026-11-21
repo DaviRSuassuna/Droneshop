@@ -43,6 +43,7 @@ import br.com.droneshop.pedido.model.Pedido;
 import br.com.droneshop.pedido.model.StatusPedido;
 import br.com.droneshop.pedido.repository.PedidoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotAuthorizedException;
@@ -50,6 +51,9 @@ import jakarta.ws.rs.NotAuthorizedException;
 /** Fecha o carrinho em pedido PENDENTE: itens, endereço e entrega congelados (#26), descontos e cupom (#29). */
 @ApplicationScoped
 public class CheckoutServiceImpl implements CheckoutService {
+
+    @Inject
+    Event<PedidoCriado> pedidoCriado;
 
     @Inject
     CarrinhoService carrinhos;
@@ -151,6 +155,7 @@ public class CheckoutServiceImpl implements CheckoutService {
         h.setObservacao("Pedido criado no checkout");
         pedido.getHistorico().add(h);
         pedidos.persist(pedido);
+        pedidoCriado.fire(new PedidoCriado(pedido));
 
         if (cupom != null) {
             UsoCupom uso = new UsoCupom();

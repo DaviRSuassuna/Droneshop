@@ -1,0 +1,158 @@
+<main class="gut">
+  <div class="ph">
+    <div>
+      <span class="lbl">Notificação</span>
+      <h1>Templates de e-mail</h1>
+      <div class="sub">Editar cria uma nova versão; o e-mail enviado guarda o texto da época.</div>
+    </div>
+  </div>
+  <div class="info">
+    Verificação de e-mail e recuperação de senha são enviadas pelo Keycloak (D56) e não aparecem aqui.
+  </div>
+  @if (carregando()) {
+    <p role="status">Carregando templates…</p>
+  } @else if (erro()) {
+    <div class="alerta" role="alert">
+      {{ erro() }}
+      <button class="btn sm" type="button" (click)="carregar()">Tentar novamente</button>
+    </div>
+  } @else {
+    <div class="grade">
+      <div class="tw">
+        <table>
+          <thead>
+            <tr>
+              <th>Template</th>
+              <th>Assunto</th>
+              <th>Versão</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (t of templates(); track t.id) {
+              <tr [class.on]="selecionado()?.codigo === t.codigo">
+                <td>
+                  <button class="link" type="button" (click)="abrir(t.codigo)">
+                    <span class="chip">{{ t.codigo }}</span>
+                  </button>
+                </td>
+                <td data-l="Assunto">{{ t.assunto }}</td>
+                <td data-l="Versão" class="mono">v{{ t.versao }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      @if (selecionado(); as t) {
+        <form class="sec" [formGroup]="form" (ngSubmit)="salvar()" novalidate>
+          <div class="sh">
+            <h2>{{ t.codigo }}</h2>
+            <span>versão {{ t.versao }}</span>
+          </div>
+          <div class="fg">
+            <div class="f w6">
+              <label for="assunto">Assunto <span class="req">*</span></label>
+              <input id="assunto" type="text" maxlength="200" formControlName="assunto" />
+            </div>
+            <div class="f w6" [class.erro]="erroCampo()">
+              <label for="corpoTemplate">Corpo (HTML) <span class="req">*</span></label>
+              <textarea
+                id="corpoTemplate"
+                rows="8"
+                formControlName="corpoTemplate"
+                [attr.aria-invalid]="!!erroCampo()"
+                aria-describedby="corpoTemplate-ajuda corpoTemplate-erro"
+              ></textarea>
+              <span class="note" id="corpoTemplate-ajuda">
+                Variáveis:
+                @for (v of t.variaveis ?? []; track v) {
+                  <code>{{ '{{' + v + '}}' }}</code>
+                }
+              </span>
+              @if (erroCampo(); as m) {
+                <span class="erro" id="corpoTemplate-erro">{{ m }}</span>
+              }
+            </div>
+          </div>
+          <div class="acoes">
+            @if (salvo(); as s) {
+              <span role="status" class="ok">{{ s }}</span>
+            }
+            <button class="btn p" type="submit" [disabled]="salvando()">Salvar nova versão</button>
+          </div>
+        </form>
+      }
+    </div>
+  }
+
+  <section class="envios">
+    <div class="ph">
+      <div><h2>Envios</h2></div>
+    </div>
+    <div class="toolbar">
+      <label class="field-s grow"
+        ><input
+          type="search"
+          placeholder="Buscar por destinatário"
+          aria-label="Buscar por destinatário"
+          [value]="destinatario()"
+          (input)="destinatario.set($any($event.target).value)"
+          (keyup.enter)="buscarEnvios()"
+      /></label>
+      <select class="sel" aria-label="Status de envio" (change)="filtrarStatus($any($event.target).value)">
+        <option value="">Status de envio</option>
+        @for (s of status; track s.id) {
+          <option [value]="s.id">{{ s.nome }}</option>
+        }
+      </select>
+      <button class="btn sm" type="button" (click)="buscarEnvios()">Buscar</button>
+    </div>
+    @if (envios(); as r) {
+      <div class="tw">
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Destinatário</th>
+              <th>Template</th>
+              <th>Assunto</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (n of r.items; track n.id) {
+              <tr>
+                <td class="mono">{{ n.dataCadastro | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td data-l="Destinatário">{{ n.destinatario.email }}</td>
+                <td data-l="Template"><span class="chip">{{ n.template.codigo }}</span></td>
+                <td data-l="Assunto">{{ n.assunto }}</td>
+                <td data-l="Status">{{ n.statusEnvio.nome }}</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5">Nenhum envio encontrado.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      @if (r.totalPages > 1) {
+        <div class="pager">
+          <span>Página {{ r.page + 1 }} de {{ r.totalPages }}</span>
+          <span>
+            <button class="btn sm" type="button" [disabled]="r.page === 0" (click)="buscarEnvios(r.page - 1)">
+              Anterior
+            </button>
+            <button
+              class="btn sm"
+              type="button"
+              [disabled]="r.page + 1 >= r.totalPages"
+              (click)="buscarEnvios(r.page + 1)"
+            >
+              Próxima
+            </button>
+          </span>
+        </div>
+      }
+    }
+  </section>
+</main>

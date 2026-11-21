@@ -196,6 +196,11 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'templates-email',
+        loadComponent: () =>
+          import('./admin/notificacoes/templates-email').then((m) => m.TemplatesEmailPage),
+      },
+      {
         path: 'configuracao',
         loadComponent: () =>
           import('./admin/configuracao/configuracao-loja').then((m) => m.ConfiguracaoLojaPage),
