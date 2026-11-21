@@ -1,0 +1,69 @@
+<main>
+  <div class="wrap account">
+    <app-account-menu [conta]="sessao.resumo()" (sair)="sessao.sair()" />
+    <section>
+      <div class="crumb">
+        <a routerLink="/">Home</a><span>Minha conta</span><span>Favoritos</span>
+      </div>
+      <div class="ahead">
+        <div>
+          <h1>Favoritos</h1>
+          <div class="sub">
+            {{ itens().length }} {{ itens().length === 1 ? 'produto salvo' : 'produtos salvos' }}
+            @if (comQueda()) {
+              · {{ comQueda() }} com queda de preço
+            }
+          </div>
+        </div>
+        <div class="acoes-topo"></div>
+      </div>
+      @if (carregado() && !itens().length) {
+        <div class="panel vazio">
+          <p>Nenhum produto salvo ainda.</p>
+          <a class="btn p" routerLink="/drones">Ver drones</a>
+        </div>
+      }
+      <div class="pgrid">
+        @for (item of itens(); track item.produto.id) {
+          <article class="pcard">
+            <div class="top">
+              <span class="lbl">{{ item.produto.sku }}</span>
+              @if (item.caiuPreco) {
+                <span class="chip">BAIXOU</span>
+              }
+            </div>
+            <h3>
+              <a [routerLink]="['/produto', item.produto.slug]">{{ item.produto.nome }}</a>
+            </h3>
+            <div class="pr" [class.sale]="item.caiuPreco">
+              {{ reais(item.produto.preco) }}
+              @if (item.caiuPreco) {
+                <s>{{ reais(item.precoAoAdicionar) }}</s>
+              }
+            </div>
+            <div class="row2">
+              <a class="btn" [routerLink]="['/produto', item.produto.slug]">Ver detalhes</a>
+              <button
+                class="btn sq"
+                type="button"
+                aria-label="Remover dos favoritos"
+                (click)="remover(item)"
+              >
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
+            </div>
+            @if (item.caiuPreco) {
+              <div class="note ok">Caiu {{ reais(queda(item)) }} desde que você salvou</div>
+            } @else if (item.produto.disponivel) {
+              <div class="note">Salvo em {{ item.adicionadoEm | date: 'dd/MM' }} · em estoque</div>
+            } @else {
+              <div class="note warn">Esgotado · avisaremos quando voltar</div>
+            }
+          </article>
+        }
+      </div>
+    </section>
+  </div>
+</main>

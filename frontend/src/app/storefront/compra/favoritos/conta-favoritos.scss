@@ -1,0 +1,22 @@
+@use '../../conta/conta';
+
+app-account-menu {
+  display: contents;
+}
+.acoes-topo {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.vazio {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+}
+.ico {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+}

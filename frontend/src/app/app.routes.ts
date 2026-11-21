@@ -263,6 +263,11 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./storefront/conta/enderecos/conta-enderecos').then((m) => m.ContaEnderecos),
           },
+          {
+            path: 'favoritos',
+            loadComponent: () =>
+              import('./storefront/compra/favoritos/conta-favoritos').then((m) => m.ContaFavoritos),
+          },
         ],
       },
       {
