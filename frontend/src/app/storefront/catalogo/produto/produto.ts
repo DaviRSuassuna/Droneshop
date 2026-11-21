@@ -1,8 +1,9 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { catchError, of, switchMap } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Observable, catchError, of, switchMap } from 'rxjs';
 import {
   MidiaLoja,
   ProdutoLojaDetalhe,
@@ -11,6 +12,8 @@ import {
 } from '../../../core/models/loja.model';
 import { LojaService } from '../../../core/services/loja.service';
 import { Comparar } from '../comparar/comparar';
+import { CarrinhoService } from '../../../core/services/carrinho.service';
+import { ProblemDetail } from '../../../core/models/problem.model';
 import { Pcard } from '../pcard/pcard';
 import { Perguntas } from '../perguntas/perguntas';
 import { Avaliacoes } from '../avaliacoes/avaliacoes';
@@ -42,6 +45,10 @@ export class Produto {
   readonly compativeis = signal<ProdutoLojaResumo[]>([]);
   readonly fotoAtual = signal(0);
   readonly quantidade = signal(1);
+  private readonly carrinho = inject(CarrinhoService);
+  private readonly router = inject(Router);
+  readonly adicionando = signal(false);
+  readonly erroCarrinho = signal<string | null>(null);
 
   readonly fotos = computed<MidiaLoja[]>(() => {
     const p = this.produto();
@@ -168,6 +175,25 @@ export class Produto {
       imagemPrincipal: null,
       disponivel: true,
     };
+  }
+
+  /** Põe no carrinho (#24): sem token, cria o carrinho anônimo antes. */
+  adicionarAoCarrinho(idProduto: number): void {
+    if (this.adicionando()) return;
+    this.adicionando.set(true);
+    this.erroCarrinho.set(null);
+    const quantidade = this.quantidade();
+    const inicio: Observable<unknown> = this.carrinho.token() ? of(null) : this.carrinho.criar();
+    inicio.pipe(switchMap(() => this.carrinho.adicionar(idProduto, quantidade))).subscribe({
+      next: () => void this.router.navigate(['/carrinho']),
+      error: (e: HttpErrorResponse) => {
+        this.adicionando.set(false);
+        const p = e.error as ProblemDetail | null;
+        this.erroCarrinho.set(
+          p?.errors?.[0]?.message ?? p?.detail ?? 'Não foi possível adicionar ao carrinho.',
+        );
+      },
+    });
   }
 
   mudarQuantidade(delta: number): void {

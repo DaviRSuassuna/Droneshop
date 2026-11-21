@@ -12,6 +12,7 @@ issue-4
 
 # ---- trilha A: acrescente abaixo desta linha (docs/agentes/README.md)
 issue-19
+issue-24
 
 # ---- trilha B: acrescente abaixo desta linha
 # Admin no protótipo 02 (#94): voltam as telas do admin que saíram com a D41.

@@ -11,6 +11,8 @@ import java.util.regex.Pattern;
 import br.com.droneshop.exception.ConflitoException;
 import br.com.droneshop.exception.ResourceNotFoundException;
 import br.com.droneshop.exception.ValidationException;
+import br.com.droneshop.pagamento.model.MetodoPagamento;
+import br.com.droneshop.pedido.dto.IndicadoresPedidoResponseDTO;
 import br.com.droneshop.pedido.dto.PedidoFiltro;
 import br.com.droneshop.identidade.model.Usuario;
 import br.com.droneshop.identidade.repository.UsuarioRepository;
@@ -43,7 +45,8 @@ public class PedidoServiceImpl implements PedidoService {
     UsuarioRepository usuarioRepository;
 
     @Override
-    public PedidoFiltro filtro(String idStatus, String dataInicio, String dataFim, String busca) {
+    public PedidoFiltro filtro(String idStatus, String dataInicio, String dataFim, String busca,
+            String idMetodoPagamento) {
         StatusPedido status = null;
         if (temTexto(idStatus)) {
             try {
@@ -60,10 +63,26 @@ public class PedidoServiceImpl implements PedidoService {
         if (inicio != null && fim != null && fim.isBefore(inicio))
             throw ValidationException.of("dataFim", "A data final não pode ser anterior à inicial.");
 
+        MetodoPagamento metodo = null;
+        if (temTexto(idMetodoPagamento)) {
+            try {
+                metodo = MetodoPagamento.valueOf(Long.valueOf(idMetodoPagamento.trim()));
+            } catch (NumberFormatException e) {
+                metodo = null;
+            }
+            if (metodo == null)
+                throw ValidationException.of("idMetodoPagamento", "Método de pagamento inexistente.");
+        }
+
         String nome = null;
         Long idBusca = null;
+        String documento = null;
         if (temTexto(busca)) {
             nome = busca.trim();
+            // CPF (11) ou CNPJ (14) com ou sem máscara: o documento é gravado só com dígitos
+            String digitos = nome.replaceAll("\\D", "");
+            if (digitos.length() == 11 || digitos.length() == 14)
+                documento = digitos;
             Matcher m = NUMERO_PEDIDO.matcher(nome);
             if (m.matches())
                 idBusca = Long.valueOf(m.group(1));
@@ -72,7 +91,7 @@ public class PedidoServiceImpl implements PedidoService {
         return new PedidoFiltro(status,
                 inicio == null ? null : inicio.atStartOfDay(),
                 fim == null ? null : fim.plusDays(1).atStartOfDay(),
-                nome, idBusca);
+                nome, idBusca, documento, metodo);
     }
 
     @Override
@@ -83,6 +102,23 @@ public class PedidoServiceImpl implements PedidoService {
     @Override
     public long countComFiltro(PedidoFiltro filtro) {
         return pedidoRepository.findComFiltro(filtro).count();
+    }
+
+    @Override
+    public IndicadoresPedidoResponseDTO indicadores() {
+        Map<StatusPedido, Long> contagem = pedidoRepository.contarPorStatus();
+        var desde = java.time.LocalDateTime.now().minusDays(30);
+        var prazos = pedidoRepository.enviosEntregues(desde).stream()
+                .mapToDouble(l -> java.time.Duration.between((java.time.LocalDateTime) l[0],
+                        (java.time.LocalDateTime) l[1]).toMinutes() / (60.0 * 24))
+                .average();
+        Double prazo = prazos.isPresent() ? Math.round(prazos.getAsDouble() * 10) / 10.0 : null;
+        return new IndicadoresPedidoResponseDTO(
+                contagem.getOrDefault(StatusPedido.PAGO, 0L),
+                new IndicadoresPedidoResponseDTO.AguardandoPagamento(
+                        contagem.getOrDefault(StatusPedido.PENDENTE, 0L), pedidoRepository.valorEmAberto()),
+                new IndicadoresPedidoResponseDTO.EmTransito(contagem.getOrDefault(StatusPedido.ENVIADO, 0L), prazo),
+                pedidoRepository.devolucoesAbertas());
     }
 
     @Override

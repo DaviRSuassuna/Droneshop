@@ -27,6 +27,10 @@ import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.PATCH;
+import jakarta.ws.rs.POST;
+import jakarta.validation.constraints.NotNull;
+import br.com.droneshop.pedido.dto.EtiquetasRequestDTO;
+import br.com.droneshop.pedido.dto.IndicadoresPedidoResponseDTO;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -59,12 +63,27 @@ public class PedidoResource {
                 .header("Content-Disposition", "attachment; filename=\"etiqueta-" + id + ".pdf\"").build();
     }
 
+    @POST
+    @Path("/etiquetas")
+    @Produces({ "application/pdf", MediaType.APPLICATION_JSON })
+    public Response etiquetas(@Valid @NotNull(message = "Informe os pedidos. (back)") EtiquetasRequestDTO dto) {
+        return Response.ok(etiquetaService.gerarLote(dto.ids()), "application/pdf")
+                .header("Content-Disposition", "attachment; filename=\"etiquetas.pdf\"").build();
+    }
+
+    @GET
+    @Path("/indicadores")
+    public IndicadoresPedidoResponseDTO indicadores() {
+        return service.indicadores();
+    }
+
     @GET
     @Path("/exportar")
     @Produces("text/csv")
     public Response exportar(@QueryParam("idStatus") String idStatus, @QueryParam("dataInicio") String dataInicio,
-            @QueryParam("dataFim") String dataFim, @QueryParam("busca") String busca) {
-        var pagina = buscarTodos(idStatus, dataInicio, dataFim, busca, 0, Integer.MAX_VALUE);
+            @QueryParam("dataFim") String dataFim, @QueryParam("busca") String busca,
+            @QueryParam("idMetodoPagamento") String idMetodoPagamento) {
+        var pagina = buscarTodos(idStatus, dataInicio, dataFim, busca, idMetodoPagamento, 0, Integer.MAX_VALUE);
         return Csv.resposta("pedidos.csv", List.of("Pedido", "Cliente", "Data", "Itens", "Total", "Status"),
                 pagina.items().stream().map(p -> Arrays.<Object>asList(p.numero(), p.cliente().nome(),
                         p.dataCadastro(), p.quantidadeItens(), p.valorTotal(), p.status().getNome())));
@@ -76,9 +95,10 @@ public class PedidoResource {
             @QueryParam("dataInicio") String dataInicio,
             @QueryParam("dataFim") String dataFim,
             @QueryParam("busca") String busca,
+            @QueryParam("idMetodoPagamento") String idMetodoPagamento,
             @QueryParam("page") @DefaultValue("0") int page,
             @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
-        PedidoFiltro filtro = service.filtro(idStatus, dataInicio, dataFim, busca);
+        PedidoFiltro filtro = service.filtro(idStatus, dataInicio, dataFim, busca, idMetodoPagamento);
         List<Pedido> pedidos = service.findComFiltro(filtro, page, pageSize);
         long totalItems = service.countComFiltro(filtro);
 

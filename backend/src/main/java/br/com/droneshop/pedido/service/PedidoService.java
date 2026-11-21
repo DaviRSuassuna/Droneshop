@@ -12,7 +12,12 @@ import br.com.droneshop.pedido.model.Pedido;
 public interface PedidoService {
 
     // valida os parâmetros de GET /pedidos (400 por campo)
-    PedidoFiltro filtro(String idStatus, String dataInicio, String dataFim, String busca);
+    default PedidoFiltro filtro(String idStatus, String dataInicio, String dataFim, String busca) {
+        return filtro(idStatus, dataInicio, dataFim, busca, null);
+    }
+    // #89: busca também por CPF/CNPJ e filtro pelo método do pagamento vigente
+    PedidoFiltro filtro(String idStatus, String dataInicio, String dataFim, String busca, String idMetodoPagamento);
+    br.com.droneshop.pedido.dto.IndicadoresPedidoResponseDTO indicadores();
     List<Pedido> findComFiltro(PedidoFiltro filtro, int page, int pageSize);
     long countComFiltro(PedidoFiltro filtro);
     // os 8 status, na ordem do enum, inclusive os sem pedido

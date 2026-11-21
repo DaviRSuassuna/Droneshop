@@ -127,6 +127,33 @@ describe('PedidoService', () => {
     expect(req.request.params.get('dataFim')).toBe('2026-10-31');
     req.flush(new Blob(['csv'], { type: 'text/csv' }));
   });
+  it('envia o método de pagamento na listagem e na exportação', () => {
+    service.listar({ idMetodoPagamento: 2 }).subscribe();
+    const lista = http.expectOne((r) => r.url === url);
+    expect(lista.request.params.get('idMetodoPagamento')).toBe('2');
+    lista.flush({ items: [], page: 0, pageSize: 10, totalItems: 0, totalPages: 0 });
+    service.exportar({ idMetodoPagamento: 1 }).subscribe();
+    const csv = http.expectOne((r) => r.url === url + '/exportar');
+    expect(csv.request.params.get('idMetodoPagamento')).toBe('1');
+    csv.flush(new Blob(['csv']));
+  });
+
+  it('busca os indicadores do painel', () => {
+    service.indicadores().subscribe();
+    const req = http.expectOne(url + '/indicadores');
+    expect(req.request.method).toBe('GET');
+    req.flush({});
+  });
+
+  it('gera as etiquetas em lote por POST com os ids e resposta binária', () => {
+    service.etiquetas([12, 15]).subscribe();
+    const req = http.expectOne(url + '/etiquetas');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ ids: [12, 15] });
+    expect(req.request.responseType).toBe('blob');
+    req.flush(new Blob(['%PDF-1.4'], { type: 'application/pdf' }));
+  });
+
   it('baixa a etiqueta PDF do pedido por GET', () => {
     service.etiqueta(7).subscribe();
     const req = http.expectOne(url + '/7/etiqueta');

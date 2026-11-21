@@ -34,9 +34,18 @@ public class PedidoRepository implements PanacheRepository<Pedido> {
             jpql.append("AND p.dataCadastro < :fim ");
             params.put("fim", f.fimExclusivo());
         }
+        if (f.metodo() != null) {
+            jpql.append("AND EXISTS (SELECT pg FROM Pagamento pg WHERE pg.pedido = p AND pg.vigente = true "
+                    + "AND pg.metodo = :metodo) ");
+            params.put("metodo", f.metodo());
+        }
         if (f.nomeCliente() != null) {
             jpql.append("AND (LOWER(p.cliente.nome) LIKE :nome ");
             params.put("nome", "%" + f.nomeCliente().toLowerCase() + "%");
+            if (f.documento() != null) {
+                jpql.append("OR p.cliente.documento = :documento ");
+                params.put("documento", f.documento());
+            }
             if (f.idBusca() != null) {
                 jpql.append("OR p.id = :id ");
                 params.put("id", f.idBusca());
@@ -84,6 +93,37 @@ public class PedidoRepository implements PanacheRepository<Pedido> {
                 .getSingleResult();
         BigDecimal soma = linha[1] instanceof BigDecimal b ? b : BigDecimal.ZERO;
         return new Totais((Long) linha[0], soma);
+    }
+
+    // #89: soma do valorTotal dos pedidos PENDENTE
+    public BigDecimal valorEmAberto() {
+        BigDecimal soma = getEntityManager()
+                .createQuery("SELECT SUM(p.valorTotal) FROM Pedido p WHERE p.status = :status", BigDecimal.class)
+                .setParameter("status", StatusPedido.PENDENTE)
+                .getSingleResult();
+        return soma == null ? BigDecimal.ZERO : soma;
+    }
+
+    // #89: devoluções que não terminaram (nem RECUSADA nem CONCLUIDA)
+    public long devolucoesAbertas() {
+        return getEntityManager()
+                .createQuery("SELECT COUNT(d) FROM Devolucao d WHERE d.status NOT IN :fim", Long.class)
+                .setParameter("fim", java.util.List.of(br.com.droneshop.devolucao.model.StatusDevolucao.RECUSADA,
+                        br.com.droneshop.devolucao.model.StatusDevolucao.CONCLUIDA))
+                .getSingleResult();
+    }
+
+    // #89: [data ENVIADO, data ENTREGUE] dos pedidos entregues a partir de "desde" (histórico, #17)
+    public java.util.List<Object[]> enviosEntregues(LocalDateTime desde) {
+        return getEntityManager()
+                .createQuery("SELECT MAX(e.dataCadastro), h.dataCadastro FROM HistoricoStatusPedido h, "
+                        + "HistoricoStatusPedido e WHERE e.pedido = h.pedido AND h.statusNovo = :entregue "
+                        + "AND e.statusNovo = :enviado AND h.dataCadastro >= :desde "
+                        + "AND e.dataCadastro <= h.dataCadastro GROUP BY h.id, h.dataCadastro", Object[].class)
+                .setParameter("entregue", StatusPedido.ENTREGUE)
+                .setParameter("enviado", StatusPedido.ENVIADO)
+                .setParameter("desde", desde)
+                .getResultList();
     }
 
     public PanacheQuery<Pedido> doUsuario(Long idUsuario) {

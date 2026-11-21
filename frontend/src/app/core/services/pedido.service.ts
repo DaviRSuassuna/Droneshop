@@ -6,6 +6,7 @@ import { PageResponse } from '../models/page.model';
 import {
   FiltroPedidos,
   HistoricoStatusPedido,
+  IndicadoresPedidos,
   Pedido,
   PedidoListagem,
   ResumoStatusPedido,
@@ -21,13 +22,29 @@ export class PedidoService {
     return this.http.get(this.baseUrl + '/' + id + '/etiqueta', { responseType: 'blob' });
   }
 
+  /** Um PDF com uma etiqueta por pedido, na ordem dos ids (#89); 409 se algum não tem endereço. */
+  etiquetas(ids: number[]): Observable<Blob> {
+    return this.http.post(this.baseUrl + '/etiquetas', { ids }, { responseType: 'blob' });
+  }
+
+  indicadores(): Observable<IndicadoresPedidos> {
+    return this.http.get<IndicadoresPedidos>(`${this.baseUrl}/indicadores`);
+  }
+
   exportar(filtro: FiltroPedidos = {}): Observable<Blob> {
-    let params = new HttpParams();
+    const params = this.filtros(new HttpParams(), filtro);
+    return this.http.get(this.baseUrl + '/exportar', { params, responseType: 'blob' });
+  }
+
+  /** Filtros vazios não vão para a API. */
+  private filtros(params: HttpParams, filtro: FiltroPedidos): HttpParams {
     if (filtro.idStatus) params = params.set('idStatus', filtro.idStatus);
     if (filtro.dataInicio) params = params.set('dataInicio', filtro.dataInicio);
     if (filtro.dataFim) params = params.set('dataFim', filtro.dataFim);
-    if (filtro.busca?.trim()) params = params.set('busca', filtro.busca.trim());
-    return this.http.get(this.baseUrl + '/exportar', { params, responseType: 'blob' });
+    const busca = filtro.busca?.trim();
+    if (busca) params = params.set('busca', busca);
+    if (filtro.idMetodoPagamento) params = params.set('idMetodoPagamento', filtro.idMetodoPagamento);
+    return params;
   }
 
   listar(
@@ -35,12 +52,10 @@ export class PedidoService {
     page = 0,
     pageSize = 10,
   ): Observable<PageResponse<PedidoListagem>> {
-    let params = new HttpParams().set('page', page).set('pageSize', pageSize);
-    if (filtro.idStatus) params = params.set('idStatus', filtro.idStatus);
-    if (filtro.dataInicio) params = params.set('dataInicio', filtro.dataInicio);
-    if (filtro.dataFim) params = params.set('dataFim', filtro.dataFim);
-    const busca = filtro.busca?.trim();
-    if (busca) params = params.set('busca', busca);
+    const params = this.filtros(
+      new HttpParams().set('page', page).set('pageSize', pageSize),
+      filtro,
+    );
     return this.http.get<PageResponse<PedidoListagem>>(this.baseUrl, { params });
   }
 
