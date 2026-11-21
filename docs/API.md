@@ -191,6 +191,6 @@ As linhas a partir do dashboard vieram da revisão do protótipo novo (D38) cont
 
 Resolvido pela D36 (o modelo vence): "Categoria pai" saiu das telas de categoria; "Inscrição estadual", "Observações internas" e "Disponível para vincular" saíram do cadastro de fornecedor; telefone, equipe, observações, foto e o status "Suspenso" saíram do cadastro de usuário (D35).
 
-Pendente (`docs/issues/nova-ajuste-prototipo.md`): permissões por tela e "Salvar rascunho" no cadastro de usuário, filtro "Canal" e parcelas na listagem de pedidos e o card "Conversão" do dashboard saem do protótipo, porque o modelo não tem módulos por tela, rascunho de usuário, canal, parcelamento nem registro de visitas.
+Resolvido pela #83: as permissões do cadastro de usuário passaram a ser por módulo (os 8 de `ModuloSistema`) e "Salvar rascunho" saiu (usuário não tem rascunho, exceção à D28 registrada na D35); o filtro "Canal" e as parcelas saíram da listagem de pedidos e o card "Conversão" saiu do dashboard, porque o modelo não tem canal, parcelamento nem registro de visitas.
 
 Subcategoria em RASCUNHO aceita nome e categoria vazios (D21); a resposta traz `categoria: null` enquanto não houver vínculo. ATIVA/INATIVA exige nome e `idCategoria`. Produto só seleciona subcategoria com categoria definida.

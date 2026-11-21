@@ -290,15 +290,8 @@ export const TELAS: Tela[] = [
     etiqueta: 'issue-5',
     area: 'admin',
     ignorar: [
-      // Convite entra com a #33; 2FA e rascunho não fazem parte da API atual de usuários.
+      // Convite entra com a #33; 2FA não faz parte da API atual de usuários.
       'Enviar convite ao criar',
-      'Salvar rascunho',
-      'Produtos',
-      'Marcas',
-      'Categorias',
-      'Pedidos',
-      'Usuários',
-      'Relatórios',
     ],
   },
   {
@@ -408,7 +401,6 @@ export const TELAS: Tela[] = [
       'Buscar por número, cliente ou CPF/CNPJ',
       'Período: 30 dias',
       'Pagamento',
-      'Canal',
     ],
   },
   {
@@ -433,10 +425,9 @@ export const TELAS: Tela[] = [
         totalPages: 1,
       },
     },
-    // #18 atual não calcula série temporal, comparação, conversão ou ranking; fila atual só contém pendentes.
+    // #18 atual não calcula série temporal, comparação ou ranking; fila atual só contém pendentes.
     ignorar: [
       'Exportar relatório',
-      'Conversão',
       'Vendas no período', // Card de série temporal, ausente no contrato atual.
       'Receita',
       'Pedidos',
