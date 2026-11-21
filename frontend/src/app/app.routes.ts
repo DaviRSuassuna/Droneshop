@@ -237,27 +237,6 @@ export const routes: Routes = [
       },
     ],
   },
-  // loja do cliente (trilha A): Minha conta
-  {
-    path: 'conta',
-    canActivate: [clienteAuthGuard],
-    children: [
-      {
-        path: 'perfil',
-        loadComponent: () =>
-          import('./storefront/conta/perfil/conta-perfil').then((m) => m.ContaPerfil),
-      },
-      {
-        path: 'enderecos',
-        loadComponent: () =>
-          import('./storefront/conta/enderecos/conta-enderecos').then((m) => m.ContaEnderecos),
-      },
-    ],
-  },
-  {
-    path: 'entrar',
-    loadComponent: () => import('./storefront/auth/login/login').then((m) => m.Login),
-  },
   // Loja do catálogo (trilha B): telas dentro da casca da loja (#96)
   {
     path: '',
@@ -267,6 +246,28 @@ export const routes: Routes = [
         path: '',
         pathMatch: 'full',
         loadComponent: () => import('./storefront/home/home').then((m) => m.Home),
+      },
+      // loja do cliente (trilha A): Minha conta
+      {
+        path: 'conta',
+        canActivate: [clienteAuthGuard],
+        children: [
+          { path: '', pathMatch: 'full', redirectTo: 'perfil' },
+          {
+            path: 'perfil',
+            loadComponent: () =>
+              import('./storefront/conta/perfil/conta-perfil').then((m) => m.ContaPerfil),
+          },
+          {
+            path: 'enderecos',
+            loadComponent: () =>
+              import('./storefront/conta/enderecos/conta-enderecos').then((m) => m.ContaEnderecos),
+          },
+        ],
+      },
+      {
+        path: 'entrar',
+        loadComponent: () => import('./storefront/auth/login/login').then((m) => m.Login),
       },
     ],
   },

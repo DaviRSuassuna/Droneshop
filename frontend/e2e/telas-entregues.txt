@@ -16,5 +16,6 @@ issue-4
 # base, issue-5, issue-6, issue-8, issue-13, issue-14, issue-15, issue-16, issue-18, issue-80.
 
 # ---- trilha A: acrescente abaixo desta linha (docs/agentes/README.md)
+issue-19
 
 # ---- trilha B: acrescente abaixo desta linha

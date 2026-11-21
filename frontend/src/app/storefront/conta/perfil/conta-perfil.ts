@@ -1,3 +1,5 @@
+import { AccountMenu } from '../../../layout/storefront/account-menu/account-menu';
+import { ContaSessao } from '../conta-sessao';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, ElementRef, OnInit, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -11,11 +13,13 @@ import { somenteDigitos } from '../../../core/utils/documentos';
 /** "Minha conta > Perfil e dados" (protótipo 02, conta-perfil.html). */
 @Component({
   selector: 'app-conta-perfil',
-  imports: [ReactiveFormsModule, RouterLink, MascaraDirective],
+  imports: [AccountMenu, ReactiveFormsModule, RouterLink, MascaraDirective],
+  providers: [ContaSessao],
   templateUrl: './conta-perfil.html',
   styleUrl: './conta-perfil.scss',
 })
 export class ContaPerfil implements OnInit {
+  protected readonly sessao = inject(ContaSessao);
   private readonly clientes = inject(ClienteService);
   private readonly fb = inject(FormBuilder);
   private readonly dialogoSenha = viewChild.required<ElementRef<HTMLDialogElement>>('dlgSenha');
@@ -39,6 +43,7 @@ export class ContaPerfil implements OnInit {
   ngOnInit(): void {
     this.clientes.perfil().subscribe((p) => {
       this.perfil.set(p);
+      this.sessao.resumo.set({ nome: p.nome, detalhe: p.email });
       this.form.patchValue({ nome: p.nome ?? '', telefone: p.telefone ?? '' });
     });
   }
@@ -62,6 +67,7 @@ export class ContaPerfil implements OnInit {
         next: () => {
           this.salvando.set(false);
           this.perfil.update((p) => (p ? { ...p, nome: v.nome.trim() } : p));
+          this.sessao.renomear(v.nome.trim());
           this.mensagem.set({ texto: 'Dados salvos.', ok: true });
         },
         error: (e: HttpErrorResponse) => {

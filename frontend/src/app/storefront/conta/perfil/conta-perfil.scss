@@ -49,3 +49,8 @@
     height: 44px;
   }
 }
+
+// o menu da conta é item da grade .account; o host não pode quebrar o sticky do .side
+app-account-menu {
+  display: contents;
+}

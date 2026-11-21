@@ -1,3 +1,5 @@
+import { AccountMenu } from '../../../layout/storefront/account-menu/account-menu';
+import { ContaSessao } from '../conta-sessao';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, ElementRef, OnInit, computed, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -17,11 +19,13 @@ import { CepPipe, formatarCep } from '../../../shared/pipes/cep.pipe';
 /** "Minha conta > Endereços" (protótipo 02, conta-enderecos.html). */
 @Component({
   selector: 'app-conta-enderecos',
-  imports: [ReactiveFormsModule, RouterLink, MascaraDirective, CepPipe],
+  imports: [AccountMenu, ReactiveFormsModule, RouterLink, MascaraDirective, CepPipe],
+  providers: [ContaSessao],
   templateUrl: './conta-enderecos.html',
   styleUrl: './conta-enderecos.scss',
 })
 export class ContaEnderecos implements OnInit {
+  protected readonly sessao = inject(ContaSessao);
   private readonly enderecosService = inject(EnderecoClienteService);
   private readonly cepService = inject(CepService);
   private readonly estadoService = inject(EstadoService);
@@ -54,6 +58,7 @@ export class ContaEnderecos implements OnInit {
   });
 
   ngOnInit(): void {
+    this.sessao.carregar();
     this.carregar();
     this.estadoService.listar().subscribe((p) => this.estados.set(p.items));
   }

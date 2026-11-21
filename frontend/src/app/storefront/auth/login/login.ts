@@ -23,7 +23,6 @@ export class Login {
   private readonly route = inject(ActivatedRoute);
 
   readonly aba = signal<'entrar' | 'criar'>('entrar');
-  readonly menuAberto = signal(false);
 
   email = '';
   senha = '';
