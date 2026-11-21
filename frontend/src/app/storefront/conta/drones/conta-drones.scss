@@ -1,0 +1,15 @@
+@use '../conta';
+
+app-account-menu {
+  display: contents;
+}
+.serie {
+  font-size: 13px;
+  color: var(--mute);
+}
+.anac {
+  margin-top: 18px;
+}
+.enviar {
+  align-self: end;
+}

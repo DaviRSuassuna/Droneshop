@@ -9,4 +9,8 @@ public class UsoCupomRepository implements PanacheRepository<UsoCupom> {
     public long countByCupom(long idCupom) {
         return count("cupom.id", idCupom);
     }
+
+    public long countByCupomECliente(long idCupom, long idCliente) {
+        return count("cupom.id = ?1 and cliente.id = ?2", idCupom, idCliente);
+    }
 }

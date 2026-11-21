@@ -1,6 +1,6 @@
 <main>
   <div class="wrap account">
-    <!-- menu da conta: <app-account-menu> da casca da loja (#96), entra quando ela estiver na develop -->
+    <app-account-menu [conta]="sessao.resumo()" (sair)="sessao.sair()" />
     <section>
       <div class="crumb">
         <a routerLink="/">Home</a><span>Minha conta</span><span>Endereços</span>

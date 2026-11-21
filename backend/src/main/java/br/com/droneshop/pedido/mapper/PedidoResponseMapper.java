@@ -1,14 +1,16 @@
 package br.com.droneshop.pedido.mapper;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import br.com.droneshop.catalogo.model.Produto;
 import br.com.droneshop.identidade.model.PerfilCliente;
 import br.com.droneshop.identidade.model.Usuario;
 import br.com.droneshop.model.OrigemRegistro;
 import br.com.droneshop.pedido.dto.ClientePedidoResponseDTO;
+import br.com.droneshop.pedido.dto.DescontoPedidoResponseDTO;
 import br.com.droneshop.pedido.dto.EnderecoPedidoResponseDTO;
+import br.com.droneshop.pedido.dto.EntregaResponseDTO;
+import br.com.droneshop.pedido.dto.PagamentoResumoDTO;
 import br.com.droneshop.pedido.dto.HistoricoStatusPedidoResponseDTO;
 import br.com.droneshop.pedido.dto.ItemPedidoResponseDTO;
 import br.com.droneshop.pedido.dto.PedidoListagemResponseDTO;
@@ -44,13 +46,16 @@ public final class PedidoResponseMapper {
                 numero(p.getId()),
                 p.getStatus(),
                 cliente(p.getCliente()),
+                p.getValorProdutos().setScale(2, java.math.RoundingMode.HALF_UP),
                 p.getValorTotal(),
                 p.getValorFrete(),
                 p.getValorDesconto(),
                 p.getItens().stream().map(PedidoResponseMapper::item).toList(),
                 endereco(p.getEnderecoEntrega()),
-                List.of(),
-                null,
+                p.getDescontos().stream().map(DescontoPedidoResponseDTO::de).toList(),
+                p.getMetodoPagamento(),
+                p.getPagamentos().stream().map(PagamentoResumoDTO::de).toList(),
+                EntregaResponseDTO.de(p.getEntrega()),
                 p.getDataCadastro());
     }
 

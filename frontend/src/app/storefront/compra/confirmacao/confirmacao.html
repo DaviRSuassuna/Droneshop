@@ -1,0 +1,119 @@
+<main>
+  @if (pedido(); as p) {
+    <div class="wrap">
+      <div class="okhead">
+        <span class="okmark"></span>
+        <div>
+          <span class="lbl">Pedido confirmado</span>
+          <h1>Tudo certo, {{ primeiroNome() }}.</h1>
+          <p>
+            @if (pago()) {
+              Pagamento aprovado.
+            } @else {
+              Assim que o pagamento for aprovado, o pedido segue para separação.
+            }
+            Você acompanha cada etapa pela sua conta.
+          </p>
+        </div>
+        <div class="ordno">
+          <span class="lbl">Número do pedido</span><b>#{{ p.numero }}</b
+          ><span>{{ p.dataCadastro | date: 'dd/MM/yyyy' }} · {{ unidades() }} itens</span>
+        </div>
+      </div>
+    </div>
+    <div class="wrap two">
+      <div>
+        <div class="panel">
+          <div class="ph2">
+            <h2>Próximos passos</h2>
+            <a class="tlink arrow" routerLink="/conta/pedidos">Acompanhar pedido</a>
+          </div>
+          <ol class="tl">
+            <li [class.done]="pago()" [class.now]="!pago()">
+              <span class="dot"></span>
+              <div>
+                <b>Pagamento {{ pago() ? 'aprovado' : 'em análise' }}</b
+                ><span>{{ metodo() }}</span>
+              </div>
+            </li>
+            <li [class.now]="pago()" [class.todo]="!pago()">
+              <span class="dot"></span>
+              <div><b>Separação e conferência</b><span>CD Palmas · até 1 dia útil</span></div>
+            </li>
+            <li class="todo">
+              <span class="dot"></span>
+              <div>
+                <b>Envio com código de rastreio</b><span>Você recebe o código por e-mail</span>
+              </div>
+            </li>
+            <li class="todo">
+              <span class="dot"></span>
+              <div>
+                <b>Registro ANAC (opcional)</b
+                ><span>Nossa equipe orienta o cadastro SISANT do seu drone</span>
+              </div>
+            </li>
+          </ol>
+        </div>
+        <div class="panel">
+          <div class="ph2"><h2>Itens do pedido</h2></div>
+          <div class="items">
+            @for (i of p.itens; track i.id) {
+              <div class="item sm">
+                <div>
+                  <h3>{{ i.produto.nome }}</h3>
+                  <div class="meta">{{ i.produto.sku }} · {{ i.quantidade }} un</div>
+                </div>
+                <div class="price num">{{ reais(i.subtotal) }}</div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+      <aside class="sticky">
+        <div class="panel">
+          <div class="ph2"><h2>Pagamento e entrega</h2></div>
+          <div class="sum">
+            <div>
+              <span>Forma de pagamento</span><span>{{ metodo() }}</span>
+            </div>
+            <div>
+              <span>Subtotal</span><span class="num">{{ reais(p.valorProdutos) }}</span>
+            </div>
+            @for (d of p.descontos; track $index) {
+              <div class="neg">
+                <span>{{ d.descricao }}</span
+                ><span class="num">− {{ reais(d.valor) }}</span>
+              </div>
+            }
+            <div>
+              <span>Frete</span><span class="num">{{ reais(p.valorFrete) }}</span>
+            </div>
+            <div class="tot">
+              <span>{{ pago() ? 'Total pago' : 'Total' }}</span
+              ><b class="num">{{ reais(p.valorTotal) }}</b>
+            </div>
+          </div>
+          @if (p.enderecoEntrega; as e) {
+            <div class="entrega">
+              <span class="lbl">Entrega em</span>
+              <p>
+                {{ e.destinatario }}<br />{{ e.logradouro }}, {{ e.numero
+                }}{{ e.complemento ? ', ' + e.complemento : '' }}<br />{{ e.bairro }} ·
+                {{ e.cidade }} / {{ e.uf }} ·
+                {{ e.cep }}
+              </p>
+              @if (p.entrega; as en) {
+                <p class="prev">Previsão: até {{ en.prazoCongeladoDias }} dias úteis</p>
+              }
+            </div>
+          }
+          <div class="acoes">
+            <a class="btn p" routerLink="/conta/pedidos">Acompanhar pedido</a>
+            <a class="btn" routerLink="/">Continuar comprando</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  }
+</main>

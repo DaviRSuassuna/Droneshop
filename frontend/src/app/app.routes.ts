@@ -237,27 +237,6 @@ export const routes: Routes = [
       },
     ],
   },
-  // loja do cliente (trilha A): Minha conta
-  {
-    path: 'conta',
-    canActivate: [clienteAuthGuard],
-    children: [
-      {
-        path: 'perfil',
-        loadComponent: () =>
-          import('./storefront/conta/perfil/conta-perfil').then((m) => m.ContaPerfil),
-      },
-      {
-        path: 'enderecos',
-        loadComponent: () =>
-          import('./storefront/conta/enderecos/conta-enderecos').then((m) => m.ContaEnderecos),
-      },
-    ],
-  },
-  {
-    path: 'entrar',
-    loadComponent: () => import('./storefront/auth/login/login').then((m) => m.Login),
-  },
   // Loja do catálogo (trilha B): telas dentro da casca da loja (#96)
   {
     path: '',
@@ -267,6 +246,62 @@ export const routes: Routes = [
         path: '',
         pathMatch: 'full',
         loadComponent: () => import('./storefront/home/home').then((m) => m.Home),
+      },
+      // loja do cliente (trilha A): Minha conta
+      {
+        path: 'conta',
+        canActivate: [clienteAuthGuard],
+        children: [
+          { path: '', pathMatch: 'full', redirectTo: 'perfil' },
+          {
+            path: 'perfil',
+            loadComponent: () =>
+              import('./storefront/conta/perfil/conta-perfil').then((m) => m.ContaPerfil),
+          },
+          {
+            path: 'enderecos',
+            loadComponent: () =>
+              import('./storefront/conta/enderecos/conta-enderecos').then((m) => m.ContaEnderecos),
+          },
+          {
+            path: 'favoritos',
+            loadComponent: () =>
+              import('./storefront/compra/favoritos/conta-favoritos').then((m) => m.ContaFavoritos),
+          },
+          {
+            path: 'pedidos',
+            loadComponent: () =>
+              import('./storefront/conta/pedidos/conta-pedidos').then((m) => m.ContaPedidos),
+          },
+          {
+            path: 'pagamentos',
+            loadComponent: () =>
+              import('./storefront/conta/pagamentos/conta-pagamentos').then(
+                (m) => m.ContaPagamentos,
+              ),
+          },
+          {
+            path: 'drones',
+            loadComponent: () =>
+              import('./storefront/conta/drones/conta-drones').then((m) => m.ContaDrones),
+          },
+        ],
+      },
+      {
+        path: 'checkout',
+        canActivate: [clienteAuthGuard],
+        loadComponent: () =>
+          import('./storefront/compra/checkout/checkout').then((m) => m.Checkout),
+      },
+      {
+        path: 'pedido-confirmado/:id',
+        canActivate: [clienteAuthGuard],
+        loadComponent: () =>
+          import('./storefront/compra/confirmacao/confirmacao').then((m) => m.Confirmacao),
+      },
+      {
+        path: 'entrar',
+        loadComponent: () => import('./storefront/auth/login/login').then((m) => m.Login),
       },
     ],
   },

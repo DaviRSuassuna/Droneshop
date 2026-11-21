@@ -1,0 +1,125 @@
+<main>
+  <div class="wrap account">
+    <app-account-menu [conta]="sessao.resumo()" (sair)="sessao.sair()" />
+    <section>
+      <div class="crumb">
+        <a routerLink="/">Home</a><span>Minha conta</span><span>Meus pedidos</span>
+      </div>
+      <div class="ahead">
+        <div>
+          <h1>Meus pedidos</h1>
+          <div class="sub">
+            {{ total() }} {{ total() === 1 ? 'pedido' : 'pedidos' }} · {{ emAndamento() }} em
+            andamento
+          </div>
+        </div>
+      </div>
+      @if (!lista().length) {
+        <div class="panel">
+          <p>Você ainda não fez pedidos.</p>
+          <a class="btn p" routerLink="/drones">Ver drones</a>
+        </div>
+      } @else {
+        <div class="ord-grid">
+          <div class="olist">
+            @for (o of lista(); track o.id) {
+              <article class="order" [attr.aria-current]="atual()?.id === o.id ? 'true' : null">
+                <div>
+                  <div class="no">#{{ o.numero }}</div>
+                  <div class="m">
+                    {{ o.dataCadastro | date: 'dd/MM/yyyy' }} · {{ o.quantidadeItens }}
+                    {{ o.quantidadeItens === 1 ? 'item' : 'itens' }}
+                  </div>
+                </div>
+                <div class="r">
+                  <span class="st {{ tom(o.status.id) }}"
+                    ><span>{{ exibicao[o.status.id]?.rotulo ?? o.status.nome }}</span></span
+                  >
+                  <b class="num">{{ reais(o.valorTotal) }}</b>
+                </div>
+                <div class="la">
+                  <button type="button" class="tlink" (click)="abrir(o.id)">Ver detalhes</button>
+                </div>
+              </article>
+            }
+          </div>
+
+          @if (atual(); as p) {
+            <aside class="sticky" id="rastreio">
+              <div class="panel">
+                <div class="ph2">
+                  <h2>Rastreio</h2>
+                  <span class="mono numero">#{{ p.numero }}</span>
+                </div>
+                @if (rastreio()?.eventos?.length) {
+                  <ol class="tl">
+                    @for (e of rastreio()!.eventos; track e.id; let ultimo = $last) {
+                      <li [class.done]="!ultimo" [class.now]="ultimo">
+                        <span class="dot"></span>
+                        <div>
+                          <b>{{ e.descricao }}</b
+                          ><span
+                            >{{ e.dataHora | date: 'dd/MM/yyyy · HH:mm'
+                            }}{{ e.localizacao ? ' · ' + e.localizacao : '' }}</span
+                          >
+                        </div>
+                      </li>
+                    }
+                  </ol>
+                } @else {
+                  <p class="formnote">{{ exibicao[p.status.id]?.rotulo ?? p.status.nome }}</p>
+                }
+                @if (rastreio()?.codigoRastreio; as codigo) {
+                  <div class="track">
+                    <span>{{ codigo }}</span>
+                    <button class="btn sm" type="button" (click)="copiar(codigo)">Copiar</button>
+                  </div>
+                }
+                <div class="sum">
+                  <div>
+                    <span>Produtos</span><span class="num">{{ reais(p.valorProdutos) }}</span>
+                  </div>
+                  @for (d of p.descontos; track $index) {
+                    <div class="neg">
+                      <span>{{ d.descricao }}</span
+                      ><span class="num">− {{ reais(d.valor) }}</span>
+                    </div>
+                  }
+                  <div>
+                    <span>Frete</span><span class="num">{{ reais(p.valorFrete) }}</span>
+                  </div>
+                  <div class="tot">
+                    <span>Total</span><b class="num">{{ reais(p.valorTotal) }}</b>
+                  </div>
+                </div>
+                @for (n of notas(); track n.id) {
+                  <p class="formnote">
+                    NF-e {{ n.numero }} ·
+                    <button type="button" class="tlink" (click)="baixar(n.danfeUrl)">DANFE</button>
+                    ·
+                    <button type="button" class="tlink" (click)="baixar(n.xmlUrl)">XML</button>
+                  </p>
+                }
+                @if (mensagem(); as m) {
+                  <p class="pwmsg" [class.good]="m.ok" [class.err]="!m.ok" role="status">
+                    {{ m.texto }}
+                  </p>
+                }
+                @if (pendente()) {
+                  <button class="btn p block acao" type="button" (click)="pagarPix()">
+                    Pagar agora
+                  </button>
+                }
+                @if (entregue()) {
+                  <button class="btn block acao" type="button" (click)="devolver()">
+                    Solicitar devolução
+                  </button>
+                }
+              </div>
+            </aside>
+          }
+        </div>
+      }
+    </section>
+  </div>
+</main>

@@ -11,3 +11,9 @@ insert into endereco_cliente (apelido, principal, cep, logradouro, numero, compl
 select 'Casa', true, '77001002', 'Quadra 104 Norte', '10', null, 'Plano Diretor Norte',
        (select id from municipio where codigo_ibge = 1721000),
        (select id from perfil_cliente where documento = '52998224725'), now();
+
+-- #30 RegraFrete: retirada no showroom e fallback do agregador para EXPRESSA e PADRAO (ids do enum ModalidadeEntrega).
+insert into regra_frete (modalidade, custo_fixo, prazo_dias, cep_origem, dataCadastro) values
+  (1, 89.90, 3, '77001000', now()),
+  (2, 39.90, 8, '77001000', now()),
+  (3, 0.00, 1, '77001000', now());

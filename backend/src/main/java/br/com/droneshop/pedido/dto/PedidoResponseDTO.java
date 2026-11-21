@@ -4,21 +4,25 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import br.com.droneshop.pagamento.model.MetodoPagamento;
 import br.com.droneshop.pedido.model.StatusPedido;
 
-// pagamentos e entrega ficam vazios até as issues de pagamento (#27) e entrega (#30, #31)
+// valorTotal = valorProdutos + valorFrete - valorDesconto; valorDesconto = soma de descontos[] (RN16)
 public record PedidoResponseDTO(
     Long id,
     String numero,
     StatusPedido status,
     ClientePedidoResponseDTO cliente,
+    BigDecimal valorProdutos,
     BigDecimal valorTotal,
     BigDecimal valorFrete,
     BigDecimal valorDesconto,
     List<ItemPedidoResponseDTO> itens,
     EnderecoPedidoResponseDTO enderecoEntrega,
-    List<Object> pagamentos,
-    Object entrega,
+    List<DescontoPedidoResponseDTO> descontos,
+    MetodoPagamento metodoPagamento,
+    List<PagamentoResumoDTO> pagamentos,
+    EntregaResponseDTO entrega,
     LocalDateTime dataCadastro
 ) {
 }

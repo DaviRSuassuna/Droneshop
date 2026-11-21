@@ -23,4 +23,6 @@ public interface PedidoService {
     // ordem cronológica
     List<HistoricoStatusPedido> historico(long id);
 
+    // mudança feita pelo sistema ou por integração (D11: sem autor); dispara StatusPedidoAlterado
+    void mudarSemAutor(Pedido pedido, br.com.droneshop.pedido.model.StatusPedido novo, br.com.droneshop.model.OrigemRegistro origem, String observacao);
 }

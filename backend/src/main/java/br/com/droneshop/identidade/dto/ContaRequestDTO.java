@@ -1,5 +1,7 @@
 package br.com.droneshop.identidade.dto;
 
+import java.util.List;
+
 import org.hibernate.validator.constraints.Length;
 
 import jakarta.validation.constraints.Email;
@@ -28,6 +30,9 @@ public record ContaRequestDTO(
     String documento,
 
     @Length(max = 20, message = "O campo deve ter no máximo 20 caracteres (back).")
-    String telefone
+    String telefone,
+
+    // termos e política na versão vigente (GET /loja/termos), conferidos no service (#46)
+    List<ConsentimentoRequestDTO> consentimentos
 ) {
 }

@@ -2,10 +2,10 @@ package br.com.droneshop.estoque.mapper;
 
 import br.com.droneshop.catalogo.model.Kit;
 import br.com.droneshop.catalogo.model.Produto;
-import br.com.droneshop.catalogo.service.KitCalculo;
 import br.com.droneshop.estoque.dto.EstoqueResponseDTO;
 import br.com.droneshop.estoque.dto.MovimentoEstoqueResponseDTO;
 import br.com.droneshop.estoque.model.MovimentoEstoque;
+import br.com.droneshop.estoque.service.ReservaSaldo;
 import br.com.droneshop.identidade.model.Usuario;
 
 public final class EstoqueResponseMapper {
@@ -30,12 +30,12 @@ public final class EstoqueResponseMapper {
 
     // Kit nao entra no alerta de minimo: quem se repoe e o componente
     public static EstoqueResponseDTO toEstoque(Produto p) {
-        int disponivel = KitCalculo.disponivel(p);
+        int disponivel = ReservaSaldo.disponivel(p);
         boolean kit = p instanceof Kit;
         return new EstoqueResponseDTO(
                 new EstoqueResponseDTO.Produto(p.getId(), p.getSku(), p.getNome(), p.getTipo(), p.getStatus()),
                 p.getEstoqueFisico(),
-                0,
+                ReservaSaldo.reservado(p),
                 disponivel,
                 p.getEstoqueMinimo(),
                 !kit && disponivel < p.getEstoqueMinimo());

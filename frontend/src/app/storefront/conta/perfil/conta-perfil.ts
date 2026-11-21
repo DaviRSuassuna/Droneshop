@@ -1,7 +1,12 @@
+import { DatePipe } from '@angular/common';
+import { AuthService, SessaoUsuario } from '../../../core/services/auth.service';
+import { AccountMenu } from '../../../layout/storefront/account-menu/account-menu';
+import { ContaSessao } from '../conta-sessao';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, ElementRef, OnInit, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { ContaService } from '../../../core/services/conta.service';
 import { PerfilCliente } from '../../../core/models/cliente.model';
 import { ProblemDetail } from '../../../core/models/problem.model';
 import { ClienteService } from '../../../core/services/cliente.service';
@@ -11,16 +16,22 @@ import { somenteDigitos } from '../../../core/utils/documentos';
 /** "Minha conta > Perfil e dados" (protótipo 02, conta-perfil.html). */
 @Component({
   selector: 'app-conta-perfil',
-  imports: [ReactiveFormsModule, RouterLink, MascaraDirective],
+  imports: [AccountMenu, DatePipe, ReactiveFormsModule, RouterLink, MascaraDirective],
+  providers: [ContaSessao],
   templateUrl: './conta-perfil.html',
   styleUrl: './conta-perfil.scss',
 })
 export class ContaPerfil implements OnInit {
+  protected readonly sessao = inject(ContaSessao);
   private readonly clientes = inject(ClienteService);
   private readonly fb = inject(FormBuilder);
   private readonly dialogoSenha = viewChild.required<ElementRef<HTMLDialogElement>>('dlgSenha');
 
+  private readonly auth = inject(AuthService);
+  private readonly conta = inject(ContaService);
+  private readonly router = inject(Router);
   readonly perfil = signal<PerfilCliente | null>(null);
+  readonly sessoes = signal<SessaoUsuario[]>([]);
   readonly salvando = signal(false);
   readonly mensagem = signal<{ texto: string; ok: boolean } | null>(null);
   readonly mensagemSenha = signal<{ texto: string; ok: boolean } | null>(null);
@@ -37,8 +48,10 @@ export class ContaPerfil implements OnInit {
   });
 
   ngOnInit(): void {
+    this.auth.sessoes().subscribe((s) => this.sessoes.set(s));
     this.clientes.perfil().subscribe((p) => {
       this.perfil.set(p);
+      this.sessao.resumo.set({ nome: p.nome, detalhe: p.email });
       this.form.patchValue({ nome: p.nome ?? '', telefone: p.telefone ?? '' });
     });
   }
@@ -62,6 +75,7 @@ export class ContaPerfil implements OnInit {
         next: () => {
           this.salvando.set(false);
           this.perfil.update((p) => (p ? { ...p, nome: v.nome.trim() } : p));
+          this.sessao.renomear(v.nome.trim());
           this.mensagem.set({ texto: 'Dados salvos.', ok: true });
         },
         error: (e: HttpErrorResponse) => {
@@ -69,6 +83,28 @@ export class ContaPerfil implements OnInit {
           this.mensagem.set({ texto: this.textoErro(e), ok: false });
         },
       });
+  }
+
+  /** Encerra outra sessão da conta (#20): o token dela deixa de valer. */
+  encerrarSessao(id: number): void {
+    this.auth
+      .revogarSessao(id)
+      .subscribe(() => this.sessoes.update((lista) => lista.filter((s) => s.id !== id)));
+  }
+
+  readonly excluindo = signal(false);
+  readonly senhaExclusao = signal('');
+  readonly erroExclusao = signal<string | null>(null);
+
+  /** Exclusão com anonimização (#46): depois, a sessão acaba e o login antigo deixa de valer. */
+  excluirConta(): void {
+    this.conta.excluirConta(this.senhaExclusao()).subscribe({
+      next: () => {
+        this.auth.limparSessao();
+        void this.router.navigateByUrl('/');
+      },
+      error: (e: HttpErrorResponse) => this.erroExclusao.set(this.textoErro(e)),
+    });
   }
 
   abrirSenha(): void {

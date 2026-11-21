@@ -1,0 +1,112 @@
+<main>
+  <div class="wrap account">
+    <app-account-menu [conta]="sessao.resumo()" (sair)="sessao.sair()" />
+    <section>
+      <div class="crumb">
+        <a routerLink="/">Home</a><span>Minha conta</span><span>Meios de pagamento</span>
+      </div>
+      <div class="ahead">
+        <div>
+          <h1>Meios de pagamento</h1>
+          <div class="sub">
+            {{ cartoes().length }}
+            {{ cartoes().length === 1 ? 'cartão salvo' : 'cartões salvos' }} · Pix e boleto
+            disponíveis no checkout
+          </div>
+        </div>
+        <div class="acoes-topo">
+          <button class="btn sm" type="button" (click)="abrir()">Novo cartão</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="ph2"><h2>Cartões salvos</h2></div>
+        @if (!cartoes().length) {
+          <p class="formnote">Nenhum cartão salvo.</p>
+        }
+        <div class="cards2">
+          @for (c of cartoes(); track c.id; let i = $index) {
+            <div>
+              <div class="cc" [class.alt]="i % 2 === 1">
+                <div class="cctop">
+                  <span class="chipc"></span>
+                  @if (c.padrao) {
+                    <span class="chip">PADRÃO</span>
+                  }
+                </div>
+                <div class="n">•••• •••• •••• {{ c.ultimosDigitos }}</div>
+                <div class="b">
+                  <span>VALIDADE {{ c.validade }}</span
+                  ><span class="brand">{{ (c.bandeira ?? 'cartão').toUpperCase() }}</span>
+                </div>
+              </div>
+              <div class="acard">
+                <span>Crédito · {{ c.bandeira ?? 'cartão' }}</span>
+                <div class="acts">
+                  @if (c.padrao) {
+                    <span>Padrão de pagamento</span>
+                  } @else {
+                    <button type="button" class="tlink" (click)="padrao(c)">
+                      Definir como padrão
+                    </button>
+                  }
+                  <button type="button" class="tlink" (click)="remover(c)">Remover</button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <dialog class="dlg wide" #dlgCartao aria-labelledby="dlgCartaoT">
+        <form class="dlgbox" [formGroup]="form" (ngSubmit)="salvar()">
+          <div class="dlghead">
+            <div>
+              <span class="lbl">Meios de pagamento</span>
+              <h2 id="dlgCartaoT">Novo cartão</h2>
+            </div>
+            <button class="iconbtn" type="button" aria-label="Fechar" (click)="fechar()">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+          </div>
+          <div class="fg">
+            <div class="f w6">
+              <label for="cn">Número do cartão <span class="req">*</span></label>
+              <input
+                id="cn"
+                type="text"
+                inputmode="numeric"
+                autocomplete="cc-number"
+                formControlName="numero"
+              />
+            </div>
+            <div class="f">
+              <label for="cv">Validade <span class="req">*</span></label>
+              <input
+                id="cv"
+                type="text"
+                placeholder="MM/AA"
+                autocomplete="cc-exp"
+                formControlName="validade"
+              />
+            </div>
+            <div class="f w6">
+              <label for="cnm">Nome impresso no cartão <span class="req">*</span></label>
+              <input id="cnm" type="text" autocomplete="cc-name" formControlName="nome" />
+            </div>
+            <p class="formnote check">
+              Dados processados pelo adquirente, não armazenados pela Aeria.
+            </p>
+          </div>
+          @if (mensagem(); as m) {
+            <p class="pwmsg err" role="status">{{ m.texto }}</p>
+          }
+          <div class="dlgfoot">
+            <button class="btn" type="button" (click)="fechar()">Cancelar</button>
+            <button class="btn p" type="submit">Salvar cartão</button>
+          </div>
+        </form>
+      </dialog>
+    </section>
+  </div>
+</main>

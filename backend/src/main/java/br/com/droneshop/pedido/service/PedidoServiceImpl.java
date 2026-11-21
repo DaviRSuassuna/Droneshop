@@ -22,11 +22,16 @@ import br.com.droneshop.pedido.model.Pedido;
 import br.com.droneshop.pedido.model.StatusPedido;
 import br.com.droneshop.pedido.repository.PedidoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class PedidoServiceImpl implements PedidoService {
+
+    @Inject
+    Event<StatusPedidoAlterado> statusAlterado;
+
 
     // "AER-000123", "aer123", "#AER-000123" ou só "123"
     private static final Pattern NUMERO_PEDIDO = Pattern.compile("(?i)^#?(?:AER-?)?0*(\\d{1,18})$");
@@ -123,6 +128,27 @@ public class PedidoServiceImpl implements PedidoService {
 
         pedido.setStatus(novo);
         pedido.getHistorico().add(historico);
+        statusAlterado.fire(new StatusPedidoAlterado(pedido, atual, novo));
+    }
+
+    @Override
+    @Transactional
+    public void mudarSemAutor(Pedido pedido, StatusPedido novo, OrigemRegistro origem, String observacao) {
+        StatusPedido atual = pedido.getStatus();
+        if (atual == novo)
+            return;
+        if (!atual.podeIrPara(novo))
+            throw new ConflitoException(
+                    "O pedido não pode passar de " + atual.getNome() + " para " + novo.getNome() + ".");
+        HistoricoStatusPedido historico = new HistoricoStatusPedido();
+        historico.setPedido(pedido);
+        historico.setStatusAnterior(atual);
+        historico.setStatusNovo(novo);
+        historico.setOrigem(origem);
+        historico.setObservacao(observacao);
+        pedido.setStatus(novo);
+        pedido.getHistorico().add(historico);
+        statusAlterado.fire(new StatusPedidoAlterado(pedido, atual, novo));
     }
 
     @Override

@@ -1,0 +1,20 @@
+// O que o protótipo 02 (confirmacao.html) faz com style inline.
+.entrega {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+  color: var(--ink2);
+}
+.entrega p {
+  margin: 8px 0 0;
+}
+.entrega .prev {
+  margin-top: 10px;
+  color: var(--ink);
+}
+.acoes {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+}

@@ -143,6 +143,30 @@ public class MovimentoEstoqueServiceImpl implements MovimentoEstoqueService {
         return estoqueRepository.findComFiltro(situacao, busca, idMarca).count();
     }
 
+    @Override
+    @Transactional
+    public MovimentoEstoque doSistema(Produto produto, TipoMovimento tipo, int quantidade, String observacao) {
+        Produto p = produtoRepository.findById(produto.getId(), LockModeType.PESSIMISTIC_WRITE);
+        int atual = (p.getEstoqueFisico() == null) ? 0 : p.getEstoqueFisico();
+        int saldo = switch (tipo) {
+            case ENTRADA, DEVOLUCAO -> atual + quantidade;
+            case SAIDA, PERDA -> atual - quantidade;
+            default -> quantidade;
+        };
+        if (saldo < 0)
+            throw new ConflitoException("Saldo insuficiente de " + p.getNome() + ".");
+        MovimentoEstoque m = new MovimentoEstoque();
+        m.setProduto(p);
+        m.setTipo(tipo);
+        m.setOrigem(OrigemRegistro.SISTEMA);
+        m.setQuantidade(quantidade);
+        m.setSaldoResultante(saldo);
+        m.setObservacao(observacao);
+        p.setEstoqueFisico(saldo);
+        movimentoRepository.persist(m);
+        return m;
+    }
+
     // Pela API e no cadastro, sempre MANUAL com o usuario do token (D11)
     private MovimentoEstoque novo(Produto produto, TipoMovimento tipo, int quantidade, int saldo,
             String observacao) {

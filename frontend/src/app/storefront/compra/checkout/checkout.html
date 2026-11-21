@@ -1,0 +1,200 @@
+<main>
+  <div class="wrap pagehead"><h1>Finalizar compra</h1></div>
+  <div class="wrap two">
+    <div>
+      <div class="steps">
+        <div class="done"><i>✓</i>Carrinho</div>
+        <div class="on"><i>2</i>Entrega e pagamento</div>
+        <div><i>3</i>Confirmação</div>
+      </div>
+
+      <div class="panel">
+        <div class="ph2"><h2>Endereço de entrega</h2></div>
+        @if (enderecos().length) {
+          <div class="choices c2">
+            @for (e of enderecos(); track e.id) {
+              <label class="choice">
+                <input
+                  type="radio"
+                  name="end"
+                  [checked]="idEndereco() === e.id"
+                  (change)="escolherEndereco(e)"
+                />
+                <div>
+                  <b>{{ e.apelido || 'Endereço' }}{{ e.principal ? ' · principal' : '' }}</b>
+                  <span
+                    >{{ linhaEndereco(e) }}<br />{{ e.bairro }} · {{ e.municipio.nome }} /
+                    {{ e.municipio.estado.sigla }} · {{ e.cep }}</span
+                  >
+                </div>
+              </label>
+            }
+          </div>
+        } @else {
+          <p class="formnote">
+            Você ainda não tem endereço.
+            <a class="tlink" routerLink="/conta/enderecos">Cadastrar endereço</a>
+          </p>
+        }
+      </div>
+
+      <div class="panel">
+        <div class="ph2"><h2>Frete</h2></div>
+        <div class="choices">
+          @for (c of cotacoes(); track c.modalidade.id) {
+            <label class="choice">
+              <input
+                type="radio"
+                name="fr2"
+                [checked]="modalidade() === c.modalidade.id"
+                (change)="modalidade.set(c.modalidade.id)"
+              />
+              <div>
+                <b>{{ nomeModalidade[c.modalidade.id] }}</b
+                ><span>{{ prazo(c) }}</span>
+              </div>
+              <span class="end" [class.free]="!c.custo">{{
+                c.custo ? reais(c.custo) : 'Grátis'
+              }}</span>
+            </label>
+          }
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="ph2">
+          <h2>Forma de pagamento</h2>
+          <span class="formnote"><span class="req">*</span> obrigatório</span>
+        </div>
+        <div class="choices c3">
+          <label class="choice">
+            <input
+              type="radio"
+              name="pg"
+              [checked]="metodo() === METODO.CARTAO"
+              (change)="metodo.set(METODO.CARTAO)"
+            />
+            <div><b>Cartão de crédito</b><span>cartão salvo na sua conta</span></div>
+          </label>
+          <label class="choice">
+            <input
+              type="radio"
+              name="pg"
+              [checked]="metodo() === METODO.PIX"
+              (change)="metodo.set(METODO.PIX)"
+            />
+            <div><b>Pix</b><span>aprovação na hora</span></div>
+          </label>
+          <label class="choice">
+            <input
+              type="radio"
+              name="pg"
+              [checked]="metodo() === METODO.BOLETO"
+              (change)="metodo.set(METODO.BOLETO)"
+            />
+            <div><b>Boleto</b><span>vence em 3 dias</span></div>
+          </label>
+        </div>
+        @if (metodo() === METODO.CARTAO) {
+          <div class="fg pgbox">
+            @if (cartoes().length) {
+              <div class="f w6">
+                <label for="cartao">Cartão <span class="req">*</span></label>
+                <select
+                  id="cartao"
+                  [value]="idCartao() ?? ''"
+                  (change)="idCartao.set(+$any($event.target).value)"
+                >
+                  @for (c of cartoes(); track c.id) {
+                    <option [value]="c.id">
+                      {{ c.bandeira || 'Cartão' }} final {{ c.ultimosDigitos }}
+                    </option>
+                  }
+                </select>
+              </div>
+            } @else {
+              <p class="formnote">
+                Nenhum cartão salvo.
+                <a class="tlink" routerLink="/conta/pagamentos">Cadastrar cartão</a>
+              </p>
+            }
+          </div>
+        } @else if (metodo() === METODO.PIX) {
+          <div class="panel pgbox">
+            <b class="b5">Total no Pix: {{ reais(total()) }}</b>
+            <p class="formnote">O QR Code aparece depois de confirmar. Aprovação na hora.</p>
+          </div>
+        } @else {
+          <div class="panel pgbox">
+            <b class="b5">Boleto de {{ reais(total()) }}</b>
+            <p class="formnote">
+              Vence em 3 dias. O pedido é separado após a compensação, em até 2 dias úteis.
+            </p>
+          </div>
+        }
+      </div>
+    </div>
+
+    <aside class="sticky">
+      <div class="panel">
+        <div class="ph2">
+          <h2>Seu pedido</h2>
+          <a class="tlink" routerLink="/carrinho">Editar</a>
+        </div>
+        <div class="items">
+          @for (i of carrinho()?.itens ?? []; track i.id) {
+            <div class="item sm">
+              <div>
+                <h3>{{ i.produto.nome }}</h3>
+                <div class="meta">{{ i.quantidade }} un</div>
+              </div>
+              <div class="price num">{{ reais(i.subtotal) }}</div>
+            </div>
+          }
+        </div>
+        <div class="sum">
+          <div>
+            <span>Subtotal</span><span class="num">{{ reais(carrinho()?.subtotal) }}</span>
+          </div>
+          @if (carrinho()?.cupom; as cupom) {
+            <div class="neg">
+              <span>Cupom {{ cupom.codigo }}</span
+              ><span class="num">− {{ reais(cupom.desconto) }}</span>
+            </div>
+          }
+          <div>
+            <span>Frete</span><span class="num">{{ frete() ? reais(frete()) : 'Grátis' }}</span>
+          </div>
+          <div class="tot">
+            <span>Total</span><b class="num">{{ reais(total()) }}</b>
+          </div>
+        </div>
+        @if (erro(); as e) {
+          <p class="login-error" role="alert">{{ e }}</p>
+        }
+        <button
+          class="btn p block pagar"
+          type="button"
+          [disabled]="enviando()"
+          (click)="confirmar()"
+        >
+          {{ enviando() ? 'Confirmando…' : 'Pagar ' + reais(total()) }}
+        </button>
+        <a class="tlink voltar" routerLink="/carrinho">← Voltar ao carrinho</a>
+        <div class="trust-mini">
+          <div>
+            Compra protegida. Dados do cartão processados pelo adquirente, não armazenados pela
+            Aeria.
+          </div>
+          <div>Garantia de 12 meses + 30 dias para troca</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+  <div class="mbar">
+    <div>
+      <span>Total do pedido</span><b class="num">{{ reais(total()) }}</b>
+    </div>
+    <button class="btn p" type="button" [disabled]="enviando()" (click)="confirmar()">Pagar</button>
+  </div>
+</main>

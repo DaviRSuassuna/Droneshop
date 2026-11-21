@@ -85,4 +85,12 @@ public class PedidoRepository implements PanacheRepository<Pedido> {
         BigDecimal soma = linha[1] instanceof BigDecimal b ? b : BigDecimal.ZERO;
         return new Totais((Long) linha[0], soma);
     }
+
+    public PanacheQuery<Pedido> doUsuario(Long idUsuario) {
+        return find("cliente.usuario.id = ?1 order by dataCadastro desc, id desc", idUsuario);
+    }
+
+    public Pedido doUsuario(Long id, Long idUsuario) {
+        return find("id = ?1 and cliente.usuario.id = ?2", id, idUsuario).firstResult();
+    }
 }

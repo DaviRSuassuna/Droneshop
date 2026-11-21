@@ -20,6 +20,9 @@ import jakarta.ws.rs.ForbiddenException;
 public class ClienteServiceImpl implements ClienteService {
 
     @Inject
+    LgpdService lgpd;
+
+    @Inject
     UsuarioRepository usuarios;
 
     @Inject
@@ -40,6 +43,7 @@ public class ClienteServiceImpl implements ClienteService {
             throw ValidationException.of("documento", "Já existe uma conta com esse documento.");
         if (usuarios.porEmail(dto.email()) != null)
             throw ValidationException.of("email", "Já existe uma conta com esse e-mail.");
+        lgpd.conferirObrigatorios(dto.consentimentos());
 
         Usuario usuario = new Usuario();
         usuario.setNome(dto.nome().trim());
@@ -56,6 +60,7 @@ public class ClienteServiceImpl implements ClienteService {
         perfil.setTelefone(Documentos.somenteDigitosOuNulo(dto.telefone()));
         perfis.persist(perfil);
         usuario.setPerfilCliente(perfil);
+        lgpd.registrar(usuario, dto.consentimentos());
         return perfil;
     }
 

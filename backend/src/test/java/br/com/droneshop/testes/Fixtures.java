@@ -417,9 +417,12 @@ public final class Fixtures {
 
     /** Id de um pedido da carga de dados no status informado (a #16 garante três por status). */
     public static long pedidoDaCarga(long idStatus) {
-        return given().queryParam("idStatus", idStatus).queryParam("pageSize", 1)
+        // A listagem vem do mais novo para o mais antigo e os testes também criam pedidos:
+        // o da carga é o mais antigo (a carga data os pedidos no passado).
+        List<Long> ids = given().queryParam("idStatus", idStatus).queryParam("pageSize", 1000)
                 .when().get("/pedidos").then().statusCode(200)
-                .extract().jsonPath().getLong("items[0].id");
+                .extract().jsonPath().getList("items.id", Long.class);
+        return ids.get(ids.size() - 1);
     }
 
     // ---------------------------------------------------------------- apoio

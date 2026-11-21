@@ -41,6 +41,7 @@ class Pedido {
   -valorTotal: BigDecimal
   -valorFrete: BigDecimal
   -valorDesconto: BigDecimal
+  -metodoPagamento: MetodoPagamento
 }
 
 class ItemPedido {
@@ -148,6 +149,14 @@ class Cupom <<externo>> {
   aeria-compra.puml
 }
 
+class Carrinho <<externo>> {
+  aeria-compra.puml
+}
+
+enum MetodoPagamento <<externo>> {
+  aeria-pagamento.puml
+}
+
 class Devolucao <<externo>> {
   aeria-pagamento.puml
 }
@@ -192,5 +201,6 @@ Entrega "*" ..> "0..1" RegraFrete : usa (fallback/retirada)
 Pedido "1" *-- "1..*" Pagamento
 Pedido "1" *-- "*" NotaFiscal
 Pedido "1" *-- "*" Devolucao
+Pedido "*" --> "0..1" Carrinho : carrinho de origem (reservas)
 
 @enduml
