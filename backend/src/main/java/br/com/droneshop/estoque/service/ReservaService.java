@@ -10,7 +10,7 @@ public interface ReservaService {
     /** Reserva (ou renova) todos os itens; 409 se algum passar do disponível, sem reservar nada. */
     void reservar(List<ItemCarrinho> itens);
 
-    /** Pagamento aprovado: as reservas ATIVA dos itens viram CONFIRMADA (#27). */
+    /** Pagamento aprovado: as reservas ATIVA viram CONFIRMADA e baixam o físico por SAIDA (#27). */
     void confirmar(List<ItemCarrinho> itens);
 
     /** Libera as reservas ATIVA dos itens (pedido cancelado, carrinho expirado). */

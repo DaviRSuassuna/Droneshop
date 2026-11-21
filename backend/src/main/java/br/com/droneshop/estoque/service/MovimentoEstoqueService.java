@@ -17,6 +17,9 @@ public interface MovimentoEstoqueService {
     // saldo inicial do produto novo (D40): ENTRADA MANUAL do usuario logado, gravada junto com ele
     void entradaInicial(Produto produto, int quantidade);
 
+    // movimento do sistema (pagamento aprovado, devolução recebida): origem SISTEMA, sem autor (D11)
+    MovimentoEstoque doSistema(Produto produto, TipoMovimento tipo, int quantidade, String observacao);
+
     TipoMovimento tipo(String idTipo);
     List<MovimentoEstoque> findComFiltro(Long idProduto, TipoMovimento tipo, int page, int pageSize);
     long countComFiltro(Long idProduto, TipoMovimento tipo);

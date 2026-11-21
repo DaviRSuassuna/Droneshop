@@ -14,6 +14,7 @@ import br.com.droneshop.catalogo.service.KitCalculo;
 import br.com.droneshop.compra.model.ItemCarrinho;
 import br.com.droneshop.estoque.model.Reserva;
 import br.com.droneshop.estoque.model.StatusReserva;
+import br.com.droneshop.estoque.model.TipoMovimento;
 import br.com.droneshop.estoque.repository.ReservaRepository;
 import br.com.droneshop.exception.ConflitoException;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -28,6 +29,9 @@ public class ReservaServiceImpl implements ReservaService {
 
     @Inject
     ReservaRepository reservas;
+
+    @Inject
+    MovimentoEstoqueService movimentos;
 
     /** O que cada item prende do estoque: o próprio produto ou, no kit, cada componente (D7). */
     static Map<Produto, Integer> partes(ItemCarrinho item) {
@@ -87,7 +91,15 @@ public class ReservaServiceImpl implements ReservaService {
     @Override
     @Transactional
     public void confirmar(List<ItemCarrinho> itens) {
-        mudar(itens, StatusReserva.CONFIRMADA);
+        // a reserva vira CONFIRMADA e o físico baixa por SAIDA do sistema (RF14); reserva que
+        // expirou antes do pagamento não impede a baixa
+        for (ItemCarrinho item : itens)
+            partes(item).forEach((p, q) -> {
+                item.getReservas().stream()
+                        .filter(r -> r.getStatus() == StatusReserva.ATIVA && r.getProduto().getId().equals(p.getId()))
+                        .forEach(r -> r.setStatus(StatusReserva.CONFIRMADA));
+                movimentos.doSistema(p, TipoMovimento.SAIDA, q, "Venda paga");
+            });
     }
 
     @Override
