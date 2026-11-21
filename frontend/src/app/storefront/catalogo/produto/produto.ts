@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { catchError, of, switchMap } from 'rxjs';
+import { Observable, catchError, of, switchMap } from 'rxjs';
 import {
   MidiaLoja,
   ProdutoLojaDetalhe,
@@ -180,7 +180,7 @@ export class Produto {
     this.adicionando.set(true);
     this.erroCarrinho.set(null);
     const quantidade = this.quantidade();
-    const inicio = this.carrinho.token() ? of(null) : this.carrinho.criar();
+    const inicio: Observable<unknown> = this.carrinho.token() ? of(null) : this.carrinho.criar();
     inicio.pipe(switchMap(() => this.carrinho.adicionar(idProduto, quantidade))).subscribe({
       next: () => void this.router.navigate(['/carrinho']),
       error: (e: HttpErrorResponse) => {
