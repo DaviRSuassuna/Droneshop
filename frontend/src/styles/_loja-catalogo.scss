@@ -1,0 +1,622 @@
+// Catálogo da loja (#21): cabeçalho de página, card de produto, filtros, paginação e seções,
+// portados de docs/design/prototipo/assets/site.css. Mudou lá, muda aqui.
+:root.loja {
+  .pagehead {
+    padding-block: 34px 26px;
+  }
+  .crumb {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--mute);
+    margin-bottom: 12px;
+  }
+  .crumb a:hover {
+    color: var(--ink);
+  }
+  .crumb span::before {
+    content: '/';
+    margin-right: 8px;
+    color: var(--faint);
+  }
+  .pagehead h1 {
+    font: 200 clamp(36px, 4.4vw, 58px)/1.02 var(--display);
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+  .pagehead .sub {
+    color: var(--mute);
+    margin-top: 10px;
+  }
+  .pagehead .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  .stage {
+    position: relative;
+    background: radial-gradient(85% 95% at 50% 40%, #1e2125, #121417);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+  .stage img {
+    width: 88%;
+    filter: drop-shadow(0 18px 18px rgba(0, 0, 0, 0.5));
+  }
+  .pic-art {
+    width: 72%;
+    height: auto;
+    display: block;
+  }
+  .pic-art * {
+    fill: none;
+    stroke: #c9cdd3;
+    stroke-width: 1.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .pic-art .s {
+    stroke: #4a5058;
+  }
+  .pic-art .a {
+    stroke: var(--amber);
+    stroke-width: 1.5;
+  }
+  .pic-art .af {
+    fill: var(--amber);
+    stroke: none;
+  }
+  .pic-art text {
+    fill: #8a9099;
+    stroke: none;
+    font: 500 7px var(--mono);
+    letter-spacing: 0.06em;
+  }
+  .pgrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .pgrid.c4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .pcard {
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(170deg, #1c1f23, #131518);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 16px 18px;
+    transition:
+      border-color 0.3s,
+      transform 0.3s;
+    min-width: 0;
+  }
+  .pcard:hover {
+    border-color: var(--line2);
+    transform: translateY(-3px);
+  }
+  .pcard .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    min-height: 22px;
+  }
+  .pcard .stage {
+    aspect-ratio: 16/11;
+    background: none;
+    margin: 4px 0;
+  }
+  .pcard .stage img {
+    transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .pcard:hover .stage img {
+    transform: translateY(-6px);
+  }
+  .pcard h3 {
+    font: 300 20px/1.2 var(--display);
+    margin: 4px 0 2px;
+  }
+  .pcard .specs {
+    font: 400 12px var(--mono);
+    color: var(--mute);
+  }
+  .pcard .pr {
+    font: 300 20px var(--display);
+    margin-top: 12px;
+  }
+  .pcard .pr s {
+    font: 400 12.5px var(--body);
+    color: var(--mute);
+    margin-left: 6px;
+  }
+  .pcard .pr.sale {
+    color: var(--amber);
+  }
+  .pcard .pr small {
+    display: block;
+    font: 400 12px var(--body);
+    color: var(--mute);
+  }
+  .pcard .row2 {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .pcard .row2 .btn {
+    flex: 1;
+    height: 40px;
+    font-size: 13.5px;
+  }
+  .pcard .row2 .sq {
+    flex: 0 0 40px;
+    padding: 0;
+  }
+  .pcard .note {
+    font-size: 12.5px;
+    color: var(--mute);
+    margin-top: 10px;
+  }
+  .pcard .note.ok {
+    color: var(--ok);
+  }
+  .pcard .note.warn {
+    color: var(--warn);
+  }
+  .catalog {
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr);
+    gap: 34px;
+    align-items: start;
+    padding-bottom: 80px;
+  }
+  .filters {
+    position: sticky;
+    top: 96px;
+    display: grid;
+    gap: 2px;
+  }
+  .fhead {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .fhead b {
+    font: 300 18px var(--display);
+  }
+  .fgroup {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+    display: grid;
+    gap: 9px;
+  }
+  .fgroup .lbl {
+    margin-bottom: 4px;
+  }
+  .opt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--ink2);
+    cursor: pointer;
+  }
+  .opt em {
+    margin-left: auto;
+    font: normal 400 11.5px var(--mono);
+    color: var(--faint);
+  }
+  .ck {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--faint);
+    border-radius: 4px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    margin: 0;
+    flex: none;
+  }
+  .ck:checked {
+    background: var(--amber);
+    border-color: var(--amber);
+  }
+  .ck:checked::after {
+    content: '';
+    width: 8px;
+    height: 4px;
+    border: 2px solid #111;
+    border-top: 0;
+    border-right: 0;
+    transform: rotate(-45deg) translate(1px, -1px);
+  }
+  .range {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 12.5px;
+    color: var(--mute);
+  }
+  .range input {
+    width: 100%;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--line2);
+    background: var(--field);
+    padding: 0 10px;
+    color: var(--ink);
+    font-size: 13px;
+  }
+  .fnote {
+    font-size: 12.5px;
+    color: var(--mute);
+    padding-top: 14px;
+  }
+  .ctool {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--line2);
+    border-radius: 999px;
+    padding: 4px 11px;
+    font-size: 12.5px;
+    color: var(--ink2);
+  }
+  .tag button {
+    border: 0;
+    background: none;
+    color: var(--mute);
+    cursor: pointer;
+    padding: 0;
+  }
+  .sel {
+    height: 40px;
+    padding: 0 34px 0 14px;
+    border-radius: 9px;
+    background: var(--surf)
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%238A9099' stroke-width='1.4'/%3E%3C/svg%3E")
+      no-repeat right 13px center;
+    border: 1px solid var(--line);
+    appearance: none;
+    color: var(--ink2);
+    font-size: 14px;
+  }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding-top: 22px;
+    color: var(--mute);
+    font-size: 13.5px;
+  }
+  .pages {
+    display: flex;
+    gap: 4px;
+  }
+  .pages a {
+    min-width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+  }
+  .pages a[aria-current] {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+  }
+  .filtbtn {
+    display: none;
+  }
+  .item .stage {
+    aspect-ratio: 1;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+  }
+  .item .stage img {
+    width: 92%;
+  }
+  .item .stage .pic-art {
+    width: 80%;
+  }
+  .stock {
+    font-size: 12.5px;
+    color: var(--ok);
+  }
+  .stock.warn {
+    color: var(--warn);
+  }
+  .qty {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--line2);
+    border-radius: 9px;
+    height: 40px;
+  }
+  .qty button {
+    width: 36px;
+    height: 100%;
+    border: 0;
+    background: none;
+    color: var(--ink2);
+    cursor: pointer;
+    font-size: 16px;
+  }
+  .qty output {
+    min-width: 28px;
+    text-align: center;
+    font: 400 14px var(--mono);
+  }
+  .sec {
+    padding-block: 70px 0;
+  }
+  .shead {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 20px;
+    margin-bottom: 26px;
+    flex-wrap: wrap;
+  }
+  .shead h2 {
+    font: 300 clamp(28px, 3.2vw, 42px)/1.1 var(--display);
+    margin: 10px 0 0;
+    letter-spacing: -0.01em;
+  }
+  .tele {
+    border-block: 1px solid var(--line);
+  }
+  .tele .wrap {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .read {
+    padding: 22px 0 24px 26px;
+    border-left: 1px solid var(--line);
+  }
+  .read:first-child {
+    border-left: 0;
+    padding-left: 0;
+  }
+  .read strong {
+    display: block;
+    margin-top: 6px;
+    font: 200 44px/1 var(--display);
+    font-variant-numeric: tabular-nums;
+  }
+  .read strong span {
+    font: 400 14px var(--mono);
+    color: var(--mute);
+    margin-left: 6px;
+  }
+  @media (max-width: 1100px) {
+    .pgrid,
+    .pgrid.c4 {
+      grid-template-columns: 1fr 1fr;
+    }
+    .catalog {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .filters {
+      position: static;
+      display: none;
+    }
+    .filters.open {
+      display: grid;
+    }
+    .filtbtn {
+      display: inline-flex;
+    }
+    .tele .wrap {
+      grid-template-columns: 1fr 1fr;
+    }
+    .read:nth-child(3) {
+      border-left: 0;
+      padding-left: 0;
+    }
+    .read:nth-child(n + 3) {
+      border-top: 1px solid var(--line);
+    }
+  }
+  @media (max-width: 640px) {
+    .pgrid,
+    .pgrid.c4,
+    .cards2,
+    .choices.c2,
+    .choices.c3 {
+      grid-template-columns: 1fr;
+    }
+    .read strong {
+      font-size: 34px;
+    }
+  }
+  @media (max-width: 640px) {
+    .tlink,
+    .arrow,
+    .crumb a,
+    .item .acts a,
+    .acard .acts a,
+    .order .la a,
+    .side a,
+    .pager a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+    .check,
+    .opt {
+      min-height: 44px;
+    }
+    .pcard h3 a {
+      display: block;
+      padding: 2px 0;
+    }
+    .read .lbl {
+      display: block;
+      min-height: 2.7em;
+      letter-spacing: 0.12em;
+    }
+    .pgrid,
+    .pgrid.c4 {
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .pcard {
+      padding: 10px 10px 12px;
+      border-radius: 12px;
+    }
+    .pcard .top {
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .pcard .top .lbl {
+      font-size: 9.5px;
+      letter-spacing: 0.1em;
+    }
+    .pcard .chip {
+      font-size: 9px;
+      padding: 2px 7px;
+      letter-spacing: 0.08em;
+    }
+    .pcard .stage {
+      aspect-ratio: 1/1;
+      margin: 2px 0;
+    }
+    .pcard .stage img {
+      width: 100%;
+    }
+    .pcard .pic-art {
+      width: 86%;
+    }
+    .pcard h3 {
+      font-size: 15.5px;
+      line-height: 1.25;
+    }
+    .pcard .specs {
+      font-size: 10.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .pcard .pr {
+      font-size: 17px;
+      margin-top: 8px;
+    }
+    .pcard .pr s {
+      display: block;
+      margin: 0;
+      font-size: 11.5px;
+    }
+    .pcard .pr small {
+      font-size: 11px;
+    }
+    .pcard .row2 {
+      margin-top: 10px;
+    }
+    .pcard .row2 .btn:not(.sq):not(.grp) {
+      display: none;
+    }
+    .pcard .row2 .grp {
+      height: 44px;
+    }
+    .pcard .row2 .sq {
+      flex: 1;
+      width: auto;
+      height: 44px;
+    }
+    .pcard .row2 .sq::after {
+      content: 'Adicionar';
+      margin-left: 8px;
+      font-size: 13.5px;
+      font-weight: 500;
+    }
+    .pcard .note {
+      font-size: 11.5px;
+    }
+  }
+  @media (max-width: 380px) {
+    .pgrid,
+    .pgrid.c4 {
+      gap: 8px;
+    }
+    .pcard h3 {
+      font-size: 14.5px;
+    }
+  }
+  .crumb {
+    align-items: center;
+  }
+  .pcard .row2 {
+    margin-top: auto;
+    padding-top: 12px;
+  }
+  @media (max-width: 640px) {
+    .crumb {
+      gap: 0 8px;
+    }
+    .pages a {
+      display: grid !important;
+      place-items: center;
+      min-width: 44px;
+      height: 44px;
+    }
+    .pcard .pr {
+      margin-bottom: 2px;
+    }
+    .pcard .row2 {
+      margin-top: auto;
+      padding-top: 10px;
+    }
+  }
+  .pcard .pr .from {
+    display: block;
+    font: 400 10.5px var(--mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--mute);
+    margin-bottom: 2px;
+  }
+  .tag button {
+    display: inline-grid;
+    place-items: center;
+    min-width: 32px;
+    min-height: 32px;
+    margin: -9px -11px -9px -6px;
+    font-size: 15px;
+  }
+  @media (max-width: 640px) {
+    .pager {
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+    }
+    .pager .pages {
+      justify-content: center;
+    }
+  }
+}

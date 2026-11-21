@@ -1,0 +1,158 @@
+<main>
+  <div class="wrap pagehead">
+    <div class="crumb">
+      <a routerLink="/">Home</a><span>{{ titulo }}</span>
+    </div>
+    <div class="row">
+      <div>
+        <h1>{{ titulo }}</h1>
+        <div class="sub">
+          {{ total() }} {{ tipo === 'DRONE' ? 'modelos' : 'itens' }} ·
+          {{
+            tipo === 'DRONE'
+              ? 'versões do mesmo drone ficam juntas na mesma página'
+              : 'compatibilidade verificada por modelo'
+          }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="wrap catalog">
+    <aside class="filters" [class.open]="filtrosAbertos()" id="filtros" aria-label="Filtros">
+      <div class="fhead">
+        <b>Filtros</b><a class="tlink" href="" (click)="limpar($event)">Limpar</a>
+      </div>
+      @if (facetas().marcas.length) {
+        <div class="fgroup">
+          <span class="lbl">Marca</span>
+          @for (m of facetas().marcas; track m.slug) {
+            <label class="opt"
+              ><input
+                class="ck"
+                type="checkbox"
+                [checked]="marcado('marca', m.slug)"
+                (change)="alternar('marca', m.slug)"
+              />{{ m.nome }}<em>{{ m.quantidade }}</em></label
+            >
+          }
+        </div>
+      }
+      @if (subcategorias().length) {
+        <div class="fgroup">
+          <span class="lbl">{{ rotuloGrupo }}</span>
+          @for (s of subcategorias(); track s.id) {
+            <label class="opt"
+              ><input
+                class="ck"
+                type="checkbox"
+                [checked]="marcado('subcategoria', s.slug)"
+                (change)="alternar('subcategoria', s.slug)"
+              />{{ s.nome }}</label
+            >
+          }
+        </div>
+      }
+      @if (tipo === 'DRONE') {
+        <div class="fgroup">
+          <span class="lbl">Alcance de transmissão</span>
+          @for (a of alcances; track a.valor) {
+            <label class="opt"
+              ><input
+                class="ck"
+                type="checkbox"
+                [checked]="marcado('alcanceMin', a.valor)"
+                (change)="alternar('alcanceMin', a.valor)"
+              />{{ a.rotulo }}</label
+            >
+          }
+        </div>
+        <div class="fgroup">
+          <span class="lbl">Autonomia de voo</span>
+          @for (a of autonomias; track a.valor) {
+            <label class="opt"
+              ><input
+                class="ck"
+                type="checkbox"
+                [checked]="marcado('autonomiaMin', a.valor)"
+                (change)="alternar('autonomiaMin', a.valor)"
+              />{{ a.rotulo }}</label
+            >
+          }
+        </div>
+      }
+      <div class="fgroup">
+        <span class="lbl">Faixa de preço</span>
+        <div class="range">
+          <input
+            inputmode="numeric"
+            aria-label="Preço mínimo"
+            [value]="filtro().precoMin ?? ''"
+            (change)="preco('precoMin', $any($event.target).value)"
+          />até<input
+            inputmode="numeric"
+            aria-label="Preço máximo"
+            [value]="filtro().precoMax ?? ''"
+            (change)="preco('precoMax', $any($event.target).value)"
+          />
+        </div>
+      </div>
+      <p class="fnote">{{ nota }}</p>
+    </aside>
+    <section aria-label="Resultados">
+      <div class="ctool">
+        <div class="tags">
+          <button
+            class="btn sm filtbtn"
+            type="button"
+            aria-controls="filtros"
+            [attr.aria-expanded]="filtrosAbertos()"
+            (click)="filtrosAbertos.set(!filtrosAbertos())"
+          >
+            Filtros
+          </button>
+          @for (t of etiquetas(); track t.chave) {
+            <span class="tag"
+              >{{ t.texto }}
+              <button type="button" aria-label="Remover filtro" (click)="tirar(t.chave)">
+                ×
+              </button></span
+            >
+          }
+        </div>
+        <select
+          class="sel"
+          aria-label="Ordenar"
+          [value]="filtro().ordem ?? ''"
+          (change)="ordenar($any($event.target).value)"
+        >
+          <option value="">Ordenar: nome</option>
+          <option value="preco">Menor preço</option>
+          <option value="-preco">Maior preço</option>
+          <option value="lancamento">Lançamentos</option>
+        </select>
+      </div>
+      <div class="pgrid">
+        @for (p of produtos(); track p.id) {
+          <article appPcard [produto]="p"></article>
+        }
+      </div>
+      <div class="pager">
+        <span>{{ exibindo() }}</span>
+        @if (totalPaginas() > 1) {
+          <div class="pages">
+            <a href="" aria-label="Página anterior" (click)="irPara($event, pagina() - 1)">‹</a>
+            @for (i of paginas(); track i) {
+              <a
+                href=""
+                [attr.aria-current]="i === pagina() ? 'page' : null"
+                (click)="irPara($event, i)"
+                >{{ i + 1 }}</a
+              >
+            }
+            <a href="" aria-label="Próxima página" (click)="irPara($event, pagina() + 1)">›</a>
+          </div>
+        }
+      </div>
+    </section>
+  </div>
+</main>

@@ -1,0 +1,16 @@
+// G. Spotlight: luz âmbar que segue o mouse na capa (protótipo: navbar-aceternity.css, bloco G).
+// A diretiva appSpotlight atualiza --x e --y no host; a luz é o elemento .ac-spot dentro dele.
+:root.loja {
+  .ac-spot {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(
+      520px circle at var(--x, 60%) var(--y, 30%),
+      rgba(232, 168, 107, 0.13),
+      transparent 60%
+    );
+    transition: opacity 0.4s;
+  }
+}

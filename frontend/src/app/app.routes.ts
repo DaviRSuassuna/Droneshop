@@ -247,6 +247,30 @@ export const routes: Routes = [
         pathMatch: 'full',
         loadComponent: () => import('./storefront/home/home').then((m) => m.Home),
       },
+      {
+        path: 'drones',
+        data: { tipo: 'DRONE' },
+        loadComponent: () =>
+          import('./storefront/catalogo/listagem/catalogo-listagem').then(
+            (m) => m.CatalogoListagem,
+          ),
+      },
+      {
+        path: 'acessorios',
+        data: { tipo: 'ACESSORIO' },
+        loadComponent: () =>
+          import('./storefront/catalogo/listagem/catalogo-listagem').then(
+            (m) => m.CatalogoListagem,
+          ),
+      },
+      {
+        path: 'produto/:slug',
+        loadComponent: () => import('./storefront/catalogo/produto/produto').then((m) => m.Produto),
+      },
+      {
+        path: 'ofertas',
+        loadComponent: () => import('./storefront/catalogo/ofertas/ofertas').then((m) => m.Ofertas),
+      },
       // loja do cliente (trilha A): Minha conta
       {
         path: 'conta',

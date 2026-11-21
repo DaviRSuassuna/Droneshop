@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { Router, provideRouter } from '@angular/router';
+import { environment } from '../../../../environments/environment';
 import { ContaFolha } from '../account-menu/conta-folha';
 import { ALTURA_SOME, ATRASO_FECHA_MEGA, StorefrontNav } from './storefront-nav';
 
@@ -10,7 +13,11 @@ class Vazia {}
 function montar() {
   TestBed.configureTestingModule({
     imports: [StorefrontNav],
-    providers: [provideRouter([{ path: '**', component: Vazia }])],
+    providers: [
+      provideRouter([{ path: '**', component: Vazia }]),
+      provideHttpClient(),
+      provideHttpClientTesting(),
+    ],
   });
   const fixture = TestBed.createComponent(StorefrontNav);
   fixture.detectChanges();
@@ -169,6 +176,36 @@ describe('StorefrontNav', () => {
     const colunas = Array.from(el.querySelectorAll('.ac-mega .col .lbl')).map((l) => l.textContent);
     expect(colunas).toEqual(['Por uso', 'Por marca', 'Atalhos']);
     expect(el.querySelector('.ac-mega .feat')?.getAttribute('href')).toBe('/produto/falcon-x2-pro');
+  });
+
+  it('mega menu monta "Por uso" e "Por marca" com as categorias e marcas da API', () => {
+    const { el, fixture } = montar();
+    const http = TestBed.inject(HttpTestingController);
+    http
+      .expectOne(
+        (r) =>
+          r.url === `${environment.apiUrl}/loja/categorias` && r.params.get('tipo') === 'DRONE',
+      )
+      .flush([
+        {
+          id: 1,
+          nome: 'Profissionais',
+          slug: 'profissionais',
+          tipo: { id: 1, nome: 'DRONE' },
+          subcategorias: [{ id: 7, nome: 'Cinema', slug: 'cinema' }],
+        },
+      ]);
+    http
+      .expectOne(
+        (r) => r.url === `${environment.apiUrl}/loja/marcas` && r.params.get('destaque') === 'true',
+      )
+      .flush([{ id: 2, nome: 'Aerion', slug: 'aerion', logoUrl: null }]);
+    fixture.detectChanges();
+    const links = Array.from(el.querySelectorAll('.ac-mega .col a')).map((a) =>
+      a.getAttribute('href'),
+    );
+    expect(links).toContain('/drones?subcategoria=cinema');
+    expect(links).toContain('/drones?marca=aerion');
   });
 
   it('navegar fecha menu, busca e mega menu', async () => {

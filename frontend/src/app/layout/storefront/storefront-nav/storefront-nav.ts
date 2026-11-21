@@ -12,6 +12,8 @@ import { NgOptimizedImage } from '@angular/common';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter } from 'rxjs';
 import { ContaFolha } from '../account-menu/conta-folha';
+import { LojaService } from '../../../core/services/loja.service';
+import { MarcaLoja } from '../../../core/models/loja.model';
 
 /** Depois desta altura o menu encolhe (protótipo: navbar-aceternity.js, bloco B). */
 export const ALTURA_ENCOLHE = 40;
@@ -26,7 +28,8 @@ const CONSULTA_CELULAR = '(max-width: 900px)';
 
 /**
  * Menu da loja (protótipo 02, index.html + navbar-aceternity.js): some ao descer, volta ao
- * subir e encolhe depois do topo; mega menu de Drones; busca que leva para /drones?q=.
+ * subir e encolhe depois do topo; mega menu de Drones com as subcategorias de drone e as marcas
+ * em destaque da API (/loja/categorias e /loja/marcas, #21); busca que leva para /drones?q=.
  * As sugestões da busca ficam para a #43; os contadores de favoritos e sacola, para a trilha A.
  */
 @Component({
@@ -49,6 +52,9 @@ export class StorefrontNav {
   readonly megaAberto = signal(false);
   readonly encolhido = signal(false);
   readonly escondido = signal(false);
+  /** "Por uso": subcategorias das categorias de drone do menu (D39, D43). */
+  readonly usos = signal<{ id: number; nome: string; slug: string; categoria: string }[]>([]);
+  readonly marcas = signal<MarcaLoja[]>([]);
 
   private ultimaRolagem = 0;
   private timerMega: ReturnType<typeof setTimeout> | undefined;
@@ -63,6 +69,15 @@ export class StorefrontNav {
       )
       .subscribe(() => this.fecharTudo());
     inject(DestroyRef).onDestroy(() => clearTimeout(this.timerMega));
+    const loja = inject(LojaService);
+    loja
+      .listarCategorias('DRONE')
+      .subscribe((categorias) =>
+        this.usos.set(
+          categorias.flatMap((c) => c.subcategorias.map((s) => ({ ...s, categoria: c.nome }))),
+        ),
+      );
+    loja.listarMarcas(true).subscribe((m) => this.marcas.set(m.slice(0, 4)));
   }
 
   aoRolar(): void {

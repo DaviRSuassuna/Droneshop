@@ -1,0 +1,148 @@
+<main>
+  @if (naoEncontrado()) {
+    <div class="wrap pagehead">
+      <div class="crumb">
+        <a routerLink="/">Home</a><span><a routerLink="/drones">Drones</a></span>
+      </div>
+      <h1>Produto não encontrado</h1>
+      <div class="sub">O endereço pode ter mudado ou o produto saiu da loja.</div>
+    </div>
+  } @else if (produto(); as p) {
+    <div class="wrap pagehead" style="padding-bottom: 18px">
+      <div class="crumb">
+        <a routerLink="/">Home</a
+        ><span
+          ><a [routerLink]="p.tipo.nome === 'DRONE' ? '/drones' : '/acessorios'">{{
+            p.tipo.nome === 'DRONE' ? 'Drones' : 'Acessórios'
+          }}</a></span
+        ><span>{{ p.nome }}</span>
+      </div>
+    </div>
+    <div class="wrap pd">
+      <div class="gal">
+        <div class="stage gmain">
+          @if (foto(); as f) {
+            <img [src]="f.url" [alt]="f.altText || p.nome" />
+          }
+        </div>
+        @if (fotos().length > 1) {
+          <div class="thumbs">
+            @for (f of fotos(); track f.id; let i = $index) {
+              <button
+                type="button"
+                [attr.aria-pressed]="i === fotoAtual()"
+                (click)="fotoAtual.set(i)"
+              >
+                <span class="stage"
+                  ><img [src]="f.url" [alt]="f.altText || p.nome" loading="lazy"
+                /></span>
+              </button>
+            }
+          </div>
+        }
+      </div>
+      <div class="buybox">
+        <div style="display: flex; gap: 12px; align-items: center">
+          <span class="lbl"
+            >{{ p.marca?.nome }}
+            @if (p.subcategoria) {
+              · {{ p.subcategoria.nome }}
+            }
+          </span>
+        </div>
+        <h1>{{ p.nome }}</h1>
+        <div class="price">
+          <b class="num">{{ p.preco | preco }}</b>
+        </div>
+        @if (p.grupo && p.grupo.versoes.length > 1) {
+          <div>
+            <span class="lbl">Versão</span>
+            <div class="vers" style="margin-top: 10px">
+              @for (v of p.grupo.versoes; track v.id) {
+                <a
+                  [routerLink]="['/produto', v.slug]"
+                  [attr.aria-current]="v.id === p.id ? 'page' : null"
+                  ><b>{{ v.rotulo || p.grupo.nome }}</b
+                  ><span>{{ v.preco | preco }}</span></a
+                >
+              }
+            </div>
+            <p class="vnote">Cada versão tem ficha, estoque e endereço próprios.</p>
+          </div>
+        }
+        <div class="buyrow">
+          <div class="qty">
+            <button type="button" aria-label="Diminuir" (click)="mudarQuantidade(-1)">−</button
+            ><output>{{ quantidade() }}</output
+            ><button type="button" aria-label="Aumentar" (click)="mudarQuantidade(1)">+</button>
+          </div>
+          @if (p.disponivel > 0) {
+            <a class="btn p" routerLink="/carrinho">Adicionar ao carrinho</a>
+          } @else {
+            <button class="btn p" type="button" disabled>Esgotado</button>
+          }
+          <a class="btn sq" routerLink="/conta/favoritos" aria-label="Salvar nos favoritos"
+            ><svg class="ico"><use href="#i-heart" /></svg
+          ></a>
+        </div>
+        <div class="perks">
+          <div>Garantia de {{ p.garantiaMeses }} meses + 30 dias para troca sem custo</div>
+          @if (p.tipo.nome === 'DRONE') {
+            <div>Registro SISANT/ANAC orientado pela nossa equipe</div>
+          }
+        </div>
+      </div>
+    </div>
+    @if (ficha().length) {
+      <section class="tele" aria-label="Ficha rápida">
+        <div class="wrap">
+          @for (r of ficha(); track r.rotulo) {
+            <div class="read">
+              <span class="lbl">{{ r.rotulo }}</span
+              ><strong
+                >{{ r.valor }}<span>{{ r.unidade }}</span></strong
+              >
+            </div>
+          }
+        </div>
+      </section>
+    }
+    <section class="wrap sec">
+      <div class="shead">
+        <div>
+          <span class="lbl">Ficha técnica</span>
+          <h2>Especificações técnicas</h2>
+        </div>
+      </div>
+      @if (p.descricao) {
+        <p class="desc">{{ p.descricao }}</p>
+      }
+      <div class="specs2">
+        @for (g of grupos(); track g.rotulo) {
+          <div class="sg">
+            <span class="lbl">{{ g.rotulo }}</span>
+            @for (l of g.linhas; track l.rotulo) {
+              <div>
+                {{ l.rotulo }}<b>{{ l.valor }}</b>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </section>
+    <section class="wrap sec" style="padding-bottom: 40px">
+      <div class="shead">
+        <div>
+          <span class="lbl">Feito para o {{ p.grupo?.nome || p.nome }}</span>
+          <h2>Acessórios compatíveis</h2>
+        </div>
+        <a class="tlink arrow" routerLink="/acessorios">Ver todos</a>
+      </div>
+      <div class="pgrid c4">
+        @for (c of compativeis(); track c.id) {
+          <article appPcard [produto]="cardCompativel(c)"></article>
+        }
+      </div>
+    </section>
+  }
+</main>

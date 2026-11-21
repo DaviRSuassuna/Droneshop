@@ -1,0 +1,145 @@
+// Estilos próprios de ofertas.html do protótipo 02.
+.ohero {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+}
+.ohero .wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 30px;
+  align-items: center;
+  padding-block: 40px 50px;
+}
+.ohero h1 {
+  font: 200 clamp(44px, 6vw, 84px)/0.98 var(--display);
+  letter-spacing: -0.025em;
+  margin: 16px 0 0;
+}
+.ohero h1 em {
+  font-style: normal;
+  color: var(--amber);
+}
+.ohero p {
+  color: var(--ink2);
+  max-width: 46ch;
+  margin: 18px 0 0;
+}
+.ohero .acts {
+  display: flex;
+  gap: 10px;
+  margin-top: 26px;
+  flex-wrap: wrap;
+}
+.count {
+  display: flex;
+  gap: 10px;
+  margin-top: 30px;
+}
+.count div {
+  border: 1px solid var(--line2);
+  border-radius: 10px;
+  padding: 10px 14px;
+  min-width: 74px;
+  text-align: center;
+}
+.count b {
+  display: block;
+  font: 200 30px/1 var(--display);
+  font-variant-numeric: tabular-nums;
+}
+.count span {
+  font: 400 10px var(--mono);
+  letter-spacing: 0.14em;
+  color: var(--mute);
+}
+.deal {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: radial-gradient(90% 90% at 50% 30%, #22262b, #121417);
+  padding: 24px;
+  display: grid;
+  gap: 8px;
+}
+.deal .stage {
+  background: none;
+  aspect-ratio: 16/9;
+}
+.deal h2 {
+  margin: 0;
+  font: 300 30px var(--display);
+}
+.deal .pr {
+  font: 300 34px var(--display);
+  color: var(--amber);
+}
+.deal .pr s {
+  font: 400 15px var(--body);
+  color: var(--mute);
+  margin-left: 8px;
+}
+.deal .bar {
+  height: 4px;
+  background: var(--surf2);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+.deal .bar i {
+  display: block;
+  height: 100%;
+  width: 72%;
+  background: var(--amber);
+}
+.deal .row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--mute);
+}
+.ostats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-bottom: 1px solid var(--line);
+}
+.ostats div {
+  padding: 20px 0 22px 26px;
+  border-left: 1px solid var(--line);
+}
+.ostats div:first-child {
+  border-left: 0;
+  padding-left: 0;
+}
+.ostats b {
+  display: block;
+  font: 200 40px/1 var(--display);
+  margin-top: 6px;
+}
+@media (max-width: 900px) {
+  .ohero .wrap {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ostats div {
+    padding: 16px 0 18px 14px;
+  }
+  .ostats div:first-child {
+    padding-left: 0;
+  }
+  .ostats b {
+    font-size: 28px;
+  }
+  .ostats .lbl {
+    display: block;
+    min-height: 2.7em;
+  }
+}
+/* celular: o card com o drone abre a página */
+@media (max-width: 900px) {
+  .ohero .deal {
+    order: -1;
+  }
+  .ohero .wrap {
+    padding-top: 24px;
+  }
+}

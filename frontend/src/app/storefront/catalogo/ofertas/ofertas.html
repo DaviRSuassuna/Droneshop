@@ -1,0 +1,80 @@
+<main>
+  <section class="ohero">
+    <div class="wrap">
+      <div>
+        @if (fim()) {
+          <span class="chip">OFERTAS DA SEMANA</span>
+        }
+        <h1 appBlurReveal>Ofertas em <em>drones e acessórios</em>.</h1>
+        <p>
+          Descontos válidos enquanto durar o estoque, com o preço já calculado e a ficha completa de
+          cada produto.
+        </p>
+        <div class="acts">
+          <a class="btn p" href="#todas">Ver ofertas</a
+          ><a class="btn" routerLink="/empresas">Condições para empresas</a>
+        </div>
+        @if (fim()) {
+          <div class="count" aria-label="Tempo restante">
+            <div>
+              <b>{{ restante().dias }}</b
+              ><span>DIAS</span>
+            </div>
+            <div>
+              <b>{{ restante().horas }}</b
+              ><span>HORAS</span>
+            </div>
+            <div>
+              <b>{{ restante().min }}</b
+              ><span>MIN</span>
+            </div>
+          </div>
+        }
+      </div>
+      @if (destaque(); as d) {
+        <article class="deal">
+          <div class="row">
+            <span class="lbl">Oferta relâmpago</span><span class="chip">−{{ desconto(d) }}%</span>
+          </div>
+          <div class="stage"></div>
+          <h2>{{ d.produto.nome }}</h2>
+          <div class="pr">
+            {{ d.precoPor | preco }}<s>{{ d.precoDe | preco }}</s>
+          </div>
+          <div style="display: flex; gap: 8px; margin-top: 10px">
+            <a class="btn p" style="flex: 1" [routerLink]="['/produto', d.produto.slug]"
+              >Comprar agora</a
+            ><a class="btn" [routerLink]="['/produto', d.produto.slug]">Ver detalhes</a>
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+  <div class="wrap">
+    <div class="ostats">
+      <div>
+        <span class="lbl">Desconto máximo</span><b>{{ descontoMaximo() }}%</b>
+      </div>
+      <div>
+        <span class="lbl">Produtos em oferta</span><b>{{ ofertas().length }}</b>
+      </div>
+      <div>
+        <span class="lbl">Duração da campanha</span
+        ><b>{{ fim() ? restante().dias + ' dias' : '—' }}</b>
+      </div>
+    </div>
+  </div>
+  <section class="wrap sec" id="todas" style="padding-bottom: 40px">
+    <div class="shead">
+      <div>
+        <span class="lbl">Todos os produtos em oferta</span>
+        <h2>Preço baixo, ficha completa.</h2>
+      </div>
+    </div>
+    <div class="pgrid">
+      @for (o of ofertas(); track o.produto.id) {
+        <article appPcard [produto]="card(o)" [precoDe]="o.precoDe"></article>
+      }
+    </div>
+  </section>
+</main>

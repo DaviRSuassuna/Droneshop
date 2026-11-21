@@ -1,0 +1,97 @@
+// J. Infinite Moving Cards: depoimentos rolando na capa (protótipo: navbar-aceternity.css,
+// bloco J). Com "reduzir movimento" as faixas param e a linha rola com o dedo/mouse.
+@keyframes ac-slide {
+  to {
+    transform: translateX(-50%);
+  }
+}
+:root.loja {
+  .ac-test {
+    padding: 80px 0 20px;
+    overflow: hidden;
+  }
+  .ac-test + .trust {
+    margin-top: 44px;
+  }
+  .ac-test .wrap {
+    margin-bottom: 28px;
+  }
+  .ac-test h2 {
+    font: 300 clamp(30px, 3.6vw, 46px) var(--display);
+    margin: 8px 0 0;
+    letter-spacing: -0.01em;
+  }
+  .ac-test .row {
+    display: flex;
+    gap: 16px;
+    width: max-content;
+    animation: ac-slide 60s linear infinite;
+    padding: 0 8px;
+  }
+  .ac-test .row.r2 {
+    animation-direction: reverse;
+    animation-duration: 70s;
+    margin-top: 16px;
+  }
+  .ac-test .mask {
+    -webkit-mask: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+    mask: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  }
+  .ac-test .mask:hover .row {
+    animation-play-state: paused;
+  }
+  .ac-test .t {
+    width: 360px;
+    flex: none;
+    padding: 20px;
+    border-radius: 14px;
+    background: linear-gradient(170deg, #1c1f23, #131518);
+    border: 1px solid var(--line);
+  }
+  .ac-test .t p {
+    margin: 0 0 16px;
+    color: var(--ink2);
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+  .ac-test .t .who {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 13px;
+  }
+  .ac-test .t .av {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: #2a2e34;
+    font: 500 12px var(--mono);
+    color: var(--amber);
+  }
+  .ac-test .t .who small {
+    display: block;
+    color: var(--mute);
+    font-size: 12px;
+  }
+  .ac-test .stars {
+    color: var(--amber);
+    letter-spacing: 2px;
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+  @media (max-width: 640px) {
+    .ac-test .t {
+      width: min(320px, calc(100vw - 48px));
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ac-test .row {
+      animation: none;
+    }
+    .ac-test .mask {
+      overflow-x: auto;
+    }
+  }
+}

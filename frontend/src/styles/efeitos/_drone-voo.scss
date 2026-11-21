@@ -1,0 +1,114 @@
+// 13/15. Drone em voo na capa: chega voando, freia e pousa; as hélices giram e param depois do
+// pouso, quando a foto com as pás aparece (protótipo: index.html e spell.css, blocos 13 e 15).
+// Com "reduzir movimento" o drone já aparece parado, sem hélices girando.
+@keyframes sp-chega {
+  0% {
+    transform: translate(70%, -60%) rotate(-18deg) scale(0.4);
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes hero-aparece {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes hero-some {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes rz-gira {
+  to {
+    transform: rotate(360deg);
+  }
+}
+:root.loja {
+  .hero.bleed .art {
+    perspective: 1400px;
+  }
+  .hero.bleed .art .flt {
+    position: relative;
+    animation: sp-chega 2s cubic-bezier(0.25, 0.8, 0.35, 1) 0.3s both;
+    transform-origin: 50% 45%;
+  }
+  .hero.bleed .art .flt img {
+    display: block;
+    filter: drop-shadow(0 40px 40px rgba(0, 0, 0, 0.55));
+  }
+  .hero.bleed .art .flt .parado {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    opacity: 0;
+    filter: none;
+    animation: hero-aparece 1.2s ease-in-out 4.3s forwards;
+  }
+  .hero.bleed .art .rotors {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+    animation: hero-some 1.2s ease-in-out 4.3s forwards;
+  }
+  .hero.bleed .art .rz {
+    position: absolute;
+    width: 42.857%;
+    aspect-ratio: 1;
+    transform-origin: 50% 50%;
+  }
+  .hero.bleed .art .rz-c {
+    position: absolute;
+    inset: 0;
+  }
+  .hero.bleed .art .rz-c svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    display: block;
+  }
+  .hero.bleed .art .rz-g {
+    will-change: transform;
+    animation: rz-gira var(--d) linear infinite;
+    animation-direction: var(--dir, normal);
+  }
+  .hero.bleed .art .rz-g[style*='--s:-1'] {
+    --dir: reverse;
+  }
+  .hero.bleed .art .rz-blades {
+    position: absolute;
+    inset: 0;
+    opacity: 0.2;
+  }
+  .hero.bleed .art .sombra {
+    position: absolute;
+    left: 22%;
+    right: 18%;
+    bottom: -14%;
+    height: 16%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(0, 0, 0, 0.55), transparent);
+    filter: blur(10px);
+    pointer-events: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero.bleed .art .flt,
+    .hero.bleed .art .flt .parado {
+      animation: none;
+      opacity: 1;
+    }
+    .hero.bleed .art .rotors {
+      display: none;
+    }
+  }
+}
