@@ -27,5 +27,8 @@ issue-20
 issue-22
 issue-24
 issue-25
+issue-26
+issue-29
+issue-30
 
 # ---- trilha B: acrescente abaixo desta linha

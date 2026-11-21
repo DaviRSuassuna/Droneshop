@@ -4,7 +4,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.droneshop.compra.model.Carrinho;
 import br.com.droneshop.identidade.model.PerfilCliente;
+import br.com.droneshop.pagamento.model.MetodoPagamento;
+import br.com.droneshop.pagamento.model.Pagamento;
 import br.com.droneshop.model.DefaultEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -13,6 +16,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 
@@ -52,6 +56,55 @@ public class Pedido extends DefaultEntity {
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
     private List<DescontoPedido> descontos = new ArrayList<>();
+
+    // Carrinho que gerou o pedido: liga o pedido às reservas dos itens (#26, #27)
+    @ManyToOne
+    @JoinColumn(name = "id_carrinho")
+    private Carrinho carrinho;
+
+    @Column(name = "metodo_pagamento")
+    private MetodoPagamento metodoPagamento;
+
+    @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL)
+    private Entrega entrega;
+
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
+    @OrderBy("id")
+    private List<Pagamento> pagamentos = new ArrayList<>();
+
+    public Carrinho getCarrinho() {
+        return carrinho;
+    }
+
+    public void setCarrinho(Carrinho carrinho) {
+        this.carrinho = carrinho;
+    }
+
+    public MetodoPagamento getMetodoPagamento() {
+        return metodoPagamento;
+    }
+
+    public void setMetodoPagamento(MetodoPagamento metodoPagamento) {
+        this.metodoPagamento = metodoPagamento;
+    }
+
+    public Entrega getEntrega() {
+        return entrega;
+    }
+
+    public void setEntrega(Entrega entrega) {
+        this.entrega = entrega;
+    }
+
+    public List<Pagamento> getPagamentos() {
+        return pagamentos;
+    }
+
+    /** Soma dos itens a preço cheio congelado; o total desconta descontos[] e soma o frete (RN16). */
+    public BigDecimal getValorProdutos() {
+        return itens.stream().map(i -> i.getPrecoUnitarioCongelado().multiply(BigDecimal.valueOf(i.getQuantidade())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 
     public StatusPedido getStatus() {
         return status;

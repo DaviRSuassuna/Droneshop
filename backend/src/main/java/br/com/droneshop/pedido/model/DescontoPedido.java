@@ -3,6 +3,7 @@ package br.com.droneshop.pedido.model;
 import java.math.BigDecimal;
 
 import br.com.droneshop.catalogo.model.Promocao;
+import br.com.droneshop.compra.model.Cupom;
 import br.com.droneshop.model.DefaultEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,6 +31,18 @@ public class DescontoPedido extends DefaultEntity {
     @ManyToOne
     @JoinColumn(name = "id_promocao")
     private Promocao promocao;
+
+    @ManyToOne
+    @JoinColumn(name = "id_cupom")
+    private Cupom cupom;
+
+    public Cupom getCupom() {
+        return cupom;
+    }
+
+    public void setCupom(Cupom cupom) {
+        this.cupom = cupom;
+    }
 
     public OrigemDesconto getOrigem() {
         return origem;
