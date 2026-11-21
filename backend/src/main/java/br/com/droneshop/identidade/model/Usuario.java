@@ -34,6 +34,9 @@ public class Usuario extends DefaultEntity {
     @OneToOne(mappedBy = "usuario", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private PerfilAdministrativo perfilAdministrativo;
 
+    @OneToOne(mappedBy = "usuario", fetch = FetchType.EAGER)
+    private PerfilCliente perfilCliente;
+
     @PrePersist
     @PreUpdate
     void normalizarEmail() {
@@ -88,5 +91,13 @@ public class Usuario extends DefaultEntity {
 
     public void setPerfilAdministrativo(PerfilAdministrativo perfilAdministrativo) {
         this.perfilAdministrativo = perfilAdministrativo;
+    }
+
+    public PerfilCliente getPerfilCliente() {
+        return perfilCliente;
+    }
+
+    public void setPerfilCliente(PerfilCliente perfilCliente) {
+        this.perfilCliente = perfilCliente;
     }
 }

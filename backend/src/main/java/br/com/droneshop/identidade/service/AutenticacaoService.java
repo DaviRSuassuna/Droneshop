@@ -2,6 +2,7 @@ package br.com.droneshop.identidade.service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -62,6 +63,11 @@ public class AutenticacaoService {
     }
 
     private List<String> perfisDo(Usuario usuario) {
-        return usuario.getPerfilAdministrativo() == null ? List.of() : List.of("ADMINISTRATIVO");
+        List<String> perfis = new ArrayList<>();
+        if (usuario.getPerfilCliente() != null)
+            perfis.add("CLIENTE");
+        if (usuario.getPerfilAdministrativo() != null)
+            perfis.add("ADMINISTRATIVO");
+        return List.copyOf(perfis);
     }
 }

@@ -1,0 +1,51 @@
+@use '../conta';
+
+.acoes {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+.secrow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.secrow > div {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+}
+.secrow b {
+  font-weight: 500;
+}
+.secrow span {
+  font-size: 13px;
+  color: var(--mute);
+}
+.secic {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  color: var(--ink2);
+  border: 1px solid var(--line2);
+  border-radius: 10px;
+}
+.secic svg,
+.iconbtn svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+}
+@media (max-width: 640px) {
+  .secrow {
+    flex-wrap: wrap;
+  }
+  .secrow .btn {
+    flex: 1 1 100%;
+    height: 44px;
+  }
+}

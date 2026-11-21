@@ -1,0 +1,121 @@
+<main>
+  <div class="wrap account">
+    <!-- menu da conta: <app-account-menu> da casca da loja (#96), entra quando ela estiver na develop -->
+    <section>
+      <div class="crumb">
+        <a routerLink="/">Home</a><span>Minha conta</span><span>Perfil e dados</span>
+      </div>
+      <div class="ahead">
+        <div>
+          <h1>Perfil e dados</h1>
+          <div class="sub">Seus dados e sua senha</div>
+        </div>
+      </div>
+
+      <form class="panel" [formGroup]="form" (ngSubmit)="salvar()">
+        <div class="ph2">
+          <h2>Dados pessoais</h2>
+          <span class="formnote"><span class="req">*</span> obrigatório</span>
+        </div>
+        <div class="fg">
+          <div class="f w4">
+            <label for="pn">Nome completo <span class="req">*</span></label>
+            <input id="pn" type="text" autocomplete="name" formControlName="nome" />
+          </div>
+          <div class="f">
+            <label for="pe">E-mail <span class="req">*</span></label>
+            <input id="pe" type="email" [value]="perfil()?.email ?? ''" readonly />
+          </div>
+          <div class="f">
+            <label for="pt">Telefone / WhatsApp</label>
+            <input
+              id="pt"
+              type="text"
+              inputmode="tel"
+              formControlName="telefone"
+              appMascara="telefone"
+            />
+          </div>
+          <div class="f w2">
+            <label for="pc"
+              >{{ perfil()?.tipoPessoa?.nome === 'PJ' ? 'CNPJ' : 'CPF' }}
+              <span class="req">*</span></label
+            >
+            <input id="pc" type="text" [value]="documentoOculto()" readonly />
+            <span class="hint">Para alterar, fale com o suporte</span>
+          </div>
+        </div>
+        @if (mensagem(); as m) {
+          <p class="pwmsg" [class.good]="m.ok" [class.err]="!m.ok" role="status">{{ m.texto }}</p>
+        }
+        <div class="acoes">
+          <button class="btn p" type="submit" [disabled]="salvando()">Salvar alterações</button>
+        </div>
+      </form>
+
+      <div class="panel">
+        <div class="ph2"><h2>Segurança</h2></div>
+        <div class="secrow">
+          <span class="secic" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <rect x="5" y="11" width="14" height="9" rx="2" />
+              <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+            </svg>
+          </span>
+          <div><b>Senha</b><span>Use pelo menos 8 caracteres</span></div>
+          <button class="btn sm" type="button" (click)="abrirSenha()">Trocar senha</button>
+        </div>
+      </div>
+
+      <dialog class="dlg" #dlgSenha aria-labelledby="dlgSenhaT">
+        <form class="dlgbox" [formGroup]="formSenha" (ngSubmit)="trocarSenha()">
+          <div class="dlghead">
+            <div>
+              <span class="lbl">Segurança</span>
+              <h2 id="dlgSenhaT">Trocar senha</h2>
+            </div>
+            <button class="iconbtn" type="button" aria-label="Fechar" (click)="fecharSenha()">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+          </div>
+          <div class="fg">
+            <div class="f w6">
+              <label for="s1">Senha atual <span class="req">*</span></label>
+              <input
+                id="s1"
+                type="password"
+                autocomplete="current-password"
+                formControlName="senhaAtual"
+              />
+            </div>
+            <div class="f w6">
+              <label for="s2">Nova senha <span class="req">*</span></label>
+              <input
+                id="s2"
+                type="password"
+                autocomplete="new-password"
+                formControlName="senhaNova"
+              />
+            </div>
+            <div class="f w6">
+              <label for="s3">Confirmar nova senha <span class="req">*</span></label>
+              <input
+                id="s3"
+                type="password"
+                autocomplete="new-password"
+                formControlName="confirmar"
+              />
+            </div>
+            <p class="pwmsg" [class.err]="mensagemSenha() && !mensagemSenha()!.ok" role="status">
+              {{ mensagemSenha()?.texto }}
+            </p>
+          </div>
+          <div class="dlgfoot">
+            <button class="btn" type="button" (click)="fecharSenha()">Cancelar</button>
+            <button class="btn p" type="submit">Atualizar senha</button>
+          </div>
+        </form>
+      </dialog>
+    </section>
+  </div>
+</main>
