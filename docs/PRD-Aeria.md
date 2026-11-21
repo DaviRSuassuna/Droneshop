@@ -328,6 +328,7 @@ O painel administrativo vem primeiro (D19): a loja só tem o que vender e o que 
 | D53 | **A conta criada só com Google é PF, sem documento e sem senha.** O `documento` de `PerfilCliente` aceita nulo, o que também atende a anonimização da #46. (PR #103) |
 | D54 | **A promoção de produto vira desconto no fechamento do pedido**, sem mudar o total que o carrinho mostra. (PR #103) |
 | D55 | **O pagamento aprovado lança SAIDA no estoque mesmo que a reserva já tenha expirado.** (PR #103) |
+| D56 | **Autenticação pelo Keycloak.** O Keycloak passa a cuidar de login, cadastro de credenciais, sessão e revogação, verificação de e-mail, recuperação de senha, login com Google e 2FA. A API vira resource server: valida o token OIDC do Keycloak e lê os papéis `CLIENTE`, `ADMINISTRATIVO` e `ADMIN` do token. O que a #20 (sessão própria e JWT da API), a #45 (2FA), a #47 (cliente Google) e a #33 fizeram por conta própria sai. `PerfilCliente` e `UsuarioAdministrativo` continuam na API, ligados ao usuário do Keycloak pelo `sub`. Os e-mails de verificação e de recuperação de senha saem pelo Keycloak, não pela #32. Substitui o login próprio. (Davi, 21/11) |
 
 ## 11. Pendências em aberto
 
