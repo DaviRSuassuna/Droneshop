@@ -17,13 +17,3 @@ insert into regra_frete (modalidade, custo_fixo, prazo_dias, cep_origem, dataCad
   (1, 89.90, 3, '77001000', now()),
   (2, 39.90, 8, '77001000', now()),
   (3, 0.00, 1, '77001000', now());
-
--- #34 Pedidos da carga que já passaram da separação: cada drone tem a sua unidade com
--- número de série (RN12), senão não poderiam ser enviados. Status 3 = VENDIDA.
-insert into unidade_individual (id_produto, status, numero_serie, validade_garantia, id_item_pedido, dataCadastro)
-select i.id_produto, 3, 'SN-CARGA-' || i.id || '-' || n, current_date + interval '12 months', i.id, now()
-from item_pedido i
-join pedido p on p.id = i.id_pedido
-join drone d on d.id = i.id_produto
-cross join lateral generate_series(1, i.quantidade) as n
-where p.status in (3, 4, 5, 6, 7);
