@@ -22,7 +22,8 @@ import io.restassured.http.ContentType;
 /**
  * Issue nova "Logo da marca por upload, peso do acessório, sugestão nos compatíveis e kit em Ofertas".
  * Contrato: docs/issues/nova-catalogo-complementos.md. A etiqueta é o nome do arquivo.
- * Os dois testes da loja dependem também da #21.
+ * Os dois testes da loja dependem também da #21. A leitura é por /produtos/{id}, que é
+ * onde se consulta qualquer tipo de produto (D27).
  */
 @QuarkusTest
 @Tag("issue-catalogo-complementos")
@@ -31,6 +32,7 @@ class CatalogoComplementosResourceTest {
     /** PNG de 1x1 pixel. */
     static final byte[] PNG = Base64.getDecoder().decode(
             "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
+    static final byte[] SVG = "<svg xmlns=\"http://www.w3.org/2000/svg\"/>".getBytes();
     static final byte[] PDF = "%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF".getBytes();
 
     static long acessorio(Fixtures.Arvore a, Map<String, Object> extras) {
@@ -53,12 +55,24 @@ class CatalogoComplementosResourceTest {
                 .then().statusCode(200)
                 .body("logoUrl", equalTo(url));
         anonimo().when().get(url).then().statusCode(200);
+
+        String novoUrl = given().multiPart("arquivo", "logo.svg", SVG,
+                "image/svg+xml")
+                .when().post("/marcas/{id}/logo", idMarca)
+                .then().statusCode(200)
+                .extract().jsonPath().getString("logoUrl");
+        anonimo().when().get(novoUrl).then().statusCode(200);
+        anonimo().when().get(url).then().statusCode(404);
     }
 
     @Test
     void logoSoAceitaPngOuSvg() {
         long idMarca = Fixtures.arvore().idMarca();
         given().multiPart("arquivo", "logo.pdf", PDF, "application/pdf")
+                .when().post("/marcas/{id}/logo", idMarca)
+                .then().statusCode(400)
+                .body("errors.field", hasItem("arquivo"));
+        given().multiPart("arquivo", "logo.png", new byte[2 * 1024 * 1024 + 1], "image/png")
                 .when().post("/marcas/{id}/logo", idMarca)
                 .then().statusCode(400)
                 .body("errors.field", hasItem("arquivo"));
@@ -70,7 +84,7 @@ class CatalogoComplementosResourceTest {
     @Test
     void acessorioGuardaPesoDoItemESugestao() {
         long id = acessorio(Fixtures.arvore(), Map.of("pesoItemG", 85, "sugerirNosCompativeis", true));
-        given().when().get("/acessorios/{id}", id)
+        given().when().get("/produtos/{id}", id)
                 .then().statusCode(200)
                 .body("pesoItemG", equalTo(85))
                 .body("sugerirNosCompativeis", equalTo(true));
@@ -80,7 +94,7 @@ class CatalogoComplementosResourceTest {
     void semSugestaoInformadaValeFalseEPesoNegativoDa400() {
         Fixtures.Arvore a = Fixtures.arvore();
         long id = acessorio(a, Map.of());
-        given().when().get("/acessorios/{id}", id)
+        given().when().get("/produtos/{id}", id)
                 .then().statusCode(200)
                 .body("sugerirNosCompativeis", equalTo(false));
 
@@ -101,7 +115,7 @@ class CatalogoComplementosResourceTest {
                 Fixtures.lista(Fixtures.componente(componente, 2)));
         corpo.put("exibirEmOfertas", true);
         long id = Fixtures.criar("/kits", corpo);
-        given().when().get("/kits/{id}", id)
+        given().when().get("/produtos/{id}", id)
                 .then().statusCode(200)
                 .body("exibirEmOfertas", equalTo(true));
     }
@@ -130,6 +144,7 @@ class CatalogoComplementosResourceTest {
         anonimo().when().get("/loja/ofertas")
                 .then().statusCode(200)
                 .body("find { it.produto.id == " + id + " }.precoDe", equalTo(600.0f))
-                .body("find { it.produto.id == " + id + " }.precoPor", equalTo(550.0f));
+                .body("find { it.produto.id == " + id + " }.precoPor", equalTo(550.0f))
+                .body("find { it.produto.id == " + id + " }.promocao", equalTo(null));
     }
 }

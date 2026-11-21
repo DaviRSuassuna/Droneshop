@@ -52,6 +52,11 @@
       <a [href]="manual.src" target="_blank" rel="noopener">{{
         manual.nomeArquivo ?? 'Manual PDF'
       }}</a>
+      @if (manual.id) {
+        <a class="btn sm" [href]="manual.src + '?download=true'" download aria-label="Baixar manual"
+          >Baixar</a
+        >
+      }
       <button class="btn sm" type="button" (click)="excluir(manual)" aria-label="Excluir manual">
         ✕
       </button>

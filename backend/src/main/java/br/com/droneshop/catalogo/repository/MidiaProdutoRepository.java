@@ -13,6 +13,10 @@ public class MidiaProdutoRepository implements PanacheRepository<MidiaProduto> {
         return list("produto.id = ?1 order by ordem, id", idProduto);
     }
 
+    public MidiaProduto findByUrl(String url) {
+        return find("url", url).firstResult();
+    }
+
     public List<MidiaProduto> findPrincipais(long idProduto, Long idIgnorado) {
         if (idIgnorado == null)
             return list("produto.id = ?1 and principal = true", idProduto);

@@ -1,17 +1,50 @@
 <header class="tb">
   <div class="in gut">
     <a class="brand" routerLink="/admin">AERIA <span>ADMIN</span></a>
-    <nav class="tabs" aria-label="Painel">
-      @for (item of itens; track item.rota) {
-        <a
-          [routerLink]="item.rota"
-          routerLinkActive
-          ariaCurrentWhenActive="page"
-          [routerLinkActiveOptions]="{ exact: !!item.exata }"
-          >{{ item.rotulo }}</a
+    <nav class="tabs grupos" aria-label="Painel">
+      <a routerLink="/admin" [attr.aria-current]="atual(dashboard) ? 'page' : null">Dashboard</a>
+      @for (g of grupos; track g.rotulo; let i = $index) {
+        <button
+          type="button"
+          [class.on]="grupoAtual() === i"
+          [class.open]="aberto() === i"
+          [attr.aria-expanded]="aberto() === i"
+          [attr.aria-controls]="'menu-admin-' + i"
+          (click)="alternar(i)"
+          (mouseenter)="abrir(i)"
+          (mouseleave)="sairDepois()"
         >
+          {{ g.rotulo }}
+        </button>
       }
     </nav>
+    @for (g of grupos; track g.rotulo; let i = $index) {
+      <div
+        class="menu-admin"
+        [id]="'menu-admin-' + i"
+        [class.on]="aberto() === i"
+        [style.--cols]="g.colunas.length"
+        (mouseenter)="abrir(i)"
+        (mouseleave)="sairDepois()"
+      >
+        @for (c of g.colunas; track c.titulo) {
+          <div class="col">
+            <span class="lbl">{{ c.titulo }}</span>
+            @for (l of c.links; track l.rota) {
+              <a [routerLink]="l.rota" [attr.aria-current]="atual(l) ? 'page' : null"
+                >{{ l.rotulo }}<small>{{ l.descricao }}</small></a
+              >
+            }
+          </div>
+        }
+        <div class="quick">
+          <span class="lbl">Ações rápidas</span>
+          @for (r of g.rapidas; track r.rotulo) {
+            <a [routerLink]="r.rota">{{ r.rotulo }}</a>
+          }
+        </div>
+      </div>
+    }
     <div class="r">
       <div class="search">
         <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
@@ -24,14 +57,10 @@
     </div>
   </div>
   <nav class="mnav" aria-label="Painel (celular)">
-    @for (item of itens; track item.rota) {
-      <a
-        [routerLink]="item.rota"
-        routerLinkActive
-        ariaCurrentWhenActive="page"
-        [routerLinkActiveOptions]="{ exact: !!item.exata }"
-        >{{ item.rotulo }}</a
-      >
+    @for (item of itensCelular; track item.rota) {
+      <a [routerLink]="item.rota" [attr.aria-current]="atual(item) ? 'page' : null">{{
+        item.rotulo
+      }}</a>
     }
   </nav>
 </header>

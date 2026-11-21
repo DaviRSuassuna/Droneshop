@@ -197,8 +197,6 @@ export const TELAS: Tela[] = [
   { prototipo: 'admin/marcas.html', rota: '/admin/marcas', etiqueta: 'base', area: 'admin' },
   {
     prototipo: 'admin/marca-nova.html',
-    // Davi autorizou manter URL do logo neste bloco; upload será implementado separadamente.
-    ignorar: ['Logo da marca'],
     rota: '/admin/marcas/novo',
     etiqueta: 'base',
     area: 'admin',
@@ -261,14 +259,12 @@ export const TELAS: Tela[] = [
     rota: '/admin/acessorios/novo',
     etiqueta: 'issue-8',
     area: 'admin',
-    ignorar: ['Peso do item', 'Sugerir na página dos drones compatíveis'],
   },
   {
     prototipo: 'admin/kit-novo.html',
     rota: '/admin/kits/novo',
     etiqueta: 'issue-80',
     area: 'admin',
-    ignorar: ['Exibir na página Ofertas'],
   },
   { prototipo: 'admin/grupos.html', rota: '/admin/grupos', etiqueta: 'issue-80', area: 'admin' },
   {
@@ -448,6 +444,7 @@ export const TELAS: Tela[] = [
       'Pedidos aguardando ação',
       'Mais vendidos',
       'Ver produtos',
+      'Receita por categoria', // Card do protótipo 02 com dado novo: entra com a #85.
     ],
     tabelasSemApi: [
       {

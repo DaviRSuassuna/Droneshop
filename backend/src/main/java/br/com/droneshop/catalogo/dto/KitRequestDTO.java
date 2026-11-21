@@ -80,6 +80,9 @@ public record KitRequestDTO(
     @Min(value = 0, message = "A ordem não pode ser negativa (back).")
     Integer ordemNoGrupo,
 
+    // sem valor, vale false
+    Boolean exibirEmOfertas,
+
     // validados item a item no ProdutoCadastro, para o erro sair como componentes[i].campo
     List<ComponenteKitRequestDTO> componentes
 ) implements ProdutoRequestDTO {

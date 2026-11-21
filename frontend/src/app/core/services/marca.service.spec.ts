@@ -61,6 +61,21 @@ describe('MarcaService', () => {
     req.flush(null);
   });
 
+  it('envia o logo com POST multipart no campo arquivo', () => {
+    const arquivo = new File(['png'], 'logo.png', { type: 'image/png' });
+    service.enviarLogo(5, arquivo).subscribe((r) => expect(r.logoUrl).toBe('/midias/arquivos/a.png'));
+    const req = http.expectOne(`${url}/5/logo`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toBeInstanceOf(FormData);
+    expect((req.request.body as FormData).get('arquivo')).toBe(arquivo);
+    req.flush({ logoUrl: '/midias/arquivos/a.png' });
+  });
+
+  it('monta a URL do logo enviado a partir da API e mantém a externa', () => {
+    expect(service.urlLogo('/midias/arquivos/a.png')).toBe(`${environment.apiUrl}/midias/arquivos/a.png`);
+    expect(service.urlLogo('https://cdn.exemplo.com/logo.svg')).toBe('https://cdn.exemplo.com/logo.svg');
+  });
+
   it('exclui com DELETE no id', () => {
     service.excluir(5).subscribe();
     const req = http.expectOne(`${url}/5`);

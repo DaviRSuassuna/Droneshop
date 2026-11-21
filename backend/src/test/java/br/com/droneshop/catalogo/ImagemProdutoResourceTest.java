@@ -92,6 +92,10 @@ class ImagemProdutoResourceTest {
         Fixtures.ProdutoCriado p = Fixtures.criarDrone(3000.0, 2);
         long id = imagem(p.id(), true);
         assertTrue(String.valueOf(imagemNaListagem(p)).startsWith("/midias/arquivos/"));
+        // D42 (#95): a última imagem de produto ativo não se exclui; inativa antes
+        Map<String, Object> corpo = Fixtures.corpoDoProduto(p.id());
+        corpo.put("idStatus", Fixtures.PRODUTO_INATIVO);
+        Fixtures.alterarProduto(p.id(), corpo).then().statusCode(204);
         given().when().delete("/midias/{id}", id).then().statusCode(204);
         assertNull(imagemNaListagem(p));
     }

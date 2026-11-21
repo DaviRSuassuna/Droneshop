@@ -43,3 +43,6 @@ issue-46
 issue-favoritos-compartilhar
 
 # ---- trilha B: acrescente abaixo desta linha
+issue-imagem-produto
+issue-armazenamento-s3
+issue-catalogo-complementos

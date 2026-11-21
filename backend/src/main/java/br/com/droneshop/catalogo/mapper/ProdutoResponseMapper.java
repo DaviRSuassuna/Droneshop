@@ -89,7 +89,7 @@ public final class ProdutoResponseMapper {
                 d.isExigeRegistroAnac(),
                 d.getClasseAnac(),
                 d.getRegistroSisant(),
-                resumos(d.getAcessoriosCompativeis()));
+                resumos(d.getAcessoriosCompativeis()), d.getImagemPrincipal());
     }
 
     public static AcessorioResponseDTO toResponse(Acessorio a) {
@@ -125,8 +125,10 @@ public final class ProdutoResponseMapper {
                 a.getRotuloNoGrupo(),
                 a.getOrdemNoGrupo(),
                 a.getTipoAcessorio(),
+                a.getPesoItemG(),
+                a.isSugerirNosCompativeis(),
                 resumos(a.getCompativeis()),
-                resumos(a.getAcessoriosCompativeis()));
+                resumos(a.getAcessoriosCompativeis()), a.getImagemPrincipal());
     }
 
     // No kit, peso e dimensoes saem efetivos: o informado ou, sem ele, o derivado (D16)
@@ -164,8 +166,9 @@ public final class ProdutoResponseMapper {
                 k.getPesoEmbalagemKg() != null,
                 k.getAlturaEmbalagemCm() != null || k.getLarguraEmbalagemCm() != null
                         || k.getComprimentoEmbalagemCm() != null,
+                k.isExibirEmOfertas(),
                 k.getComponentes().stream().map(ProdutoResponseMapper::componente).toList(),
-                resumos(k.getAcessoriosCompativeis()));
+                resumos(k.getAcessoriosCompativeis()), k.getImagemPrincipal());
     }
 
     // D26: (preco - custo) / preco * 100, com 2 casas; sem preco ou sem custo nao ha margem
@@ -178,7 +181,7 @@ public final class ProdutoResponseMapper {
     private static ComponenteKitResponseDTO componente(ComponenteKit c) {
         Produto p = c.getProduto();
         return new ComponenteKitResponseDTO(p.getId(), p.getSku(), p.getNome(), p.getTipo(), p.getStatus(),
-                p.getEstoqueFisico(), KitCalculo.disponivel(p), c.getQuantidade());
+                p.getEstoqueFisico(), KitCalculo.disponivel(p), c.getQuantidade(), p.getImagemPrincipal());
     }
 
     // ordem por nome para a lista sair estavel; rascunho sem nome vai para o fim
@@ -186,7 +189,7 @@ public final class ProdutoResponseMapper {
         return produtos.stream()
                 .sorted(Comparator.comparing(Produto::getNome, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER))
                         .thenComparing(Produto::getId))
-                .map(p -> new ProdutoResumoDTO(p.getId(), p.getNome(), p.getTipo()))
+                .map(p -> new ProdutoResumoDTO(p.getId(), p.getNome(), p.getTipo(), p.getImagemPrincipal()))
                 .toList();
     }
 

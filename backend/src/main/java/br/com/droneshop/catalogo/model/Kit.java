@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -21,6 +22,10 @@ public class Kit extends Produto {
     @OrderBy("id")
     private List<ComponenteKit> componentes = new ArrayList<>();
 
+    // Kit ATIVO com a opcao ligada aparece em /loja/ofertas (#84)
+    @Column(nullable = false, name = "exibir_em_ofertas", columnDefinition = "boolean default false")
+    private boolean exibirEmOfertas;
+
     @Override
     public TipoProduto getTipo() {
         return TipoProduto.KIT;
@@ -32,6 +37,14 @@ public class Kit extends Produto {
 
     public void setComponentes(List<ComponenteKit> componentes) {
         this.componentes = componentes;
+    }
+
+    public boolean isExibirEmOfertas() {
+        return exibirEmOfertas;
+    }
+
+    public void setExibirEmOfertas(boolean exibirEmOfertas) {
+        this.exibirEmOfertas = exibirEmOfertas;
     }
 
 }

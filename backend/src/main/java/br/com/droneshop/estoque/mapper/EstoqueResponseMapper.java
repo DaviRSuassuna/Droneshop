@@ -33,7 +33,7 @@ public final class EstoqueResponseMapper {
         int disponivel = ReservaSaldo.disponivel(p);
         boolean kit = p instanceof Kit;
         return new EstoqueResponseDTO(
-                new EstoqueResponseDTO.Produto(p.getId(), p.getSku(), p.getNome(), p.getTipo(), p.getStatus()),
+                new EstoqueResponseDTO.Produto(p.getId(), p.getSku(), p.getNome(), p.getTipo(), p.getStatus(), p.getImagemPrincipal()),
                 p.getEstoqueFisico(),
                 ReservaSaldo.reservado(p),
                 disponivel,

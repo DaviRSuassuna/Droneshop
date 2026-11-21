@@ -9,6 +9,6 @@ public record ItemPedidoResponseDTO(
     BigDecimal precoUnitarioCongelado,
     BigDecimal subtotal
 ) {
-    public record ProdutoResumo(Long id, String sku, String nome) {
+    public record ProdutoResumo(Long id, String sku, String nome, String imagemPrincipal) {
     }
 }

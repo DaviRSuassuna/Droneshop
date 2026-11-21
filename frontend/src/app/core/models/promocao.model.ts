@@ -17,6 +17,8 @@ export interface ProdutoPromocao {
   id: number;
   sku: string | null;
   nome: string | null;
+  /** URL da imagem principal (#87) ou null sem imagem. */
+  imagemPrincipal?: string | null;
 }
 
 /** Resposta de GET /promocoes e GET /promocoes/{id}. */

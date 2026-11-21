@@ -1,16 +1,16 @@
 package br.com.droneshop.catalogo.resource;
 
-import java.io.IOException;
-
 import br.com.droneshop.catalogo.service.MidiaProdutoService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 
-// Publico: a vitrine e o <img> do admin carregam o arquivo sem token.
+// Publico: a vitrine e o <img> do admin carregam o arquivo sem token. O bucket e privado (D42):
+// a API le o objeto e devolve; ?download=true baixa com Content-Disposition: attachment.
 @Path("midias/arquivos")
 public class ArquivoMidiaResource {
 
@@ -19,11 +19,16 @@ public class ArquivoMidiaResource {
 
     @GET
     @Path("/{nome}")
-    @Produces({ "image/png", "image/jpeg", "application/pdf" })
-    public Response arquivo(@PathParam("nome") String nome) throws IOException {
+    @Produces({ "image/png", "image/jpeg", "image/webp", "image/svg+xml", "application/pdf" })
+    public Response arquivo(@PathParam("nome") String nome, @QueryParam("download") boolean download) {
         MidiaProdutoService.ArquivoMidia arquivo = service.buscarArquivo(nome);
-        return Response.ok(arquivo.conteudo(), arquivo.contentType())
-                .header("X-Content-Type-Options", "nosniff")
-                .build();
+        Response.ResponseBuilder resposta = Response.ok(arquivo.conteudo(), arquivo.contentType())
+                .header("X-Content-Type-Options", "nosniff");
+        // o nome ja passou pela expressao do service (uuid.ext), sem aspas nem barras
+        resposta.header("Content-Disposition", (download ? "attachment" : "inline") + "; filename=\"" + nome + "\"");
+        // SVG (logo da marca, #84) pode conter script: aberto direto, roda isolado e sem nada externo
+        if (arquivo.contentType().equals("image/svg+xml"))
+            resposta.header("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; sandbox");
+        return resposta.build();
     }
 }

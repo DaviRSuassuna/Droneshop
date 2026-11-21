@@ -1,0 +1,34 @@
+// G. A borda do card acende onde o mouse está. A diretiva appBrilhoCards (no layout do admin)
+// atualiza --x e --y do card sob o ponteiro.
+app-admin-layout main .card {
+  position: relative;
+}
+app-admin-layout main .card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 2;
+  background: radial-gradient(
+    260px circle at var(--x, 50%) var(--y, 50%),
+    rgba(232, 168, 107, 0.55),
+    transparent 60%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+app-admin-layout main .card:hover::before {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  app-admin-layout main .card::before {
+    transition: none;
+  }
+}

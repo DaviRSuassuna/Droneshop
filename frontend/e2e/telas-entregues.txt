@@ -10,12 +10,18 @@
 # Acesso migrado e validado na issue #80 (o login segue igual no protótipo 02).
 issue-4
 
-# Saíram com o protótipo 02 (D41), pela regra da D38: a barra do admin mudou de estilo
-# (.tb .tabs a) e o dashboard ganhou "Receita por categoria" e o indicador "ao vivo".
-# Voltam no PR da issue "Admin no protótipo 02" (docs/issues/nova-admin-prototipo-02.md):
-# base, issue-5, issue-6, issue-8, issue-13, issue-14, issue-15, issue-16, issue-18, issue-80.
-
 # ---- trilha A: acrescente abaixo desta linha (docs/agentes/README.md)
 issue-19
 
 # ---- trilha B: acrescente abaixo desta linha
+# Admin no protótipo 02 (#94): voltam as telas do admin que saíram com a D41.
+base
+issue-5
+issue-6
+issue-8
+issue-13
+issue-14
+issue-15
+issue-16
+issue-18
+issue-80

@@ -62,7 +62,7 @@
                     <tr>
                       <td>
                         <div class="pc">
-                          <span class="thumb ph" aria-hidden="true"></span>
+                          <span class="thumb" aria-hidden="true" [class.ph]="!i.produto.imagemPrincipal">@if (i.produto.imagemPrincipal) {<img [src]="i.produto.imagemPrincipal" alt="" />}</span>
                           <div>
                             <b>{{ i.produto.nome }}</b
                             ><span class="chip">{{ i.produto.sku }}</span>

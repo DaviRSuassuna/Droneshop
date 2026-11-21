@@ -29,6 +29,14 @@ describe('KitService', () => {
     req.flush({ id: 1 });
   });
 
+  it('envia exibirEmOfertas no corpo (#84)', () => {
+    const dto = { nome: 'Combo', idStatus: 2, exibirEmOfertas: true, componentes: [{ idProduto: 1, quantidade: 1 }] } as KitDTO;
+    service.criar(dto).subscribe();
+    const req = http.expectOne(url);
+    expect(req.request.body.exibirEmOfertas).toBe(true);
+    req.flush({ id: 1 });
+  });
+
   it('altera com PUT em /kits/{id}', () => {
     const dto = { nome: 'Combo', idStatus: 2, componentes: [{ idProduto: 1, quantidade: 2 }] } as KitDTO;
     service.atualizar(7, dto).subscribe();

@@ -10,6 +10,8 @@ export interface VersaoGrupo {
   rotulo: string;
   ordem: number;
   preco: number | null;
+  /** URL da imagem principal (#87) ou null sem imagem. */
+  imagemPrincipal?: string | null;
 }
 
 /**

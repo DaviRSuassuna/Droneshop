@@ -56,6 +56,7 @@ public record DroneResponseDTO(
     boolean exigeRegistroAnac,
     String classeAnac,
     String registroSisant,
-    List<ProdutoResumoDTO> acessoriosCompativeis
+    List<ProdutoResumoDTO> acessoriosCompativeis,
+    String imagemPrincipal
 ) implements ProdutoResponseDTO {
 }

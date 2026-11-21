@@ -26,7 +26,14 @@ export type SituacaoEstoque = 'TODOS' | 'ABAIXO_MINIMO' | 'ZERADO';
 
 /** Item de GET /estoque. No kit, estoqueFisico é nulo e o disponível vem dos componentes (D7). */
 export interface ItemEstoque {
-  produto: { id: number; sku: string | null; nome: string | null; tipo: StatusRef; status: StatusRef };
+  produto: {
+    id: number;
+    sku: string | null;
+    nome: string | null;
+    tipo: StatusRef;
+    status: StatusRef;
+    imagemPrincipal?: string | null;
+  };
   estoqueFisico: number | null;
   reservado: number;
   disponivel: number;

@@ -23,9 +23,10 @@ public record CupomResponseDTO(
         List<ReferenciaCupomDTO> marcas,
         List<ReferenciaCupomDTO> produtos
 ) {
-    public record ReferenciaCupomDTO(Long id, String nome, String sku) {
+    // imagemPrincipal só nos produtos (#87); categoria e marca saem sem ela
+    public record ReferenciaCupomDTO(Long id, String nome, String sku, String imagemPrincipal) {
         public ReferenciaCupomDTO(Long id, String nome) {
-            this(id, nome, null);
+            this(id, nome, null, null);
         }
     }
 }

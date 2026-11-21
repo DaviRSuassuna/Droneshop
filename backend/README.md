@@ -17,6 +17,26 @@ O script cria chaves de assinatura só de desenvolvimento em `target/jwt-dev/` (
 
 > **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
 
+## Armazenamento de mídias (S3 com RustFS, D42)
+
+Imagens e manuais dos produtos ficam num bucket S3. No desenvolvimento, o RustFS do `compose.yaml`:
+
+```shell script
+docker compose up -d rustfs        # API em http://localhost:9000, console em http://localhost:9001
+```
+
+A API cria o bucket na subida e envia para ele as fotos da carga de dados (`src/main/resources/midias-carga`).
+Configuração por variável de ambiente (os padrões servem só ao RustFS local):
+
+| Variável | Padrão |
+|---|---|
+| `AERIA_S3_ENDPOINT` | `http://localhost:9000` |
+| `AERIA_S3_BUCKET` | `aeria-midias` (trilhas: `aeria-midias-a`, `aeria-midias-b`) |
+| `AERIA_S3_ACCESS_KEY` / `AERIA_S3_SECRET_KEY` | usuário e senha de dev do RustFS local |
+| `AERIA_S3_REGION` | `us-east-1` |
+
+Para a AWS, basta apontar essas variáveis para a conta. Os testes usam um armazenamento em memória e não precisam do RustFS.
+
 ## Packaging and running the application
 
 The application can be packaged using:

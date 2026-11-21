@@ -3,9 +3,6 @@ package br.com.droneshop.catalogo.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -13,17 +10,20 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import br.com.droneshop.catalogo.dto.MidiaProdutoAlteracaoRequestDTO;
 import br.com.droneshop.catalogo.dto.MidiaProdutoOrdemRequestDTO;
 import br.com.droneshop.catalogo.dto.MidiaProdutoRequestDTO;
+import br.com.droneshop.catalogo.model.Marca;
 import br.com.droneshop.catalogo.model.MidiaProduto;
 import br.com.droneshop.catalogo.model.Produto;
+import br.com.droneshop.catalogo.model.StatusProduto;
 import br.com.droneshop.catalogo.model.TipoMidia;
+import br.com.droneshop.catalogo.repository.MarcaRepository;
 import br.com.droneshop.catalogo.repository.MidiaProdutoRepository;
 import br.com.droneshop.catalogo.repository.ProdutoRepository;
+import br.com.droneshop.exception.ConflitoException;
 import br.com.droneshop.exception.ResourceNotFoundException;
 import br.com.droneshop.exception.ValidationException;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -40,9 +40,12 @@ import jakarta.validation.Validator;
 @ApplicationScoped
 public class MidiaProdutoServiceImpl implements MidiaProdutoService {
 
-    private static final long TAMANHO_MAXIMO = 20L * 1024 * 1024;
+    // D42: imagem até 5 MB, manual PDF até 20 MB
+    private static final long MAXIMO_IMAGEM = 5L * 1024 * 1024;
+    private static final long MAXIMO_PDF = 20L * 1024 * 1024;
+    private static final String PREFIXO_URL = "/midias/arquivos/";
     private static final Pattern NOME_ARQUIVO = Pattern.compile(
-            "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.(png|jpe?g|pdf)$");
+            "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.(png|jpe?g|webp|svg|pdf)$");
 
     @Inject
     MidiaProdutoRepository midiaRepository;
@@ -56,8 +59,11 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
     @Inject
     TransactionSynchronizationRegistry transacao;
 
-    @ConfigProperty(name = "aeria.midias.diretorio")
-    String diretorio;
+    @Inject
+    ArmazenamentoArquivos armazenamento;
+
+    @Inject
+    MarcaRepository marcaRepository;
 
     @Override
     @Transactional
@@ -85,7 +91,7 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
             validarArquivo(tipo, dto.arquivo());
             if (dto.url() != null && !dto.url().isBlank())
                 throw ValidationException.of("url", "Arquivos de imagem e PDF não aceitam URL.");
-            url = gravarArquivo(dto.arquivo());
+            url = gravarArquivo(idProduto, dto.arquivo());
         }
 
         MidiaProduto midia = new MidiaProduto();
@@ -152,19 +158,30 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
             porId.get(ids.get(i)).setOrdem(i + 1);
     }
 
+    // D42: a última imagem de produto ativo não se exclui (409); apagar a principal promove a
+    // próxima imagem na ordem; o objeto sai do armazenamento depois do commit.
     @Override
     @Transactional
     public void excluir(long id) {
         MidiaProduto midia = buscarMidia(id);
         long idProduto = midia.getProduto().getId();
-        buscarProdutoComLock(idProduto);
+        Produto produto = buscarProdutoComLock(idProduto);
+        List<MidiaProduto> restantes = midiaRepository.findByProdutoId(idProduto).stream()
+                .filter(m -> m.getId() != id)
+                .toList();
+        if (midia.getTipo() == TipoMidia.IMAGEM && produto.getStatus() == StatusProduto.ATIVO
+                && restantes.stream().noneMatch(m -> m.getTipo() == TipoMidia.IMAGEM))
+            throw new ConflitoException(
+                    "Esta é a última imagem de um produto ativo. Inative o produto antes de excluí-la.");
         removerArquivo(midia);
         midiaRepository.delete(midia);
         // as que sobram voltam a ser 1..n, sem buraco na ordem
         int ordem = 1;
-        for (MidiaProduto restante : midiaRepository.findByProdutoId(idProduto))
-            if (restante.getId() != id)
-                restante.setOrdem(ordem++);
+        for (MidiaProduto restante : restantes)
+            restante.setOrdem(ordem++);
+        if (midia.isPrincipal())
+            restantes.stream().filter(m -> m.getTipo() == TipoMidia.IMAGEM).findFirst()
+                    .ifPresent(m -> m.setPrincipal(true));
     }
 
     @Override
@@ -178,14 +195,37 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
     }
 
     @Override
-    public ArquivoMidia buscarArquivo(String nome) throws IOException {
+    public ArquivoMidia buscarArquivo(String nome) {
         if (nome == null || !NOME_ARQUIVO.matcher(nome).matches())
             throw new ResourceNotFoundException("Arquivo de mídia não encontrado.");
-        Path raiz = diretorio().toAbsolutePath().normalize();
-        Path arquivo = raiz.resolve(nome).normalize();
-        if (!raiz.equals(arquivo.getParent()) || !Files.isRegularFile(arquivo))
-            throw new ResourceNotFoundException("Arquivo de mídia não encontrado.");
-        return new ArquivoMidia(Files.readAllBytes(arquivo), contentType(nome));
+        MidiaProduto midia = midiaRepository.findByUrl(PREFIXO_URL + nome);
+        String chave;
+        if (midia != null) {
+            chave = chave(midia.getProduto().getId(), nome);
+        } else {
+            // logo da marca enviado por upload (#84)
+            Marca marca = marcaRepository.find("logoUrl", PREFIXO_URL + nome).firstResult();
+            if (marca == null)
+                throw new ResourceNotFoundException("Arquivo de mídia não encontrado.");
+            chave = MarcaServiceImpl.chaveLogo(marca.getId(), nome);
+        }
+        byte[] conteudo = armazenamento.ler(chave)
+                .orElseThrow(() -> new ResourceNotFoundException("Arquivo de mídia não encontrado."));
+        return new ArquivoMidia(conteudo, contentType(nome));
+    }
+
+    @Override
+    public boolean gravarCargaSeAusente(String nome, byte[] conteudo) {
+        if (nome == null || !NOME_ARQUIVO.matcher(nome).matches())
+            throw new IllegalArgumentException("Nome de arquivo da carga inválido: " + nome);
+        MidiaProduto midia = midiaRepository.findByUrl(PREFIXO_URL + nome);
+        if (midia == null)
+            return false;
+        String chave = chave(midia.getProduto().getId(), nome);
+        if (armazenamento.existe(chave))
+            return false;
+        armazenamento.gravar(chave, conteudo, contentType(nome));
+        return true;
     }
 
     private void validar(MidiaProdutoRequestDTO dto) {
@@ -257,12 +297,18 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
     }
 
     private void validarArquivo(TipoMidia tipo, FileUpload upload) {
-        if (upload.size() > TAMANHO_MAXIMO)
+        if (tipo == TipoMidia.IMAGEM && upload.size() > MAXIMO_IMAGEM)
+            throw ValidationException.of("arquivo", "A imagem deve ter no máximo 5 MB.");
+        if (upload.size() > MAXIMO_PDF)
             throw ValidationException.of("arquivo", "O arquivo deve ter no máximo 20 MB.");
         String nome = upload.fileName() == null ? "" : upload.fileName().toLowerCase(Locale.ROOT);
         String extensao = nome.substring(nome.lastIndexOf('.') + 1);
+        String enviado = upload.contentType() == null ? "" : upload.contentType().toLowerCase(Locale.ROOT);
+        if (!enviado.isEmpty() && !enviado.startsWith("application/octet-stream")
+                && !enviado.startsWith(contentType("x." + extensao)))
+            throw ValidationException.of("arquivo", "O formato do arquivo não corresponde ao tipo de mídia.");
         boolean formatoValido = switch (tipo) {
-            case IMAGEM -> Set.of("png", "jpg", "jpeg").contains(extensao)
+            case IMAGEM -> Set.of("png", "jpg", "jpeg", "webp").contains(extensao)
                     && conteudoValido(extensao, upload.filePath());
             case MANUAL_PDF -> extensao.equals("pdf") && conteudoValido(extensao, upload.filePath());
             case VIDEO -> false;
@@ -271,13 +317,16 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
             throw ValidationException.of("arquivo", "O formato do arquivo não corresponde ao tipo de mídia.");
     }
 
-    private boolean conteudoValido(String extensao, Path caminho) {
-        try (InputStream input = Files.newInputStream(caminho)) {
-            byte[] inicio = input.readNBytes(8);
+    private boolean conteudoValido(String extensao, java.nio.file.Path caminho) {
+        try (InputStream input = java.nio.file.Files.newInputStream(caminho)) {
+            byte[] inicio = input.readNBytes(12);
             return switch (extensao) {
                 case "png" -> assinatura(inicio,
                         new byte[] { (byte) 0x89, 'P', 'N', 'G', 13, 10, 26, 10 });
                 case "jpg", "jpeg" -> assinatura(inicio, new byte[] { (byte) 0xff, (byte) 0xd8, (byte) 0xff });
+                // WebP: "RIFF", 4 bytes de tamanho, "WEBP"
+                case "webp" -> inicio.length >= 12 && assinatura(inicio, new byte[] { 'R', 'I', 'F', 'F' })
+                        && inicio[8] == 'W' && inicio[9] == 'E' && inicio[10] == 'B' && inicio[11] == 'P';
                 case "pdf" -> inicio.length >= 5 && inicio[0] == '%'
                         && inicio[1] == 'P' && inicio[2] == 'D' && inicio[3] == 'F' && inicio[4] == '-';
                 default -> false;
@@ -297,19 +346,22 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
         return true;
     }
 
-    private String gravarArquivo(FileUpload upload) {
+    private String gravarArquivo(long idProduto, FileUpload upload) {
         String nome = upload.fileName().toLowerCase(Locale.ROOT);
         String extensao = nome.substring(nome.lastIndexOf('.') + 1);
+        if (extensao.equals("jpeg"))
+            extensao = "jpg";
         String salvo = UUID.randomUUID() + "." + extensao;
-        Path destino = diretorio().resolve(salvo).normalize();
+        String chave = chave(idProduto, salvo);
+        byte[] conteudo;
         try {
-            Files.createDirectories(destino.getParent());
-            Files.copy(upload.filePath(), destino, StandardCopyOption.REPLACE_EXISTING);
+            conteudo = java.nio.file.Files.readAllBytes(upload.filePath());
         } catch (IOException e) {
-            throw new IllegalStateException("Não foi possível gravar o arquivo de mídia.", e);
+            throw new IllegalStateException("Não foi possível ler o arquivo enviado.", e);
         }
-        apagarAoTerminar(destino, false);
-        return "/midias/arquivos/" + salvo;
+        armazenamento.gravar(chave, conteudo, contentType(salvo));
+        removerAoTerminar(chave, false);
+        return PREFIXO_URL + salvo;
     }
 
     private void removerArquivo(MidiaProduto midia) {
@@ -317,13 +369,18 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
             return;
         String nome = midia.getUrl().substring(midia.getUrl().lastIndexOf('/') + 1);
         if (!NOME_ARQUIVO.matcher(nome).matches())
-            throw new IllegalStateException("A mídia contém um caminho de arquivo inválido.");
-        apagarAoTerminar(diretorio().resolve(nome).normalize(), true);
+            throw new IllegalStateException("A mídia contém um nome de arquivo inválido.");
+        removerAoTerminar(chave(midia.getProduto().getId(), nome), true);
     }
 
-    // O disco nao participa da transacao: o arquivo so e apagado depois que o banco decide.
+    // D42: produtos/{idProduto}/{uuid}.{ext}
+    private static String chave(long idProduto, String nome) {
+        return "produtos/" + idProduto + "/" + nome;
+    }
+
+    // O armazenamento nao participa da transacao: o objeto so e apagado depois que o banco decide.
     // aposCommit = true apaga se confirmou (exclusao); false apaga se desfez (upload que nao foi salvo).
-    private void apagarAoTerminar(Path arquivo, boolean aposCommit) {
+    private void removerAoTerminar(String chave, boolean aposCommit) {
         transacao.registerInterposedSynchronization(new Synchronization() {
             @Override
             public void beforeCompletion() {
@@ -334,16 +391,12 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
                 if ((status == Status.STATUS_COMMITTED) != aposCommit)
                     return;
                 try {
-                    Files.deleteIfExists(arquivo);
-                } catch (IOException e) {
-                    Log.warnf(e, "Não foi possível apagar o arquivo de mídia %s", arquivo);
+                    armazenamento.remover(chave);
+                } catch (RuntimeException e) {
+                    Log.warnf(e, "Não foi possível remover o objeto %s do armazenamento", chave);
                 }
             }
         });
-    }
-
-    private Path diretorio() {
-        return Path.of(diretorio).toAbsolutePath().normalize();
     }
 
     private String contentType(String nome) {
@@ -351,6 +404,10 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
             return "image/png";
         if (nome.endsWith(".jpg") || nome.endsWith(".jpeg"))
             return "image/jpeg";
+        if (nome.endsWith(".webp"))
+            return "image/webp";
+        if (nome.endsWith(".svg"))
+            return "image/svg+xml";
         return "application/pdf";
     }
 }

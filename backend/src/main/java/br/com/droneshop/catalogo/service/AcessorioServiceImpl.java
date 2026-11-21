@@ -49,6 +49,8 @@ public class AcessorioServiceImpl implements AcessorioService {
         Set<Produto> compativeis = buscarCompativeis(dto.idsCompativeis(), idAtual);
         cadastro.aplicar(destino, dto, status, idAtual);
         destino.setTipoAcessorio(dto.tipoAcessorio());
+        destino.setPesoItemG(dto.pesoItemG());
+        destino.setSugerirNosCompativeis(Boolean.TRUE.equals(dto.sugerirNosCompativeis()));
         destino.getCompativeis().clear();
         destino.getCompativeis().addAll(compativeis);
     }

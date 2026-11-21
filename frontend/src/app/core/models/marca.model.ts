@@ -14,6 +14,11 @@ export interface Marca {
   destacarHome: boolean;
 }
 
+/** Resposta do POST /marcas/{id}/logo (#84). */
+export interface MarcaLogo {
+  logoUrl: string;
+}
+
 /** Espelha o MarcaRequestDTO aceito pelo POST /marcas e PUT /marcas/{id}. */
 export interface MarcaDTO {
   nome: string;

@@ -66,6 +66,7 @@ interface OpcaoComponente {
   sku: string | null;
   tipo: string;
   disponivel: number;
+  imagemPrincipal?: string | null;
   pesoEmbalagemKg: number | null;
   alturaEmbalagemCm: number | null;
   larguraEmbalagemCm: number | null;
@@ -84,6 +85,7 @@ interface VersaoTela {
   rotulo: string;
   tipo: string;
   preco: number | null;
+  imagemPrincipal: string | null;
   este: boolean;
 }
 
@@ -176,6 +178,9 @@ export class ProdutoCadastro implements OnInit {
     idStatus: this.fb.nonNullable.control<number>(STATUS_PRODUTO.RASCUNHO),
     destaque: this.fb.nonNullable.control(false),
     tipoAcessorio: this.fb.nonNullable.control(''),
+    pesoItemG: this.fb.control<number | null>(null),
+    sugerirNosCompativeis: this.fb.nonNullable.control(false),
+    exibirEmOfertas: this.fb.nonNullable.control(false),
   });
 
   // preço, estoque e embalagem do próprio produto (D40); a caixa é digitada como A×L×C
@@ -318,6 +323,7 @@ export class ProdutoCadastro implements OnInit {
         rotulo: x.rotulo,
         tipo: tipoTexto(x.tipo.id),
         preco: x.preco,
+        imagemPrincipal: x.imagemPrincipal ?? null,
         ordem: x.ordem,
         este: false,
       }));
@@ -328,6 +334,7 @@ export class ProdutoCadastro implements OnInit {
       tipo: tipoTexto(this.tipo),
       preco: numero(this.valoresComerciais().preco ?? null),
       ordem: numero(pagina.ordemNoGrupo ?? null) ?? Number.MAX_SAFE_INTEGER,
+      imagemPrincipal: grupo.versoes.find((x) => x.idProduto === id)?.imagemPrincipal ?? null,
       este: true,
     };
     return [...outras, este].sort((a, b) => a.ordem - b.ordem);
@@ -471,6 +478,9 @@ export class ProdutoCadastro implements OnInit {
           idStatus: produto.status.id,
           destaque: produto.destaque,
           tipoAcessorio: produto.tipoAcessorio ?? '',
+          pesoItemG: produto.pesoItemG ?? null,
+          sugerirNosCompativeis: !!produto.sugerirNosCompativeis,
+          exibirEmOfertas: !!produto.exibirEmOfertas,
         });
         // no kit, peso e dimensões só vão para o campo quando foram informados nele (D16)
         const sobrescrito =
@@ -517,6 +527,7 @@ export class ProdutoCadastro implements OnInit {
           sku: c.sku,
           tipo: tipoTexto(c.tipo.id),
           disponivel: c.status.id === STATUS_PRODUTO.ATIVO ? c.disponivel : 0,
+          imagemPrincipal: c.imagemPrincipal ?? null,
           pesoEmbalagemKg: null,
           alturaEmbalagemCm: null,
           larguraEmbalagemCm: null,
@@ -687,6 +698,7 @@ export class ProdutoCadastro implements OnInit {
     } else if (this.ehKit) {
       const kit: KitDTO = {
         ...dto,
+        exibirEmOfertas: v.exibirEmOfertas,
         componentes: this.componentes().map((c) => ({
           idProduto: c.produto.id,
           quantidade: c.quantidade,
@@ -698,6 +710,8 @@ export class ProdutoCadastro implements OnInit {
         ...dto,
         ...estoque,
         tipoAcessorio: v.tipoAcessorio,
+        pesoItemG: numero(v.pesoItemG),
+        sugerirNosCompativeis: v.sugerirNosCompativeis,
         idsCompativeis: this.compativeis().map((c) => c.produto.id),
       };
       request$ = id
@@ -817,6 +831,7 @@ function opcaoDoProduto(p: Produto): OpcaoComponente {
     sku: p.sku,
     tipo: tipoTexto(p.tipo.id),
     disponivel: p.disponivel,
+    imagemPrincipal: p.imagemPrincipal ?? null,
     pesoEmbalagemKg: p.pesoEmbalagemKg,
     alturaEmbalagemCm: p.alturaEmbalagemCm,
     larguraEmbalagemCm: p.larguraEmbalagemCm,

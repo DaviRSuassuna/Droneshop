@@ -74,7 +74,7 @@ public final class PedidoResponseMapper {
         Produto p = i.getProduto();
         return new ItemPedidoResponseDTO(
                 i.getId(),
-                new ItemPedidoResponseDTO.ProdutoResumo(p.getId(), p.getSku(), p.getNome()),
+                new ItemPedidoResponseDTO.ProdutoResumo(p.getId(), p.getSku(), p.getNome(), p.getImagemPrincipal()),
                 i.getQuantidade(),
                 i.getPrecoUnitarioCongelado(),
                 i.getPrecoUnitarioCongelado().multiply(BigDecimal.valueOf(i.getQuantidade())));

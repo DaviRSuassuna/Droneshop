@@ -30,7 +30,7 @@ public final class GrupoProdutoResponseMapper {
                 aPartirDe,
                 grupo.getProdutos().stream()
                         .map(p -> new GrupoProdutoResponseDTO.Versao(p.getId(), p.getNome(), p.getSku(), p.getTipo(),
-                                p.getStatus(), p.getRotuloNoGrupo(), p.getOrdemNoGrupo(), p.getPreco()))
+                                p.getStatus(), p.getRotuloNoGrupo(), p.getOrdemNoGrupo(), p.getPreco(), p.getImagemPrincipal()))
                         .toList());
     }
 }

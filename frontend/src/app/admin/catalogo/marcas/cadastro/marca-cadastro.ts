@@ -1,13 +1,16 @@
 import { toSignal } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Observable, map } from 'rxjs';
+import { Observable, map, of, switchMap } from 'rxjs';
 import { MarcaService } from '../../../../core/services/marca.service';
-import { MarcaDTO } from '../../../../core/models/marca.model';
+import { Marca, MarcaDTO } from '../../../../core/models/marca.model';
 import { STATUS_PUBLICACAO } from '../../../../core/models/status.model';
 import { ProblemDetail } from '../../../../core/models/problem.model';
+
+const TIPOS_LOGO = ['image/png', 'image/svg+xml'];
+const TAMANHO_MAXIMO_LOGO = 2 * 1024 * 1024;
 
 @Component({
   selector: 'app-marca-cadastro',
@@ -31,6 +34,10 @@ export class MarcaCadastro implements OnInit {
   readonly erroGeral = signal<string | null>(null);
   readonly errosCampo = signal<Record<string, string>>({});
 
+  // Logo por arquivo (#84): só sobe ao salvar, porque o upload precisa do id da marca
+  readonly arquivoLogo = signal<File | null>(null);
+  readonly previaArquivo = signal<string | null>(null);
+
   readonly form = this.fb.nonNullable.group({
     nome: [''],
     slug: [''],
@@ -52,9 +59,18 @@ export class MarcaCadastro implements OnInit {
     const faltando: string[] = [];
     if (!v.nome.trim()) faltando.push('Nome da marca');
     if (!v.paisOrigem.trim()) faltando.push('País de origem');
-    if (!v.logoUrl.trim()) faltando.push('Logo da marca (URL)');
+    if (!v.logoUrl.trim() && !this.arquivoLogo()) faltando.push('Logo da marca');
     return faltando;
   });
+
+  readonly previaLogo = computed(() => {
+    const url = this.valores().logoUrl.trim();
+    return this.previaArquivo() ?? (url ? this.marcaService.urlLogo(url) : null);
+  });
+
+  constructor() {
+    inject(DestroyRef).onDestroy(() => this.trocarPrevia(null));
+  }
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -92,6 +108,49 @@ export class MarcaCadastro implements OnInit {
     });
   }
 
+  aoEscolherLogo(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.escolherLogo(input.files?.item(0) ?? null);
+    input.value = '';
+  }
+
+  aoSoltarLogo(event: DragEvent): void {
+    event.preventDefault();
+    this.escolherLogo(event.dataTransfer?.files.item(0) ?? null);
+  }
+
+  permitirSoltar(event: DragEvent): void {
+    event.preventDefault();
+  }
+
+  removerArquivoLogo(): void {
+    this.arquivoLogo.set(null);
+    this.trocarPrevia(null);
+  }
+
+  private escolherLogo(arquivo: File | null): void {
+    if (!arquivo) return;
+    const erros = { ...this.errosCampo() };
+    delete erros['arquivo'];
+    if (!TIPOS_LOGO.includes(arquivo.type)) {
+      this.errosCampo.set({ ...erros, arquivo: 'O logo deve ser um arquivo PNG ou SVG.' });
+      return;
+    }
+    if (arquivo.size > TAMANHO_MAXIMO_LOGO) {
+      this.errosCampo.set({ ...erros, arquivo: 'O logo deve ter no máximo 2 MB.' });
+      return;
+    }
+    this.errosCampo.set(erros);
+    this.arquivoLogo.set(arquivo);
+    this.trocarPrevia(URL.createObjectURL(arquivo));
+  }
+
+  private trocarPrevia(url: string | null): void {
+    const anterior = this.previaArquivo();
+    if (anterior) URL.revokeObjectURL(anterior);
+    this.previaArquivo.set(url);
+  }
+
   campoInvalido(campo: string): boolean {
     return campo in this.errosCampo();
   }
@@ -121,13 +180,36 @@ export class MarcaCadastro implements OnInit {
 
     this.salvando.set(true);
     const id = this.marcaId();
-    const request$: Observable<unknown> = id
-      ? this.marcaService.atualizar(id, dto)
-      : this.marcaService.criar(dto);
+    const arquivo = this.arquivoLogo();
+    let request$: Observable<unknown>;
+    if (!arquivo) {
+      request$ = id ? this.marcaService.atualizar(id, dto) : this.marcaService.criar(dto);
+    } else {
+      // Marca nova com arquivo: nasce como rascunho (o logo ainda não existe), recebe o
+      // upload e só então ganha o status escolhido junto com o logoUrl gravado
+      const marca$: Observable<number> = id
+        ? of(id)
+        : this.marcaService
+            .criar({ ...dto, idStatus: STATUS_PUBLICACAO.RASCUNHO })
+            .pipe(map((m: Marca) => m.id));
+      request$ = marca$.pipe(
+        switchMap((idMarca) => {
+          this.marcaId.set(idMarca);
+          return this.marcaService
+            .enviarLogo(idMarca, arquivo)
+            .pipe(
+              switchMap(({ logoUrl }) =>
+                this.marcaService.atualizar(idMarca, { ...dto, logoUrl }),
+              ),
+            );
+        }),
+      );
+    }
 
     request$.subscribe({
       next: () => {
         this.salvando.set(false);
+        this.removerArquivoLogo();
         this.router.navigate(['/admin/marcas']);
       },
       error: (err: HttpErrorResponse) => this.tratarErro(err),
