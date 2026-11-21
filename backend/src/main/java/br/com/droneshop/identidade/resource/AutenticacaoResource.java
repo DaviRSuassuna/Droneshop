@@ -2,6 +2,9 @@ package br.com.droneshop.identidade.resource;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
+import br.com.droneshop.compra.resource.CarrinhoResource;
+import br.com.droneshop.compra.service.CarrinhoService;
+import br.com.droneshop.exception.ResourceNotFoundException;
 import br.com.droneshop.identidade.dto.LoginRequestDTO;
 import br.com.droneshop.identidade.dto.LoginResponseDTO;
 import br.com.droneshop.identidade.dto.PerfilAtivoRequestDTO;
@@ -12,6 +15,7 @@ import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -28,11 +32,23 @@ public class AutenticacaoResource {
     @Inject
     JsonWebToken token;
 
+    @Inject
+    CarrinhoService carrinhos;
+
     @POST
     @Path("login")
     @Consumes(MediaType.APPLICATION_JSON)
-    public LoginResponseDTO login(@Valid LoginRequestDTO dto) {
-        return autenticacao.login(dto);
+    public LoginResponseDTO login(@Valid LoginRequestDTO dto, @HeaderParam(CarrinhoResource.HEADER) String carrinho) {
+        LoginResponseDTO resposta = autenticacao.login(dto);
+        // Login com o carrinho anônimo no header já vincula (RF17, #24)
+        if (carrinho != null && !carrinho.isBlank() && resposta.perfis().contains("CLIENTE")) {
+            try {
+                carrinhos.vincular(resposta.usuario().id(), carrinho);
+            } catch (ResourceNotFoundException e) {
+                // token de carrinho desconhecido não impede o login
+            }
+        }
+        return resposta;
     }
 
     @GET
