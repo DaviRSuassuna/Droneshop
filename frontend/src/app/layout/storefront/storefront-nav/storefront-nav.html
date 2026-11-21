@@ -72,9 +72,13 @@
       <a class="iconbtn" routerLink="/conta/favoritos" aria-label="Favoritos"
         ><svg class="ico"><use href="#i-heart" /></svg
       ></a>
-      <a class="iconbtn" routerLink="/carrinho" aria-label="Carrinho"
+      <a
+        class="iconbtn"
+        routerLink="/carrinho"
+        [attr.aria-label]="sacola() ? 'Carrinho, ' + sacola() + (sacola() === 1 ? ' item' : ' itens') : 'Carrinho'"
         ><svg class="ico"><use href="#i-bag" /></svg
-      ></a>
+        >@if (sacola()) {<span class="navcount" [class.sp-bump]="pulaSacola()">{{ sacola() }}</span>}</a
+      >
       <a
         class="iconbtn acct"
         routerLink="/conta/perfil"

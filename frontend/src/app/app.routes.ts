@@ -312,6 +312,11 @@ export const routes: Routes = [
         ],
       },
       {
+        path: 'carrinho',
+        loadComponent: () =>
+          import('./storefront/compra/carrinho/carrinho').then((m) => m.CarrinhoPagina),
+      },
+      {
         path: 'checkout',
         canActivate: [clienteAuthGuard],
         loadComponent: () =>

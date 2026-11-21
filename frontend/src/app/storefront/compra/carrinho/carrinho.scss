@@ -1,0 +1,77 @@
+// Classes do protótipo 02 (pagehead, two, item, qty, stock, choices, sum, mbar) vêm do _loja*.scss;
+// aqui só o que o carrinho.html do protótipo usa e a camada global ainda não traz (site.css).
+.items {
+  display: grid;
+}
+.item .stage {
+  display: grid;
+  place-items: center;
+  color: var(--mute);
+}
+.item .acts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--ink2);
+}
+.item .acts a {
+  white-space: nowrap;
+}
+.item .acts a:hover {
+  color: var(--ink);
+}
+.coupon {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+.coupon input {
+  flex: 1;
+  min-width: 0;
+  height: 42px;
+  border-radius: 9px;
+  border: 1px solid var(--line2);
+  background: var(--field);
+  padding: 0 12px;
+  color: var(--ink);
+}
+.formnote {
+  margin-top: 8px;
+}
+.formnote.ok {
+  color: var(--ok);
+}
+.formnote.erro {
+  color: var(--warn);
+}
+.finalizar {
+  margin-top: 18px;
+}
+.trust-mini {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--mute);
+}
+.trust-mini div {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.trust-mini .ico {
+  width: 17px;
+  height: 17px;
+  color: var(--ink2);
+  margin-top: 1px;
+}
+.vazio .panel {
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+}

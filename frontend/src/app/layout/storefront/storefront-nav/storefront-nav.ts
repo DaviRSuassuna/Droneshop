@@ -3,6 +3,7 @@ import {
   Component,
   DestroyRef,
   ElementRef,
+  effect,
   inject,
   signal,
   viewChild,
@@ -14,6 +15,8 @@ import { catchError, filter, of } from 'rxjs';
 import { ContaFolha } from '../account-menu/conta-folha';
 import { LojaService } from '../../../core/services/loja.service';
 import { MarcaLoja } from '../../../core/models/loja.model';
+import { CarrinhoService } from '../../../core/services/carrinho.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 /** Depois desta altura o menu encolhe (protótipo: navbar-aceternity.js, bloco B). */
 export const ALTURA_ENCOLHE = 40;
@@ -30,7 +33,8 @@ const CONSULTA_CELULAR = '(max-width: 900px)';
  * Menu da loja (protótipo 02, index.html + navbar-aceternity.js): some ao descer, volta ao
  * subir e encolhe depois do topo; mega menu de Drones com as subcategorias de drone e as marcas
  * em destaque da API (/loja/categorias e /loja/marcas, #21); busca que leva para /drones?q=.
- * As sugestões da busca ficam para a #43; os contadores de favoritos e sacola, para a trilha A.
+ * As sugestões da busca ficam para a #43. O contador da sacola vem do CarrinhoService (#24) e
+ * pula (.sp-bump) quando o número muda.
  */
 @Component({
   selector: 'app-storefront-nav',
@@ -55,9 +59,13 @@ export class StorefrontNav {
   /** "Por uso": subcategorias das categorias de drone do menu (D39, D43). */
   readonly usos = signal<{ id: number; nome: string; slug: string; categoria: string }[]>([]);
   readonly marcas = signal<MarcaLoja[]>([]);
+  /** Itens na sacola (#24). */
+  readonly sacola = inject(CarrinhoService).quantidade;
+  readonly pulaSacola = signal(false);
 
   private ultimaRolagem = 0;
   private timerMega: ReturnType<typeof setTimeout> | undefined;
+  private timerSacola: ReturnType<typeof setTimeout> | undefined;
 
   constructor() {
     this.ultimaRolagem = this.rolagemAtual();
@@ -68,7 +76,21 @@ export class StorefrontNav {
         takeUntilDestroyed(),
       )
       .subscribe(() => this.fecharTudo());
-    inject(DestroyRef).onDestroy(() => clearTimeout(this.timerMega));
+    inject(DestroyRef).onDestroy(() => {
+      clearTimeout(this.timerMega);
+      clearTimeout(this.timerSacola);
+    });
+    this.carregarSacola();
+    let anterior = this.sacola();
+    effect(() => {
+      const atual = this.sacola();
+      if (atual === anterior) return;
+      anterior = atual;
+      this.pulaSacola.set(false);
+      clearTimeout(this.timerSacola);
+      setTimeout(() => this.pulaSacola.set(true));
+      this.timerSacola = setTimeout(() => this.pulaSacola.set(false), 600);
+    });
     const loja = inject(LojaService);
     loja
       .listarCategorias('DRONE')
@@ -81,6 +103,17 @@ export class StorefrontNav {
       .listarMarcas(true)
       .pipe(catchError(() => of([])))
       .subscribe((m) => this.marcas.set(m.slice(0, 4)));
+  }
+
+  /** Número da sacola ao abrir a loja: carrinho do cliente logado ou o anônimo do token. */
+  private carregarSacola(): void {
+    const carrinho = inject(CarrinhoService);
+    const req = inject(AuthService).autenticado()
+      ? carrinho.doCliente()
+      : carrinho.token()
+        ? carrinho.buscar()
+        : null;
+    req?.pipe(catchError(() => of(null))).subscribe();
   }
 
   aoRolar(): void {

@@ -124,6 +124,57 @@ const nomesDeExemplo = [
   'Bateria Nimbus Mini 3',
 ];
 
+/** Carrinho do cliente logado (#24), com o endereço principal e a cotação do frete (#30). */
+const carrinho = {
+  token: 'token-de-teste',
+  status: { id: 1, nome: 'ATIVO' },
+  itens: [
+    {
+      id: 1,
+      produto: { id: 31, sku: 'DRN-FX2P-0042', nome: 'Falcon X2 Pro', slug: 'falcon-x2-pro' },
+      quantidade: 1,
+      precoUnitario: 12499,
+      subtotal: 12499,
+      disponivel: true,
+      reservas: [],
+    },
+  ],
+  subtotal: 12499,
+  desconto: 0,
+  total: 12499,
+  cupom: null,
+  avisos: [],
+};
+const enderecoCarrinho = {
+  id: 1,
+  apelido: 'Casa',
+  cep: '77001002',
+  logradouro: 'Quadra 104 Sul',
+  numero: '10',
+  complemento: null,
+  bairro: 'Plano Diretor Sul',
+  municipio: { id: 1, nome: 'Palmas', estado: { id: 1, nome: 'Tocantins', sigla: 'TO' } },
+  principal: true,
+};
+const cotacoesCarrinho = [
+  {
+    modalidade: { id: 1, nome: 'EXPRESSA' },
+    origemCalculo: { id: 1, nome: 'TABELA' },
+    transportadora: null,
+    codigoServicoTransportadora: null,
+    custo: 92,
+    prazoDias: 3,
+  },
+  {
+    modalidade: { id: 2, nome: 'PADRAO' },
+    origemCalculo: { id: 1, nome: 'TABELA' },
+    transportadora: null,
+    codigoServicoTransportadora: null,
+    custo: 0,
+    prazoDias: 7,
+  },
+];
+
 /** Respostas da vitrine (#21): um card, as facetas e uma categoria com subcategoria. */
 const vitrine = {
   '/loja/produtos': {
@@ -646,7 +697,19 @@ export const TELAS: Tela[] = [
     etiqueta: 'issue-22',
     area: 'loja',
   },
-  { prototipo: 'carrinho.html', rota: '/carrinho', etiqueta: 'issue-24', area: 'loja' },
+  {
+    prototipo: 'carrinho.html',
+    rota: '/carrinho',
+    etiqueta: 'issue-24',
+    area: 'loja',
+    api: {
+      '/conta/carrinho': carrinho,
+      '/conta/enderecos': [enderecoCarrinho],
+      '/frete/cotacao': cotacoesCarrinho,
+    },
+    // "Quem levou este drone também comprou": sem contrato de recomendação na #24
+    ignorar: [...nomesDeExemplo, 'Ver detalhes'],
+  },
   { prototipo: 'checkout.html', rota: '/checkout', etiqueta: 'issue-26', area: 'loja' },
   {
     prototipo: 'confirmacao.html',
