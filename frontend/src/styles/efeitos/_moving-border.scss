@@ -1,0 +1,44 @@
+// H. Moving Border: borda luminosa girando no botão principal da capa (protótipo:
+// navbar-aceternity.css, bloco H). Com "reduzir movimento" a borda fica parada.
+@property --a {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes ac-rot {
+  to {
+    --a: 360deg;
+  }
+}
+:root.loja {
+  .ac-mb {
+    position: relative;
+    isolation: isolate;
+  }
+  .ac-mb::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    padding: 2px;
+    z-index: -2;
+    background: conic-gradient(
+      from var(--a, 0deg),
+      transparent 0 70%,
+      var(--amber) 80%,
+      #ffe6c8 85%,
+      transparent 92%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: ac-rot 3s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ac-mb::after {
+      animation: none;
+    }
+  }
+}

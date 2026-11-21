@@ -102,6 +102,54 @@ const indicadoresDashboard = {
   ultimosPedidos: [pedidoListagem],
 };
 
+/** Nomes de produto do protótipo: dado de exemplo nos cards da loja (#21). */
+const nomesDeExemplo = [
+  'Falcon X2',
+  'Falcon X2 Pro',
+  'Nimbus Mini 3',
+  'Heron Survey Pro',
+  'Vortex FPV Racer',
+  'Atlas Agro 10L',
+  'Sparrow Kids',
+  'Bateria extra Falcon X2',
+  'Maleta rígida Falcon',
+  'Hélices de reposição',
+  'Antena de longo alcance',
+  'Controle Aeria RC Pro',
+  'Controle remoto',
+  'Mochila de campo 25 L',
+  'Carregador para 3 baterias',
+  'Filtros ND (kit com 4)',
+  'Gimbal de reposição',
+  'Bateria Nimbus Mini 3',
+];
+
+/** Respostas da vitrine (#21): um card, as facetas e uma categoria com subcategoria. */
+const vitrine = {
+  '/loja/produtos': {
+    items: [
+      {
+        id: 1,
+        nome: 'Falcon X2 Pro',
+        slug: 'falcon-x2-pro',
+        tipo: { id: 1, nome: 'DRONE' },
+        marca: { nome: 'Aerion' },
+        precoMinimo: 12499,
+        imagemPrincipal: null,
+        disponivel: true,
+      },
+    ],
+    page: 0,
+    pageSize: 9,
+    totalItems: 1,
+    totalPages: 1,
+  },
+  '/loja/filtros': {
+    marcas: [{ slug: 'aerion', nome: 'Aerion', quantidade: 1 }],
+    preco: { min: 12499, max: 12499 },
+  },
+};
+
 const produto = {
   id: 1,
   nome: 'Falcon X2 Pro',
@@ -290,15 +338,8 @@ export const TELAS: Tela[] = [
     etiqueta: 'issue-5',
     area: 'admin',
     ignorar: [
-      // Convite entra com a #33; 2FA e rascunho não fazem parte da API atual de usuários.
+      // Convite entra com a #33; 2FA não faz parte da API atual de usuários.
       'Enviar convite ao criar',
-      'Salvar rascunho',
-      'Produtos',
-      'Marcas',
-      'Categorias',
-      'Pedidos',
-      'Usuários',
-      'Relatórios',
     ],
   },
   {
@@ -408,7 +449,6 @@ export const TELAS: Tela[] = [
       'Buscar por número, cliente ou CPF/CNPJ',
       'Período: 30 dias',
       'Pagamento',
-      'Canal',
     ],
   },
   {
@@ -433,10 +473,9 @@ export const TELAS: Tela[] = [
         totalPages: 1,
       },
     },
-    // #18 atual não calcula série temporal, comparação, conversão ou ranking; fila atual só contém pendentes.
+    // #18 atual não calcula série temporal, comparação ou ranking; fila atual só contém pendentes.
     ignorar: [
       'Exportar relatório',
-      'Conversão',
       'Vendas no período', // Card de série temporal, ausente no contrato atual.
       'Receita',
       'Pedidos',
@@ -456,9 +495,66 @@ export const TELAS: Tela[] = [
   },
 
   // ------------------------------------------------------------ loja
-  { prototipo: 'index.html', rota: '/', etiqueta: 'issue-21', area: 'loja' },
-  { prototipo: 'drones.html', rota: '/drones', etiqueta: 'issue-21', area: 'loja' },
-  { prototipo: 'acessorios.html', rota: '/acessorios', etiqueta: 'issue-21', area: 'loja' },
+  {
+    prototipo: 'index.html',
+    rota: '/',
+    etiqueta: 'issue-21',
+    area: 'loja',
+    api: vitrine,
+    // Nomes de produto são dado de exemplo; "O que você vai voar?" lista as subcategorias de
+    // drone da API no lugar dos desenhos fixos do protótipo (desenhos.js).
+    ignorar: [...nomesDeExemplo, 'Filmagem e viagem', 'Inspeção', 'Mapeamento', 'Agricultura'],
+  },
+  {
+    prototipo: 'drones.html',
+    rota: '/drones',
+    etiqueta: 'issue-21',
+    area: 'loja',
+    api: vitrine,
+    // Marcas e "Uso" vêm de /loja/filtros e /loja/categorias (dado). "Escolher versão" pede saber
+    // se o item é um grupo, o que a listagem não traz; o card sempre leva à página da versão.
+    // Registro ANAC não é filtro do contrato da #21.
+    ignorar: [
+      ...nomesDeExemplo,
+      'Escolher versão',
+      'Aerion',
+      'Skyline',
+      'Vortex',
+      'Atlas',
+      'Heron',
+      'Sparrow',
+      'Profissional',
+      'Lazer',
+      'Corrida FPV',
+      'Agro / mapeamento',
+      'Exige SISANT',
+    ],
+  },
+  {
+    prototipo: 'acessorios.html',
+    rota: '/acessorios',
+    etiqueta: 'issue-21',
+    area: 'loja',
+    api: vitrine,
+    // "Tipo" vem das subcategorias de acessório (dado). Compatibilidade e disponibilidade
+    // (pronta entrega, pré-venda) não são filtros do contrato da #21.
+    ignorar: [
+      ...nomesDeExemplo,
+      'Baterias',
+      'Hélices',
+      'Maletas e mochilas',
+      'Filtros e lentes',
+      'Controles e antenas',
+      'Carregadores',
+      'Falcon X2',
+      'Nimbus Mini 3',
+      'Vortex FPV',
+      'Atlas Agro',
+      'Heron Survey',
+      'Pronta entrega',
+      'Pré-venda',
+    ],
+  },
   {
     prototipo: 'produto.html',
     rota: '/produto/falcon-x2-pro',
@@ -466,10 +562,46 @@ export const TELAS: Tela[] = [
     area: 'loja',
     api: {
       '/loja/produtos/falcon-x2-pro': produto,
-      '/loja/produtos/falcon-x2-pro/compativeis': [],
+      '/loja/produtos/falcon-x2-pro/compativeis': [
+        { id: 9, nome: 'Bateria extra Falcon X2', slug: 'bateria-falcon-x2', precoMinimo: 899 },
+      ],
     },
+    // Comparação entra com a #44; avaliações não têm issue no contrato atual.
+    ignorar: [
+      ...nomesDeExemplo,
+      'Comparar com outro drone',
+      'Avaliar este drone',
+      'Cancelar',
+      'Publicar avaliação',
+      'Escolha um drone',
+      'Quem já voa com ele.',
+      'Sua nota',
+      '★',
+      'Título',
+      'Comentário',
+      'Uso principal',
+      'Fotos ou vídeo',
+      'Adicionar arquivos',
+    ],
+    tabelasSemApi: [{ colunas: ['Modelo'], motivo: 'Comparação de especificações: #44' }],
   },
-  { prototipo: 'ofertas.html', rota: '/ofertas', etiqueta: 'issue-21', area: 'loja' },
+  {
+    prototipo: 'ofertas.html',
+    rota: '/ofertas',
+    etiqueta: 'issue-21',
+    area: 'loja',
+    api: {
+      '/loja/ofertas': [
+        {
+          produto: { id: 1, nome: 'Nimbus Mini 3', slug: 'nimbus-mini-3', precoMinimo: 4790 },
+          precoDe: 4790,
+          precoPor: 4290,
+          promocao: { id: 1, nome: 'Semana do piloto', dataFim: '2099-10-26T23:59:00' },
+        },
+      ],
+    },
+    ignorar: [...nomesDeExemplo],
+  },
   {
     prototipo: 'login.html',
     rota: '/entrar',

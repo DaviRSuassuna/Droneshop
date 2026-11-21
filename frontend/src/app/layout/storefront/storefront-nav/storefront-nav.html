@@ -113,16 +113,17 @@
     >
       <div class="col">
         <span class="lbl">Por uso</span>
-        <a routerLink="/drones">Cinema e criação<small>Câmera 4K/6K, gimbal 3 eixos</small></a>
-        <a routerLink="/drones">Viagem e iniciantes<small>Até 249 g, sem registro</small></a>
-        <a routerLink="/empresas">Mapeamento e agro<small>RTK, fotogrametria</small></a>
+        @for (s of usos(); track s.id) {
+          <a routerLink="/drones" [queryParams]="{ subcategoria: s.slug }"
+            >{{ s.nome }}<small>{{ s.categoria }}</small></a
+          >
+        }
       </div>
       <div class="col">
         <span class="lbl">Por marca</span>
-        <a routerLink="/drones">Aerion<small>Linha Falcon</small></a>
-        <a routerLink="/drones">Skyline<small>Linha Nimbus</small></a>
-        <a routerLink="/drones">Heron<small>Linha Survey</small></a>
-        <a routerLink="/drones">Vortex<small>FPV e corrida</small></a>
+        @for (m of marcas(); track m.id) {
+          <a routerLink="/drones" [queryParams]="{ marca: m.slug }">{{ m.nome }}</a>
+        }
       </div>
       <div class="col">
         <span class="lbl">Atalhos</span>

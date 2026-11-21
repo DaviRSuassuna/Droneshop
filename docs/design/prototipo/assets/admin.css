@@ -55,6 +55,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 
 /* telemetria / KPIs */
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);border-block:1px solid var(--line)}
+.kpis.k3{grid-template-columns:repeat(3,1fr)}
 .kpi{padding:20px 0 22px 26px;border-left:1px solid var(--line)}
 .kpi:first-child{border-left:0;padding-left:0}
 .kpi strong{display:block;margin-top:8px;font:200 40px/1 var(--display);letter-spacing:-.02em}
@@ -210,7 +211,7 @@ td.r,th.r{text-align:right}
 @media (max-width:1150px){.search{display:none}.g-21,.g-11,.form{grid-template-columns:minmax(0,1fr)}.rail{position:static}}
 @media (max-width:800px){
   .tb .in{gap:12px}.store{display:none}
-  .kpis{grid-template-columns:1fr 1fr}
+  .kpis,.kpis.k3{grid-template-columns:1fr 1fr}
   .kpi:nth-child(3){border-left:0;padding-left:0}.kpi:nth-child(n+3){border-top:1px solid var(--line)}
   .fg{grid-template-columns:1fr 1fr}.f,.f.w3,.f.w6,.f.w1,.f.w2,.f.w4,.toggle,.sub-h{grid-column:span 2}
   .ph h1{font-size:28px}
