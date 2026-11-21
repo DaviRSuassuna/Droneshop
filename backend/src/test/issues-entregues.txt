@@ -26,3 +26,4 @@ issue-19
 
 # ---- trilha B: acrescente abaixo desta linha
 issue-imagem-produto
+issue-armazenamento-s3

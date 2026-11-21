@@ -2,7 +2,8 @@ import { Component, input, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ItemMidia, ProdutoMidiasEstado } from './produto-midias-estado';
 
-const TAMANHO_MAXIMO = 20 * 1024 * 1024;
+// D42: imagem PNG, JPEG ou WebP até 5 MB (o back confere de novo, com a assinatura do arquivo)
+const TAMANHO_MAXIMO = 5 * 1024 * 1024;
 const LIMITE_GALERIA = 8;
 
 interface Escolha {
@@ -68,12 +69,12 @@ export class ProdutoMidias {
   private escolher(arquivo: File | null, principal: boolean): void {
     this.erroArquivo.set(null);
     if (!arquivo) return;
-    if (!/\.(png|jpe?g)$/i.test(arquivo.name)) {
-      this.erroArquivo.set('Envie uma imagem JPG ou PNG.');
+    if (!/\.(png|jpe?g|webp)$/i.test(arquivo.name)) {
+      this.erroArquivo.set('Envie uma imagem JPG, PNG ou WebP.');
       return;
     }
     if (arquivo.size > TAMANHO_MAXIMO) {
-      this.erroArquivo.set('A imagem deve ter no máximo 20 MB.');
+      this.erroArquivo.set('A imagem deve ter no máximo 5 MB.');
       return;
     }
     this.descartarEscolha(true);

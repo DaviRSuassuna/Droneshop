@@ -1,6 +1,5 @@
 package br.com.droneshop.catalogo.service;
 
-import java.io.IOException;
 import java.util.List;
 
 import br.com.droneshop.catalogo.dto.MidiaProdutoAlteracaoRequestDTO;
@@ -23,9 +22,9 @@ public interface MidiaProdutoService {
 
     void excluirDoProduto(long idProduto);
 
-    ArquivoMidia buscarArquivo(String nome) throws IOException;
+    ArquivoMidia buscarArquivo(String nome);
 
-    /** Grava um arquivo da carga de dados (#87) só se ainda não existe; devolve se gravou. */
+    /** Envia ao armazenamento um arquivo da carga de dados (#87) só se ainda não está lá; devolve se enviou. */
     boolean gravarCargaSeAusente(String nome, byte[] conteudo);
 
     record ArquivoMidia(byte[] conteudo, String contentType) {

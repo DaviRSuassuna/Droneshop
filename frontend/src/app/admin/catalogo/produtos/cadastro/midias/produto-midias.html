@@ -56,10 +56,13 @@
                   #trocarImagem
                   type="file"
                   hidden
-                  accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+                  accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
                   (change)="aoEscolher($event, true)"
                 />
               </label>
+              @if (p.id) {
+                <a class="btn sm" [href]="p.src + '?download=true'" download>Baixar</a>
+              }
               <button class="btn sm" type="button" (click)="excluir(p)">Excluir</button>
             </div>
           </div>
@@ -79,7 +82,7 @@
               #imagemPrincipal
               type="file"
               hidden
-              accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+              accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
               (change)="aoEscolher($event, true)"
             />
           </label>
@@ -121,6 +124,15 @@
                   >
                     ★
                   </button>
+                  @if (item.id) {
+                    <a
+                      [href]="item.src + '?download=true'"
+                      download
+                      aria-label="Baixar imagem"
+                      title="Baixar"
+                      >↓</a
+                    >
+                  }
                   <button type="button" (click)="excluir(item)" aria-label="Excluir imagem">
                     ✕
                   </button>
@@ -147,7 +159,7 @@
               #imagemGaleria
               type="file"
               hidden
-              accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+              accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
               (change)="aoEscolher($event, false)"
             />
           </label>

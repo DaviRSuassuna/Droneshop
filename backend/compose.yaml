@@ -27,6 +27,24 @@ services:
     volumes:
       - droneshop-postgres-b-data:/var/lib/postgresql/data
 
+  # Armazenamento S3 das mídias (D42, #95). API em 9000, console em http://localhost:9001.
+  # Usuário e senha só de desenvolvimento local, trocáveis por variável de ambiente.
+  # Cada trilha usa o próprio bucket (AERIA_S3_BUCKET), criado pela API na subida.
+  rustfs:
+    image: docker.io/rustfs/rustfs:1.0.5
+    container_name: droneshop-rustfs
+    restart: unless-stopped
+    environment:
+      RUSTFS_ACCESS_KEY: ${AERIA_S3_ACCESS_KEY:-rustfsadmin}
+      RUSTFS_SECRET_KEY: ${AERIA_S3_SECRET_KEY:-rustfsadmin}
+      RUSTFS_CONSOLE_ENABLE: "true"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - droneshop-rustfs-data:/data
+
 volumes:
   droneshop-postgres-data:
   droneshop-postgres-b-data:
+  droneshop-rustfs-data:
