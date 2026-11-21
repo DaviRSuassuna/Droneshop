@@ -1,16 +1,32 @@
 import { baixarArquivo } from '../../../shared/arquivo';
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 import { PedidoService } from '../../../core/services/pedido.service';
+import { METODO_PAGAMENTO } from '../../../core/models/compra.model';
 import {
   EXIBICAO_STATUS_PEDIDO,
+  IndicadoresPedidos,
   PedidoListagem,
   ResumoStatusPedido,
   STATUS_PEDIDO,
 } from '../../../core/models/pedido.model';
 
 const TAMANHO_PAGINA = 10;
+
+/** Filtro "Pagamento" do protótipo (#89): só os métodos da loja online. */
+const METODOS: { id: number; rotulo: string }[] = [
+  { id: METODO_PAGAMENTO.PIX, rotulo: 'Pix' },
+  { id: METODO_PAGAMENTO.CARTAO, rotulo: 'Cartão' },
+  { id: METODO_PAGAMENTO.BOLETO, rotulo: 'Boleto' },
+];
+const ROTULO_METODO: Record<number, string> = {
+  [METODO_PAGAMENTO.PIX]: 'Pix',
+  [METODO_PAGAMENTO.CARTAO]: 'Cartão',
+  [METODO_PAGAMENTO.BOLETO]: 'Boleto',
+  [METODO_PAGAMENTO.FATURAMENTO_PJ]: 'Faturamento PJ',
+};
 
 /** Abas do protótipo; "Todos" mostra também Em devolução e Devolvido. */
 const ABAS: { rotulo: string; idStatus: number | null }[] = [
@@ -34,22 +50,38 @@ export class PedidosListagem implements OnInit, OnDestroy {
 
   readonly abas = ABAS;
   readonly STATUS = STATUS_PEDIDO;
+  readonly metodos = METODOS;
+  // 30 dias primeiro, como no protótipo
   readonly periodos = [
-    { rotulo: 'Período: todos', dias: 0 },
-    { rotulo: 'Período: 7 dias', dias: 7 },
     { rotulo: 'Período: 30 dias', dias: 30 },
+    { rotulo: 'Período: 7 dias', dias: 7 },
+    { rotulo: 'Período: todos', dias: 0 },
     { rotulo: 'Período: 90 dias', dias: 90 },
     { rotulo: 'Período: 12 meses', dias: 365 },
   ];
 
   readonly carregando = signal(true);
   readonly erro = signal<string | null>(null);
+  readonly erroEtiquetas = signal<string | null>(null);
   readonly pedidos = signal<PedidoListagem[]>([]);
   readonly resumo = signal<ResumoStatusPedido[]>([]);
 
   readonly aba = signal<number | null>(null);
   readonly termoBusca = signal('');
-  readonly periodoDias = signal(0);
+  readonly periodoDias = signal(30);
+  readonly metodo = signal<number | null>(null);
+  readonly indicadores = signal<IndicadoresPedidos | null>(null);
+  readonly selecionados = signal<ReadonlySet<number>>(new Set());
+  readonly imprimindo = signal(false);
+  readonly todosSelecionados = computed(
+    () => this.pedidos().length > 0 && this.pedidos().every((p) => this.selecionados().has(p.id)),
+  );
+  readonly prazoMedio = computed(() => {
+    const dias = this.indicadores()?.emTransito?.prazoMedioDias;
+    return dias == null
+      ? 'sem entregas em 30 dias'
+      : `prazo médio ${dias.toLocaleString('pt-BR')} dias`;
+  });
   readonly pagina = signal(0);
   readonly totalItens = signal(0);
   readonly totalPaginasApi = signal(0);
@@ -90,6 +122,10 @@ export class PedidosListagem implements OnInit, OnDestroy {
   }
 
   carregarResumo(): void {
+    this.pedidoService.indicadores().subscribe({
+      next: (i) => this.indicadores.set(i),
+      error: () => this.indicadores.set(null),
+    });
     this.pedidoService.resumoStatus().subscribe({
       next: (r) => this.resumo.set(Array.isArray(r) ? r : []),
       error: () => this.resumo.set([]),
@@ -103,8 +139,7 @@ export class PedidosListagem implements OnInit, OnDestroy {
     this.pedidoService
       .listar(
         {
-          idStatus: this.aba(),
-          busca: this.termoBusca(),
+          ...this.filtroAtual(),
           dataInicio: periodo?.inicio,
           dataFim: periodo?.fim,
         },
@@ -160,8 +195,7 @@ export class PedidosListagem implements OnInit, OnDestroy {
     const periodo = this.periodo();
     this.pedidoService
       .exportar({
-        idStatus: this.aba(),
-        busca: this.termoBusca(),
+        ...this.filtroAtual(),
         dataInicio: periodo?.inicio,
         dataFim: periodo?.fim,
       })
@@ -169,6 +203,68 @@ export class PedidosListagem implements OnInit, OnDestroy {
         next: (blob) => baixarArquivo('pedidos.csv', blob),
         error: () => this.erro.set('Não foi possível exportar os pedidos.'),
       });
+  }
+
+  aoMudarMetodo(valor: string): void {
+    this.metodo.set(valor ? Number(valor) : null);
+    this.pagina.set(0);
+    this.carregar();
+  }
+
+  alternar(id: number): void {
+    this.selecionados.update((s) => {
+      const novo = new Set(s);
+      if (novo.has(id)) novo.delete(id);
+      else novo.add(id);
+      return novo;
+    });
+  }
+
+  alternarTodos(marcar: boolean): void {
+    this.selecionados.update((s) => {
+      const novo = new Set(s);
+      for (const p of this.pedidos()) {
+        if (marcar) novo.add(p.id);
+        else novo.delete(p.id);
+      }
+      return novo;
+    });
+  }
+
+  /** Etiquetas em lote (#89), na ordem da tabela: tudo ou nada. */
+  imprimirEtiquetas(): void {
+    const ids = [...this.selecionados()];
+    if (!ids.length || this.imprimindo()) return;
+    this.imprimindo.set(true);
+    this.pedidoService.etiquetas(ids).subscribe({
+      next: (blob) => {
+        this.imprimindo.set(false);
+        baixarArquivo('etiquetas.pdf', blob);
+      },
+      error: (e: HttpErrorResponse) => {
+        this.imprimindo.set(false);
+        void this.mensagemErro(e).then((m) => this.erroEtiquetas.set(m));
+      },
+    });
+  }
+
+  rotuloMetodo(id: number | undefined): string {
+    return id ? (ROTULO_METODO[id] ?? '') : '';
+  }
+
+  private filtroAtual() {
+    return { idStatus: this.aba(), busca: this.termoBusca(), idMetodoPagamento: this.metodo() };
+  }
+
+  /** O corpo do erro vem como Blob (responseType blob): lê o Problem para citar os pedidos. */
+  private async mensagemErro(e: HttpErrorResponse): Promise<string> {
+    const padrao = 'Não foi possível gerar as etiquetas.';
+    try {
+      const corpo = e.error instanceof Blob ? JSON.parse(await e.error.text()) : e.error;
+      return corpo?.errors?.[0]?.message ?? corpo?.detail ?? padrao;
+    } catch {
+      return padrao;
+    }
   }
 
   rotuloStatus(id: number): string {

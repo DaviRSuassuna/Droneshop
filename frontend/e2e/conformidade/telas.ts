@@ -67,6 +67,7 @@ const pedidoListagem = {
   valorTotal: pedido.valorTotal,
   quantidadeItens: pedido.itens.length,
   dataCadastro: '2026-10-24T12:00:00',
+  metodoPagamento: { id: 1, nome: 'PIX' },
 };
 const historicoPedido = [
   {
@@ -492,15 +493,13 @@ export const TELAS: Tela[] = [
     api: {
       '/pedidos': { items: [pedidoListagem], page: 0, pageSize: 10, totalItems: 1, totalPages: 1 },
       '/pedidos/resumo-status': [{ status: pedido.status, quantidade: 1 }],
+      '/pedidos/indicadores': {
+        aSeparar: 1,
+        aguardandoPagamento: { quantidade: 0, valorEmAberto: 0 },
+        emTransito: { quantidade: 0, prazoMedioDias: 4.2 },
+        devolucoesAbertas: 0,
+      },
     },
-    // Contrato atual: número/nome, contagens por status e etiqueta individual. Sem métricas logísticas.
-    ignorar: [
-      'Imprimir etiquetas',
-      'Devoluções abertas',
-      'Buscar por número, cliente ou CPF/CNPJ',
-      'Período: 30 dias',
-      'Pagamento',
-    ],
   },
   {
     prototipo: 'admin/pedido.html',

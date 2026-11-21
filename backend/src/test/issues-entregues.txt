@@ -41,6 +41,7 @@ issue-37
 issue-45
 issue-46
 issue-favoritos-compartilhar
+issue-pedidos-painel
 
 # ---- trilha B: acrescente abaixo desta linha
 issue-23
