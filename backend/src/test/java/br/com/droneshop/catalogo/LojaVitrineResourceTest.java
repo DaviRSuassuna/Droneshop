@@ -37,6 +37,7 @@ class LojaVitrineResourceTest {
                 Fixtures.dadosComerciais("AC-" + Dados.sufixo().toUpperCase(), 499.0, 3));
         ac.put("idsCompativeis", ids);
         ac.put("idStatus", idStatus);
+        ac.put("sugerirNosCompativeis", true); // #84: a loja só sugere os marcados
         return ac;
     }
 
@@ -72,6 +73,9 @@ class LojaVitrineResourceTest {
         Fixtures.ProdutoCriado drone = Fixtures.criarDrone(a, 7999.0, 2);
         long ativo = Fixtures.criar("/acessorios", acessorioCompativel(a, List.of(drone.id()), Fixtures.PRODUTO_ATIVO));
         Fixtures.criar("/acessorios", acessorioCompativel(a, List.of(drone.id()), Fixtures.PRODUTO_INATIVO));
+        Map<String, Object> naoSugerido = acessorioCompativel(a, List.of(drone.id()), Fixtures.PRODUTO_ATIVO);
+        naoSugerido.put("sugerirNosCompativeis", false);
+        Fixtures.criar("/acessorios", naoSugerido);
 
         anonimo().when().get("/loja/produtos/{slug}/compativeis", drone.slug())
                 .then().statusCode(200)

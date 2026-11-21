@@ -10,7 +10,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgOptimizedImage } from '@angular/common';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { filter } from 'rxjs';
+import { catchError, filter, of } from 'rxjs';
 import { ContaFolha } from '../account-menu/conta-folha';
 import { LojaService } from '../../../core/services/loja.service';
 import { MarcaLoja } from '../../../core/models/loja.model';
@@ -77,7 +77,10 @@ export class StorefrontNav {
           categorias.flatMap((c) => c.subcategorias.map((s) => ({ ...s, categoria: c.nome }))),
         ),
       );
-    loja.listarMarcas(true).subscribe((m) => this.marcas.set(m.slice(0, 4)));
+    loja
+      .listarMarcas(true)
+      .pipe(catchError(() => of([])))
+      .subscribe((m) => this.marcas.set(m.slice(0, 4)));
   }
 
   aoRolar(): void {
