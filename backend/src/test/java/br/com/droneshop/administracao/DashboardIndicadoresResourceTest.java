@@ -61,8 +61,8 @@ class DashboardIndicadoresResourceTest {
     @Test
     void somaDasVendasPorDiaBateComOFaturamento() {
         JsonPath j = dashboard(LocalDate.now().minusDays(90), LocalDate.now());
-        BigDecimal soma = j.getList("vendasPorDia.faturamento", Number.class).stream()
-                .map(n -> new BigDecimal(n.toString()))
+        BigDecimal soma = j.getList("vendasPorDia.faturamento", String.class).stream()
+                .map(BigDecimal::new)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal faturamento = new BigDecimal(j.getString("faturamento"));
         assertEquals(0, faturamento.compareTo(soma), "soma de vendasPorDia diferente do faturamento");

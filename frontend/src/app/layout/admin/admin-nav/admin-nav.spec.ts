@@ -64,7 +64,7 @@ describe('AdminNav', () => {
   it('mantém todos os links soltos na faixa do celular', async () => {
     const { raiz } = await montar('/admin/cupons');
     const links = raiz.querySelectorAll('.mnav a');
-    expect(links.length).toBe(14);
+    expect(links.length).toBe(20); // +6: e-mails, termos buscados, auditoria, chamados, moderação e propostas
     expect(raiz.querySelector('.mnav a[aria-current]')!.textContent).toBe('Cupons');
   });
 });

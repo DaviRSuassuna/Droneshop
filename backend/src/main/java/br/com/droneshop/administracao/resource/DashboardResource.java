@@ -13,8 +13,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import java.util.List;
-import br.com.droneshop.util.Csv;
 
 // Indicadores calculados no backend (#18); a tela só exibe
 @Path("admin/dashboard")
@@ -34,15 +32,18 @@ public class DashboardResource {
         return service.resumo(dataInicio, dataFim);
     }
 
-    // CSV das vendas por dia, no padrão da #61 (separador ";", UTF-8 com BOM)
+    // CSV das vendas por dia, no padrão da #61 (separador ";", UTF-8 com BOM). Só datas e números,
+    // então as células saem sem aspas, como no cabeçalho do contrato.
     @GET
     @Path("exportar")
     @Produces("text/csv")
     public Response exportar(@QueryParam("dataInicio") String dataInicio, @QueryParam("dataFim") String dataFim) {
-        return Csv.resposta("vendas-por-dia.csv",
-                List.of("data", "faturamento", "pedidos", "faturamentoAnterior", "pedidosAnterior"),
-                service.vendasPorDia(dataInicio, dataFim).stream().<List<?>>map(v -> List.<Object>of(v.data(),
-                        v.faturamento(), v.quantidadePedidos(), v.faturamentoAnterior(),
-                        v.quantidadePedidosAnterior())));
+        StringBuilder csv = new StringBuilder("\uFEFFdata;faturamento;pedidos;faturamentoAnterior;pedidosAnterior\r\n");
+        for (DashboardResponseDTO.VendaDia v : service.vendasPorDia(dataInicio, dataFim))
+            csv.append(v.data()).append(';').append(v.faturamento().toPlainString()).append(';')
+                    .append(v.quantidadePedidos()).append(';').append(v.faturamentoAnterior().toPlainString())
+                    .append(';').append(v.quantidadePedidosAnterior()).append("\r\n");
+        return Response.ok(csv.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8), "text/csv; charset=UTF-8")
+                .header("Content-Disposition", "attachment; filename=\"vendas-por-dia.csv\"").build();
     }
 }

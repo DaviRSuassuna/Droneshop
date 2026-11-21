@@ -16,6 +16,7 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.hibernate.Interceptor;
 import org.hibernate.type.Type;
 import org.jboss.logging.Logger;
@@ -108,8 +109,9 @@ public class AuditoriaInterceptor implements Interceptor {
             if (identidade == null || identidade.isAnonymous() || !identidade.hasRole("ADMINISTRATIVO"))
                 return null;
             Long autor = null;
-            try {
-                autor = Long.valueOf(identidade.getPrincipal().getName());
+            try (InstanceHandle<JsonWebToken> jwt = Arc.container().instance(JsonWebToken.class)) {
+                if (jwt.isAvailable() && jwt.get().getSubject() != null)
+                    autor = Long.valueOf(jwt.get().getSubject());
             } catch (RuntimeException e) {
                 // sem id numérico no token, a linha fica sem autor
             }

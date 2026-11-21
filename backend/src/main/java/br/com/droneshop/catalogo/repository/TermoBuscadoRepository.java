@@ -16,14 +16,17 @@ public class TermoBuscadoRepository implements PanacheRepository<TermoBuscado> {
 
     public void registrar(String termo, int resultados) {
         TermoBuscado t = find("termo", termo).firstResult();
-        if (t == null) {
+        boolean novo = t == null;
+        if (novo) {
             t = new TermoBuscado();
             t.setTermo(termo);
-            persist(t);
         }
         t.setBuscas(t.getBuscas() + 1);
         t.setUltimaQuantidadeResultados(resultados);
         t.setUltimaBusca(LocalDateTime.now());
+        // id IDENTITY: o insert sai no persist, então os campos já precisam estar preenchidos
+        if (novo)
+            persist(t);
     }
 
     /** Filtros vazios são ignorados; mais buscados primeiro. */
