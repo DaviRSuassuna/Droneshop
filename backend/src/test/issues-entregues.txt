@@ -48,3 +48,4 @@ issue-imagem-produto
 issue-armazenamento-s3
 issue-catalogo-complementos
 issue-21
+issue-61
