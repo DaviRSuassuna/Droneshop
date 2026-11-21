@@ -1,0 +1,39 @@
+// 6. Animated Checkbox: o "check" é desenhado (protótipo: spell.css, bloco 6). Vale para .ck.
+:root.loja {
+  .ck {
+    transition:
+      background 0.2s,
+      border-color 0.2s,
+      transform 0.2s;
+  }
+  .ck:checked {
+    animation: sp-ck 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+  .ck:checked::after {
+    animation: sp-ckd 0.28s ease-out 0.05s both;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ck,
+    .ck:checked,
+    .ck:checked::after {
+      transition: none;
+      animation: none;
+    }
+  }
+}
+@keyframes sp-ck {
+  40% {
+    transform: scale(0.8);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes sp-ckd {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}

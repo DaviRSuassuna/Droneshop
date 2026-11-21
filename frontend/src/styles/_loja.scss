@@ -78,6 +78,7 @@
     font-size: 13px;
   }
   .search kbd {
+    display: inline; // o _admin.scss esconde o kbd abaixo de 1700px; na loja ele fica
     margin-left: auto;
     font: 400 11px var(--mono);
     border: 1px solid var(--line2);
@@ -356,6 +357,260 @@
     .mark {
       font-size: 15px;
       letter-spacing: 0.28em;
+    }
+  }
+
+  // busca do celular (botão de lupa abre o campo abaixo do menu) e contadores do menu
+  .sbtn,
+  .msearch {
+    display: none;
+  }
+  .navcount {
+    font: 400 12px var(--mono);
+  }
+  @media (max-width: 1100px) {
+    .sbtn {
+      display: inline-flex;
+    }
+    .msearch.open {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: absolute;
+      top: 62px;
+      left: 0;
+      right: 0;
+      z-index: 5;
+      background: var(--surf);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 10px 10px 16px;
+    }
+    .msearch input {
+      flex: 1;
+      min-width: 0;
+      height: 40px;
+      background: none;
+      border: 0;
+      outline: 0;
+      color: var(--ink);
+      font: inherit;
+      font-size: 16px;
+    }
+    .msearch input::placeholder {
+      color: var(--mute);
+    }
+    .links.open ~ .msearch.open {
+      display: none;
+    }
+  }
+  .btn.sm {
+    height: 36px;
+    padding: 0 14px;
+    font-size: 13.5px;
+  }
+
+  // menu da conta (account-menu): coluna lateral no desktop; abaixo de 900px sai e a conta
+  // abre na folha de baixo (.cs) pelo ícone do menu
+  .side {
+    position: sticky;
+    top: 96px;
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 18px;
+    display: grid;
+    gap: 4px;
+  }
+  .me {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 4px 16px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+  }
+  .av {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--surf2);
+    border: 1px solid var(--line2);
+    display: grid;
+    place-items: center;
+    font: 500 13px var(--mono);
+  }
+  .me b {
+    display: block;
+    font-weight: 500;
+  }
+  .me span {
+    font-size: 12.5px;
+    color: var(--mute);
+  }
+  .side a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 9px;
+    color: var(--ink2);
+    font-size: 14px;
+  }
+  .side a:hover {
+    background: var(--surf);
+  }
+  .side a[aria-current] {
+    background: var(--surf2);
+    color: var(--ink);
+    box-shadow: inset 2px 0 0 var(--amber);
+  }
+  .side a em {
+    font: normal 400 11.5px var(--mono);
+    color: var(--mute);
+  }
+  .side .out {
+    margin-top: 8px;
+    border-top: 1px solid var(--line);
+    border-radius: 0;
+    padding-top: 14px;
+    color: var(--mute);
+    background: none;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+    font-size: 14px;
+  }
+  @media (max-width: 900px) {
+    .side {
+      display: none;
+    }
+  }
+
+  // folha da conta no celular (protótipo: assets/conta-folha.css)
+  .cs {
+    position: fixed;
+    inset: auto 0 0 0;
+    width: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 10px 18px calc(18px + env(safe-area-inset-bottom));
+    border: 0;
+    border-top: 1px solid var(--line2);
+    border-radius: 22px 22px 0 0;
+    background: #17191c;
+    color: var(--ink);
+    box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.5);
+    transform: translateY(100%);
+    transition: transform 0.32s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .cs[open] {
+    display: block;
+  }
+  .cs.on {
+    transform: none;
+  }
+  .cs::backdrop {
+    background: rgba(0, 0, 0, 0);
+    transition: background 0.32s;
+  }
+  .cs.on::backdrop {
+    background: rgba(0, 0, 0, 0.6);
+  }
+  .cs .bar {
+    display: block;
+    width: 40px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--line2);
+    margin: 0 auto 16px;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+  .cs .quem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 4px 14px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 6px;
+  }
+  .cs .av {
+    width: 44px;
+    height: 44px;
+    border: 0;
+    font: 500 14px var(--mono);
+    color: var(--amber);
+  }
+  .cs .quem b {
+    display: block;
+    font: 400 17px var(--display);
+  }
+  .cs .quem small {
+    color: var(--mute);
+    font-size: 12.5px;
+  }
+  .cs a,
+  .cs .sair {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 54px;
+    padding: 0 6px;
+    border-radius: 12px;
+    color: var(--ink);
+    font-size: 15.5px;
+  }
+  .cs a[aria-current] {
+    background: var(--surf2);
+  }
+  .cs a .d {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--mute);
+  }
+  .cs a em {
+    font: normal 500 11px var(--mono);
+    color: #1a1205;
+    background: var(--amber);
+    padding: 1px 7px;
+    border-radius: 999px;
+  }
+  .cs svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.6;
+    flex: none;
+  }
+  .cs .sair {
+    width: 100%;
+    color: var(--mute);
+    font-size: 14px;
+    background: none;
+    border: 0;
+    border-top: 1px solid var(--line);
+    border-radius: 0;
+    margin-top: 6px;
+    cursor: pointer;
+  }
+
+  // reduzir movimento (site.css): sem transição nem animação na loja; só a mudança de estado
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition: none !important;
+      animation: none !important;
     }
   }
 }

@@ -1,0 +1,51 @@
+// 5. Pop Button: a sacola pula e solta faíscas (protótipo: spell.css, bloco 5).
+// Classes ligadas pela diretiva appPopButton. O salto do contador do menu (.navcount.sp-bump)
+// fica pronto aqui para quando o carrinho (trilha A) atualizar o número.
+:root.loja {
+  .sp-pop {
+    animation: sp-pop 0.45s cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+  .navcount.sp-bump {
+    display: inline-block;
+    animation: sp-pop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+  .sp-spark {
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--amber);
+    pointer-events: none;
+    z-index: 9999;
+    animation: sp-spark 0.6s ease-out forwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sp-pop,
+    .navcount.sp-bump {
+      animation: none;
+    }
+    .sp-spark {
+      display: none;
+    }
+  }
+}
+@keyframes sp-pop {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(0.82);
+  }
+  70% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes sp-spark {
+  to {
+    transform: translate(var(--dx), var(--dy)) scale(0.2);
+    opacity: 0;
+  }
+}

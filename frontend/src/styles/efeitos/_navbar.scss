@@ -1,0 +1,33 @@
+// B. Navbar que some ao descer, volta ao subir e encolhe depois do topo
+// (protótipo: navbar-aceternity.css, bloco B). As classes ac-hide e ac-small vêm do storefront-nav.
+// Sem este arquivo o menu fica fixo no topo, sem perder nada.
+:root.loja {
+  .navwrap {
+    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .navwrap.ac-hide {
+    transform: translateY(calc(-100% - 20px));
+  }
+  .nav {
+    transition:
+      height 0.3s,
+      box-shadow 0.3s,
+      background 0.3s;
+  }
+  .navwrap.ac-small .nav {
+    height: 48px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+    background: rgba(18, 20, 23, 0.88);
+  }
+  // C. (removido no protótipo 02: indicador que deslizava entre os links)
+  .links a {
+    position: relative;
+    padding: 6px 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .navwrap,
+    .nav {
+      transition: none;
+    }
+  }
+}

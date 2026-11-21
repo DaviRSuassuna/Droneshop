@@ -1,0 +1,15 @@
+// Camada de efeitos da loja (DESIGN.md, Movimento). Um efeito por arquivo, com o nome do bloco
+// do protótipo (assets/spell.css e assets/navbar-aceternity.css). Para desligar um efeito,
+// tire a linha dele daqui: a tela continua completa.
+// Fora desta issue: brilho de selo, faixa de marcas e indicador entre os links (removidos no
+// protótipo 02) e os efeitos só da capa (luz, raios, borda girando, depoimentos: #21).
+@use 'announcement-bar';
+@use 'navbar';
+@use 'mega-menu';
+@use 'blur-reveal';
+@use 'flow-button';
+@use 'pop-button';
+@use 'animated-checkbox';
+@use 'label-input';
+@use 'spinner';
+@use 'card-spotlight';
