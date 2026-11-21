@@ -41,6 +41,7 @@ As telas citadas são as do [protótipo](design/README.md).
 | GET POST | `/marcas` | Marcas, Cadastrar marca | base | pronto |
 | GET PUT DELETE | `/marcas/{id}` | editar / excluir marca | base | pronto |
 | GET | `/marcas/nome/{nome}` · `/marcas/slug/{slug}` | busca | base | pronto |
+| POST | `/marcas/{id}/logo` | upload de PNG/SVG até 2 MB; atualiza `logoUrl` e substitui mídia previamente enviada | #84 | pronto |
 | GET | `/status-marca` · `/status-categoria` · `/status-fornecedor` · `/status-produto` (+ `/{id}`) | selects de status | base | pronto |
 | GET | `/escopos-promocao` (+ `/{id}`) | escopos PRODUTO, CARRINHO e FRETE | #14 | pronto |
 | GET POST · GET PUT DELETE | `/categorias` · `/categorias/{id}` (+ `nome`, `slug`) | Categorias, Cadastrar categoria (com `idTipo` desde a #8, D39) | base / #8 | pronto |
@@ -51,6 +52,7 @@ As telas citadas são as do [protótipo](design/README.md).
 | GET | `/produtos/slug/{slug}` · `/tipos-produto` (+ `/{id}`) | busca por slug, select de tipo | #7, #8 | pronto |
 | POST · PUT | `/drones` · `/drones/{id}` | Cadastrar drone (specs fixas, D14) | #8 | pronto |
 | POST · PUT | `/acessorios` · `/acessorios/{id}` | Cadastrar acessório | #8 | pronto |
+| (corpo) | `pesoItemG`, `sugerirNosCompativeis` em acessórios; `exibirEmOfertas` em kits | dados complementares do catálogo | #84 | pronto |
 | (corpo) | `sku`, `preco`, `custoAquisicao`, `estoqueFisico`, `estoqueMinimo` e embalagem no próprio drone/acessório/kit; resposta com `margemPercentual` e `disponivel` | Preço, estoque e embalagem (D26, D40) | #80 | pronto (substitui a #9) |
 | GET | `/produtos?busca=&idStatus=2&kit=false&idGrupo=&estoque=` | select de produto (estoque, promoção, cupom, componente de kit): `idStatus=2` lista só ATIVO, `kit=false` tira os kits; `estoque=ABAIXO_MINIMO\|ZERADO` na listagem | #80 | pronto; `/variantes` saiu (D40) |
 | POST · PUT | `/kits` · `/kits/{id}` com `componentes[]` (`idProduto`, `quantidade`); resposta com `disponivel`, `pesoSobrescrito`/`dimensoesSobrescritas` | Cadastrar kit (D7, D16, D40) | #80 | pronto (substitui o kit da #10) |
@@ -123,8 +125,8 @@ As telas citadas são as do [protótipo](design/README.md).
 | GET | `/loja/produtos?categoria=&subcategoria=&marca=&precoMin=&precoMax=&alcance=&autonomia=&ordem=&page=` | Drones, Acessórios (só ATIVO, RN17; um item por grupo, "a partir de", D40) | #21 | a fazer |
 | GET | `/loja/filtros?categoria=` | contagens de cada filtro (facetas) | #21 | a fazer |
 | GET | `/loja/produtos/{slug}` | Produto (specs, mídias e `grupo` com as versões: `rotulo`, `slug`, `preco`, `disponivel`, D40) | #21 | a fazer |
-| GET | `/loja/produtos/{slug}/compativeis` | Acessórios compatíveis | #21 | a fazer |
-| GET | `/loja/ofertas` | Ofertas e Kits com desconto | #21 | a fazer |
+| GET | `/loja/produtos/{slug}/compativeis` | Acessórios compatíveis; só ATIVO com `sugerirNosCompativeis=true` (#84) | #21, #84 | a fazer (#21; complemento #84 pronto) |
+| GET | `/loja/ofertas` | Promoções vigentes e kits ATIVOS com `exibirEmOfertas=true`; kit retorna soma dos componentes em `precoDe` e `promocao: null` (#84) | #21, #84 | a fazer (#21; complemento #84 pronto) |
 | GET | `/loja/busca?q=` | busca (registra o termo) | #43 | a fazer |
 | GET | `/loja/comparar?grupo=&ids=` | comparação de especificações: versões do grupo e mais drones, até 4 (D40) | #44 | a fazer |
 | GET POST | `/loja/produtos/{slug}/avaliacoes` | Avaliações (compra verificada) | #39 | a fazer |

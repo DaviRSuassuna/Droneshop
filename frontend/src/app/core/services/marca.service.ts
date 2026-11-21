@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { PageResponse } from '../models/page.model';
-import { Marca, MarcaDTO } from '../models/marca.model';
+import { Marca, MarcaDTO, MarcaLogo } from '../models/marca.model';
 
 @Injectable({ providedIn: 'root' })
 export class MarcaService {
@@ -42,6 +42,18 @@ export class MarcaService {
 
   atualizar(id: number, dto: MarcaDTO): Observable<void> {
     return this.http.put<void>(`${this.baseUrl}/${id}`, dto);
+  }
+
+  /** Envia o logo (PNG ou SVG até 2 MB) e devolve o novo logoUrl (#84). */
+  enviarLogo(id: number, arquivo: File): Observable<MarcaLogo> {
+    const form = new FormData();
+    form.set('arquivo', arquivo);
+    return this.http.post<MarcaLogo>(`${this.baseUrl}/${id}/logo`, form);
+  }
+
+  /** logoUrl de arquivo enviado é relativo à API; URL externa fica como está. */
+  urlLogo(logoUrl: string): string {
+    return logoUrl.startsWith('/') ? `${environment.apiUrl}${logoUrl}` : logoUrl;
   }
 
   excluir(id: number): Observable<void> {

@@ -178,6 +178,9 @@ export class ProdutoCadastro implements OnInit {
     idStatus: this.fb.nonNullable.control<number>(STATUS_PRODUTO.RASCUNHO),
     destaque: this.fb.nonNullable.control(false),
     tipoAcessorio: this.fb.nonNullable.control(''),
+    pesoItemG: this.fb.control<number | null>(null),
+    sugerirNosCompativeis: this.fb.nonNullable.control(false),
+    exibirEmOfertas: this.fb.nonNullable.control(false),
   });
 
   // preço, estoque e embalagem do próprio produto (D40); a caixa é digitada como A×L×C
@@ -475,6 +478,9 @@ export class ProdutoCadastro implements OnInit {
           idStatus: produto.status.id,
           destaque: produto.destaque,
           tipoAcessorio: produto.tipoAcessorio ?? '',
+          pesoItemG: produto.pesoItemG ?? null,
+          sugerirNosCompativeis: !!produto.sugerirNosCompativeis,
+          exibirEmOfertas: !!produto.exibirEmOfertas,
         });
         // no kit, peso e dimensões só vão para o campo quando foram informados nele (D16)
         const sobrescrito =
@@ -692,6 +698,7 @@ export class ProdutoCadastro implements OnInit {
     } else if (this.ehKit) {
       const kit: KitDTO = {
         ...dto,
+        exibirEmOfertas: v.exibirEmOfertas,
         componentes: this.componentes().map((c) => ({
           idProduto: c.produto.id,
           quantidade: c.quantidade,
@@ -703,6 +710,8 @@ export class ProdutoCadastro implements OnInit {
         ...dto,
         ...estoque,
         tipoAcessorio: v.tipoAcessorio,
+        pesoItemG: numero(v.pesoItemG),
+        sugerirNosCompativeis: v.sugerirNosCompativeis,
         idsCompativeis: this.compativeis().map((c) => c.produto.id),
       };
       request$ = id

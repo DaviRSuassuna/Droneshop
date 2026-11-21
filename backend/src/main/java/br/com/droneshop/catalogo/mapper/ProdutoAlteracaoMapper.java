@@ -91,6 +91,8 @@ public final class ProdutoAlteracaoMapper {
             p.getRotuloNoGrupo(),
             p.getOrdemNoGrupo(),
             p.getTipoAcessorio(),
+            p.getPesoItemG(),
+            p.isSugerirNosCompativeis(),
             p.getCompativeis().stream().map(Produto::getId).toList());
     }
 
@@ -121,6 +123,7 @@ public final class ProdutoAlteracaoMapper {
             p.getGrupo() == null ? null : p.getGrupo().getId(),
             p.getRotuloNoGrupo(),
             p.getOrdemNoGrupo(),
+            p.isExibirEmOfertas(),
             p.getComponentes().stream().map(c -> new ComponenteKitRequestDTO(c.getProduto().getId(), c.getQuantidade())).toList());
     }
 }

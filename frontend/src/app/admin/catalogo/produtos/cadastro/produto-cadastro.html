@@ -197,6 +197,11 @@
                 </select>
                 @if (mensagemErro('tipoAcessorio'); as m) { <span class="erro">{{ m }}</span> }
               </div>
+              <div class="f">
+                <label for="pesoItemG">Peso do item</label>
+                <div class="unit"><input id="pesoItemG" type="number" min="0" step="1" inputmode="numeric" formControlName="pesoItemG" [attr.aria-invalid]="campoInvalido('pesoItemG')" /><em>g</em></div>
+                @if (mensagemErro('pesoItemG'); as m) { <span class="erro">{{ m }}</span> }
+              </div>
             </div>
           </section>
 
@@ -476,6 +481,12 @@
                 </div>
                 @if (mensagemErro('idStatus'); as m) { <span class="erro">{{ m }}</span> }
               </div>
+              @if (ehAcessorio) {
+                <label class="toggle" style="margin-top: 8px"><input type="checkbox" formControlName="sugerirNosCompativeis" />Sugerir na página dos drones compatíveis</label>
+              }
+              @if (ehKit) {
+                <label class="toggle" style="margin-top: 8px"><input type="checkbox" formControlName="exibirEmOfertas" />Exibir na página Ofertas</label>
+              }
               <div class="rl" style="margin-top: 14px">
                 <div><span>Aparece na loja</span><b>{{ statusAtual() === 'Ativo' ? 'Sim' : 'Não' }}</b></div>
                 <div><span>Preço</span><b class="num">{{ moeda(dadosComerciais.controls.preco.value) }}</b></div>

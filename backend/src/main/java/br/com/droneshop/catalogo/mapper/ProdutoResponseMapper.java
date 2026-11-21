@@ -125,6 +125,8 @@ public final class ProdutoResponseMapper {
                 a.getRotuloNoGrupo(),
                 a.getOrdemNoGrupo(),
                 a.getTipoAcessorio(),
+                a.getPesoItemG(),
+                a.isSugerirNosCompativeis(),
                 resumos(a.getCompativeis()),
                 resumos(a.getAcessoriosCompativeis()), a.getImagemPrincipal());
     }
@@ -164,6 +166,7 @@ public final class ProdutoResponseMapper {
                 k.getPesoEmbalagemKg() != null,
                 k.getAlturaEmbalagemCm() != null || k.getLarguraEmbalagemCm() != null
                         || k.getComprimentoEmbalagemCm() != null,
+                k.isExibirEmOfertas(),
                 k.getComponentes().stream().map(ProdutoResponseMapper::componente).toList(),
                 resumos(k.getAcessoriosCompativeis()), k.getImagemPrincipal());
     }

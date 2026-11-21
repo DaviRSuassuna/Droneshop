@@ -145,7 +145,46 @@
           <div class="bd">
             <span class="lbl">Logo</span>
             <div class="f">
-              <label for="logoUrl">Logo da marca <span class="req">*</span></label
+              @if (previaLogo(); as previa) {
+                <div class="preview-card">
+                  <img [src]="previa" alt="Pré-visualização do logo" />
+                </div>
+                @if (arquivoLogo(); as arquivo) {
+                  <div class="logo-acoes">
+                    <span class="note">{{ arquivo.name }} · enviado ao salvar</span
+                    ><button class="btn sm" type="button" (click)="removerArquivoLogo()">
+                      Remover arquivo
+                    </button>
+                  </div>
+                }
+              }
+              <label
+                class="up"
+                tabindex="0"
+                role="button"
+                aria-label="Enviar logo da marca"
+                [attr.aria-invalid]="!!mensagemErro('arquivo')"
+                (keydown.enter)="arquivoLogoInput.click()"
+                (keydown.space)="$event.preventDefault(); arquivoLogoInput.click()"
+                (dragover)="permitirSoltar($event)"
+                (drop)="aoSoltarLogo($event)"
+                ><div class="mini" aria-hidden="true"><span>+</span></div>
+                <b>Logo da marca <span class="req">*</span></b>Arraste um arquivo ou clique · SVG ou
+                PNG, fundo transparente
+                <input
+                  #arquivoLogoInput
+                  type="file"
+                  hidden
+                  accept=".png,.svg,image/png,image/svg+xml"
+                  (change)="aoEscolherLogo($event)"
+                />
+              </label>
+              @if (mensagemErro('arquivo'); as erro) {
+                <span class="erro" role="alert">{{ erro }}</span>
+              }
+            </div>
+            <div class="f">
+              <label for="logoUrl">Ou informe a URL do logo</label
               ><input
                 id="logoUrl"
                 type="url"
@@ -157,13 +196,7 @@
               @if (mensagemErro('logoUrl'); as erro) {
                 <span class="erro" role="alert">{{ erro }}</span>
               }
-              @if (form.controls.logoUrl.value) {
-                <div class="preview-card">
-                  <img [src]="form.controls.logoUrl.value" alt="Pré-visualização do logo" />
-                </div>
-              }
             </div>
-            <p class="note">Informe a URL do logo.</p>
           </div>
         </section>
         <section class="card pend">

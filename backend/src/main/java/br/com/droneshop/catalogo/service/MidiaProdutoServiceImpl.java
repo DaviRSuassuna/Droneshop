@@ -15,10 +15,12 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 import br.com.droneshop.catalogo.dto.MidiaProdutoAlteracaoRequestDTO;
 import br.com.droneshop.catalogo.dto.MidiaProdutoOrdemRequestDTO;
 import br.com.droneshop.catalogo.dto.MidiaProdutoRequestDTO;
+import br.com.droneshop.catalogo.model.Marca;
 import br.com.droneshop.catalogo.model.MidiaProduto;
 import br.com.droneshop.catalogo.model.Produto;
 import br.com.droneshop.catalogo.model.StatusProduto;
 import br.com.droneshop.catalogo.model.TipoMidia;
+import br.com.droneshop.catalogo.repository.MarcaRepository;
 import br.com.droneshop.catalogo.repository.MidiaProdutoRepository;
 import br.com.droneshop.catalogo.repository.ProdutoRepository;
 import br.com.droneshop.exception.ConflitoException;
@@ -43,7 +45,7 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
     private static final long MAXIMO_PDF = 20L * 1024 * 1024;
     private static final String PREFIXO_URL = "/midias/arquivos/";
     private static final Pattern NOME_ARQUIVO = Pattern.compile(
-            "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.(png|jpe?g|webp|pdf)$");
+            "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.(png|jpe?g|webp|svg|pdf)$");
 
     @Inject
     MidiaProdutoRepository midiaRepository;
@@ -59,6 +61,9 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
 
     @Inject
     ArmazenamentoArquivos armazenamento;
+
+    @Inject
+    MarcaRepository marcaRepository;
 
     @Override
     @Transactional
@@ -194,9 +199,17 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
         if (nome == null || !NOME_ARQUIVO.matcher(nome).matches())
             throw new ResourceNotFoundException("Arquivo de mídia não encontrado.");
         MidiaProduto midia = midiaRepository.findByUrl(PREFIXO_URL + nome);
-        if (midia == null)
-            throw new ResourceNotFoundException("Arquivo de mídia não encontrado.");
-        byte[] conteudo = armazenamento.ler(chave(midia.getProduto().getId(), nome))
+        String chave;
+        if (midia != null) {
+            chave = chave(midia.getProduto().getId(), nome);
+        } else {
+            // logo da marca enviado por upload (#84)
+            Marca marca = marcaRepository.find("logoUrl", PREFIXO_URL + nome).firstResult();
+            if (marca == null)
+                throw new ResourceNotFoundException("Arquivo de mídia não encontrado.");
+            chave = MarcaServiceImpl.chaveLogo(marca.getId(), nome);
+        }
+        byte[] conteudo = armazenamento.ler(chave)
                 .orElseThrow(() -> new ResourceNotFoundException("Arquivo de mídia não encontrado."));
         return new ArquivoMidia(conteudo, contentType(nome));
     }
@@ -393,6 +406,8 @@ public class MidiaProdutoServiceImpl implements MidiaProdutoService {
             return "image/jpeg";
         if (nome.endsWith(".webp"))
             return "image/webp";
+        if (nome.endsWith(".svg"))
+            return "image/svg+xml";
         return "application/pdf";
     }
 }

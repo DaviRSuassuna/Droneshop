@@ -6,6 +6,9 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 
 import br.com.droneshop.dto.PageResponse;
+import org.jboss.resteasy.reactive.RestForm;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
+
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -22,6 +25,7 @@ import jakarta.annotation.security.RolesAllowed;
 import br.com.droneshop.administracao.ModuloAdmin;
 import br.com.droneshop.administracao.model.ModuloSistema;
 
+import br.com.droneshop.catalogo.dto.MarcaLogoResponseDTO;
 import br.com.droneshop.catalogo.dto.MarcaRequestDTO;
 import br.com.droneshop.catalogo.dto.MarcaResponseDTO;
 import br.com.droneshop.catalogo.mapper.MarcaResponseMapper;
@@ -87,6 +91,13 @@ public class MarcaResource {
     @Path("/{id}")
     public void alterar(@PathParam("id") Long id, MarcaRequestDTO dto) {
         service.update(id, dto);
+    }
+
+    @POST
+    @Path("/{id}/logo")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public MarcaLogoResponseDTO enviarLogo(@PathParam("id") Long id, @RestForm("arquivo") FileUpload arquivo) {
+        return new MarcaLogoResponseDTO(service.enviarLogo(id, arquivo).getLogoUrl());
     }
 
     @DELETE
