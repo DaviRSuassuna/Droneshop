@@ -20,6 +20,8 @@
         @for (p of periodos; track p.valor) {
           <option [value]="p.valor">{{ p.rotulo }}</option>
         }</select
+      ><button class="btn" type="button" [disabled]="exportando()" (click)="exportar()">
+        Exportar relatório</button
       ><a class="btn p" routerLink="/admin/drones/novo">Novo drone</a>
     </div>
   </div>
@@ -37,18 +39,78 @@
       <div class="kpi">
         <span class="lbl">Vendas no período</span
         ><strong class="num">{{ moeda(d.faturamento) }}</strong>
-        <div class="delta"><span>Pagos, em separação, enviados e entregues</span></div>
+        <div class="delta" [class.dup]="(d.comparacao?.variacaoFaturamento ?? 0) >= 0">
+          {{ variacao(d.comparacao?.variacaoFaturamento) }}
+          <span>{{ d.comparacao ? 'vs. período anterior' : 'Pagos, em separação, enviados e entregues' }}</span>
+        </div>
       </div>
       <div class="kpi">
         <span class="lbl">Pedidos</span><strong class="num">{{ d.quantidadePedidos }}</strong>
-        <div class="delta">
-          <span>{{ totalPedidosPeriodo() }} criados no período, em todos os status</span>
+        <div class="delta" [class.dup]="(d.comparacao?.variacaoPedidos ?? 0) >= 0">
+          {{ variacao(d.comparacao?.variacaoPedidos) }}
+          <span>{{ totalAguardando() }} aguardando ação</span>
         </div>
       </div>
       <div class="kpi">
         <span class="lbl">Ticket médio</span><strong class="num">{{ moeda(d.ticketMedio) }}</strong>
+        @if (d.comparacao) {
+          <div class="delta" [class.dup]="(d.comparacao.variacaoTicketMedio ?? 0) >= 0">
+            {{ variacao(d.comparacao.variacaoTicketMedio) }}
+          </div>
+        }
       </div>
     </section>
+    <div class="grid g-21 bloco">
+      <section class="card">
+        <div class="hd">
+          <h2>Vendas no período</h2>
+          <div class="seg" role="group" aria-label="Métrica">
+            <button type="button" [attr.aria-pressed]="metrica() === 'receita'" (click)="metrica.set('receita')">
+              Receita
+            </button>
+            <button type="button" [attr.aria-pressed]="metrica() === 'pedidos'" (click)="metrica.set('pedidos')">
+              Pedidos
+            </button>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="legend">
+            <span><i></i>{{ rotuloPeriodo() }}</span><span><i class="prev"></i>Período anterior</span>
+          </div>
+          <svg
+            class="chart"
+            viewBox="0 0 760 240"
+            preserveAspectRatio="none"
+            role="img"
+            [attr.aria-label]="(metrica() === 'receita' ? 'Receita' : 'Pedidos') + ' por dia no período e no período anterior'"
+          >
+            @if (!grafico().vazio) {
+              <path class="ln2" [attr.d]="grafico().anterior" />
+              <path class="ln" [attr.d]="grafico().atual" />
+            }
+            @for (m of grafico().marcas; track m.x) {
+              <text class="ax" [attr.x]="m.x" y="232" text-anchor="middle">{{ m.rotulo }}</text>
+            }
+          </svg>
+        </div>
+      </section>
+      <section class="card">
+        <div class="hd"><h2>Receita por categoria</h2></div>
+        <div class="bd">
+          <div class="list">
+            @for (c of receitaPorCategoria(); track c.categoria) {
+              <div class="status-linha">
+                <span>{{ c.categoria }}</span
+                ><span class="barra" aria-hidden="true"><i [style.width.%]="c.participacao"></i></span
+                ><span class="num qtd">{{ moeda(c.receita) }}</span>
+              </div>
+            } @empty {
+              <p class="note">Sem vendas no período.</p>
+            }
+          </div>
+        </div>
+      </section>
+    </div>
     <div class="grid g-21 bloco">
       <section class="card">
         <div class="hd">
@@ -109,12 +171,12 @@
     <div class="grid g-11 bloco">
       <section class="card">
         <div class="hd">
-          <h2>Pedidos pendentes</h2>
+          <h2>Pedidos aguardando ação</h2>
           <a routerLink="/admin/pedidos">Ver todos</a>
         </div>
         <div class="bd">
           <div class="list">
-            @for (p of pendentes(); track p.id) {
+            @for (p of aguardando(); track p.id) {
               <a class="li pedido" [routerLink]="['/admin/pedidos', p.id]"
                 ><div>
                   <div class="t mono">#{{ p.numero }}</div>
@@ -130,12 +192,12 @@
                 </div></a
               >
             } @empty {
-              <p class="note">Nenhum pedido aguardando pagamento.</p>
+              <p class="note">Nenhum pedido aguardando ação.</p>
             }
           </div>
-          @if (totalPendentes() > pendentes().length) {
+          @if (totalAguardando() > aguardando().length) {
             <a class="mais" routerLink="/admin/pedidos"
-              >+ {{ totalPendentes() - pendentes().length }} aguardando pagamento</a
+              >+ {{ totalAguardando() - aguardando().length }} aguardando ação</a
             >
           }
         </div>
@@ -169,5 +231,46 @@
         </div>
       </section>
     </div>
+    <section class="card bloco">
+      <div class="hd">
+        <h2>Mais vendidos</h2>
+        <a routerLink="/admin/produtos">Ver produtos</a>
+      </div>
+      <div class="bd tabela">
+        <table>
+          <thead>
+            <tr>
+              <th aria-label="Posição"></th>
+              <th>Produto</th>
+              <th class="r">Unid.</th>
+              <th class="r">Receita</th>
+              <th>Participação</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (m of maisVendidos(); track m.produto.id; let i = $index) {
+              <tr>
+                <td class="mono pos">{{ (i + 1).toString().padStart(2, '0') }}</td>
+                <td>
+                  <b>{{ m.produto.nome }}</b> <span class="chip">{{ m.produto.sku }}</span>
+                </td>
+                <td data-l="Unid." class="r num mono">{{ m.unidades }}</td>
+                <td data-l="Receita" class="r num">{{ moeda(m.receita) }}</td>
+                <td data-l="Participação">
+                  <div class="part">
+                    <span class="barra" aria-hidden="true"><i [style.width.%]="m.participacao"></i></span
+                    ><span class="mono">{{ m.participacao }}%</span>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="note">Sem vendas no período.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
   }
 </main>

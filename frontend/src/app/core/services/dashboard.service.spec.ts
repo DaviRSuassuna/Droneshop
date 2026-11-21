@@ -35,6 +35,16 @@ describe('DashboardService', () => {
     });
   });
 
+  it('exporta o CSV das vendas por dia com o período', () => {
+    service.exportar({ dataInicio: '2026-10-01', dataFim: '2026-10-07' }).subscribe();
+    const req = http.expectOne((r) => r.url === `${url}/exportar`);
+    expect(req.request.method).toBe('GET');
+    expect(req.request.responseType).toBe('blob');
+    expect(req.request.params.get('dataInicio')).toBe('2026-10-01');
+    expect(req.request.params.get('dataFim')).toBe('2026-10-07');
+    req.flush(new Blob(['data;faturamento']));
+  });
+
   it('envia o período para a API', () => {
     service.buscar({ dataInicio: '2026-01-01', dataFim: '2026-10-17' }).subscribe();
     const req = http.expectOne((r) => r.url === url);

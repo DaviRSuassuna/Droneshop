@@ -17,4 +17,12 @@ export class DashboardService {
     if (filtro.dataFim) params = params.set('dataFim', filtro.dataFim);
     return this.http.get<IndicadoresDashboard>(this.baseUrl, { params });
   }
+
+  /** CSV das vendas por dia (separador ";", UTF-8 com BOM). */
+  exportar(filtro: FiltroDashboard = {}): Observable<Blob> {
+    let params = new HttpParams();
+    if (filtro.dataInicio) params = params.set('dataInicio', filtro.dataInicio);
+    if (filtro.dataFim) params = params.set('dataFim', filtro.dataFim);
+    return this.http.get(`${this.baseUrl}/exportar`, { params, responseType: 'blob' });
+  }
 }

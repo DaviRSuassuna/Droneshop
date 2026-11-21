@@ -72,6 +72,57 @@ export class Dashboard implements OnInit {
 
   readonly ultimosPedidos = computed(() => this.dados()?.ultimosPedidos ?? []);
 
+  /** Aguardando ação (PENDENTE, PAGO, SEPARACAO) vem da API; sem o campo, cai nos pendentes. */
+  readonly aguardando = computed(() => this.dados()?.pedidosAguardandoAcao ?? this.pendentes());
+  readonly totalAguardando = computed(
+    () => this.dados()?.quantidadeAguardandoAcao ?? this.totalPendentes(),
+  );
+  readonly maisVendidos = computed(() => this.dados()?.maisVendidos ?? []);
+  readonly receitaPorCategoria = computed(() => this.dados()?.receitaPorCategoria ?? []);
+  readonly metrica = signal<'receita' | 'pedidos'>('receita');
+  readonly exportando = signal(false);
+
+  /** Série do gráfico: período atual e anterior na mesma escala (0 a 100 de altura). */
+  readonly grafico = computed(() => {
+    const dias = this.dados()?.vendasPorDia ?? [];
+    const receita = this.metrica() === 'receita';
+    const atual = dias.map((d) => (receita ? d.faturamento : d.quantidadePedidos));
+    const anterior = dias.map((d) => (receita ? d.faturamentoAnterior : d.quantidadePedidosAnterior));
+    const maior = Math.max(1, ...atual, ...anterior);
+    const passo = dias.length > 1 ? 700 / (dias.length - 1) : 0;
+    const linha = (v: number[]) =>
+      v.map((n, i) => `${i ? 'L' : 'M'}${(44 + i * passo).toFixed(1)} ${(212 - (n / maior) * 198).toFixed(1)}`).join(' ');
+    const marcas = dias
+      .map((d, i) => ({ x: 44 + i * passo, rotulo: this.br(d.data).slice(0, 5) }))
+      .filter((_, i) => i % Math.max(1, Math.ceil(dias.length / 5)) === 0);
+    return { atual: linha(atual), anterior: linha(anterior), marcas, vazio: !dias.length };
+  });
+
+  variacao(v: number | null | undefined): string {
+    if (v === null || v === undefined) return '';
+    const n = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(Math.abs(v));
+    return `${v >= 0 ? '▲ +' : '▼ −'}${n}%`;
+  }
+
+  exportar(): void {
+    this.exportando.set(true);
+    this.dashboardService.exportar(this.filtro()).subscribe({
+      next: (blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'vendas-por-dia.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+        this.exportando.set(false);
+      },
+      error: () => {
+        this.erro.set('Não foi possível exportar o relatório.');
+        this.exportando.set(false);
+      },
+    });
+  }
+
   private readonly formatoMoeda = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',

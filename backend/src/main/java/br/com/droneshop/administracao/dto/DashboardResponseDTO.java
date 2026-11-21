@@ -17,8 +17,33 @@ public record DashboardResponseDTO(
     BigDecimal ticketMedio,
     List<ResumoStatusPedidoResponseDTO> pedidosPorStatus,
     List<EstoqueBaixo> estoqueBaixo,
-    List<PedidoListagemResponseDTO> ultimosPedidos
+    List<PedidoListagemResponseDTO> ultimosPedidos,
+    Comparacao comparacao,
+    List<VendaDia> vendasPorDia,
+    long quantidadeAguardandoAcao,
+    List<PedidoListagemResponseDTO> pedidosAguardandoAcao,
+    List<MaisVendido> maisVendidos,
+    List<ReceitaCategoria> receitaPorCategoria
 ) {
+    /** Período anterior de mesmo tamanho, terminando na véspera de dataInicio; variação nula sem base. */
+    public record Comparacao(Periodo periodoAnterior, BigDecimal faturamento, long quantidadePedidos,
+            BigDecimal ticketMedio, BigDecimal variacaoFaturamento, BigDecimal variacaoPedidos,
+            BigDecimal variacaoTicketMedio) {
+    }
+
+    public record VendaDia(LocalDate data, BigDecimal faturamento, long quantidadePedidos,
+            BigDecimal faturamentoAnterior, long quantidadePedidosAnterior) {
+    }
+
+    public record ProdutoVendido(Long id, String nome, String sku) {
+    }
+
+    public record MaisVendido(ProdutoVendido produto, long unidades, BigDecimal receita, BigDecimal participacao) {
+    }
+
+    public record ReceitaCategoria(String categoria, BigDecimal receita, BigDecimal participacao) {
+    }
+
     public record Periodo(LocalDate dataInicio, LocalDate dataFim) {
     }
 
