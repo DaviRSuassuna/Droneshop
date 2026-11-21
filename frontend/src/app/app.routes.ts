@@ -201,6 +201,11 @@ export const routes: Routes = [
           import('./admin/catalogo/termos-buscados/termos-buscados').then((m) => m.TermosBuscadosPage),
       },
       {
+        path: 'auditoria',
+        loadComponent: () =>
+          import('./admin/auditoria/auditoria').then((m) => m.AuditoriaPage),
+      },
+      {
         path: 'templates-email',
         loadComponent: () =>
           import('./admin/notificacoes/templates-email').then((m) => m.TemplatesEmailPage),

@@ -53,3 +53,4 @@ issue-32
 issue-43
 issue-44
 issue-dashboard-indicadores
+issue-41

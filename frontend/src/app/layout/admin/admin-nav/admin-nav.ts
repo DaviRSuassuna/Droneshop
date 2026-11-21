@@ -169,6 +169,11 @@ export class AdminNav {
               descricao: 'Parâmetros gerais',
             },
             {
+              rotulo: 'Auditoria',
+              rota: 'C:/Program Files/Git/admin/auditoria',
+              descricao: 'Log das ações do painel',
+            },
+            {
               rotulo: 'E-mails',
               rota: '/admin/templates-email',
               descricao: 'Templates e envios',

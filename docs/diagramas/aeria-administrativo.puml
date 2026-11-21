@@ -68,7 +68,7 @@ package "Auditoria" {
   class LogAuditoria {
     -acao: AcaoAuditoria
     -entidade: String
-    -entidadeId: Long
+    -entidadeId: String
     -campo: String
     -valorAnterior: String
     -valorNovo: String
