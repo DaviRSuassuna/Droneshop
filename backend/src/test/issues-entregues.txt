@@ -33,5 +33,9 @@ issue-30
 issue-27
 issue-28
 issue-36
+issue-31
+issue-34
+issue-35
+issue-meus-drones
 
 # ---- trilha B: acrescente abaixo desta linha

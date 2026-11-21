@@ -1,10 +1,15 @@
 package br.com.droneshop.pedido.resource;
 
+import java.util.List;
+
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import br.com.droneshop.dto.PageResponse;
 import br.com.droneshop.exception.ResourceNotFoundException;
+import br.com.droneshop.pedido.dto.NotaFiscalResponseDTO;
 import br.com.droneshop.pedido.dto.PedidoListagemResponseDTO;
+import br.com.droneshop.pedido.dto.RastreioResponseDTO;
+import br.com.droneshop.pedido.service.NotaFiscalService;
 import br.com.droneshop.pedido.dto.PedidoResponseDTO;
 import br.com.droneshop.pedido.mapper.PedidoResponseMapper;
 import br.com.droneshop.pedido.model.Pedido;
@@ -32,6 +37,9 @@ public class ContaPedidoResource {
     @Inject
     PedidoRepository pedidos;
 
+    @Inject
+    NotaFiscalService notasFiscais;
+
     private Long usuario() {
         return Long.valueOf(token.getSubject());
     }
@@ -58,5 +66,19 @@ public class ContaPedidoResource {
     @Transactional
     public PedidoResponseDTO buscar(@PathParam("id") Long id) {
         return PedidoResponseMapper.toResponse(doCliente(id));
+    }
+
+    @GET
+    @Path("{id}/rastreio")
+    @Transactional
+    public RastreioResponseDTO rastreio(@PathParam("id") Long id) {
+        return RastreioResponseDTO.de(doCliente(id).getEntrega());
+    }
+
+    @GET
+    @Path("{id}/nota-fiscal")
+    @Transactional
+    public List<NotaFiscalResponseDTO> notas(@PathParam("id") Long id) {
+        return notasFiscais.doPedido(doCliente(id).getId()).stream().map(NotaFiscalResponseDTO::de).toList();
     }
 }
