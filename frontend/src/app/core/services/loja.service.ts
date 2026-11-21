@@ -45,6 +45,12 @@ export class LojaService {
     return this.http.get<PageResponse<ProdutoLojaItem>>(`${this.baseUrl}/produtos`, { params });
   }
 
+  /** Barra de busca (#43): nome, SKU, marca e tags; a API grava o termo. */
+  buscar(q: string, page = 0, pageSize = 12): Observable<PageResponse<ProdutoLojaItem>> {
+    const params = new HttpParams().set('q', q.trim()).set('page', page).set('pageSize', pageSize);
+    return this.http.get<PageResponse<ProdutoLojaItem>>(`${this.baseUrl}/busca`, { params });
+  }
+
   buscarFiltros(categoria?: string): Observable<FiltrosLoja> {
     const params = categoria ? new HttpParams().set('categoria', categoria) : new HttpParams();
     return this.http.get<FiltrosLoja>(`${this.baseUrl}/filtros`, { params });

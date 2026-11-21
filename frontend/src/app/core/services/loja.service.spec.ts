@@ -40,6 +40,16 @@ describe('LojaService', () => {
     req.flush([]);
   });
 
+  it('busca pelo termo com paginação (#43)', () => {
+    service.buscar(' fálcon ', 2, 12).subscribe();
+    const req = http.expectOne((r) => r.url === `${url}/busca`);
+    expect(req.request.method).toBe('GET');
+    expect(req.request.params.get('q')).toBe('fálcon');
+    expect(req.request.params.get('page')).toBe('2');
+    expect(req.request.params.get('pageSize')).toBe('12');
+    req.flush({ items: [], page: 2, pageSize: 12, totalItems: 0, totalPages: 0 });
+  });
+
   it('lista produtos paginados sem mandar filtro vazio', () => {
     service
       .listarProdutos(

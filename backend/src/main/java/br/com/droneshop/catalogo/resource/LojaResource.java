@@ -61,7 +61,15 @@ public class LojaResource {
             @QueryParam("page") @DefaultValue("0") int page,
             @QueryParam("pageSize") @DefaultValue("12") int pageSize) {
         return service.listarProdutos(new LojaService.Filtro(categoria, subcategoria, marca, tipo, precoMin, precoMax,
-                autonomiaMin, alcanceMin, nome), ordem, page, pageSize);
+                autonomiaMin, alcanceMin, nome, null), ordem, page, pageSize);
+    }
+
+    @GET
+    @Path("/busca")
+    public PageResponse<ProdutoLojaItemDTO> buscar(@QueryParam("q") String q,
+            @QueryParam("page") @DefaultValue("0") int page,
+            @QueryParam("pageSize") @DefaultValue("12") int pageSize) {
+        return service.buscar(q, page, pageSize);
     }
 
     @GET

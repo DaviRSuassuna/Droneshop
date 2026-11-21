@@ -1,0 +1,43 @@
+<main>
+  <div class="wrap pagehead">
+    <div class="crumb">
+      <a routerLink="/">Home</a><span>Busca</span>
+    </div>
+    <div class="row">
+      <div>
+        <h1>Busca</h1>
+        <div class="sub" aria-live="polite">
+          @if (termo().length < 2) {
+            Digite ao menos 2 caracteres para buscar.
+          } @else if (carregando()) {
+            Buscando “{{ termo() }}”…
+          } @else {
+            {{ total() }} resultado(s) para “{{ termo() }}”
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="wrap">
+    @if (!carregando() && termo().length >= 2 && !total()) {
+      <p class="note">
+        Nada encontrado. Tente outro termo ou veja todos os <a routerLink="/drones">drones</a> e
+        <a routerLink="/acessorios">acessórios</a>.
+      </p>
+    }
+    <div class="pgrid">
+      @for (p of produtos(); track p.id) {
+        <article appPcard [produto]="p"></article>
+      }
+    </div>
+    @if (totalPaginas() > 1) {
+      <div class="pager">
+        @for (i of paginas(); track i) {
+          <button class="btn sm" type="button" [attr.aria-current]="i === pagina() ? 'page' : null" (click)="irPara(i)">
+            {{ i + 1 }}
+          </button>
+        }
+      </div>
+    }
+  </div>
+</main>

@@ -123,7 +123,9 @@ export class StorefrontNav {
   buscar(e: Event, termo: string): void {
     e.preventDefault();
     const q = termo.trim();
-    this.router.navigate(['/drones'], { queryParams: q ? { q } : {} });
+    // com termo vai para a busca (#43), que grava o termo; vazio abre os drones
+    if (q) this.router.navigate(['/busca'], { queryParams: { q } });
+    else this.router.navigate(['/drones']);
   }
 
   abrirMega(): void {

@@ -1,0 +1,77 @@
+<main class="gut">
+  <div class="ph">
+    <div>
+      <span class="lbl">Catálogo</span>
+      <h1>Termos buscados</h1>
+      <div class="sub">O que os clientes procuram na loja, normalizado sem acento e sem maiúsculas.</div>
+    </div>
+  </div>
+  <div class="toolbar">
+    <label class="opt"
+      ><input
+        type="checkbox"
+        [checked]="semResultado()"
+        (change)="semResultado.set($any($event.target).checked); carregar()"
+      />
+      Só buscas sem resultado</label
+    >
+    <input
+      class="sel"
+      type="date"
+      aria-label="Data inicial"
+      [value]="dataInicio()"
+      (change)="dataInicio.set($any($event.target).value); carregar()"
+    />
+    <input
+      class="sel"
+      type="date"
+      aria-label="Data final"
+      [value]="dataFim()"
+      (change)="dataFim.set($any($event.target).value); carregar()"
+    />
+  </div>
+  @if (erro()) {
+    <div class="alerta" role="alert">
+      Não foi possível carregar o relatório.
+      <button class="btn sm" type="button" (click)="carregar()">Tentar novamente</button>
+    </div>
+  } @else if (resultado(); as r) {
+    <div class="tw">
+      <table>
+        <thead>
+          <tr>
+            <th>Termo</th>
+            <th>Buscas</th>
+            <th>Resultados na última busca</th>
+            <th>Última busca</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (t of r.items; track t.termo) {
+            <tr>
+              <td><span class="chip">{{ t.termo }}</span></td>
+              <td data-l="Buscas" class="mono">{{ t.buscas }}</td>
+              <td data-l="Resultados" class="mono">{{ t.ultimaQuantidadeResultados }}</td>
+              <td data-l="Última busca" class="mono">{{ t.ultimaBusca | date: 'dd/MM/yyyy HH:mm' }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4">Nenhum termo no período.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    @if (r.totalPages > 1) {
+      <div class="pager">
+        <span>Página {{ r.page + 1 }} de {{ r.totalPages }}</span>
+        <span>
+          <button class="btn sm" type="button" [disabled]="r.page === 0" (click)="carregar(r.page - 1)">Anterior</button>
+          <button class="btn sm" type="button" [disabled]="r.page + 1 >= r.totalPages" (click)="carregar(r.page + 1)">
+            Próxima
+          </button>
+        </span>
+      </div>
+    }
+  }
+</main>

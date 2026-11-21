@@ -24,6 +24,9 @@ public interface LojaService {
     ProdutoLojaDetalheDTO buscarProduto(String slug);
 
     record Filtro(String categoria, String subcategoria, String marca, String tipo, BigDecimal precoMin,
-            BigDecimal precoMax, Integer autonomiaMin, Integer alcanceMin, String nome) {
+            BigDecimal precoMax, Integer autonomiaMin, Integer alcanceMin, String nome, String busca) {
     }
+
+    /** Busca da barra do storefront (#43): nome, SKU, marca e tags; grava o termo normalizado. */
+    PageResponse<ProdutoLojaItemDTO> buscar(String q, int page, int pageSize);
 }

@@ -196,6 +196,11 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'termos-buscados',
+        loadComponent: () =>
+          import('./admin/catalogo/termos-buscados/termos-buscados').then((m) => m.TermosBuscadosPage),
+      },
+      {
         path: 'templates-email',
         loadComponent: () =>
           import('./admin/notificacoes/templates-email').then((m) => m.TemplatesEmailPage),
@@ -251,6 +256,11 @@ export const routes: Routes = [
         path: '',
         pathMatch: 'full',
         loadComponent: () => import('./storefront/home/home').then((m) => m.Home),
+      },
+      {
+        path: 'busca',
+        loadComponent: () =>
+          import('./storefront/catalogo/busca/busca').then((m) => m.BuscaPage),
       },
       {
         path: 'drones',

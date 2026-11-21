@@ -32,6 +32,8 @@ import br.com.droneshop.catalogo.repository.MarcaRepository;
 import br.com.droneshop.catalogo.repository.MidiaProdutoRepository;
 import br.com.droneshop.catalogo.repository.ProdutoRepository;
 import br.com.droneshop.catalogo.repository.SubcategoriaRepository;
+import br.com.droneshop.catalogo.repository.TermoBuscadoRepository;
+import br.com.droneshop.exception.ValidationException;
 import br.com.droneshop.dto.PageResponse;
 import br.com.droneshop.exception.ResourceNotFoundException;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -40,6 +42,9 @@ import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class LojaServiceImpl implements LojaService {
+
+    @Inject
+    TermoBuscadoRepository termos;
 
     @Inject
     CategoriaRepository categoriaRepository;
@@ -108,7 +113,7 @@ public class LojaServiceImpl implements LojaService {
     @Override
     @Transactional
     public FiltrosLojaDTO buscarFiltros(String categoria) {
-        List<Item> itens = itens(new Filtro(categoria, null, null, null, null, null, null, null, null));
+        List<Item> itens = itens(new Filtro(categoria, null, null, null, null, null, null, null, null, null));
         Map<String, FiltrosLojaDTO.Marca> marcas = new LinkedHashMap<>();
         itens.stream()
                 .map(i -> i.representante().getMarca())
@@ -199,11 +204,14 @@ public class LojaServiceImpl implements LojaService {
 
         TipoProduto tipo = vazio(f.tipo()) == null ? null : tipo(f.tipo());
         String nome = normalizar(f.nome());
+        String[] palavras = vazio(f.busca()) == null ? null : termo(f.busca()).split(" ");
         Map<String, List<Produto>> grupos = new LinkedHashMap<>();
         for (Produto p : produtos) {
             if (vazio(f.tipo()) != null && p.getTipo() != tipo)
                 continue;
             if (nome != null && !normalizar(p.getNome()).contains(nome))
+                continue;
+            if (palavras != null && !contemTodas(p, palavras))
                 continue;
             if (f.autonomiaMin() != null && !(p instanceof Drone d && d.getAutonomiaMinutos() != null
                     && d.getAutonomiaMinutos() >= f.autonomiaMin()))
@@ -255,6 +263,36 @@ public class LojaServiceImpl implements LojaService {
             if (t.getNome().equalsIgnoreCase(tipo.trim()))
                 return t;
         return null;
+    }
+
+    @Override
+    @Transactional
+    public PageResponse<ProdutoLojaItemDTO> buscar(String q, int page, int pageSize) {
+        if (q == null || termo(q).length() < 2)
+            throw ValidationException.of("q", "Digite ao menos 2 caracteres para buscar (back)");
+        PageResponse<ProdutoLojaItemDTO> r = listarProdutos(
+                new Filtro(null, null, null, null, null, null, null, null, null, q), null, page, pageSize);
+        termos.registrar(termo(q), (int) r.totalItems());
+        return r;
+    }
+
+    /** Termo normalizado: minúsculo, sem acento e com os espaços colapsados (D23). */
+    public static String termo(String q) {
+        String n = normalizar(q);
+        return n == null ? "" : n.replaceAll("\s+", " ");
+    }
+
+    private static boolean contemTodas(Produto p, String[] palavras) {
+        String texto = normalizar(String.join(" ", p.getNome() == null ? "" : p.getNome(),
+                p.getSku() == null ? "" : p.getSku(),
+                p.getMarca() == null ? "" : p.getMarca().getNome(),
+                p.getTags() == null ? "" : p.getTags()));
+        if (texto == null)
+            return false;
+        for (String w : palavras)
+            if (!texto.contains(w))
+                return false;
+        return true;
     }
 
     private static String vazio(String s) {

@@ -76,6 +76,11 @@ export class AdminNav {
               rota: '/admin/subcategorias',
               descricao: 'Dentro de cada categoria',
             },
+            {
+              rotulo: 'Termos buscados',
+              rota: '/admin/termos-buscados',
+              descricao: 'O que os clientes procuram',
+            },
           ],
         },
       ],
