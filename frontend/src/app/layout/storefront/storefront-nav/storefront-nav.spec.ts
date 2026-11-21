@@ -102,14 +102,14 @@ describe('StorefrontNav', () => {
     expect(el.querySelector('nav.links')?.classList.contains('open')).toBe(false);
   });
 
-  it('a busca leva para /drones com o termo em q', async () => {
+  it('a busca leva para /busca com o termo em q (#43)', async () => {
     const { el, fixture } = montar();
     const router = TestBed.inject(Router);
     const input = el.querySelector<HTMLInputElement>('form.search input')!;
     input.value = '  falcon  ';
     el.querySelector('form.search')!.dispatchEvent(new Event('submit', { cancelable: true }));
     await fixture.whenStable();
-    expect(router.url).toBe('/drones?q=falcon');
+    expect(router.url).toBe('/busca?q=falcon');
   });
 
   it('busca vazia leva para /drones sem q', async () => {

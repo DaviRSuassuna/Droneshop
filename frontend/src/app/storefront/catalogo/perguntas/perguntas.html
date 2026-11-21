@@ -1,0 +1,56 @@
+<section class="wrap sec" id="perguntas">
+  <div class="shead">
+    <div>
+      <span class="lbl">Perguntas</span>
+      <h2>Dúvidas de quem está escolhendo.</h2>
+    </div>
+  </div>
+  <div class="rlist">
+    @for (p of perguntas(); track p.id) {
+      <div class="rcard">
+        <div class="h">
+          <span><b>{{ p.autor.nome }}</b> perguntou</span>
+        </div>
+        <p>{{ p.texto }}</p>
+        @for (r of p.respostas; track r.id) {
+          <div class="h">
+            <span
+              ><b>{{ r.autor.nome }}</b>
+              @if (r.oficial) {
+                <span class="vtag">Resposta oficial</span>
+              }</span
+            >
+          </div>
+          <p>{{ r.texto }}</p>
+        }
+        @if (logado()) {
+          @if (respondendo() === p.id) {
+            <div class="f w6">
+              <textarea aria-label="Sua resposta" placeholder="Conte o que você sabe" [formControl]="resposta"></textarea>
+            </div>
+            <button class="btn sm" type="button" (click)="responder(p.id)">Enviar resposta</button>
+          } @else {
+            <button class="tlink" type="button" (click)="respondendo.set(p.id)">Responder</button>
+          }
+        }
+      </div>
+    } @empty {
+      <p class="formnote">Ninguém perguntou ainda. Seja o primeiro.</p>
+    }
+  </div>
+  @if (logado()) {
+    <div class="f w6 pergunta-nova">
+      <label for="pergunta-texto">Sua pergunta</label>
+      <textarea
+        id="pergunta-texto"
+        placeholder="Ex.: funciona com óculos FPV?"
+        [formControl]="texto"
+        aria-describedby="pergunta-aviso"
+      ></textarea>
+    </div>
+    <button class="btn" type="button" (click)="perguntar()">Perguntar</button>
+  } @else {
+    <p class="formnote"><a routerLink="/login">Entre</a> para perguntar ou responder.</p>
+  }
+  <p class="formnote" id="pergunta-aviso" role="status">{{ aviso() }}</p>
+</section>

@@ -1,0 +1,178 @@
+<main>
+  <section class="shero">
+    <div class="wrap">
+      <span class="lbl">Central de ajuda</span>
+      <h1>Como podemos ajudar?</h1>
+      <p>
+        Busque por um tema, consulte as perguntas frequentes ou abra um chamado com nossa equipe
+        técnica.
+      </p>
+      <label class="bigsearch"
+        ><input
+          #termo
+          placeholder="Ex.: calibrar bússola, garantia"
+          aria-label="Buscar na central de ajuda"
+          (keyup.enter)="buscar(termo.value)" /><a
+          class="btn sm p"
+          href="#faq"
+          (click)="buscar(termo.value)"
+          >Buscar</a
+        ></label
+      >
+      <div class="popular">
+        Mais buscados: <a routerLink="/conta/pedidos">Rastrear pedido</a><a href="#faq" (click)="verTema(temas[3])">Registro SISANT</a
+        ><a href="#faq" (click)="verTema(temas[1])">Trocas e devoluções</a>
+      </div>
+    </div>
+  </section>
+  <section class="wrap sec">
+    <div class="shead">
+      <div>
+        <span class="lbl">Temas</span>
+        <h2>Encontre pelo assunto</h2>
+      </div>
+      <a class="tlink arrow" routerLink="/conta/pedidos">Rastrear um pedido</a>
+    </div>
+    <div class="topics">
+      @for (t of temas; track t.id) {
+        <button
+          type="button"
+          class="topic"
+          [class.on]="temaAtivo()?.id === t.id"
+          [attr.aria-pressed]="temaAtivo()?.id === t.id"
+          (click)="verTema(t)"
+        >
+          <span class="pi" aria-hidden="true"></span>
+          <div>
+            <h3>{{ t.titulo }}</h3>
+            <p>{{ t.resumo(prazos()) }}</p>
+            <span class="tlink arrow">Ver artigos</span>
+          </div>
+        </button>
+      }
+    </div>
+  </section>
+  <section class="wrap sec" id="faq" style="padding-bottom: 40px">
+    <div class="faqwrap">
+      <div>
+        <div class="shead">
+          <div>
+            <span class="lbl">{{ temaAtivo()?.titulo ?? 'Perguntas frequentes' }}</span>
+            <h2>Respostas rápidas</h2>
+          </div>
+        </div>
+        <div class="faq">
+          @for (q of perguntas(); track q.pergunta; let primeira = $first) {
+            <details class="q" [open]="primeira">
+              <summary>{{ q.pergunta }}</summary>
+              <p>{{ q.resposta(prazos()) }}</p>
+            </details>
+          } @empty {
+            <p class="formnote">Nada encontrado. Abra um chamado e a nossa equipe responde.</p>
+          }
+        </div>
+        @if (logado()) {
+          <div class="shead">
+            <div>
+              <span class="lbl">Seus chamados</span>
+              <h2>Acompanhe o atendimento</h2>
+            </div>
+          </div>
+          <div class="meus">
+            @for (c of meus(); track c.id) {
+              <button type="button" class="chamado" [class.on]="aberto()?.id === c.id" (click)="abrir(c)">
+                <span class="mono">{{ c.protocolo }}</span>
+                <b>{{ c.assunto }}</b>
+                <span class="st">{{ c.status.nome }}</span>
+              </button>
+            } @empty {
+              <p class="formnote">Você ainda não abriu chamados.</p>
+            }
+          </div>
+          @if (aberto(); as c) {
+            <div class="panel conversa" aria-live="polite">
+              <div class="ph2">
+                <h2>{{ c.protocolo }}</h2>
+                <span class="formnote">{{ c.status.nome }}</span>
+              </div>
+              @for (m of mensagens(); track m.id) {
+                <div class="msg" [class.atendente]="m.tipoAutor.nome === 'ATENDENTE'">
+                  <span class="formnote"
+                    >{{ m.tipoAutor.nome === 'ATENDENTE' ? 'Aeria' : 'Você' }} ·
+                    {{ m.dataCadastro | date: 'dd/MM HH:mm' }}</span
+                  >
+                  <p>{{ m.texto }}</p>
+                </div>
+              }
+              @if (c.status.nome !== 'ENCERRADO') {
+                <div class="f w6">
+                  <textarea
+                    aria-label="Responder ao atendimento"
+                    placeholder="Escreva sua resposta"
+                    [formControl]="resposta"
+                  ></textarea>
+                </div>
+                <button class="btn" type="button" (click)="responder()">Responder</button>
+              }
+              @if (erroResposta(); as e) {
+                <p class="formnote" role="alert">{{ e }}</p>
+              }
+            </div>
+          }
+        }
+      </div>
+      <div>
+        <form class="panel" [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+          <div class="ph2">
+            <h2>Abrir chamado</h2>
+            <span class="formnote">Resposta em até 1 dia útil</span>
+          </div>
+          <div class="fg">
+            <div class="f w6">
+              <label for="ta">Assunto <span class="req">*</span></label>
+              <select id="ta" formControlName="assunto">
+                @for (a of assuntos; track a) {
+                  <option [value]="a">{{ a }}</option>
+                }
+              </select>
+            </div>
+            <div class="f w6">
+              <label for="tp">Pedido relacionado</label>
+              <select id="tp" formControlName="idPedido">
+                <option value="">Nenhum</option>
+                @for (p of pedidos(); track p.id) {
+                  <option [value]="p.id">#{{ p.numero }}</option>
+                }
+              </select>
+            </div>
+            <div class="f w6">
+              <label for="td">Descreva o problema <span class="req">*</span></label>
+              <textarea
+                id="td"
+                placeholder="O que aconteceu, quando e em qual situação de voo"
+                formControlName="mensagem"
+              ></textarea>
+            </div>
+            @if (erro(); as e) {
+              <p class="formnote erro" role="alert">
+                {{ e }}
+                @if (!logado()) {
+                  <a routerLink="/login">Entrar</a>
+                }
+              </p>
+            }
+            @if (sucesso(); as s) {
+              <p class="formnote" role="status">{{ s }}</p>
+            }
+            <button class="btn p check" type="submit" [disabled]="enviando()">Enviar chamado</button>
+          </div>
+        </form>
+        <div class="contact3">
+          <div><b>Chat</b>Seg a sáb, 8h às 20h</div>
+          <div><b class="mono">(63) 3214-2200</b>Seg a sex, 8h às 18h</div>
+          <div><b>E-mail</b>suporte&#64;aeria.com.br</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>

@@ -1,0 +1,124 @@
+<main class="gut">
+  <div class="ph">
+    <div>
+      <span class="lbl">Atendimento</span>
+      <h1>Moderação</h1>
+      <div class="sub">Nada aparece na loja antes de aprovado (RN05).</div>
+    </div>
+  </div>
+  <div class="seg" role="group" aria-label="Conteúdo">
+    <button type="button" [attr.aria-pressed]="aba() === 'perguntas'" (click)="aba.set('perguntas')">
+      Perguntas
+    </button>
+    <button type="button" [attr.aria-pressed]="aba() === 'avaliacoes'" (click)="aba.set('avaliacoes')">
+      Avaliações
+    </button>
+  </div>
+  <div class="toolbar">
+    <select class="sel" aria-label="Status" (change)="filtrar($any($event.target).value)">
+      <option value="">Status</option>
+      @for (s of status; track s.id) {
+        <option [value]="s.id" [selected]="s.id === idStatus()">{{ s.nome }}</option>
+      }
+    </select>
+  </div>
+  @if (erro(); as e) {
+    <div class="alerta" role="alert">{{ e }}</div>
+  }
+  @if (aba() === 'avaliacoes') {
+    @if (avaliacoes(); as r) {
+      <div class="tw">
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Produto</th>
+              <th>Nota</th>
+              <th>Comentário</th>
+              <th>Status</th>
+              <th aria-label="Ações"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (a of r.items; track a.id) {
+              <tr>
+                <td class="mono">{{ a.dataCadastro | date: 'dd/MM/yyyy' }}</td>
+                <td data-l="Produto">{{ a.produto.nome }}</td>
+                <td data-l="Nota" [attr.aria-label]="a.nota + ' de 5'">{{ estrelas(a.nota) }}</td>
+                <td data-l="Comentário">
+                  {{ a.comentario ?? '—' }}
+                  @if (a.compraVerificada) {
+                    <span class="chip">compra verificada</span>
+                  }
+                </td>
+                <td data-l="Status"><span class="chip">{{ a.status.nome }}</span></td>
+                <td>
+                  @if (a.status.id !== STATUS.APROVADA) {
+                    <button class="btn sm" type="button" (click)="moderarAvaliacao(a.id, STATUS.APROVADA)">Aprovar</button>
+                  }
+                  @if (a.status.id !== STATUS.REJEITADA) {
+                    <button class="btn sm" type="button" (click)="moderarAvaliacao(a.id, STATUS.REJEITADA)">Rejeitar</button>
+                  }
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6">Nenhuma avaliação.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  } @else if (perguntas(); as r) {
+    <div class="tw">
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Produto</th>
+            <th>Pergunta</th>
+            <th>Status</th>
+            <th aria-label="Ações"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of r.items; track p.id) {
+            <tr>
+              <td class="mono">{{ p.dataCadastro | date: 'dd/MM/yyyy' }}</td>
+              <td data-l="Produto">{{ p.produto.nome }}</td>
+              <td data-l="Pergunta">
+                {{ p.texto }}
+                @for (resp of p.respostas; track resp.id) {
+                  <div class="note">↳ {{ resp.autor.nome }}: {{ resp.texto }}</div>
+                }
+                @if (respondendo() === p.id) {
+                  <div class="f w6">
+                    <textarea aria-label="Resposta oficial" [formControl]="resposta"></textarea>
+                  </div>
+                  <button class="btn sm p" type="button" (click)="responder(p.id)">Publicar resposta</button>
+                }
+              </td>
+              <td data-l="Status"><span class="chip">{{ p.status.nome }}</span></td>
+              <td>
+                @if (p.status.id !== STATUS.APROVADA) {
+                  <button class="btn sm" type="button" (click)="moderarPergunta(p.id, STATUS.APROVADA)">Aprovar</button>
+                }
+                @if (p.status.id !== STATUS.REJEITADA) {
+                  <button class="btn sm" type="button" (click)="moderarPergunta(p.id, STATUS.REJEITADA)">Rejeitar</button>
+                }
+                @if (p.status.id === STATUS.APROVADA) {
+                  <button class="btn sm" type="button" (click)="respondendo.set(p.id)">Responder</button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5">Nenhuma pergunta.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</main>

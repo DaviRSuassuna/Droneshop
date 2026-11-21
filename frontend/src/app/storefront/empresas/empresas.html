@@ -1,0 +1,167 @@
+<main>
+  <section class="bhero">
+    <div class="grid-bg" aria-hidden="true"></div>
+    <div class="wrap">
+      <div>
+        <span class="chip">AERIA EMPRESAS</span>
+        <h1>Frota, treinamento e suporte em um só contrato.</h1>
+        <p>
+          Equipamentos, peças e pilotos certificados para mapeamento, agro, inspeção e segurança, com
+          faturamento PJ e SLA de manutenção.
+        </p>
+        <div class="acts">
+          <a class="btn p" href="#contato">Falar com um consultor</a
+          ><a class="btn" routerLink="/drones">Ver catálogo completo</a>
+        </div>
+      </div>
+      <img src="/images/heron.webp" alt="Drone Heron Survey Pro" />
+    </div>
+  </section>
+  <section class="tele" aria-label="Números">
+    <div class="wrap">
+      <div class="read"><span class="lbl">Frotas atendidas</span><strong>420<span>+</span></strong></div>
+      <div class="read"><span class="lbl">SLA de reparo</span><strong>5<span>dias úteis</span></strong></div>
+      <div class="read"><span class="lbl">Prazo de pagamento</span><strong>90<span>dias</span></strong></div>
+      <div class="read"><span class="lbl">Pilotos treinados</span><strong>1.800<span>+</span></strong></div>
+    </div>
+  </section>
+  <section class="wrap sec">
+    <div class="shead">
+      <div>
+        <span class="lbl">Soluções por setor</span>
+        <h2>Feito para operação em campo.</h2>
+      </div>
+      <a class="tlink arrow" routerLink="/drones">Comparar modelos</a>
+    </div>
+    <div class="sectors">
+      <a class="sector" href="#contato"
+        ><div class="art-box" aria-hidden="true"></div>
+        <div class="body">
+          <h3>Mapeamento e topografia</h3>
+          <p>Heron Survey Pro com RTK, software de fotogrametria e treinamento incluso.</p>
+          <div class="meta"><span>Sob proposta</span><span class="arrow">Solicitar proposta</span></div>
+        </div></a
+      ><a class="sector" href="#contato"
+        ><div class="art-box" aria-hidden="true"></div>
+        <div class="body">
+          <h3>Agronegócio</h3>
+          <p>Atlas Agro 10L, pulverização de precisão e plano de manutenção em campo.</p>
+          <div class="meta"><span>Sob proposta</span><span class="arrow">Solicitar proposta</span></div>
+        </div></a
+      ><a class="sector" href="#contato"
+        ><div class="art-box" aria-hidden="true"></div>
+        <div class="body">
+          <h3>Inspeção e segurança</h3>
+          <p>Frota Falcon X2 Enterprise com câmera térmica e gestão centralizada de voos.</p>
+          <div class="meta"><span>Sob proposta</span><span class="arrow">Solicitar proposta</span></div>
+        </div></a
+      >
+    </div>
+  </section>
+  <section class="wrap sec">
+    <div class="shead">
+      <div>
+        <span class="lbl">Incluso no contrato</span>
+        <h2>O que está incluso</h2>
+      </div>
+    </div>
+    <div class="incl">
+      <div><b>Nota fiscal e faturamento PJ</b><span>Emissão automática, condições em 30/60/90 dias</span></div>
+      <div><b>Consultor dedicado</b><span>Um ponto de contato para frota, peças e treinamento</span></div>
+      <div><b>SLA de manutenção</b><span>Reparo em até 5 dias úteis com equipamento reserva</span></div>
+      <div><b>Treinamento de pilotos</b><span>Turmas presenciais ou remotas com certificado</span></div>
+      <div><b>Regularização ANAC</b><span>Cadastro SISANT e apoio documental por aeronave</span></div>
+      <div><b>Volume e licitação</b><span>Propostas para compras públicas e grandes frotas</span></div>
+    </div>
+  </section>
+  <section class="wrap sec" id="contato" style="padding-bottom: 40px">
+    <div class="lead-form">
+      <div>
+        <span class="lbl">Vendas corporativas</span>
+        <h2>Vamos montar sua frota.</h2>
+        <p>
+          Conte o que sua operação precisa. Um consultor responde com proposta e, se fizer sentido,
+          agenda uma demonstração na sua área.
+        </p>
+        <div class="chan">
+          <div><span class="mono">(63) 3214-2200</span></div>
+          <div><span class="mono">empresas&#64;aeria.com.br</span></div>
+          <div>Segunda a sexta, 8h às 18h</div>
+        </div>
+      </div>
+      <form class="panel" [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+        <div class="fg">
+          <div class="f" [class.erro]="erro('nomeContato')">
+            <label for="bn">Nome do responsável <span class="req">*</span></label>
+            <input id="bn" type="text" autocomplete="name" formControlName="nomeContato" />
+            @if (erro('nomeContato'); as m) {
+              <span class="erro">{{ m }}</span>
+            }
+          </div>
+          <div class="f" [class.erro]="erro('emailContato')">
+            <label for="be">E-mail corporativo <span class="req">*</span></label>
+            <input id="be" type="email" autocomplete="email" formControlName="emailContato" />
+            @if (erro('emailContato'); as m) {
+              <span class="erro">{{ m }}</span>
+            }
+          </div>
+          <div class="f" [class.erro]="erro('razaoSocial')">
+            <label for="bc">Empresa <span class="req">*</span></label>
+            <input id="bc" type="text" autocomplete="organization" formControlName="razaoSocial" />
+            @if (erro('razaoSocial'); as m) {
+              <span class="erro">{{ m }}</span>
+            }
+          </div>
+          <div class="f" [class.erro]="erro('cnpj')">
+            <label for="bcnpj">CNPJ <span class="req">*</span></label>
+            <input
+              id="bcnpj"
+              type="text"
+              inputmode="numeric"
+              placeholder="00.000.000/0000-00"
+              appMascara="cnpj"
+              formControlName="cnpj"
+            />
+            @if (erro('cnpj'); as m) {
+              <span class="erro">{{ m }}</span>
+            }
+          </div>
+          <div class="f">
+            <label for="bs">Setor de atuação <span class="req">*</span></label>
+            <select id="bs" formControlName="segmento">
+              @for (s of setores; track s) {
+                <option [value]="s">{{ s }}</option>
+              }
+            </select>
+          </div>
+          <div class="f">
+            <label for="bf">Tamanho da frota</label>
+            <select id="bf" formControlName="quantidadeEstimada">
+              @for (f of frotas; track f.valor) {
+                <option [ngValue]="f.valor">{{ f.rotulo }}</option>
+              }
+            </select>
+          </div>
+          <div class="f w6">
+            <label for="bm">Conte o que precisa</label>
+            <textarea id="bm" placeholder="Área a cobrir, prazos, uso previsto" formControlName="mensagem"></textarea>
+          </div>
+          <label class="check"
+            ><input class="ck" type="checkbox" formControlName="demonstracao" />Quero receber uma
+            demonstração em campo</label
+          >
+          <button class="btn p check" type="submit" [disabled]="enviando()">
+            Enviar para vendas corporativas
+          </button>
+          @if (sucesso()) {
+            <span class="formnote check" role="status">Recebemos o seu pedido. Um consultor responde em até 1 dia útil.</span>
+          } @else if (erroGeral(); as e) {
+            <span class="formnote check" role="alert">{{ e }}</span>
+          } @else {
+            <span class="formnote check">Resposta em até 1 dia útil.</span>
+          }
+        </div>
+      </form>
+    </div>
+  </section>
+</main>

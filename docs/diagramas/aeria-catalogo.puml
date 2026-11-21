@@ -177,6 +177,17 @@ note bottom of Produto
   pendem do produto e estão em aeria-estoque.puml
 end note
 
+class TermoBuscado {
+  -termo: String
+  -buscas: int
+  -ultimaQuantidadeResultados: int
+  -ultimaBusca: LocalDateTime
+}
+note bottom of TermoBuscado
+  Termo normalizado (minúsculo, sem acento),
+  gravado por GET /loja/busca (#43)
+end note
+
 class GrupoProduto {
   -nome: String
   -slug: String

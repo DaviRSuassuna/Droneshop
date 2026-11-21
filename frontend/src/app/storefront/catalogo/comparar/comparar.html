@@ -1,0 +1,127 @@
+<section class="wrap sec" id="comparar">
+  <div class="shead">
+    <div>
+      <span class="lbl">Comparar</span>
+      <h2>Compare as versões do {{ nome() }}</h2>
+    </div>
+    <button class="btn" type="button" aria-haspopup="dialog" (click)="abrir()">
+      Comparar com outro drone
+    </button>
+  </div>
+  @if (erro(); as e) {
+    <p class="formnote" role="alert">{{ e }}</p>
+  }
+  @if (comparacao(); as c) {
+    <div class="cmpw" tabindex="0" role="region" aria-label="Tabela de comparação">
+      <table class="cmp">
+        <thead>
+          <tr>
+            <th scope="col"><span class="vh">Modelo</span></th>
+            @for (p of c.produtos; track p.id) {
+              <th scope="col" [class.cur]="p.id === idProduto()">
+                @if (extras().includes(p.id)) {
+                  <button
+                    class="rm"
+                    type="button"
+                    [attr.aria-label]="'Tirar ' + p.nome + ' da comparação'"
+                    (click)="tirar(p.id)"
+                  >
+                    ✕
+                  </button>
+                }
+                <a class="nm" [routerLink]="['/produto', p.slug]">{{ p.nome }}</a>
+                @if (p.id === idProduto()) {
+                  <span class="tg">Você está vendo</span>
+                } @else {
+                  <span class="tg">{{ p.doGrupo ? 'Versão do grupo' : 'Outro drone' }}</span>
+                }
+              </th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Preço</th>
+            @for (p of c.produtos; track p.id) {
+              <td [class.cur]="p.id === idProduto()">
+                <span class="pr">{{ p.preco | preco }}</span>
+              </td>
+            }
+          </tr>
+          <tr>
+            <th scope="row">Avaliação</th>
+            @for (p of c.produtos; track p.id) {
+              <td [class.cur]="p.id === idProduto()">
+                @if (p.nota !== null) {
+                  <span class="rs">★</span> {{ p.nota }} ({{ p.totalAvaliacoes }})
+                } @else {
+                  <span class="no">sem avaliações</span>
+                }
+              </td>
+            }
+          </tr>
+          @for (s of c.specs; track s.campo) {
+            <tr>
+              <th scope="row">{{ s.rotulo }}</th>
+              @for (p of c.produtos; track p.id; let i = $index) {
+                <td [class.cur]="p.id === idProduto()">
+                  <span [class.best]="s.melhor === i">{{ valor(s, i) }}</span>
+                </td>
+              }
+            </tr>
+          }
+          @if (temExtras(c)) {
+            <tr>
+              <th scope="row">Itens extras do kit</th>
+              @for (p of c.produtos; track p.id) {
+                <td [class.cur]="p.id === idProduto()">{{ p.itensExtras.join(', ') || '—' }}</td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="formnote"><span class="best-k"></span> melhor valor da linha · até 4 drones lado a lado</p>
+  } @else {
+    <p class="formnote">Escolha outro drone do catálogo para comparar lado a lado.</p>
+  }
+  <dialog class="dlg" #dlg aria-labelledby="dlgCmpT">
+    <div class="dlgbox">
+      <div class="dlghead">
+        <div>
+          <span class="lbl">Comparar</span>
+          <h2 id="dlgCmpT">Escolha um drone</h2>
+        </div>
+        <button class="iconbtn" type="button" aria-label="Fechar" (click)="fechar()">✕</button>
+      </div>
+      <label class="cmpq"
+        ><input
+          placeholder="Buscar no catálogo"
+          aria-label="Buscar drone"
+          [value]="busca()"
+          (input)="procurar($any($event.target).value)"
+      /></label>
+      <div class="cmpl">
+        @for (o of opcoes(); track o.id) {
+          <button
+            type="button"
+            [disabled]="cheia() || naTabela().includes(o.id)"
+            (click)="adicionar(o.id)"
+          >
+            <span>{{ o.nome }}</span>
+            <em>{{ naTabela().includes(o.id) ? 'na tabela' : (o.precoMinimo | preco) }}</em>
+          </button>
+        } @empty {
+          <p class="formnote">Nenhum drone encontrado.</p>
+        }
+      </div>
+      <p class="formnote" aria-live="polite">
+        {{
+          cheia()
+            ? 'A tabela já tem 4 drones. Tire um para adicionar outro.'
+            : 'Até 4 drones lado a lado.'
+        }}
+      </p>
+    </div>
+  </dialog>
+</section>

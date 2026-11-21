@@ -1,0 +1,62 @@
+<main class="gut">
+  <div class="ph">
+    <div>
+      <span class="lbl">Atendimento</span>
+      <h1>Propostas para empresas</h1>
+      <div class="sub">Pedidos enviados pela página Empresas da loja.</div>
+    </div>
+  </div>
+  <div class="toolbar">
+    <select class="sel" aria-label="Status" (change)="filtrar($any($event.target).value)">
+      <option value="">Status</option>
+      @for (s of status; track s.id) {
+        <option [value]="s.id">{{ s.nome }}</option>
+      }
+    </select>
+  </div>
+  @if (erro(); as e) {
+    <div class="alerta" role="alert">{{ e }}</div>
+  }
+  @if (resultado(); as r) {
+    <div class="tw">
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Empresa</th>
+            <th>Contato</th>
+            <th>Setor</th>
+            <th>Frota</th>
+            <th>Mensagem</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (l of r.items; track l.id) {
+            <tr>
+              <td class="mono">{{ l.dataCadastro | date: 'dd/MM/yyyy' }}</td>
+              <td data-l="Empresa">
+                <b>{{ l.razaoSocial }}</b> <span class="chip">{{ l.cnpj | cnpj }}</span>
+              </td>
+              <td data-l="Contato">{{ l.nomeContato }} · {{ l.emailContato }}</td>
+              <td data-l="Setor">{{ l.segmento ?? '—' }}</td>
+              <td data-l="Frota" class="mono">{{ l.quantidadeEstimada ?? '—' }}</td>
+              <td data-l="Mensagem">{{ l.mensagem ?? '—' }}</td>
+              <td data-l="Status">
+                <select class="sel" [attr.aria-label]="'Status de ' + l.razaoSocial" (change)="mudar(l, $any($event.target).value)">
+                  @for (s of status; track s.id) {
+                    <option [value]="s.id" [selected]="s.id === l.status.id">{{ s.nome }}</option>
+                  }
+                </select>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7">Nenhuma proposta.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</main>

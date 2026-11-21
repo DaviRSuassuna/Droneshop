@@ -33,3 +33,13 @@ from produto p join (values
 ) as v(sku, peso, sugerir) on v.sku = p.sku
 where a.id = p.id;
 update kit set exibir_em_ofertas = true where id = (select id from produto where sku = 'DRN-FX2P-0042-FLY');
+
+-- #32: templates de e-mail (versão 1). Verificação de e-mail e recuperação de senha ficam com o Keycloak (D56).
+insert into template_notificacao (codigo, assunto, corpoTemplate, versao, ativo, categoria, variaveis, dataCadastro) values
+('PEDIDO_CONFIRMADO', 'Pedido {{numeroPedido}} confirmado', '<p>Olá {{nome}},</p><p>recebemos o seu pedido {{numeroPedido}}, no valor de R$ {{valorTotal}}. Avisaremos assim que o pagamento for aprovado.</p><p>Aeria Drones</p>', 1, true, 1, 'nome,numeroPedido,valorTotal', now()),
+('PAGAMENTO_APROVADO', 'Pagamento do pedido {{numeroPedido}} aprovado', '<p>Olá {{nome}},</p><p>o pagamento do pedido {{numeroPedido}} foi aprovado. Já estamos separando os itens.</p><p>Aeria Drones</p>', 1, true, 1, 'nome,numeroPedido,valorTotal', now()),
+('PEDIDO_ENVIADO', 'Pedido {{numeroPedido}} enviado', '<p>Olá {{nome}},</p><p>o pedido {{numeroPedido}} saiu para entrega. Acompanhe o rastreio na sua conta.</p><p>Aeria Drones</p>', 1, true, 1, 'nome,numeroPedido,valorTotal', now()),
+('RASTREIO_ATUALIZADO', 'Novidade na entrega do pedido {{numeroPedido}}', '<p>Olá {{nome}},</p><p>a entrega do pedido {{numeroPedido}} foi atualizada: {{evento}}.</p><p>Aeria Drones</p>', 1, true, 1, 'nome,numeroPedido,evento', now()),
+('DEVOLUCAO_ATUALIZADA', 'Sua solicitação de devolução foi atualizada', '<p>Olá {{nome}},</p><p>a devolução do pedido {{numeroPedido}} está agora como {{status}}.</p><p>Aeria Drones</p>', 1, true, 1, 'nome,numeroPedido,status', now()),
+('CHAMADO_RESPONDIDO', 'Resposta no chamado {{protocolo}}', '<p>Olá {{nome}},</p><p>respondemos o seu chamado {{protocolo}} ({{assunto}}). Veja a resposta na sua conta.</p><p>Aeria Drones</p>', 1, true, 1, 'nome,protocolo,assunto', now()),
+('CARRINHO_ABANDONADO', 'Seus itens ainda estão no carrinho', '<p>Olá {{nome}},</p><p>você deixou itens no carrinho. Eles continuam esperando por você na Aeria Drones.</p><p><small>Não quer mais receber este e-mail? <a href="{{linkDescadastro}}">Descadastre-se</a>.</small></p>', 1, true, 2, 'nome,linkDescadastro', now());

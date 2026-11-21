@@ -50,3 +50,13 @@ issue-armazenamento-s3
 issue-catalogo-complementos
 issue-21
 issue-61
+issue-32
+issue-43
+issue-44
+issue-dashboard-indicadores
+issue-41
+issue-38
+issue-40
+issue-39
+issue-empresas
+issue-42

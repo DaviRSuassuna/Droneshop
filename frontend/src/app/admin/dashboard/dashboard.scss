@@ -98,3 +98,22 @@
   margin: 0;
   place-content: center;
 }
+
+.tabela {
+  overflow-x: auto;
+}
+.tabela table {
+  min-width: 520px;
+}
+.pos {
+  color: var(--mute);
+  width: 36px;
+}
+.part {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.part .barra {
+  flex: 1;
+}

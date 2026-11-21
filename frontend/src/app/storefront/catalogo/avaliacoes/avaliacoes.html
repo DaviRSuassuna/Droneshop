@@ -1,0 +1,93 @@
+<section class="wrap sec" id="avaliacoes">
+  <div class="shead">
+    <div>
+      <span class="lbl">Avaliações</span>
+      <h2>Quem já voa com ele.</h2>
+    </div>
+    <button class="btn" type="button" aria-haspopup="dialog" (click)="abrir()">
+      Avaliar este {{ drone() ? 'drone' : 'produto' }}
+    </button>
+  </div>
+  <dialog class="dlg wide" #dlg aria-labelledby="dlgAvalT">
+    <form class="dlgbox" [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+      <div class="dlghead">
+        <div>
+          <span class="lbl">Só quem comprou pode avaliar</span>
+          <h2 id="dlgAvalT">Avaliar o <span class="avname">{{ nome() }}</span></h2>
+        </div>
+        <button class="iconbtn" type="button" aria-label="Fechar" (click)="fechar()">✕</button>
+      </div>
+      @if (logado()) {
+        <div class="fg">
+          <div class="f w6">
+            <label id="nota-rotulo">Sua nota <span class="req">*</span></label>
+            <div class="rate-in" role="radiogroup" aria-labelledby="nota-rotulo">
+              @for (n of notas; track n) {
+                <input type="radio" [id]="'n' + n" [value]="n" formControlName="nota" /><label
+                  [for]="'n' + n"
+                  [title]="n + ' de 5'"
+                  >★</label
+                >
+              }
+            </div>
+          </div>
+          <div class="f w6">
+            <label for="rc">Comentário</label>
+            <textarea
+              id="rc"
+              placeholder="Autonomia real, estabilidade com vento, qualidade da imagem, o que faltou"
+              formControlName="comentario"
+            ></textarea>
+          </div>
+        </div>
+        <p class="formnote">
+          Quem recebeu o pedido ganha o selo <b>compra verificada</b>. A avaliação aparece depois da
+          moderação.
+        </p>
+      } @else {
+        <p class="formnote"><a routerLink="/login">Entre</a> para avaliar.</p>
+      }
+      <p class="pwmsg" role="status">{{ aviso() }}</p>
+      <div class="dlgfoot">
+        <button class="btn" type="button" (click)="fechar()">Cancelar</button>
+        @if (logado()) {
+          <button class="btn p" type="submit">Publicar avaliação</button>
+        }
+      </div>
+    </form>
+  </dialog>
+  <div class="rev">
+    <div class="score">
+      <b>{{ media() }}</b>
+      <div class="stars">{{ estrelas(dados().media ?? 0) }}</div>
+      <div class="formnote">{{ dados().quantidade }} avaliação(ões)</div>
+      <div class="bars">
+        @for (b of barras(); track b.nota) {
+          <div>
+            {{ b.nota }}★<i [style.--w]="b.largura + '%'"></i><span>{{ b.quantidade }}</span>
+          </div>
+        }
+      </div>
+    </div>
+    <div class="rlist">
+      @for (a of dados().itens; track a.id) {
+        <div class="rcard">
+          <div class="h">
+            <span
+              ><b>{{ a.autor.nome }}</b>
+              @if (a.compraVerificada) {
+                · compra verificada
+              }</span
+            >
+          </div>
+          <div class="stars" [attr.aria-label]="a.nota + ' de 5'">{{ estrelas(a.nota) }}</div>
+          @if (a.comentario) {
+            <p>{{ a.comentario }}</p>
+          }
+        </div>
+      } @empty {
+        <p class="formnote">Ainda não há avaliações publicadas.</p>
+      }
+    </div>
+  </div>
+</section>

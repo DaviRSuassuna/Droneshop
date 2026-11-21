@@ -1,0 +1,32 @@
+<main>
+  <div class="wrap pagehead">
+    <div class="row">
+      <div>
+        <h1>Notificações por e-mail</h1>
+        <div class="sub">
+          E-mails do pedido, do pagamento e da entrega sempre chegam. Os demais só com a sua
+          autorização, e todos trazem um link para sair da lista.
+        </div>
+      </div>
+    </div>
+  </div>
+  <section class="wrap sec">
+    <div class="panel">
+      @for (p of preferencias(); track p.tipoNotificacao) {
+        <label class="check pref">
+          <input
+            class="ck"
+            type="checkbox"
+            [checked]="p.habilitado"
+            (change)="alternar(p, $any($event.target).checked)"
+          />
+          <span
+            ><b>{{ rotulo(p.tipoNotificacao).nome }}</b>
+            <span class="formnote">{{ rotulo(p.tipoNotificacao).descricao }}</span></span
+          >
+        </label>
+      }
+      <p class="formnote" role="status">{{ aviso() }}</p>
+    </div>
+  </section>
+</main>

@@ -21,6 +21,45 @@ export interface IndicadoresDashboard {
   pedidosPorStatus: ResumoStatusPedido[];
   estoqueBaixo: EstoqueBaixo[];
   ultimosPedidos: PedidoListagem[];
+  /** Indicadores da issue nova-dashboard-indicadores (#85). */
+  comparacao?: ComparacaoPeriodo;
+  vendasPorDia?: VendaDia[];
+  quantidadeAguardandoAcao?: number;
+  pedidosAguardandoAcao?: PedidoListagem[];
+  maisVendidos?: MaisVendido[];
+  receitaPorCategoria?: ReceitaCategoria[];
+}
+
+/** Período anterior de mesmo tamanho; variação em %, nula sem base. */
+export interface ComparacaoPeriodo {
+  periodoAnterior: { dataInicio: string; dataFim: string };
+  faturamento: number;
+  quantidadePedidos: number;
+  ticketMedio: number;
+  variacaoFaturamento: number | null;
+  variacaoPedidos: number | null;
+  variacaoTicketMedio: number | null;
+}
+
+export interface VendaDia {
+  data: string;
+  faturamento: number;
+  quantidadePedidos: number;
+  faturamentoAnterior: number;
+  quantidadePedidosAnterior: number;
+}
+
+export interface MaisVendido {
+  produto: { id: number; nome: string; sku: string };
+  unidades: number;
+  receita: number;
+  participacao: number;
+}
+
+export interface ReceitaCategoria {
+  categoria: string;
+  receita: number;
+  participacao: number;
 }
 
 /** Datas AAAA-MM-DD, inclusivas; sem datas, a API usa os últimos 30 dias. */

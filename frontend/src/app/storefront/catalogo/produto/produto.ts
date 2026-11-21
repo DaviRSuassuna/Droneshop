@@ -11,9 +11,12 @@ import {
   ProdutoLojaResumo,
 } from '../../../core/models/loja.model';
 import { LojaService } from '../../../core/services/loja.service';
+import { Comparar } from '../comparar/comparar';
 import { CarrinhoService } from '../../../core/services/carrinho.service';
 import { ProblemDetail } from '../../../core/models/problem.model';
 import { Pcard } from '../pcard/pcard';
+import { Perguntas } from '../perguntas/perguntas';
+import { Avaliacoes } from '../avaliacoes/avaliacoes';
 import { PrecoPipe } from '../preco.pipe';
 
 interface Linha {
@@ -29,7 +32,7 @@ const sim = (v: boolean | null | undefined, texto: string) => (v ? texto : null)
  */
 @Component({
   selector: 'app-produto',
-  imports: [RouterLink, Pcard, PrecoPipe],
+  imports: [RouterLink, Pcard, PrecoPipe, Comparar, Avaliacoes, Perguntas],
   templateUrl: './produto.html',
 })
 export class Produto {

@@ -196,6 +196,36 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'termos-buscados',
+        loadComponent: () =>
+          import('./admin/catalogo/termos-buscados/termos-buscados').then((m) => m.TermosBuscadosPage),
+      },
+      {
+        path: 'auditoria',
+        loadComponent: () =>
+          import('./admin/auditoria/auditoria').then((m) => m.AuditoriaPage),
+      },
+      {
+        path: 'chamados',
+        loadComponent: () =>
+          import('./admin/atendimento/chamados/chamados').then((m) => m.ChamadosPage),
+      },
+      {
+        path: 'moderacao',
+        loadComponent: () =>
+          import('./admin/atendimento/moderacao/moderacao').then((m) => m.ModeracaoPage),
+      },
+      {
+        path: 'leads-empresas',
+        loadComponent: () =>
+          import('./admin/atendimento/leads/leads-empresas').then((m) => m.LeadsEmpresasPage),
+      },
+      {
+        path: 'templates-email',
+        loadComponent: () =>
+          import('./admin/notificacoes/templates-email').then((m) => m.TemplatesEmailPage),
+      },
+      {
         path: 'configuracao',
         loadComponent: () =>
           import('./admin/configuracao/configuracao-loja').then((m) => m.ConfiguracaoLojaPage),
@@ -246,6 +276,26 @@ export const routes: Routes = [
         path: '',
         pathMatch: 'full',
         loadComponent: () => import('./storefront/home/home').then((m) => m.Home),
+      },
+      {
+        path: 'suporte',
+        loadComponent: () =>
+          import('./storefront/suporte/suporte').then((m) => m.Suporte),
+      },
+      {
+        path: 'empresas',
+        loadComponent: () =>
+          import('./storefront/empresas/empresas').then((m) => m.Empresas),
+      },
+      {
+        path: 'descadastro/:token',
+        loadComponent: () =>
+          import('./storefront/notificacoes/descadastro').then((m) => m.Descadastro),
+      },
+      {
+        path: 'busca',
+        loadComponent: () =>
+          import('./storefront/catalogo/busca/busca').then((m) => m.BuscaPage),
       },
       {
         path: 'drones',
@@ -308,6 +358,13 @@ export const routes: Routes = [
             path: 'drones',
             loadComponent: () =>
               import('./storefront/conta/drones/conta-drones').then((m) => m.ContaDrones),
+          },
+          {
+            path: 'notificacoes',
+            loadComponent: () =>
+              import('./storefront/notificacoes/conta-notificacoes').then(
+                (m) => m.ContaNotificacoes,
+              ),
           },
         ],
       },

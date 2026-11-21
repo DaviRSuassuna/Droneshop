@@ -101,6 +101,25 @@ const indicadoresDashboard = {
     },
   ],
   ultimosPedidos: [pedidoListagem],
+  comparacao: {
+    periodoAnterior: { dataInicio: '2026-08-25', dataFim: '2026-09-23' },
+    faturamento: 480.0,
+    quantidadePedidos: 1,
+    ticketMedio: 480.0,
+    variacaoFaturamento: 12.3,
+    variacaoPedidos: 0.0,
+    variacaoTicketMedio: 12.3,
+  },
+  vendasPorDia: [
+    { data: '2026-10-23', faturamento: 0, quantidadePedidos: 0, faturamentoAnterior: 480.0, quantidadePedidosAnterior: 1 },
+    { data: '2026-10-24', faturamento: 538.9, quantidadePedidos: 1, faturamentoAnterior: 0, quantidadePedidosAnterior: 0 },
+  ],
+  quantidadeAguardandoAcao: 1,
+  pedidosAguardandoAcao: [{ ...pedidoListagem, status: { id: 1, nome: 'PENDENTE' } }],
+  maisVendidos: [
+    { produto: { id: 1, nome: 'Bateria de teste', sku: 'BAT-5000' }, unidades: 1, receita: 499.0, participacao: 92.6 },
+  ],
+  receitaPorCategoria: [{ categoria: 'Baterias', receita: 499.0, participacao: 100.0 }],
 };
 
 /** Nomes de produto do protótipo: dado de exemplo nos cards da loja (#21). */
@@ -523,25 +542,7 @@ export const TELAS: Tela[] = [
         totalPages: 1,
       },
     },
-    // #18 atual não calcula série temporal, comparação ou ranking; fila atual só contém pendentes.
-    ignorar: [
-      'Exportar relatório',
-      'Vendas no período', // Card de série temporal, ausente no contrato atual.
-      'Receita',
-      'Pedidos',
-      'Período anterior',
-      'Pedidos aguardando ação',
-      'Mais vendidos',
-      'Ver produtos',
-      'Receita por categoria', // Card do protótipo 02 com dado novo: entra com a #85.
-    ],
-    tabelasSemApi: [
-      {
-        colunas: ['Produto', 'Unid.', 'Receita', 'Participação'],
-        motivo:
-          'Ranking de produtos mais vendidos não faz parte da API atual de indicadores (#18).',
-      },
-    ],
+    // Série, comparação, aguardando ação, mais vendidos e receita por categoria entraram com a #85.
   },
 
   // ------------------------------------------------------------ loja
@@ -724,6 +725,13 @@ export const TELAS: Tela[] = [
     area: 'loja',
   },
   { prototipo: 'conta-pedidos.html', rota: '/conta/pedidos', etiqueta: 'issue-29', area: 'loja' },
-  { prototipo: 'suporte.html', rota: '/suporte', etiqueta: 'issue-38', area: 'loja' },
+  {
+    prototipo: 'suporte.html',
+    rota: '/suporte',
+    etiqueta: 'issue-38',
+    area: 'loja',
+    // anexo no chamado não tem API (o contrato da #38 é só texto)
+    ignorar: ['Fotos ou vídeo'],
+  },
   { prototipo: 'empresas.html', rota: '/empresas', etiqueta: 'issue-empresas', area: 'loja' },
 ];

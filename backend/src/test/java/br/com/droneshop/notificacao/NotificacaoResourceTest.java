@@ -37,7 +37,8 @@ class NotificacaoResourceTest {
         given().when().get("/admin/templates-email").then().statusCode(200)
                 .body("codigo", hasItems("PEDIDO_CONFIRMADO", "PAGAMENTO_APROVADO", "PEDIDO_ENVIADO",
                         "RASTREIO_ATUALIZADO", "DEVOLUCAO_ATUALIZADA", "CHAMADO_RESPONDIDO",
-                        "VERIFICAR_EMAIL", "RECUPERAR_SENHA", "CARRINHO_ABANDONADO"));
+                        "CARRINHO_ABANDONADO"));
+        // D56: verificação de e-mail e recuperação de senha são enviadas pelo Keycloak, sem template aqui
     }
 
     @Test

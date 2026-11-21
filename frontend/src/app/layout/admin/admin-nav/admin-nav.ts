@@ -76,6 +76,11 @@ export class AdminNav {
               rota: '/admin/subcategorias',
               descricao: 'Dentro de cada categoria',
             },
+            {
+              rotulo: 'Termos buscados',
+              rota: '/admin/termos-buscados',
+              descricao: 'O que os clientes procuram',
+            },
           ],
         },
       ],
@@ -162,6 +167,31 @@ export class AdminNav {
               rotulo: 'Configuração da loja',
               rota: '/admin/configuracao',
               descricao: 'Parâmetros gerais',
+            },
+            {
+              rotulo: 'Auditoria',
+              rota: 'C:/Program Files/Git/admin/auditoria',
+              descricao: 'Log das ações do painel',
+            },
+            {
+              rotulo: 'Chamados',
+              rota: 'C:/Program Files/Git/admin/chamados',
+              descricao: 'Suporte ao cliente',
+            },
+            {
+              rotulo: 'Moderação',
+              rota: 'C:/Program Files/Git/admin/moderacao',
+              descricao: 'Perguntas e avaliações',
+            },
+            {
+              rotulo: 'Propostas de empresas',
+              rota: 'C:/Program Files/Git/admin/leads-empresas',
+              descricao: 'Vendas corporativas',
+            },
+            {
+              rotulo: 'E-mails',
+              rota: '/admin/templates-email',
+              descricao: 'Templates e envios',
             },
           ],
         },

@@ -1,0 +1,39 @@
+:host {
+  display: block;
+}
+.grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .grade {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.link {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+tr.on td {
+  background: var(--surf);
+}
+.acoes {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+.ok {
+  color: var(--ok);
+}
+.envios {
+  margin-top: 28px;
+}
+code {
+  margin-left: 4px;
+}

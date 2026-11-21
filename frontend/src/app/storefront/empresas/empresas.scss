@@ -1,0 +1,36 @@
+// Estilos da página empresas.html do protótipo 02 (bloco <style> da própria página),
+// sem os desenhos dos setores.
+.bhero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.bhero .grid-bg{position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:88px 88px;mask-image:radial-gradient(60% 80% at 70% 50%,#000 30%,transparent 80%);-webkit-mask-image:radial-gradient(60% 80% at 70% 50%,#000 30%,transparent 80%)}
+.bhero .wrap{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:20px;align-items:center;min-height:560px}
+.bhero h1{font:200 clamp(44px,5.6vw,80px)/1 var(--display);letter-spacing:-.02em;margin:16px 0 0}
+.bhero p{color:var(--ink2);max-width:46ch;margin:18px 0 0;font-size:16px}
+.bhero .acts{display:flex;gap:10px;margin-top:26px;flex-wrap:wrap}
+.bhero img{width:118%;max-width:none;margin-left:-6%;filter:drop-shadow(0 40px 40px rgba(0,0,0,.6))}
+.sectors{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.sector{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--bg2);transition:border-color .3s,transform .3s}
+.sector:hover{border-color:var(--line2)}
+.sector .art-box{aspect-ratio:3/2;background:radial-gradient(85% 95% at 50% 40%,#1E2125,#121417);border-bottom:1px solid var(--line);padding:14px 16px}
+.sector .body{padding:20px 22px 22px;display:flex;flex-direction:column;gap:8px;flex:1}
+.sector h3{margin:0;font:300 22px var(--display)}
+.sector p{margin:0;color:var(--mute);font-size:14px}
+.sector .meta{margin-top:auto;padding-top:14px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);font-size:13.5px;color:var(--ink2)}
+.sector .meta b{font-weight:500;color:var(--ink)}
+.incl{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line2)}
+.incl div{padding:22px 24px 24px 0;border-bottom:1px solid var(--line)}
+.incl div:not(:nth-child(3n+1)){padding-left:24px;border-left:1px solid var(--line)}
+.incl b{display:block;font:300 19px var(--display);margin:10px 0 4px}
+.incl span{color:var(--mute);font-size:14px}
+.incl .ico{color:var(--amber);width:22px;height:22px}
+.lead-form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:30px;align-items:start}
+.lead-form h2{font:300 clamp(28px,3vw,40px)/1.1 var(--display);margin:10px 0 12px}
+.lead-form p{color:var(--ink2)}
+.chan{display:grid;gap:12px;margin-top:22px;font-size:14px;color:var(--ink2)}
+.chan div{display:flex;gap:12px;align-items:center}
+.chan .ico{color:var(--mute)}
+@media (max-width:1000px){.bhero .wrap{grid-template-columns:minmax(0,1fr);padding-block:40px;min-height:0}.bhero img{width:100%;margin:0}.sectors{grid-template-columns:1fr}.incl{grid-template-columns:1fr}.incl div{padding-left:0!important;border-left:0!important}.lead-form{grid-template-columns:minmax(0,1fr)}}
+/* celular: o drone abre a página */
+@media (max-width:1000px){.bhero .wrap>img{order:-1}}
+
+@media (prefers-reduced-motion:no-preference){.sector:hover{transform:translateY(-3px)}}
+.f .erro{color:var(--amber);font-size:12.5px}

@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { Comparacao } from '../models/comparacao.model';
 import { environment } from '../../../environments/environment';
 import {
   CategoriaLoja,
@@ -43,6 +44,20 @@ export class LojaService {
       params = params.set(chave, `${valor}`.trim());
     }
     return this.http.get<PageResponse<ProdutoLojaItem>>(`${this.baseUrl}/produtos`, { params });
+  }
+
+  /** Barra de busca (#43): nome, SKU, marca e tags; a API grava o termo. */
+  buscar(q: string, page = 0, pageSize = 12): Observable<PageResponse<ProdutoLojaItem>> {
+    const params = new HttpParams().set('q', q.trim()).set('page', page).set('pageSize', pageSize);
+    return this.http.get<PageResponse<ProdutoLojaItem>>(`${this.baseUrl}/busca`, { params });
+  }
+
+  /** Comparação de 2 a 4 drones (#44): versões do grupo e/ou ids avulsos. */
+  comparar(grupo: string | null, ids: number[] = []): Observable<Comparacao> {
+    let params = new HttpParams();
+    if (grupo) params = params.set('grupo', grupo);
+    if (ids.length) params = params.set('ids', ids.join(','));
+    return this.http.get<Comparacao>(`${this.baseUrl}/comparar`, { params });
   }
 
   buscarFiltros(categoria?: string): Observable<FiltrosLoja> {

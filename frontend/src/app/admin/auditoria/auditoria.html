@@ -1,0 +1,92 @@
+<main class="gut">
+  <div class="ph">
+    <div>
+      <span class="lbl">Administração</span>
+      <h1>Auditoria</h1>
+      <div class="sub">Quem mudou o quê, quando e de onde. Dado pessoal aparece como ***.</div>
+    </div>
+  </div>
+  <div class="toolbar">
+    <label class="field-s grow"
+      ><input
+        type="search"
+        placeholder="Entidade (ex.: Produto, Pedido)"
+        aria-label="Entidade"
+        [value]="entidade()"
+        (input)="entidade.set($any($event.target).value)"
+        (keyup.enter)="carregar()"
+    /></label>
+    <label class="field-s"
+      ><input
+        type="search"
+        placeholder="Id do registro"
+        aria-label="Id do registro"
+        [value]="entidadeId()"
+        (input)="entidadeId.set($any($event.target).value)"
+        (keyup.enter)="carregar()"
+    /></label>
+    <select class="sel" aria-label="Ação" (change)="filtrarAcao($any($event.target).value)">
+      <option value="">Ação</option>
+      @for (a of acoes(); track a.id) {
+        <option [value]="a.id">{{ a.nome }}</option>
+      }
+    </select>
+    <button class="btn sm" type="button" (click)="carregar()">Buscar</button>
+  </div>
+  @if (erro(); as e) {
+    <div class="alerta" role="alert">{{ e }}</div>
+  } @else if (resultado(); as r) {
+    <div class="tw">
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Ação</th>
+            <th>Entidade</th>
+            <th>Campo</th>
+            <th>Antes</th>
+            <th>Depois</th>
+            <th>Autor</th>
+            <th>IP</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (l of r.items; track $index) {
+            <tr>
+              <td class="mono">{{ l.dataHora | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
+              <td data-l="Ação"><span class="chip">{{ l.acao.nome }}</span></td>
+              <td data-l="Entidade">{{ l.entidade }} {{ l.entidadeId ? '#' + l.entidadeId : '' }}</td>
+              <td data-l="Campo">{{ l.campo ?? '—' }}</td>
+              <td data-l="Antes" class="mono">{{ l.valorAnterior ?? '—' }}</td>
+              <td data-l="Depois" class="mono">{{ l.valorNovo ?? '—' }}</td>
+              <td data-l="Autor">{{ l.autor?.nome ?? '—' }}</td>
+              <td data-l="IP" class="mono">{{ l.ip ?? '—' }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8">Nenhum registro.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    @if (r.totalPages > 1) {
+      <div class="pager">
+        <span>Página {{ r.page + 1 }} de {{ r.totalPages }}</span>
+        <span>
+          <button class="btn sm" type="button" [disabled]="r.page === 0" (click)="carregar(r.page - 1)">
+            Anterior
+          </button>
+          <button
+            class="btn sm"
+            type="button"
+            [disabled]="r.page + 1 >= r.totalPages"
+            (click)="carregar(r.page + 1)"
+          >
+            Próxima
+          </button>
+        </span>
+      </div>
+    }
+  }
+</main>
