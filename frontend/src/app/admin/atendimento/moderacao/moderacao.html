@@ -6,6 +6,14 @@
       <div class="sub">Nada aparece na loja antes de aprovado (RN05).</div>
     </div>
   </div>
+  <div class="seg" role="group" aria-label="Conteúdo">
+    <button type="button" [attr.aria-pressed]="aba() === 'perguntas'" (click)="aba.set('perguntas')">
+      Perguntas
+    </button>
+    <button type="button" [attr.aria-pressed]="aba() === 'avaliacoes'" (click)="aba.set('avaliacoes')">
+      Avaliações
+    </button>
+  </div>
   <div class="toolbar">
     <select class="sel" aria-label="Status" (change)="filtrar($any($event.target).value)">
       <option value="">Status</option>
@@ -17,7 +25,52 @@
   @if (erro(); as e) {
     <div class="alerta" role="alert">{{ e }}</div>
   }
-  @if (perguntas(); as r) {
+  @if (aba() === 'avaliacoes') {
+    @if (avaliacoes(); as r) {
+      <div class="tw">
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Produto</th>
+              <th>Nota</th>
+              <th>Comentário</th>
+              <th>Status</th>
+              <th aria-label="Ações"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (a of r.items; track a.id) {
+              <tr>
+                <td class="mono">{{ a.dataCadastro | date: 'dd/MM/yyyy' }}</td>
+                <td data-l="Produto">{{ a.produto.nome }}</td>
+                <td data-l="Nota" [attr.aria-label]="a.nota + ' de 5'">{{ estrelas(a.nota) }}</td>
+                <td data-l="Comentário">
+                  {{ a.comentario ?? '—' }}
+                  @if (a.compraVerificada) {
+                    <span class="chip">compra verificada</span>
+                  }
+                </td>
+                <td data-l="Status"><span class="chip">{{ a.status.nome }}</span></td>
+                <td>
+                  @if (a.status.id !== STATUS.APROVADA) {
+                    <button class="btn sm" type="button" (click)="moderarAvaliacao(a.id, STATUS.APROVADA)">Aprovar</button>
+                  }
+                  @if (a.status.id !== STATUS.REJEITADA) {
+                    <button class="btn sm" type="button" (click)="moderarAvaliacao(a.id, STATUS.REJEITADA)">Rejeitar</button>
+                  }
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6">Nenhuma avaliação.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  } @else if (perguntas(); as r) {
     <div class="tw">
       <table>
         <thead>

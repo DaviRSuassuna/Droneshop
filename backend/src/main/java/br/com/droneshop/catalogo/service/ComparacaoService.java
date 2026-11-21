@@ -118,6 +118,10 @@ public class ComparacaoService {
 
     /** Nota média e total de avaliações aprovadas (#39); sem avaliações, nota nula. */
     Object[] nota(Long idProduto) {
-        return new Object[] { null, 0L };
+        Object[] r = em.createQuery("select avg(a.nota), count(a) from Avaliacao a where a.produto.id = :p"
+                + " and a.status = :s", Object[].class).setParameter("p", idProduto)
+                .setParameter("s", br.com.droneshop.atendimento.model.StatusModeracao.APROVADA).getSingleResult();
+        Double media = r[0] == null ? null : Math.round(((Number) r[0]).doubleValue() * 10) / 10.0;
+        return new Object[] { media, ((Number) r[1]).longValue() };
     }
 }

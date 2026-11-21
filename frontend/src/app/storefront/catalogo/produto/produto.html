@@ -133,6 +133,7 @@
     @if (p.tipo.nome !== 'ACESSORIO') {
       <app-comparar [idProduto]="p.id" [nome]="p.grupo?.nome || p.nome" [grupo]="p.grupo?.slug ?? null" />
     }
+    <app-avaliacoes [slug]="p.slug" [nome]="p.nome" [drone]="p.tipo.nome !== 'ACESSORIO'" />
     <app-perguntas [slug]="p.slug" />
     <section class="wrap sec" style="padding-bottom: 40px">
       <div class="shead">
