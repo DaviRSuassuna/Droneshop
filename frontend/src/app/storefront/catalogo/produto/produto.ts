@@ -12,6 +12,7 @@ import {
 import { LojaService } from '../../../core/services/loja.service';
 import { Comparar } from '../comparar/comparar';
 import { Pcard } from '../pcard/pcard';
+import { Perguntas } from '../perguntas/perguntas';
 import { PrecoPipe } from '../preco.pipe';
 
 interface Linha {
@@ -27,7 +28,7 @@ const sim = (v: boolean | null | undefined, texto: string) => (v ? texto : null)
  */
 @Component({
   selector: 'app-produto',
-  imports: [RouterLink, Pcard, PrecoPipe, Comparar],
+  imports: [RouterLink, Pcard, PrecoPipe, Comparar, Perguntas],
   templateUrl: './produto.html',
 })
 export class Produto {

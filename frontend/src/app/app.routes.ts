@@ -211,6 +211,11 @@ export const routes: Routes = [
           import('./admin/atendimento/chamados/chamados').then((m) => m.ChamadosPage),
       },
       {
+        path: 'moderacao',
+        loadComponent: () =>
+          import('./admin/atendimento/moderacao/moderacao').then((m) => m.ModeracaoPage),
+      },
+      {
         path: 'templates-email',
         loadComponent: () =>
           import('./admin/notificacoes/templates-email').then((m) => m.TemplatesEmailPage),

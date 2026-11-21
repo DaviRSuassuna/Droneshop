@@ -179,6 +179,11 @@ export class AdminNav {
               descricao: 'Suporte ao cliente',
             },
             {
+              rotulo: 'Moderação',
+              rota: 'C:/Program Files/Git/admin/moderacao',
+              descricao: 'Perguntas e avaliações',
+            },
+            {
               rotulo: 'E-mails',
               rota: '/admin/templates-email',
               descricao: 'Templates e envios',

@@ -55,3 +55,4 @@ issue-44
 issue-dashboard-indicadores
 issue-41
 issue-38
+issue-40
