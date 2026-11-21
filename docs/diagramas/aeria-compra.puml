@@ -32,10 +32,12 @@ class ItemCarrinho {
 }
 
 class ListaDesejos {
+  -tokenCompartilhamento: String
 }
 
 class ItemListaDesejos {
   -adicionadoEm: LocalDateTime
+  -precoAoAdicionar: BigDecimal
 }
 
 enum TipoDescontoCupom {
