@@ -1,0 +1,16 @@
+// E. Status "aguardando": a bolinha pulsa (o texto do status continua o mesmo).
+@keyframes adm-pulso {
+  0% {
+    box-shadow: 0 0 0 0 currentColor;
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 6px transparent;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  app-admin-layout .st.amber::before,
+  app-admin-layout .st.warn::before {
+    animation: adm-pulso 1.8s ease-out infinite;
+  }
+}

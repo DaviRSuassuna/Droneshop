@@ -1,0 +1,13 @@
+// Camada de efeitos do admin (protótipo 02: assets/admin-fx.css). Um bloco por arquivo, com a
+// letra do bloco do protótipo. Para desligar um efeito, tire a linha dele daqui: a tela continua
+// completa. Com "reduzir movimento" ligado, as entradas aparecem prontas e os laços param
+// (DESIGN.md, Movimento), ao contrário do protótipo, que religa tudo.
+// Fora desta issue: gráfico desenhado e lido no hover e receita por categoria (B, C e H: #85).
+@use 'largura';
+@use 'barra';
+@use 'entrada';
+@use 'medidores';
+@use 'aguardando';
+@use 'linhas';
+@use 'brilho';
+@use 'ao-vivo';

@@ -448,6 +448,7 @@ export const TELAS: Tela[] = [
       'Pedidos aguardando ação',
       'Mais vendidos',
       'Ver produtos',
+      'Receita por categoria', // Card do protótipo 02 com dado novo: entra com a #85.
     ],
     tabelasSemApi: [
       {
