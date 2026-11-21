@@ -9,7 +9,7 @@
 -- #87: foto principal dos produtos de exemplo (fotos do protótipo em midias-carga/, um arquivo por produto
 -- para a exclusão de uma mídia não apagar a foto de outro;
 -- copiadas para o armazenamento na subida por CargaMidias). tipo 1 = IMAGEM.
-insert into midia_produto (id_produto, tipo, url, principal, ordem, alt_text, data_cadastro)
+insert into midia_produto (id_produto, tipo, url, principal, ordem, alt_text, dataCadastro)
 select p.id, 1, '/midias/arquivos/' || f.arquivo, true, 1, p.nome, now()
 from produto p join (values
     ('DRN-FX2P-0042', '3f6c2a10-8b4e-4c1d-9a7e-0f1a2b3c4d01.webp'),
