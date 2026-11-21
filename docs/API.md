@@ -106,10 +106,10 @@ As telas citadas são as do [protótipo](design/README.md).
 | GET | `/auth/me` | quem está logado e perfis disponíveis | #4 | a fazer |
 | POST | `/auth/perfil-ativo` | escolher perfil cliente/admin no login | #20 | a fazer |
 | GET DELETE | `/conta/sessoes` · `/conta/sessoes/{id}` | sessões ativas e revogação | #20 | a fazer |
-| POST | `/clientes` | Criar conta | #19 | a fazer |
-| GET PUT | `/conta/perfil` | Perfil e dados | #19 | a fazer |
-| PUT | `/conta/senha` | Atualizar senha | #19 | a fazer |
-| GET POST · PUT DELETE · PATCH | `/conta/enderecos` · `/conta/enderecos/{id}` · `/conta/enderecos/{id}/padrao` | Endereços | #19 | a fazer |
+| GET · POST | `/tipos-pessoa` · `/clientes` | Tipos de pessoa e criar conta (público) | #19 | pronto |
+| GET PUT | `/conta/perfil` | Perfil e dados | #19 | pronto |
+| PUT | `/conta/senha` | Atualizar senha | #19 | pronto |
+| GET POST · PUT DELETE · PATCH | `/conta/enderecos` · `/conta/enderecos/{id}` · `/conta/enderecos/{id}/principal` | Endereços | #19 | pronto |
 | POST | `/auth/verificar-email/enviar` · `/auth/verificar-email` · `/auth/recuperar-senha` · `/auth/redefinir-senha` | tokens de e-mail e senha | #33 | a fazer |
 | POST | `/auth/google` | login com Google por ID token (D6, D37) | #47 | a fazer |
 | GET PUT · POST | `/conta/consentimentos` · `/conta/exclusao` | LGPD: consentimentos e exclusão/anonimização | #46 | a fazer |

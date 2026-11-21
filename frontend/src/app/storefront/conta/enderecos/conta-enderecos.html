@@ -1,0 +1,135 @@
+<main>
+  <div class="wrap account">
+    <!-- menu da conta: <app-account-menu> da casca da loja (#96), entra quando ela estiver na develop -->
+    <section>
+      <div class="crumb">
+        <a routerLink="/">Home</a><span>Minha conta</span><span>Endereços</span>
+      </div>
+      <div class="ahead">
+        <div>
+          <h1>Endereços</h1>
+          <div class="sub">{{ resumo() }}</div>
+        </div>
+        <div class="topo-acoes">
+          <button class="btn sm" type="button" (click)="novo()">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>Novo
+            endereço
+          </button>
+        </div>
+      </div>
+
+      @if (mensagem(); as m) {
+        <p class="pwmsg good" role="status">{{ m }}</p>
+      }
+
+      <div class="cards2">
+        @for (e of enderecos(); track e.id) {
+          <div class="acard" [class.def]="e.principal">
+            <div class="t">
+              <b>{{ e.apelido || 'Endereço' }}</b>
+              @if (e.principal) {
+                <span class="chip">PADRÃO</span>
+              }
+            </div>
+            <span
+              >{{ e.logradouro }}, {{ e.numero
+              }}{{ e.complemento ? ', ' + e.complemento : '' }}</span
+            >
+            <span
+              >{{ e.bairro }} · {{ e.municipio.nome }} / {{ e.municipio.estado.sigla }} ·
+              {{ e.cep | cep }}</span
+            >
+            <div class="acts">
+              <button type="button" (click)="editar(e)">Editar</button>
+              @if (!e.principal) {
+                <button type="button" (click)="tornarPrincipal(e)">Definir como padrão</button>
+              }
+              <button type="button" (click)="remover(e)">Remover</button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <dialog class="dlg wide" #dlgEnd aria-labelledby="dlgEndT">
+        <form class="dlgbox" [formGroup]="form" (ngSubmit)="salvar()">
+          <div class="dlghead">
+            <div>
+              <span class="lbl">Endereços</span>
+              <h2 id="dlgEndT">{{ editando() === null ? 'Novo endereço' : 'Editar endereço' }}</h2>
+            </div>
+            <button class="iconbtn" type="button" aria-label="Fechar" (click)="fechar()">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+          </div>
+          <div class="fg">
+            <div class="f w6">
+              <label for="ea">Apelido do endereço</label>
+              <input
+                id="ea"
+                type="text"
+                placeholder="Ex.: Fazenda, Escritório"
+                formControlName="apelido"
+              />
+            </div>
+            <div class="f w2">
+              <label for="ec">CEP <span class="req">*</span></label>
+              <input
+                id="ec"
+                type="text"
+                inputmode="numeric"
+                placeholder="00000-000"
+                formControlName="cep"
+                appMascara="cep"
+                (blur)="buscarCep()"
+              />
+              <span class="hint">Preenche rua, bairro e cidade</span>
+            </div>
+            <div class="f w4">
+              <label for="er">Rua / logradouro <span class="req">*</span></label>
+              <input id="er" type="text" formControlName="logradouro" />
+            </div>
+            <div class="f w2">
+              <label for="en">Número <span class="req">*</span></label>
+              <input id="en" type="text" formControlName="numero" />
+            </div>
+            <div class="f w4">
+              <label for="ecp">Complemento</label>
+              <input id="ecp" type="text" formControlName="complemento" />
+            </div>
+            <div class="f">
+              <label for="eb">Bairro <span class="req">*</span></label>
+              <input id="eb" type="text" formControlName="bairro" />
+            </div>
+            <div class="f w2">
+              <label for="eci">Cidade <span class="req">*</span></label>
+              <select id="eci" formControlName="idMunicipio">
+                <option [ngValue]="0" disabled>Selecione</option>
+                @for (m of municipios(); track m.id) {
+                  <option [ngValue]="m.id">{{ m.nome }}</option>
+                }
+              </select>
+            </div>
+            <div class="f w1">
+              <label for="ees">Estado <span class="req">*</span></label>
+              <select id="ees" formControlName="idEstado" (change)="aoMudarEstado()">
+                <option [ngValue]="0" disabled>UF</option>
+                @for (uf of estados(); track uf.id) {
+                  <option [ngValue]="uf.id">{{ uf.sigla }}</option>
+                }
+              </select>
+            </div>
+            <label class="check">
+              <input class="ck" type="checkbox" formControlName="principal" />Definir como endereço
+              padrão de entrega
+            </label>
+          </div>
+          <p class="pwmsg" [class.err]="erroDialogo()" role="status">{{ erroDialogo() }}</p>
+          <div class="dlgfoot">
+            <button class="btn" type="button" (click)="fechar()">Cancelar</button>
+            <button class="btn p" type="submit">Salvar endereço</button>
+          </div>
+        </form>
+      </dialog>
+    </section>
+  </div>
+</main>

@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { clienteAuthGuard } from './core/guards/cliente-auth.guard';
 import { adminAuthGuard } from './core/guards/admin-auth.guard';
 import { AdminLayout } from './layout/admin/admin-layout';
 import { TIPO_PRODUTO } from './core/models/produto.model';
@@ -96,23 +97,17 @@ export const routes: Routes = [
       {
         path: 'promocoes',
         loadComponent: () =>
-          import('./admin/promocoes/listagem/promocoes-listagem').then(
-            (m) => m.PromocoesListagem,
-          ),
+          import('./admin/promocoes/listagem/promocoes-listagem').then((m) => m.PromocoesListagem),
       },
       {
         path: 'promocoes/nova',
         loadComponent: () =>
-          import('./admin/promocoes/cadastro/promocao-cadastro').then(
-            (m) => m.PromocaoCadastro,
-          ),
+          import('./admin/promocoes/cadastro/promocao-cadastro').then((m) => m.PromocaoCadastro),
       },
       {
         path: 'promocoes/:id/editar',
         loadComponent: () =>
-          import('./admin/promocoes/cadastro/promocao-cadastro').then(
-            (m) => m.PromocaoCadastro,
-          ),
+          import('./admin/promocoes/cadastro/promocao-cadastro').then((m) => m.PromocaoCadastro),
       },
       {
         path: 'produtos',
@@ -141,25 +136,33 @@ export const routes: Routes = [
         path: 'drones/novo',
         data: { tipo: TIPO_PRODUTO.DRONE },
         loadComponent: () =>
-          import('./admin/catalogo/produtos/cadastro/produto-cadastro').then((m) => m.ProdutoCadastro),
+          import('./admin/catalogo/produtos/cadastro/produto-cadastro').then(
+            (m) => m.ProdutoCadastro,
+          ),
       },
       {
         path: 'drones/:id/editar',
         data: { tipo: TIPO_PRODUTO.DRONE },
         loadComponent: () =>
-          import('./admin/catalogo/produtos/cadastro/produto-cadastro').then((m) => m.ProdutoCadastro),
+          import('./admin/catalogo/produtos/cadastro/produto-cadastro').then(
+            (m) => m.ProdutoCadastro,
+          ),
       },
       {
         path: 'acessorios/novo',
         data: { tipo: TIPO_PRODUTO.ACESSORIO },
         loadComponent: () =>
-          import('./admin/catalogo/produtos/cadastro/produto-cadastro').then((m) => m.ProdutoCadastro),
+          import('./admin/catalogo/produtos/cadastro/produto-cadastro').then(
+            (m) => m.ProdutoCadastro,
+          ),
       },
       {
         path: 'acessorios/:id/editar',
         data: { tipo: TIPO_PRODUTO.ACESSORIO },
         loadComponent: () =>
-          import('./admin/catalogo/produtos/cadastro/produto-cadastro').then((m) => m.ProdutoCadastro),
+          import('./admin/catalogo/produtos/cadastro/produto-cadastro').then(
+            (m) => m.ProdutoCadastro,
+          ),
       },
       {
         path: 'grupos',
@@ -180,13 +183,17 @@ export const routes: Routes = [
         path: 'kits/novo',
         data: { tipo: TIPO_PRODUTO.KIT },
         loadComponent: () =>
-          import('./admin/catalogo/produtos/cadastro/produto-cadastro').then((m) => m.ProdutoCadastro),
+          import('./admin/catalogo/produtos/cadastro/produto-cadastro').then(
+            (m) => m.ProdutoCadastro,
+          ),
       },
       {
         path: 'kits/:id/editar',
         data: { tipo: TIPO_PRODUTO.KIT },
         loadComponent: () =>
-          import('./admin/catalogo/produtos/cadastro/produto-cadastro').then((m) => m.ProdutoCadastro),
+          import('./admin/catalogo/produtos/cadastro/produto-cadastro').then(
+            (m) => m.ProdutoCadastro,
+          ),
       },
       {
         path: 'configuracao',
@@ -230,10 +237,26 @@ export const routes: Routes = [
       },
     ],
   },
+  // loja do cliente (trilha A): Minha conta
+  {
+    path: 'conta',
+    canActivate: [clienteAuthGuard],
+    children: [
+      {
+        path: 'perfil',
+        loadComponent: () =>
+          import('./storefront/conta/perfil/conta-perfil').then((m) => m.ContaPerfil),
+      },
+      {
+        path: 'enderecos',
+        loadComponent: () =>
+          import('./storefront/conta/enderecos/conta-enderecos').then((m) => m.ContaEnderecos),
+      },
+    ],
+  },
   {
     path: 'entrar',
-    loadComponent: () =>
-      import('./storefront/auth/login/login').then((m) => m.Login),
+    loadComponent: () => import('./storefront/auth/login/login').then((m) => m.Login),
   },
   { path: '**', redirectTo: 'admin/marcas' },
 ];

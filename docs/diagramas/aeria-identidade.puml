@@ -42,16 +42,21 @@ class PerfilCliente {
   -telefone: String
 }
 
-class Endereco {
+class EnderecoCliente {
   -apelido: String
+  -principal: boolean
+}
+
+class Endereco <<Embeddable>> {
+  -cep: String
   -logradouro: String
   -numero: String
   -complemento: String
   -bairro: String
-  -cidade: String
-  -uf: String
-  -cep: String
-  -principal: boolean
+}
+
+class Municipio <<externo>> {
+  módulo endereco (D32)
 }
 
 enum PerfilAtivo {
@@ -89,7 +94,9 @@ Usuario "1" o-- "0..1" PerfilCliente
 Usuario "1" o-- "0..1" PerfilAdministrativo
 Usuario "1" *-- "*" SessaoUsuario
 Usuario "1" *-- "*" ConsentimentoLGPD
-PerfilCliente "1" *-- "*" Endereco
+PerfilCliente "1" *-- "*" EnderecoCliente
+EnderecoCliente *-- "1" Endereco
+Endereco --> "1" Municipio
 PerfilCliente "1" *-- "0..1" ListaDesejos
 PerfilCliente "1" *-- "*" CartaoSalvo
 

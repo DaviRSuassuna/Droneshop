@@ -1,0 +1,214 @@
+// Partes comuns das telas "Minha conta" (perfil e endereços), copiadas do site.css do protótipo 02.
+// O menu lateral (.side) é do account-menu (layout/storefront, trilha B) e não é estilizado aqui.
+// Sem animação de abrir diálogo: efeito de movimento só pela camada de efeitos (DESIGN.md, Movimento).
+
+.account {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  gap: 30px;
+  align-items: start;
+  padding-top: 30px;
+  padding-bottom: 80px;
+}
+.crumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--mute);
+}
+.crumb a:hover {
+  color: var(--ink);
+}
+.crumb span::before {
+  content: '/';
+  margin-right: 8px;
+  color: var(--faint);
+}
+.ahead {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.ahead h1 {
+  margin: 0;
+  font: 200 40px/1.05 var(--display);
+  letter-spacing: -0.02em;
+}
+.ahead .sub {
+  margin-top: 6px;
+  color: var(--mute);
+}
+.panel {
+  padding: 24px;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+.panel + .panel {
+  margin-top: 14px;
+}
+.ph2 {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.ph2 h2 {
+  margin: 0;
+  font: 300 22px var(--display);
+}
+.f.w1 {
+  grid-column: span 1;
+}
+.f.w2 {
+  grid-column: span 2;
+}
+.f.w4 {
+  grid-column: span 4;
+}
+.f .hint {
+  font-size: 12px;
+  color: var(--mute);
+}
+.chip {
+  display: inline-block;
+  padding: 3px 10px;
+  font: 500 10.5px var(--mono);
+  letter-spacing: 0.12em;
+  color: var(--amber);
+  white-space: nowrap;
+  border: 1px solid rgba(232, 168, 107, 0.35);
+  border-radius: 999px;
+}
+
+// diálogo
+.dlg {
+  width: 460px;
+  max-width: calc(100vw - 32px);
+  margin: auto;
+  padding: 0;
+  color: var(--ink);
+  background: none;
+  border: 0;
+}
+.dlg::backdrop {
+  background: rgba(5, 6, 8, 0.72);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.dlgbox {
+  padding: 22px 24px 20px;
+  background: var(--bg2);
+  border: 1px solid var(--line2);
+  border-radius: 18px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+}
+.dlghead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.dlghead h2 {
+  margin: 6px 0 0;
+  font: 300 26px var(--display);
+}
+.dlghead .iconbtn {
+  margin: -6px -8px 0 0;
+}
+.dlg:not(.wide) .fg {
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+.dlg .f.w6 {
+  grid-column: 1 / -1;
+}
+.dlg.wide {
+  width: 620px;
+}
+.dlg.wide .dlgbox {
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+}
+.dlgfoot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.pwmsg {
+  min-height: 1.2em;
+  margin: 0;
+  font-size: 13px;
+}
+.pwmsg.err {
+  color: var(--warn);
+}
+.pwmsg.good {
+  color: var(--ok);
+}
+
+@media (max-width: 1100px) {
+  .account {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .crumb {
+    gap: 0 8px;
+  }
+  .f,
+  .f.w2,
+  .f.w4,
+  .f.w6,
+  .check {
+    grid-column: span 2;
+  }
+  .f.w1 {
+    grid-column: span 1;
+  }
+  .panel {
+    padding: 18px;
+  }
+  .dlg,
+  .dlg.wide {
+    width: 100%;
+    max-width: 100%;
+    max-height: 92dvh;
+    margin: auto 0 0;
+  }
+  .dlgbox {
+    padding: 18px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+    border-bottom: 0;
+    border-radius: 20px 20px 0 0;
+  }
+  .dlgbox::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 4px;
+    margin: 0 auto 14px;
+    background: var(--line2);
+    border-radius: 2px;
+  }
+  .dlg.wide .dlgbox {
+    max-height: 92dvh;
+  }
+  .dlgfoot .btn {
+    flex: 1;
+    height: 48px;
+  }
+}

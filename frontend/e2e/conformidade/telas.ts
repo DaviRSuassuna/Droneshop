@@ -481,12 +481,35 @@ export const TELAS: Tela[] = [
     // Busca da loja (#43), recuperação de senha e acesso fictício não existem na tela atual.
     ignorar: ['Buscar', 'Esqueci minha senha', 'Continuar como Marina (protótipo)'],
   },
-  { prototipo: 'conta-perfil.html', rota: '/conta/perfil', etiqueta: 'issue-19', area: 'loja' },
+  {
+    prototipo: 'conta-perfil.html',
+    rota: '/conta/perfil',
+    etiqueta: 'issue-19',
+    area: 'loja',
+    api: {
+      '/conta/perfil': {
+        nome: 'Marina Ribeiro',
+        email: 'marina@exemplo.com',
+        tipoPessoa: { id: 1, nome: 'PF' },
+        documento: '52998224725',
+        telefone: '63988124477',
+      },
+    },
+    // sem campo no contrato da #19: nascimento e perfil de piloto (#83), novidades (#42), drones (#88)
+    ignorar: [
+      'Data de nascimento',
+      'Quero receber novidades, ofertas e conteúdos sobre voo',
+      'Perfil de piloto',
+      'Drones registrados',
+    ],
+  },
   {
     prototipo: 'conta-enderecos.html',
     rota: '/conta/enderecos',
     etiqueta: 'issue-19',
     area: 'loja',
+    // sem campo no contrato da #19 (o endereço do cliente não tem destinatário, telefone nem cobrança)
+    ignorar: ['Quem recebe', 'Telefone para entrega', 'Usar também como endereço de cobrança'],
   },
   {
     prototipo: 'conta-favoritos.html',
