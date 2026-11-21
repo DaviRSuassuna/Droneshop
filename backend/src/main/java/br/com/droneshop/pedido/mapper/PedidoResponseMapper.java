@@ -37,7 +37,9 @@ public final class PedidoResponseMapper {
                 cliente(p.getCliente()),
                 p.getValorTotal(),
                 p.getItens().size(),
-                p.getDataCadastro());
+                p.getDataCadastro(),
+                p.getPagamentos().stream().filter(pg -> pg.isVigente()).map(pg -> pg.getMetodo())
+                        .findFirst().orElse(null));
     }
 
     public static PedidoResponseDTO toResponse(Pedido p) {

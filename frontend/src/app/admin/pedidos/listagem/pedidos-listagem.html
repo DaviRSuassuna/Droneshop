@@ -9,22 +9,39 @@
     </div>
     <div class="acts">
       <button class="btn" type="button" (click)="exportarCsv()">Exportar</button>
+      <button
+        class="btn p"
+        type="button"
+        [disabled]="!selecionados().size || imprimindo()"
+        [attr.aria-label]="'Imprimir etiquetas dos ' + selecionados().size + ' pedidos selecionados'"
+        (click)="imprimirEtiquetas()"
+      >
+        Imprimir etiquetas
+      </button>
     </div>
   </div>
   <section class="kpis" aria-label="Resumo de todos os pedidos">
     <div class="kpi">
       <span class="lbl">A separar</span
-      ><strong class="num">{{ contagemDaAba(STATUS.PAGO) }}</strong>
+      ><strong class="num">{{ indicadores()?.aSeparar ?? 0 }}</strong>
       <div class="delta"><span>pedidos pagos</span></div>
     </div>
     <div class="kpi">
       <span class="lbl">Aguardando pagamento</span
-      ><strong class="num">{{ contagemDaAba(STATUS.PENDENTE) }}</strong>
+      ><strong class="num">{{ indicadores()?.aguardandoPagamento?.quantidade ?? 0 }}</strong>
+      <div class="delta">
+        <span>{{ moeda(indicadores()?.aguardandoPagamento?.valorEmAberto ?? 0) }} em aberto</span>
+      </div>
     </div>
     <div class="kpi">
       <span class="lbl">Em trânsito</span
-      ><strong class="num">{{ contagemDaAba(STATUS.ENVIADO) }}</strong>
-      <div class="delta"><span>pedidos enviados</span></div>
+      ><strong class="num">{{ indicadores()?.emTransito?.quantidade ?? 0 }}</strong>
+      <div class="delta"><span>{{ prazoMedio() }}</span></div>
+    </div>
+    <div class="kpi">
+      <span class="lbl">Devoluções abertas</span
+      ><strong class="num">{{ indicadores()?.devolucoesAbertas ?? 0 }}</strong>
+      <div class="delta"><span>em andamento</span></div>
     </div>
   </section>
   <nav class="stabs" aria-label="Status do pedido">
@@ -44,8 +61,8 @@
         <path d="m20 20-3.5-3.5" /></svg
       ><input
         type="search"
-        placeholder="Buscar por número ou cliente"
-        aria-label="Buscar por número ou cliente"
+        placeholder="Buscar por número, cliente ou CPF/CNPJ"
+        aria-label="Buscar por número, cliente ou CPF/CNPJ"
         [value]="termoBusca()"
         (input)="aoDigitarBusca($any($event.target).value)" /></label
     ><select
@@ -57,8 +74,22 @@
       @for (p of periodos; track p.dias) {
         <option [value]="p.dias">{{ p.rotulo }}</option>
       }
+    </select
+    ><select
+      class="sel"
+      aria-label="Pagamento"
+      [value]="metodo() ?? ''"
+      (change)="aoMudarMetodo($any($event.target).value)"
+    >
+      <option value="">Pagamento</option>
+      @for (m of metodos; track m.id) {
+        <option [value]="m.id">{{ m.rotulo }}</option>
+      }
     </select>
   </div>
+  @if (erroEtiquetas(); as m) {
+    <div class="alerta" role="alert">{{ m }}</div>
+  }
   @if (erro()) {
     <div class="alerta" role="alert">
       {{ erro() }}
@@ -71,6 +102,14 @@
       <table>
         <thead>
           <tr>
+            <th class="sel-col">
+              <input
+                type="checkbox"
+                aria-label="Selecionar todos os pedidos da página"
+                [checked]="todosSelecionados()"
+                (change)="alternarTodos($any($event.target).checked)"
+              />
+            </th>
             <th>Pedido</th>
             <th>Cliente</th>
             <th>Data</th>
@@ -84,6 +123,14 @@
         <tbody>
           @for (p of pedidos(); track p.id) {
             <tr>
+              <td class="sel-col">
+                <input
+                  type="checkbox"
+                  [attr.aria-label]="'Selecionar pedido ' + p.numero"
+                  [checked]="selecionados().has(p.id)"
+                  (change)="alternar(p.id)"
+                />
+              </td>
               <td data-l="Pedido" class="mono numero">
                 <a [routerLink]="['/admin/pedidos', p.id]">#{{ p.numero }}</a>
               </td>
@@ -95,7 +142,7 @@
               <td data-l="Total" class="r num valor">
                 <span>{{ moeda(p.valorTotal) }}</span>
               </td>
-              <td data-l="Pagamento">—</td>
+              <td data-l="Pagamento" class="pagamento">{{ rotuloMetodo(p.metodoPagamento?.id) }}</td>
               <td data-l="Status">
                 <span class="st" [style.color]="corStatus(p.status.id)"
                   ><span>{{ rotuloStatus(p.status.id) }}</span></span
@@ -112,7 +159,7 @@
             </tr>
           } @empty {
             <tr>
-              <td colspan="8">Nenhum pedido encontrado. Ajuste a busca, o período ou a aba.</td>
+              <td colspan="9">Nenhum pedido encontrado. Ajuste a busca, o período ou a aba.</td>
             </tr>
           }
         </tbody>

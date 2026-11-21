@@ -55,6 +55,16 @@ export interface PedidoListagem {
   valorTotal: number;
   quantidadeItens: number;
   dataCadastro: string;
+  /** Método do pagamento vigente (#89); null sem pagamento. */
+  metodoPagamento: StatusRef | null;
+}
+
+/** GET /pedidos/indicadores (#89): números de agora. */
+export interface IndicadoresPedidos {
+  aSeparar: number;
+  aguardandoPagamento: { quantidade: number; valorEmAberto: number };
+  emTransito: { quantidade: number; prazoMedioDias: number | null };
+  devolucoesAbertas: number;
 }
 
 export interface ItemPedido {
@@ -166,4 +176,6 @@ export interface FiltroPedidos {
   dataInicio?: string | null;
   dataFim?: string | null;
   busca?: string | null;
+  /** Método do pagamento vigente (#89). */
+  idMetodoPagamento?: number | null;
 }

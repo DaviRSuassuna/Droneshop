@@ -1,0 +1,177 @@
+<main>
+  <div class="wrap pagehead">
+    <div class="row">
+      <div>
+        <h1>Carrinho</h1>
+        <div class="sub">
+          {{ itens().length }} {{ itens().length === 1 ? 'produto' : 'produtos' }} ·
+          {{ quantidade() }} {{ quantidade() === 1 ? 'item' : 'itens' }}
+        </div>
+      </div>
+      <a class="tlink arrow" routerLink="/drones">Continuar comprando</a>
+    </div>
+  </div>
+  @if (!carregando() && !itens().length) {
+    <div class="wrap vazio">
+      <div class="panel">
+        <p>Seu carrinho está vazio.</p>
+        <a class="btn p" routerLink="/drones">Ver drones</a>
+      </div>
+    </div>
+  } @else {
+    <div class="wrap two">
+      <div>
+        <div class="panel">
+          <div class="items">
+            @for (i of itens(); track i.id) {
+              <div class="item">
+                <a
+                  class="stage"
+                  [routerLink]="['/produto', i.produto.slug]"
+                  [attr.aria-label]="i.produto.nome"
+                  ><svg class="ico" aria-hidden="true"><use href="#i-bag" /></svg
+                ></a>
+                <div>
+                  <h3>
+                    <a [routerLink]="['/produto', i.produto.slug]">{{ i.produto.nome }}</a>
+                  </h3>
+                  <div class="meta">{{ i.produto.sku }}</div>
+                  <div class="stock" [class.warn]="!i.disponivel">
+                    {{ i.disponivel ? 'Em estoque' : 'Sem estoque para esta quantidade' }}
+                  </div>
+                  <div class="acts">
+                    <div class="qty">
+                      <button
+                        type="button"
+                        aria-label="Diminuir"
+                        [disabled]="i.quantidade <= 1"
+                        (click)="mudarQuantidade(i, -1)"
+                      >
+                        −</button
+                      ><output>{{ i.quantidade }}</output
+                      ><button type="button" aria-label="Aumentar" (click)="mudarQuantidade(i, 1)">
+                        +
+                      </button>
+                    </div>
+                    <a href="#" (click)="$event.preventDefault(); remover(i)">Remover</a>
+                    <a href="#" (click)="$event.preventDefault(); salvarNosFavoritos(i)"
+                      >Salvar nos favoritos</a
+                    >
+                  </div>
+                </div>
+                <div class="price num">
+                  {{ reais(i.subtotal) }}<small>{{ reais(i.precoUnitario) }} cada</small>
+                </div>
+              </div>
+            }
+          </div>
+          <form class="coupon" (submit)="$event.preventDefault(); aplicarCupom()">
+            <input
+              aria-label="Cupom de desconto"
+              placeholder="Cupom de desconto"
+              [value]="cupom()"
+              (input)="cupom.set($any($event.target).value)"
+            />
+            <button class="btn sm" type="submit">Aplicar</button>
+          </form>
+          @if (carrinho()?.cupom; as c) {
+            <div class="formnote ok">
+              Cupom {{ c.codigo }} aplicado.
+              <a href="#" (click)="$event.preventDefault(); removerCupom()">Remover cupom</a>
+            </div>
+          }
+          @for (a of carrinho()?.avisos ?? []; track a) {
+            <div class="formnote">{{ a }}</div>
+          }
+          @if (erro(); as e) {
+            <p class="formnote erro" role="alert">{{ e }}</p>
+          }
+        </div>
+        <div class="panel">
+          <div class="ph2">
+            <h2>Frete</h2>
+            @if (cotacoes().length) {
+              <span class="tlink">CEP {{ cepFormatado() }}</span>
+            }
+          </div>
+          <form class="coupon" (submit)="$event.preventDefault(); cotar()">
+            <input
+              aria-label="CEP para o frete"
+              placeholder="CEP"
+              inputmode="numeric"
+              [value]="cepFormatado()"
+              (input)="alterarCep($any($event.target).value)"
+            />
+            <button class="btn sm" type="submit">Calcular</button>
+          </form>
+          @if (cotacoes().length) {
+            <div class="choices">
+              @for (c of cotacoes(); track c.modalidade.id) {
+                <label class="choice">
+                  <input
+                    type="radio"
+                    name="fr"
+                    [checked]="modalidade() === c.modalidade.id"
+                    (change)="modalidade.set(c.modalidade.id)"
+                  />
+                  <div>
+                    <b>{{ nome(c) }}</b><span>{{ prazo(c) }}</span>
+                  </div>
+                  @if (c.custo) {
+                    <span class="end">{{ reais(c.custo) }}</span>
+                  } @else {
+                    <span class="end free">Grátis</span>
+                  }
+                </label>
+              }
+            </div>
+          }
+        </div>
+      </div>
+      <aside class="sticky">
+        <div class="panel">
+          <div class="ph2"><h2>Resumo</h2></div>
+          <div class="sum">
+            <div>
+              <span>Subtotal ({{ quantidade() }} {{ quantidade() === 1 ? 'item' : 'itens' }})</span
+              ><span class="num">{{ reais(carrinho()?.subtotal ?? 0) }}</span>
+            </div>
+            @if (carrinho()?.cupom; as c) {
+              <div class="neg">
+                <span>Cupom {{ c.codigo }}</span
+                ><span class="num">− {{ reais(carrinho()?.desconto ?? 0) }}</span>
+              </div>
+            }
+            @if (cotacao(); as c) {
+              <div>
+                <span>Frete {{ nome(c).toLowerCase() }}</span
+                ><span class="num">{{ c.custo ? reais(c.custo) : 'Grátis' }}</span>
+              </div>
+            }
+            <div><span>Impostos</span><span>Inclusos</span></div>
+            <div class="tot">
+              <span>Total</span><b class="num">{{ reais(total()) }}</b>
+            </div>
+          </div>
+          <a class="btn p block finalizar" routerLink="/checkout">Finalizar compra</a>
+          <div class="trust-mini">
+            <div>
+              <svg class="ico"><use href="#i-lock" /></svg>Compra protegida. Dados do cartão
+              processados pelo adquirente, não armazenados pela Aeria.
+            </div>
+            <div>
+              <svg class="ico"><use href="#i-shield" /></svg>Garantia de 12 meses + 30 dias para
+              troca
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+    <div class="mbar">
+      <div>
+        <span>Total</span><b class="num">{{ reais(total()) }}</b>
+      </div>
+      <a class="btn p" routerLink="/checkout">Finalizar compra</a>
+    </div>
+  }
+</main>

@@ -77,7 +77,14 @@
             ><button type="button" aria-label="Aumentar" (click)="mudarQuantidade(1)">+</button>
           </div>
           @if (p.disponivel > 0) {
-            <a class="btn p" routerLink="/carrinho">Adicionar ao carrinho</a>
+            <button
+              class="btn p"
+              type="button"
+              [disabled]="adicionando()"
+              (click)="adicionarAoCarrinho(p.id)"
+            >
+              Adicionar ao carrinho
+            </button>
           } @else {
             <button class="btn p" type="button" disabled>Esgotado</button>
           }
@@ -85,6 +92,9 @@
             ><svg class="ico"><use href="#i-heart" /></svg
           ></a>
         </div>
+        @if (erroCarrinho(); as e) {
+          <p class="formnote" role="alert">{{ e }}</p>
+        }
         <div class="perks">
           <div>Garantia de {{ p.garantiaMeses }} meses + 30 dias para troca sem custo</div>
           @if (p.tipo.nome === 'DRONE') {

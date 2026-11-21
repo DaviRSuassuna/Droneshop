@@ -29,11 +29,11 @@ export class CarrinhoService {
 
   private guardar(c: Carrinho): void {
     try {
-      localStorage.setItem(CHAVE_CARRINHO, c.token);
+      if (c?.token) localStorage.setItem(CHAVE_CARRINHO, c.token);
     } catch {
       // sem armazenamento: o carrinho vale só nesta aba
     }
-    this.quantidade.set(c.itens.reduce((s, i) => s + i.quantidade, 0));
+    this.quantidade.set((c?.itens ?? []).reduce((s, i) => s + i.quantidade, 0));
   }
 
   esquecer(): void {
