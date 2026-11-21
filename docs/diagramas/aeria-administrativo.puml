@@ -139,6 +139,7 @@ package "Notificações" {
   class PreferenciaNotificacao {
     -tipoNotificacao: String
     -habilitado: boolean
+    -tokenDescadastro: String
   }
 }
 

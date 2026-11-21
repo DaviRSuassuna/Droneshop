@@ -288,6 +288,11 @@ export const routes: Routes = [
           import('./storefront/empresas/empresas').then((m) => m.Empresas),
       },
       {
+        path: 'descadastro/:token',
+        loadComponent: () =>
+          import('./storefront/notificacoes/descadastro').then((m) => m.Descadastro),
+      },
+      {
         path: 'busca',
         loadComponent: () =>
           import('./storefront/catalogo/busca/busca').then((m) => m.BuscaPage),
@@ -353,6 +358,13 @@ export const routes: Routes = [
             path: 'drones',
             loadComponent: () =>
               import('./storefront/conta/drones/conta-drones').then((m) => m.ContaDrones),
+          },
+          {
+            path: 'notificacoes',
+            loadComponent: () =>
+              import('./storefront/notificacoes/conta-notificacoes').then(
+                (m) => m.ContaNotificacoes,
+              ),
           },
         ],
       },

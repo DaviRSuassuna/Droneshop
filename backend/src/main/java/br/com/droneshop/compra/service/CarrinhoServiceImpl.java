@@ -32,6 +32,7 @@ import br.com.droneshop.exception.ValidationException;
 import br.com.droneshop.identidade.model.PerfilCliente;
 import br.com.droneshop.identidade.repository.PerfilClienteRepository;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
@@ -40,6 +41,9 @@ public class CarrinhoServiceImpl implements CarrinhoService {
 
     @ConfigProperty(name = "aeria.carrinho.abandono-horas", defaultValue = "24")
     int horasAbandono;
+
+    @Inject
+    Event<CarrinhoAbandonado> carrinhoAbandonado;
 
     @Inject
     CarrinhoRepository carrinhos;
@@ -288,6 +292,7 @@ public class CarrinhoServiceImpl implements CarrinhoService {
                 continue;
             reservas.liberar(c.getItens());
             c.setStatus(StatusCarrinho.ABANDONADO);
+            carrinhoAbandonado.fire(new CarrinhoAbandonado(c.getId()));
             n++;
         }
         return n;
