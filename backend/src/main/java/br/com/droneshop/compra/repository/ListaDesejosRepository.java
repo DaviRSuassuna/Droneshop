@@ -10,4 +10,8 @@ public class ListaDesejosRepository implements PanacheRepository<ListaDesejos> {
     public ListaDesejos doUsuario(Long idUsuario) {
         return find("cliente.usuario.id", idUsuario).firstResult();
     }
+
+    public ListaDesejos porToken(String token) {
+        return token == null ? null : find("tokenCompartilhamento", token).firstResult();
+    }
 }

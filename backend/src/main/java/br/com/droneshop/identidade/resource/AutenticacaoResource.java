@@ -5,11 +5,14 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import br.com.droneshop.compra.resource.CarrinhoResource;
 import br.com.droneshop.compra.service.CarrinhoService;
 import br.com.droneshop.exception.ResourceNotFoundException;
+import br.com.droneshop.identidade.dto.GoogleLoginRequestDTO;
+import br.com.droneshop.identidade.dto.Login2faRequestDTO;
 import br.com.droneshop.identidade.dto.LoginRequestDTO;
 import br.com.droneshop.identidade.dto.LoginResponseDTO;
 import br.com.droneshop.identidade.dto.PerfilAtivoRequestDTO;
 import br.com.droneshop.identidade.dto.UsuarioResponseDTO;
 import br.com.droneshop.identidade.service.AutenticacaoService;
+import br.com.droneshop.identidade.service.GoogleService;
 import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -35,13 +38,16 @@ public class AutenticacaoResource {
     @Inject
     CarrinhoService carrinhos;
 
+    @Inject
+    GoogleService google;
+
     @POST
     @Path("login")
     @Consumes(MediaType.APPLICATION_JSON)
     public LoginResponseDTO login(@Valid LoginRequestDTO dto, @HeaderParam(CarrinhoResource.HEADER) String carrinho) {
         LoginResponseDTO resposta = autenticacao.login(dto);
         // Login com o carrinho anônimo no header já vincula (RF17, #24)
-        if (carrinho != null && !carrinho.isBlank() && resposta.perfis().contains("CLIENTE")) {
+        if (carrinho != null && !carrinho.isBlank() && resposta.token() != null && resposta.perfis().contains("CLIENTE")) {
             try {
                 carrinhos.vincular(resposta.usuario().id(), carrinho);
             } catch (ResourceNotFoundException e) {
@@ -49,6 +55,21 @@ public class AutenticacaoResource {
             }
         }
         return resposta;
+    }
+
+    @POST
+    @Path("login/2fa")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public LoginResponseDTO login2fa(Login2faRequestDTO dto) {
+        return autenticacao.login2fa(dto == null ? null : dto.tokenTemporario(), dto == null ? null : dto.codigo());
+    }
+
+    // Login com Google: o ID token do Google Identity Services é validado no backend (#47, D37)
+    @POST
+    @Path("google")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public LoginResponseDTO google(@Valid GoogleLoginRequestDTO dto) {
+        return google.entrar(dto.idToken());
     }
 
     @GET

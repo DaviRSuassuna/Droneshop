@@ -10,5 +10,8 @@ public record LoginResponseDTO(
         UsuarioResponseDTO usuario,
         List<String> perfis,
         String perfilAtivo,
-        boolean escolherPerfil) {
+        boolean escolherPerfil,
+        // 2FA ligado (#45): token nulo; o código vai em /auth/login/2fa com o tokenTemporario
+        boolean precisa2fa,
+        String tokenTemporario) {
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import br.com.droneshop.identidade.model.PerfilCliente;
 import br.com.droneshop.model.DefaultEntity;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
@@ -25,6 +26,18 @@ public class ListaDesejos extends DefaultEntity {
     @OneToMany(mappedBy = "lista", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("adicionadoEm DESC, id DESC")
     private List<ItemListaDesejos> itens = new ArrayList<>();
+
+    // Link público só de leitura; nulo com o link desligado (#86)
+    @Column(name = "token_compartilhamento", unique = true, length = 36)
+    private String tokenCompartilhamento;
+
+    public String getTokenCompartilhamento() {
+        return tokenCompartilhamento;
+    }
+
+    public void setTokenCompartilhamento(String tokenCompartilhamento) {
+        this.tokenCompartilhamento = tokenCompartilhamento;
+    }
 
     public PerfilCliente getCliente() {
         return cliente;

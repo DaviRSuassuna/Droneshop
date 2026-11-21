@@ -5,9 +5,9 @@ import java.time.LocalDateTime;
 
 import br.com.droneshop.compra.model.ItemListaDesejos;
 
-/** precoAoAdicionar e caiuPreco: aviso de queda de preço (#86). */
+/** precoAoAdicionar e quedaDePreco: aviso de queda de preço (#86). */
 public record ItemListaDesejosResponseDTO(ProdutoResumoDTO produto, LocalDateTime adicionadoEm,
-        BigDecimal precoAoAdicionar, boolean caiuPreco) {
+        BigDecimal precoAoAdicionar, boolean quedaDePreco) {
 
     public static ItemListaDesejosResponseDTO de(ItemListaDesejos i) {
         BigDecimal antes = i.getPrecoAoAdicionar();

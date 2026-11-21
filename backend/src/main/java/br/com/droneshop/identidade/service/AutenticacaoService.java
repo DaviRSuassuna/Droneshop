@@ -4,10 +4,14 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Set;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import br.com.droneshop.administracao.service.DoisFatoresService;
 import br.com.droneshop.exception.ResourceNotFoundException;
 import br.com.droneshop.exception.ValidationException;
 import br.com.droneshop.identidade.dto.LoginRequestDTO;
@@ -31,6 +35,14 @@ public class AutenticacaoService {
 
     private static final Duration DURACAO_TOKEN = Duration.ofHours(1);
     private static final String ERRO_LOGIN = "E-mail ou senha inválidos.";
+    private static final String ERRO_2FA = "Código de verificação inválido.";
+    private static final Duration DURACAO_2FA = Duration.ofMinutes(5);
+
+    /** Login que espera o código do 2FA: o token temporário só vale aqui, por 5 minutos (#45). */
+    private record Pendente2fa(Long idUsuario, LocalDateTime expiraEm) {
+    }
+
+    private final Map<String, Pendente2fa> pendentes2fa = new ConcurrentHashMap<>();
 
     @ConfigProperty(name = "mp.jwt.verify.issuer")
     String emissor;
@@ -48,6 +60,27 @@ public class AutenticacaoService {
                 || !BcryptUtil.matches(dto.senha(), usuario.getSenhaHash())) {
             throw new NotAuthorizedException(ERRO_LOGIN, "Bearer");
         }
+        if (DoisFatoresService.exige(usuario)) {
+            String temporario = UUID.randomUUID().toString();
+            pendentes2fa.put(temporario, new Pendente2fa(usuario.getId(), LocalDateTime.now().plus(DURACAO_2FA)));
+            return new LoginResponseDTO(null, null, null, perfisDo(usuario), null, false, true, temporario);
+        }
+        return abrirSessao(usuario);
+    }
+
+    /** Segunda etapa do login com 2FA: token temporário + código TOTP (#45). */
+    @Transactional
+    public LoginResponseDTO login2fa(String tokenTemporario, String codigo) {
+        Pendente2fa p = tokenTemporario == null ? null : pendentes2fa.get(tokenTemporario);
+        if (p == null || p.expiraEm().isBefore(LocalDateTime.now())) {
+            if (tokenTemporario != null)
+                pendentes2fa.remove(tokenTemporario);
+            throw new NotAuthorizedException(ERRO_2FA, "Bearer");
+        }
+        Usuario usuario = usuarios.findById(p.idUsuario());
+        if (usuario == null || !usuario.isAtivo() || !DoisFatoresService.codigoValido(usuario, codigo))
+            throw new NotAuthorizedException(ERRO_2FA, "Bearer");
+        pendentes2fa.remove(tokenTemporario);
         return abrirSessao(usuario);
     }
 
@@ -132,7 +165,7 @@ public class AutenticacaoService {
                 .sign();
         return new LoginResponseDTO(token, sessao.getExpiraEm(),
                 new UsuarioResponseDTO(usuario.getId(), usuario.getNome(), usuario.getEmail(), perfis), perfis,
-                ativo == null ? null : ativo.getNome(), ativo == null);
+                ativo == null ? null : ativo.getNome(), ativo == null, false, null);
     }
 
     private List<String> perfisDo(Usuario usuario) {

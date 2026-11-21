@@ -18,8 +18,8 @@ public class PerfilCliente extends DefaultEntity {
     @Column(nullable = false, length = 150)
     private String nome;
 
-    // CPF ou CNPJ só com dígitos
-    @Column(nullable = false, unique = true, length = 14)
+    // CPF ou CNPJ só com dígitos; nulo só em conta excluída (anonimizada, #46)
+    @Column(unique = true, length = 14)
     private String documento;
 
     @Column(length = 11)

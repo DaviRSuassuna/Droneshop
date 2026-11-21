@@ -38,5 +38,8 @@ issue-34
 issue-35
 issue-meus-drones
 issue-37
+issue-45
+issue-46
+issue-favoritos-compartilhar
 
 # ---- trilha B: acrescente abaixo desta linha
