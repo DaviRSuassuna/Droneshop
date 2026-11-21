@@ -24,12 +24,14 @@ public final class KitCalculo {
                 .toList();
     }
 
-    // Fisico menos reservas ativas; as reservas chegam com a #23, ate la e o fisico.
+    // Fisico menos reservas ativas (#23).
     // No kit: o menor (disponivel do componente / quantidade exigida), arredondado para
     // baixo. Componente que nao esta ATIVO nao se vende, entao conta como zero.
     public static int disponivel(Produto p) {
-        if (!(p instanceof Kit kit))
-            return (p.getEstoqueFisico() == null) ? 0 : Math.max(p.getEstoqueFisico(), 0);
+        if (!(p instanceof Kit kit)) {
+            int fisico = (p.getEstoqueFisico() == null) ? 0 : p.getEstoqueFisico();
+            return Math.max(fisico - br.com.droneshop.estoque.service.ReservaSaldo.reservado(p), 0);
+        }
         List<Parte> partes = partes(kit);
         if (partes.isEmpty())
             return 0;
