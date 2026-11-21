@@ -9,19 +9,68 @@
       </p>
       <label class="bigsearch"
         ><input
+          #termo
           placeholder="Ex.: calibrar bússola, garantia"
-          aria-label="Buscar na central de ajuda" /><a class="btn sm p" href="#faq">Buscar</a></label
+          aria-label="Buscar na central de ajuda"
+          (keyup.enter)="buscar(termo.value)" /><a
+          class="btn sm p"
+          href="#faq"
+          (click)="buscar(termo.value)"
+          >Buscar</a
+        ></label
       >
       <div class="popular">
-        Mais buscados: <a routerLink="/conta/pedidos">Rastrear pedido</a><a href="#faq">Registro SISANT</a
-        ><a href="#faq">Troca em 30 dias</a>
+        Mais buscados: <a routerLink="/conta/pedidos">Rastrear pedido</a><a href="#faq" (click)="verTema(temas[3])">Registro SISANT</a
+        ><a href="#faq" (click)="verTema(temas[1])">Trocas e devoluções</a>
       </div>
     </div>
   </section>
-  <!-- temas e perguntas frequentes: #90 -->
+  <section class="wrap sec">
+    <div class="shead">
+      <div>
+        <span class="lbl">Temas</span>
+        <h2>Encontre pelo assunto</h2>
+      </div>
+      <a class="tlink arrow" routerLink="/conta/pedidos">Rastrear um pedido</a>
+    </div>
+    <div class="topics">
+      @for (t of temas; track t.id) {
+        <button
+          type="button"
+          class="topic"
+          [class.on]="temaAtivo()?.id === t.id"
+          [attr.aria-pressed]="temaAtivo()?.id === t.id"
+          (click)="verTema(t)"
+        >
+          <span class="pi" aria-hidden="true"></span>
+          <div>
+            <h3>{{ t.titulo }}</h3>
+            <p>{{ t.resumo(prazos()) }}</p>
+            <span class="tlink arrow">Ver artigos</span>
+          </div>
+        </button>
+      }
+    </div>
+  </section>
   <section class="wrap sec" id="faq" style="padding-bottom: 40px">
     <div class="faqwrap">
       <div>
+        <div class="shead">
+          <div>
+            <span class="lbl">{{ temaAtivo()?.titulo ?? 'Perguntas frequentes' }}</span>
+            <h2>Respostas rápidas</h2>
+          </div>
+        </div>
+        <div class="faq">
+          @for (q of perguntas(); track q.pergunta; let primeira = $first) {
+            <details class="q" [open]="primeira">
+              <summary>{{ q.pergunta }}</summary>
+              <p>{{ q.resposta(prazos()) }}</p>
+            </details>
+          } @empty {
+            <p class="formnote">Nada encontrado. Abra um chamado e a nossa equipe responde.</p>
+          }
+        </div>
         @if (logado()) {
           <div class="shead">
             <div>

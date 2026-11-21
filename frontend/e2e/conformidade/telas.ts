@@ -663,6 +663,13 @@ export const TELAS: Tela[] = [
     area: 'loja',
   },
   { prototipo: 'conta-pedidos.html', rota: '/conta/pedidos', etiqueta: 'issue-29', area: 'loja' },
-  { prototipo: 'suporte.html', rota: '/suporte', etiqueta: 'issue-38', area: 'loja' },
+  {
+    prototipo: 'suporte.html',
+    rota: '/suporte',
+    etiqueta: 'issue-38',
+    area: 'loja',
+    // anexo no chamado não tem API (o contrato da #38 é só texto)
+    ignorar: ['Fotos ou vídeo'],
+  },
   { prototipo: 'empresas.html', rota: '/empresas', etiqueta: 'issue-empresas', area: 'loja' },
 ];
