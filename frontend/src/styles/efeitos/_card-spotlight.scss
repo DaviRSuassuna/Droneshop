@@ -1,0 +1,36 @@
+// I. Card Spotlight: a borda do card acende onde o mouse está (protótipo: navbar-aceternity.css, bloco I).
+// A diretiva appCardSpotlight põe .ac-glow e atualiza --x e --y.
+:root.loja {
+  .ac-glow {
+    position: relative;
+  }
+  .ac-glow::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 3;
+    background: radial-gradient(
+      240px circle at var(--x, 50%) var(--y, 50%),
+      rgba(232, 168, 107, 0.9),
+      transparent 60%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+  .ac-glow:hover::before {
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ac-glow::before {
+      transition: none;
+    }
+  }
+}

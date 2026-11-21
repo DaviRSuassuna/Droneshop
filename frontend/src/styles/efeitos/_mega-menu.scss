@@ -1,0 +1,100 @@
+// D. Mega menu de Drones (protótipo: navbar-aceternity.css, bloco D). Some abaixo de 980px:
+// lá o link "Drones" leva direto à listagem.
+:root.loja {
+  .ac-mega {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 10px);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr) 1.3fr;
+    gap: 8px;
+    padding: 18px;
+    background: rgba(22, 24, 27, 0.97);
+    backdrop-filter: blur(18px);
+    border: 1px solid var(--line2);
+    border-radius: 16px;
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: 0.25s cubic-bezier(0.2, 0.7, 0.2, 1);
+    z-index: 30;
+  }
+  .ac-mega.on {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+  .ac-mega .col {
+    display: grid;
+    gap: 2px;
+    align-content: start;
+  }
+  .ac-mega .col .lbl {
+    margin: 0 10px 8px;
+  }
+  .ac-mega .col a {
+    display: grid;
+    gap: 2px;
+    padding: 10px;
+    border-radius: 10px;
+    color: var(--ink);
+    font: 400 14px var(--body);
+  }
+  .ac-mega .col a small {
+    color: var(--mute);
+    font-size: 12px;
+  }
+  .ac-mega .col a:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  .ac-mega .feat {
+    position: relative;
+    border-radius: 12px;
+    padding: 16px;
+    background: radial-gradient(90% 90% at 70% 30%, #24272c, #141619);
+    border: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 200px;
+    overflow: hidden;
+    color: var(--ink);
+  }
+  .ac-mega .feat img {
+    position: absolute;
+    top: 6px;
+    right: -12%;
+    width: 95%;
+    filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.6));
+    transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .ac-mega .feat:hover img {
+    transform: translateY(-6px) rotate(-2deg);
+  }
+  .ac-mega .feat .lbl {
+    color: var(--amber);
+  }
+  .ac-mega .feat b {
+    font: 300 20px var(--display);
+  }
+  .ac-mega .feat span:not(.lbl) {
+    font-size: 12.5px;
+    color: var(--mute);
+  }
+  @media (max-width: 980px) {
+    .ac-mega {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ac-mega,
+    .ac-mega .feat img {
+      transition: none;
+    }
+    .ac-mega .feat:hover img {
+      transform: none;
+    }
+  }
+}

@@ -1,0 +1,141 @@
+<svg width="0" height="0" style="position: absolute" aria-hidden="true">
+  <symbol id="i-search" viewBox="0 0 24 24">
+    <circle cx="11" cy="11" r="7" />
+    <path d="m20 20-3.5-3.5" />
+  </symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24">
+    <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z" />
+  </symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24">
+    <path d="M5 8h14l-1 13H6L5 8Z" />
+    <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+  </symbol>
+  <symbol id="i-user" viewBox="0 0 24 24">
+    <circle cx="12" cy="8" r="4" />
+    <path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" />
+  </symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" /></symbol>
+</svg>
+<div class="navwrap wrap" [class.ac-small]="encolhido()" [class.ac-hide]="escondido()">
+  <div class="nav">
+    <button
+      class="iconbtn menu"
+      type="button"
+      (click)="alternarMenu()"
+      [attr.aria-expanded]="menuAberto()"
+      aria-controls="links"
+      aria-label="Menu"
+    >
+      <svg class="ico"><use href="#i-menu" /></svg>
+    </button>
+    <a class="mark" routerLink="/">AERIA</a>
+    <nav class="links" [class.open]="menuAberto()" id="links" aria-label="Principal">
+      <a
+        routerLink="/drones"
+        routerLinkActive
+        ariaCurrentWhenActive="page"
+        aria-haspopup="true"
+        [attr.aria-expanded]="megaAberto()"
+        aria-controls="mega-drones"
+        (mouseenter)="abrirMega()"
+        (mouseleave)="fecharMega()"
+        (focus)="abrirMega()"
+        >Drones</a
+      ><a routerLink="/acessorios" routerLinkActive ariaCurrentWhenActive="page">Acessórios</a
+      ><a routerLink="/empresas" routerLinkActive ariaCurrentWhenActive="page">Empresas</a
+      ><a routerLink="/suporte" routerLinkActive ariaCurrentWhenActive="page">Suporte</a
+      ><a class="hot" routerLink="/ofertas" routerLinkActive ariaCurrentWhenActive="page"
+        >Ofertas</a
+      >
+    </nav>
+    <div class="right">
+      <form class="search" role="search" (submit)="buscar($event, buscaDesktop.value)">
+        <svg class="ico" aria-hidden="true"><use href="#i-search" /></svg>
+        <input
+          #buscaDesktop
+          type="search"
+          name="q"
+          placeholder="Buscar drones e acessórios"
+          aria-label="Buscar drones e acessórios"
+        /><kbd aria-hidden="true">/</kbd>
+      </form>
+      <button
+        class="iconbtn sbtn"
+        type="button"
+        [attr.aria-expanded]="buscaAberta()"
+        aria-controls="msearch"
+        aria-label="Buscar"
+        (click)="alternarBusca(buscaCelular)"
+      >
+        <svg class="ico"><use href="#i-search" /></svg>
+      </button>
+      <a class="iconbtn" routerLink="/conta/favoritos" aria-label="Favoritos"
+        ><svg class="ico"><use href="#i-heart" /></svg
+      ></a>
+      <a class="iconbtn" routerLink="/carrinho" aria-label="Carrinho"
+        ><svg class="ico"><use href="#i-bag" /></svg
+      ></a>
+      <a
+        class="iconbtn acct"
+        routerLink="/conta/perfil"
+        aria-label="Minha conta"
+        (click)="abrirConta($event)"
+        ><svg class="ico"><use href="#i-user" /></svg><span class="acct-t">Conta</span></a
+      >
+    </div>
+    <form
+      class="msearch"
+      id="msearch"
+      role="search"
+      [class.open]="buscaAberta()"
+      (submit)="buscar($event, buscaCelular.value)"
+    >
+      <svg class="ico" aria-hidden="true"><use href="#i-search" /></svg>
+      <input
+        #buscaCelular
+        type="search"
+        name="q"
+        placeholder="Buscar na loja"
+        aria-label="Buscar drones e acessórios"
+      />
+      <button class="btn sm p" type="submit">Buscar</button>
+    </form>
+
+    <div
+      #mega
+      class="ac-mega"
+      id="mega-drones"
+      [class.on]="megaAberto()"
+      (mouseenter)="abrirMega()"
+      (mouseleave)="fecharMega()"
+      (focusin)="abrirMega()"
+      (focusout)="aoSairFocoMega($event, mega)"
+    >
+      <div class="col">
+        <span class="lbl">Por uso</span>
+        <a routerLink="/drones">Cinema e criação<small>Câmera 4K/6K, gimbal 3 eixos</small></a>
+        <a routerLink="/drones">Viagem e iniciantes<small>Até 249 g, sem registro</small></a>
+        <a routerLink="/empresas">Mapeamento e agro<small>RTK, fotogrametria</small></a>
+      </div>
+      <div class="col">
+        <span class="lbl">Por marca</span>
+        <a routerLink="/drones">Aerion<small>Linha Falcon</small></a>
+        <a routerLink="/drones">Skyline<small>Linha Nimbus</small></a>
+        <a routerLink="/drones">Heron<small>Linha Survey</small></a>
+        <a routerLink="/drones">Vortex<small>FPV e corrida</small></a>
+      </div>
+      <div class="col">
+        <span class="lbl">Atalhos</span>
+        <a routerLink="/ofertas">Ofertas da semana<small>Até 15% off</small></a>
+        <a routerLink="/acessorios">Kits Fly More<small>Baterias, hélices, case</small></a>
+        <a routerLink="/suporte">Ajuda para escolher<small>Fale com um piloto</small></a>
+      </div>
+      <a class="feat" routerLink="/produto/falcon-x2-pro"
+        ><img ngSrc="/images/falcon.webp" width="1400" height="687" alt="" /><span class="lbl"
+          >Lançamento</span
+        ><b>Falcon X2 Pro</b><span>4K 60 · 43 min · a partir de R$ 12.499</span></a
+      >
+    </div>
+  </div>
+</div>
+<app-conta-folha (sair)="sairDaConta()" />

@@ -1,0 +1,38 @@
+// 4. Flow Button: brilho que percorre o botão principal no hover (protótipo: spell.css, bloco 4).
+:root.loja {
+  .btn.p {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .btn.p::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(
+        110deg,
+        transparent 30%,
+        rgba(232, 168, 107, 0.55) 50%,
+        transparent 70%
+      )
+      0 0 / 250% 100% no-repeat;
+    background-position: 160% 0;
+    transition: background-position 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .btn.p:hover::before {
+    background-position: -60% 0;
+  }
+  .btn.p:active {
+    transform: scale(0.97);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .btn.p::before {
+      transition: none;
+    }
+    .btn.p:active {
+      transform: none;
+    }
+  }
+}

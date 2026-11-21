@@ -1,0 +1,30 @@
+// 8. Spinner: botão que processa mostra carregamento (protótipo: spell.css, bloco 8).
+// A diretiva appSpinner põe .sp-busy no botão e o .sp-spin antes do texto.
+// Com "reduzir movimento" o círculo fica parado; o texto "Processando…" continua.
+:root.loja {
+  .sp-spin {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    display: inline-block;
+    vertical-align: -2px;
+    margin-right: 8px;
+    animation: sp-rot 0.7s linear infinite;
+  }
+  .sp-busy {
+    pointer-events: none;
+    opacity: 0.85;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sp-spin {
+      animation: none;
+    }
+  }
+}
+@keyframes sp-rot {
+  to {
+    transform: rotate(360deg);
+  }
+}

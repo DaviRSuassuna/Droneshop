@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
 import { adminAuthGuard } from './core/guards/admin-auth.guard';
 import { AdminLayout } from './layout/admin/admin-layout';
+import { StorefrontLayout } from './layout/storefront/storefront-layout';
 import { TIPO_PRODUTO } from './core/models/produto.model';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'admin/marcas', pathMatch: 'full' },
   {
     path: 'admin',
     component: AdminLayout,
@@ -235,5 +235,17 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./storefront/auth/login/login').then((m) => m.Login),
   },
-  { path: '**', redirectTo: 'admin/marcas' },
+  // Loja do catálogo (trilha B): telas dentro da casca da loja (#96)
+  {
+    path: '',
+    component: StorefrontLayout,
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () => import('./storefront/home/home').then((m) => m.Home),
+      },
+    ],
+  },
+  { path: '**', redirectTo: '' },
 ];

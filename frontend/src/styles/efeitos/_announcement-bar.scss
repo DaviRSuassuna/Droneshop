@@ -1,0 +1,80 @@
+// A. Announcement Bar: faixa de promoção acima do menu (protótipo: navbar-aceternity.css, bloco A).
+// Só cor e posição; não anima. Componente: layout/storefront/faixa-promocao.
+:root.loja {
+  .ac-ann {
+    position: relative;
+    z-index: 21;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    padding: 9px 44px;
+    font: 400 13px var(--body);
+    color: var(--ink2);
+    background: linear-gradient(
+      90deg,
+      rgba(232, 168, 107, 0.08),
+      rgba(232, 168, 107, 0.18),
+      rgba(232, 168, 107, 0.08)
+    );
+    border-bottom: 1px solid rgba(232, 168, 107, 0.22);
+  }
+  .ac-ann b {
+    color: var(--amber);
+    font-weight: 500;
+  }
+  .ac-ann code {
+    font: 500 12px var(--mono);
+    color: var(--ink);
+    padding: 2px 8px;
+    border: 1px dashed rgba(232, 168, 107, 0.5);
+    border-radius: 6px;
+  }
+  .ac-ann a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  // "×" com área de toque de 40px
+  .ac-ann button {
+    all: unset;
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    color: var(--mute);
+    font-size: 18px;
+    line-height: 1;
+  }
+  .ac-ann button:hover {
+    color: var(--ink);
+  }
+  .ac-ann button:focus-visible {
+    outline: 2px solid var(--amber);
+    outline-offset: -4px;
+    border-radius: 8px;
+  }
+  // celular: uma linha só, com o essencial
+  @media (max-width: 640px) {
+    .ac-ann {
+      justify-content: flex-start;
+      padding: 8px 44px 8px 16px;
+      font-size: 12.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .ac-ann > span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .ac-ann .ac-ann-x {
+      display: none;
+    }
+  }
+}
