@@ -12,6 +12,8 @@ export interface ContaDTO {
   idTipoPessoa: number;
   documento: string;
   telefone: string;
+  /** Termos e política na versão vigente de GET /loja/termos (#46). */
+  consentimentos?: { tipo: string; versao: string }[];
 }
 
 /** Resposta do POST /clientes; id é o do usuário (o mesmo de /auth/me). */

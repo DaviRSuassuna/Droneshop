@@ -77,20 +77,71 @@ export interface EnderecoPedido {
   cep: string;
 }
 
-/** GET /pedidos/{id}. pagamentos e entrega chegam vazios até as issues de pagamento e entrega. */
+/** Entrega com custo e prazo congelados (#30, RN07). */
+export interface EntregaPedido {
+  modalidade: StatusRef;
+  origemCalculo: StatusRef;
+  transportadora: string | null;
+  codigoServicoTransportadora: string | null;
+  custoCongelado: number;
+  prazoCongeladoDias: number;
+  codigoRastreio: string | null;
+}
+
+/** Desconto do pedido por origem, cupom ou promoção (#29, RN13). */
+export interface DescontoPedido {
+  origem: StatusRef;
+  descricao: string;
+  valor: number;
+}
+
+/** Pagamento dentro do pedido (#27); só um é vigente. */
+export interface PagamentoPedido {
+  id: number;
+  metodo: StatusRef;
+  status: StatusRef;
+  valor: number;
+  vigente: boolean;
+  gatewayTransacaoId: string | null;
+  dataCadastro: string;
+}
+
+/** GET /pedidos/{id} e GET /conta/pedidos/{id}. valorTotal = valorProdutos + valorFrete - valorDesconto (RN16). */
 export interface Pedido {
   id: number;
   numero: string;
   status: StatusRef;
   cliente: ClientePedido;
+  valorProdutos: number;
   valorTotal: number;
   valorFrete: number;
   valorDesconto: number;
   itens: ItemPedido[];
   enderecoEntrega: EnderecoPedido | null;
-  pagamentos: unknown[];
-  entrega: unknown | null;
+  descontos: DescontoPedido[];
+  metodoPagamento: StatusRef | null;
+  pagamentos: PagamentoPedido[];
+  entrega: EntregaPedido | null;
   dataCadastro?: string;
+}
+
+/** GET /conta/pedidos/{id}/rastreio (#31). */
+export interface Rastreio {
+  codigoRastreio: string | null;
+  transportadora: string | null;
+  eventos: { id: number; descricao: string; localizacao: string | null; dataHora: string }[];
+}
+
+/** NF-e simulada (#35). */
+export interface NotaFiscal {
+  id: number;
+  tipoOrigem: StatusRef;
+  numero: string;
+  serie: string;
+  chaveAcesso: string;
+  xmlUrl: string;
+  danfeUrl: string;
+  dataEmissao: string;
 }
 
 /** Item de GET /pedidos/{id}/historico, em ordem cronológica. autor só quando a origem é MANUAL. */

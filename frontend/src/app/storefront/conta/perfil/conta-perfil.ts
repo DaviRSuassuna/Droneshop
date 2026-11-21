@@ -5,7 +5,8 @@ import { ContaSessao } from '../conta-sessao';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, ElementRef, OnInit, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { ContaService } from '../../../core/services/conta.service';
 import { PerfilCliente } from '../../../core/models/cliente.model';
 import { ProblemDetail } from '../../../core/models/problem.model';
 import { ClienteService } from '../../../core/services/cliente.service';
@@ -27,6 +28,8 @@ export class ContaPerfil implements OnInit {
   private readonly dialogoSenha = viewChild.required<ElementRef<HTMLDialogElement>>('dlgSenha');
 
   private readonly auth = inject(AuthService);
+  private readonly conta = inject(ContaService);
+  private readonly router = inject(Router);
   readonly perfil = signal<PerfilCliente | null>(null);
   readonly sessoes = signal<SessaoUsuario[]>([]);
   readonly salvando = signal(false);
@@ -87,6 +90,21 @@ export class ContaPerfil implements OnInit {
     this.auth
       .revogarSessao(id)
       .subscribe(() => this.sessoes.update((lista) => lista.filter((s) => s.id !== id)));
+  }
+
+  readonly excluindo = signal(false);
+  readonly senhaExclusao = signal('');
+  readonly erroExclusao = signal<string | null>(null);
+
+  /** Exclusão com anonimização (#46): depois, a sessão acaba e o login antigo deixa de valer. */
+  excluirConta(): void {
+    this.conta.excluirConta(this.senhaExclusao()).subscribe({
+      next: () => {
+        this.auth.limparSessao();
+        void this.router.navigateByUrl('/');
+      },
+      error: (e: HttpErrorResponse) => this.erroExclusao.set(this.textoErro(e)),
+    });
   }
 
   abrirSenha(): void {

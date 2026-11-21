@@ -51,7 +51,12 @@ describe('AuthService', () => {
     req.flush({
       token: accessToken,
       expiraEm: '2026-10-15T06:00:00',
-      usuario: { id: 1, nome: 'Administrador', email: 'admin@aeria.com.br', perfis: ['ADMINISTRATIVO'] },
+      usuario: {
+        id: 1,
+        nome: 'Administrador',
+        email: 'admin@aeria.com.br',
+        perfis: ['ADMINISTRATIVO'],
+      },
       perfis: ['ADMINISTRATIVO'],
     });
 
@@ -113,5 +118,23 @@ describe('AuthService', () => {
     const del = http!.expectOne(`${environment.apiUrl}/conta/sessoes/7`);
     expect(del.request.method).toBe('DELETE');
     del.flush(null);
+  });
+
+  it('segunda etapa do 2FA com POST /auth/login/2fa (#45)', () => {
+    const novo = token(Math.floor(Date.now() / 1000) + 3600);
+    service.login2fa('temp', '123456', false).subscribe();
+    const req = http!.expectOne(`${environment.apiUrl}/auth/login/2fa`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ tokenTemporario: 'temp', codigo: '123456' });
+    req.flush({ token: novo, perfis: [], perfilAtivo: 'ADMINISTRATIVO', escolherPerfil: false });
+    expect(sessionStorage.getItem(CHAVE_TOKEN)).toBe(novo);
+  });
+
+  it('login com Google manda o ID token (#47)', () => {
+    service.google('id-token').subscribe();
+    const req = http!.expectOne(`${environment.apiUrl}/auth/google`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ idToken: 'id-token' });
+    req.flush({ token: null, perfis: [], perfilAtivo: null, escolherPerfil: false });
   });
 });

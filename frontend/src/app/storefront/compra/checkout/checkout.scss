@@ -1,0 +1,24 @@
+// Classes do protótipo 02 (two, steps, choices, sum, mbar) vêm do _loja.scss; aqui só o que
+// o protótipo faz com style inline.
+.pgbox {
+  margin-top: 18px;
+}
+.b5 {
+  font-weight: 500;
+}
+.pgbox .formnote {
+  margin: 6px 0 0;
+}
+.sum {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.pagar {
+  margin-top: 18px;
+}
+.voltar {
+  display: block;
+  text-align: center;
+  margin-top: 12px;
+}

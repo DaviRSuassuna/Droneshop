@@ -68,7 +68,10 @@
         @for (s of sessoes(); track s.id) {
           <div class="secrow">
             <span class="secic" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="12" rx="2" /><path d="M8 21h8" /></svg>
+              <svg viewBox="0 0 24 24">
+                <rect x="3" y="5" width="18" height="12" rx="2" />
+                <path d="M8 21h8" />
+              </svg>
             </span>
             <div>
               <b>{{ s.atual ? 'Esta sessão' : 'Sessão ativa' }}</b
@@ -78,6 +81,44 @@
               <button class="btn sm" type="button" (click)="encerrarSessao(s.id)">Encerrar</button>
             }
           </div>
+        }
+      </div>
+
+      <div class="panel">
+        <div class="ph2"><h2>Privacidade</h2></div>
+        <div class="secrow">
+          <div>
+            <b>Excluir minha conta</b
+            ><span
+              >Seus dados pessoais são apagados; os pedidos ficam guardados sem identificar você
+              (LGPD).</span
+            >
+          </div>
+          @if (!excluindo()) {
+            <button class="btn sm" type="button" (click)="excluindo.set(true)">
+              Excluir conta
+            </button>
+          }
+        </div>
+        @if (excluindo()) {
+          <form class="fg exclusao" (ngSubmit)="excluirConta()">
+            <div class="f w4">
+              <label for="senhaExclusao">Confirme com a sua senha <span class="req">*</span></label>
+              <input
+                id="senhaExclusao"
+                type="password"
+                autocomplete="current-password"
+                [value]="senhaExclusao()"
+                (input)="senhaExclusao.set($any($event.target).value)"
+              />
+            </div>
+            <div class="f w2 enviar">
+              <button class="btn" type="submit">Excluir definitivamente</button>
+            </div>
+            @if (erroExclusao(); as e) {
+              <p class="pwmsg err check" role="alert">{{ e }}</p>
+            }
+          </form>
         }
       </div>
 

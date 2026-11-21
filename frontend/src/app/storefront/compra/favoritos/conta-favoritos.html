@@ -15,8 +15,16 @@
             }
           </div>
         </div>
-        <div class="acoes-topo"></div>
+        <div class="acoes-topo">
+          <button class="btn sm" type="button" (click)="compartilhar()">Compartilhar lista</button>
+          <button class="btn sm p" type="button" [disabled]="!itens().length" (click)="moverTudo()">
+            Mover tudo para o carrinho
+          </button>
+        </div>
       </div>
+      @if (aviso(); as a) {
+        <p class="pwmsg good" role="status">{{ a }}</p>
+      }
       @if (carregado() && !itens().length) {
         <div class="panel vazio">
           <p>Nenhum produto salvo ainda.</p>
@@ -28,16 +36,16 @@
           <article class="pcard">
             <div class="top">
               <span class="lbl">{{ item.produto.sku }}</span>
-              @if (item.caiuPreco) {
+              @if (item.quedaDePreco) {
                 <span class="chip">BAIXOU</span>
               }
             </div>
             <h3>
               <a [routerLink]="['/produto', item.produto.slug]">{{ item.produto.nome }}</a>
             </h3>
-            <div class="pr" [class.sale]="item.caiuPreco">
+            <div class="pr" [class.sale]="item.quedaDePreco">
               {{ reais(item.produto.preco) }}
-              @if (item.caiuPreco) {
+              @if (item.quedaDePreco) {
                 <s>{{ reais(item.precoAoAdicionar) }}</s>
               }
             </div>
@@ -54,7 +62,7 @@
                 </svg>
               </button>
             </div>
-            @if (item.caiuPreco) {
+            @if (item.quedaDePreco) {
               <div class="note ok">Caiu {{ reais(queda(item)) }} desde que você salvou</div>
             } @else if (item.produto.disponivel) {
               <div class="note">Salvo em {{ item.adicionadoEm | date: 'dd/MM' }} · em estoque</div>

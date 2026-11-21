@@ -1,0 +1,67 @@
+<main>
+  <div class="wrap account">
+    <app-account-menu [conta]="sessao.resumo()" (sair)="sessao.sair()" />
+    <section>
+      <div class="crumb">
+        <a routerLink="/">Home</a><span>Minha conta</span><span>Meus drones</span>
+      </div>
+      <div class="ahead">
+        <div>
+          <h1>Meus drones</h1>
+          <div class="sub">Número de série, garantia e registro ANAC</div>
+        </div>
+      </div>
+      @if (carregado() && !drones().length) {
+        <div class="panel">
+          <p>Os drones que você comprar aparecem aqui depois do envio.</p>
+          <a class="btn p" routerLink="/drones">Ver drones</a>
+        </div>
+      }
+      @for (d of drones(); track d.idUnidade) {
+        <div class="panel">
+          <div class="ph2">
+            <h2>{{ d.produto.nome }}</h2>
+            <span class="mono serie">{{ d.numeroSerie }}</span>
+          </div>
+          <div class="sum">
+            <div>
+              <span>Pedido</span><span>#{{ d.pedido.numero }}</span>
+            </div>
+            <div>
+              <span>Comprado em</span><span>{{ d.dataCompra | date: 'dd/MM/yyyy' }}</span>
+            </div>
+            <div>
+              <span>Garantia até</span
+              ><span>{{
+                d.validadeGarantia ? (d.validadeGarantia | date: 'dd/MM/yyyy') : '—'
+              }}</span>
+            </div>
+          </div>
+          <form class="fg anac" (ngSubmit)="salvar(d)">
+            <div class="f w4">
+              <label [for]="'anac' + d.idUnidade">Registro SISANT/ANAC</label>
+              <input
+                [id]="'anac' + d.idUnidade"
+                [name]="'anac' + d.idUnidade"
+                type="text"
+                maxlength="40"
+                placeholder="PP-0000000"
+                [(ngModel)]="registros[d.idUnidade]"
+              />
+            </div>
+            <div class="f w2 enviar">
+              <button class="btn" type="submit">Salvar registro</button>
+            </div>
+          </form>
+          @if (mensagem(); as m) {
+            @if (m.id === d.idUnidade) {
+              <p class="pwmsg" [class.good]="m.ok" [class.err]="!m.ok" role="status">
+                {{ m.texto }}
+              </p>
+            }
+          }
+        </div>
+      }
+    </section>
+  </div>
+</main>

@@ -38,9 +38,32 @@
           </button>
         </div>
         <div id="entrar" role="tabpanel" aria-labelledby="aba-entrar" [hidden]="aba() !== 'entrar'">
-          @if (escolhendoPerfil()) {
+          @if (tokenTemporario()) {
+            <h2>Verificação em duas etapas</h2>
+            <p class="formnote intro">Digite o código de 6 dígitos do seu app autenticador.</p>
+            <form class="fg" (ngSubmit)="confirmar2fa()">
+              <div class="f w6">
+                <label for="codigo2fa">Código <span class="req">*</span></label
+                ><input
+                  id="codigo2fa"
+                  name="codigo2fa"
+                  inputmode="numeric"
+                  autocomplete="one-time-code"
+                  maxlength="6"
+                  [(ngModel)]="codigo2fa"
+                  required
+                />
+              </div>
+              @if (erro()) {
+                <p class="login-error check" role="alert">{{ erro() }}</p>
+              }
+              <button class="btn p check" type="submit" [disabled]="carregando()">Confirmar</button>
+            </form>
+          } @else if (escolhendoPerfil()) {
             <h2>Com qual perfil entrar?</h2>
-            <p class="formnote intro">Sua conta tem acesso de cliente e ao painel administrativo.</p>
+            <p class="formnote intro">
+              Sua conta tem acesso de cliente e ao painel administrativo.
+            </p>
             <div class="fg">
               <button
                 class="btn p check"

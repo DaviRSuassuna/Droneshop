@@ -1,9 +1,10 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { switchMap } from 'rxjs';
+import { ContaService } from '../../../core/services/conta.service';
 import { AuthService, LoginResponse, PERFIL_ATIVO } from '../../../core/services/auth.service';
 import { ClienteService } from '../../../core/services/cliente.service';
 import { TIPO_PESSOA } from '../../../core/models/cliente.model';
@@ -16,9 +17,10 @@ import { somenteDigitos } from '../../../core/utils/documentos';
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
-export class Login {
+export class Login implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly clientes = inject(ClienteService);
+  private readonly conta = inject(ContaService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -31,6 +33,9 @@ export class Login {
   readonly erro = signal<string | null>(null);
   /** Quem tem os dois perfis escolhe com qual entrar (#20). */
   readonly escolhendoPerfil = signal(false);
+  /** 2FA ligado (#45): o login pede o código antes de entregar o token. */
+  readonly tokenTemporario = signal<string | null>(null);
+  codigo2fa = '';
   protected readonly PERFIL_ATIVO = PERFIL_ATIVO;
 
   novo = { nome: '', email: '', documento: '', senha: '', confirmar: '' };
@@ -73,6 +78,23 @@ export class Login {
     });
   }
 
+  /** Termos e política vigentes; criar a conta é aceitar os dois (#46). */
+  private readonly termos = signal<{ tipo: string; versao: string }[]>([]);
+
+  ngOnInit(): void {
+    this.conta.termos().subscribe({
+      next: (t) =>
+        this.termos.set(
+          t.filter((x) => x.obrigatorio).map(({ tipo, versao }) => ({ tipo, versao })),
+        ),
+      error: () => this.termos.set([]),
+    });
+  }
+
+  private termosObrigatorios(): { tipo: string; versao: string }[] {
+    return this.termos();
+  }
+
   erroCampo(campo: string): string | null {
     return this.errosCampo()[campo] ?? null;
   }
@@ -103,6 +125,7 @@ export class Login {
         idTipoPessoa: documento.length === 14 ? TIPO_PESSOA.PJ : TIPO_PESSOA.PF,
         documento,
         telefone: '',
+        consentimentos: this.termosObrigatorios(),
       })
       .pipe(switchMap(() => this.auth.login(email, this.novo.senha, false)))
       .subscribe({
@@ -126,13 +149,38 @@ export class Login {
   }
 
   /** Volta para onde estava; sem destino, cliente vai para a conta e admin para o painel. */
+  confirmar2fa(): void {
+    const temporario = this.tokenTemporario();
+    if (!temporario || this.carregando()) return;
+    this.carregando.set(true);
+    this.erro.set(null);
+    this.auth.login2fa(temporario, this.codigo2fa.trim(), this.manterConectado).subscribe({
+      next: (resposta) => {
+        this.carregando.set(false);
+        this.tokenTemporario.set(null);
+        this.irParaDestino(resposta);
+      },
+      error: () => {
+        this.carregando.set(false);
+        this.erro.set('Código inválido. Confira o app autenticador.');
+      },
+    });
+  }
+
   private irParaDestino(resposta: LoginResponse): void {
+    if (resposta.precisa2fa && resposta.tokenTemporario) {
+      this.tokenTemporario.set(resposta.tokenTemporario);
+      return;
+    }
     if (resposta.escolherPerfil) {
       this.escolhendoPerfil.set(true);
       return;
     }
     const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
-    const padrao = (resposta.perfilAtivo ?? resposta.perfis[0]) === 'ADMINISTRATIVO' ? '/admin/marcas' : '/conta/perfil';
+    const padrao =
+      (resposta.perfilAtivo ?? resposta.perfis[0]) === 'ADMINISTRATIVO'
+        ? '/admin/marcas'
+        : '/conta/perfil';
     const destino = returnUrl?.startsWith('/') && !returnUrl.startsWith('//') ? returnUrl : padrao;
     void this.router.navigateByUrl(destino);
   }
