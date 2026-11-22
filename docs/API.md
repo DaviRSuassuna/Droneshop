@@ -122,8 +122,8 @@ As telas citadas são as do [protótipo](design/README.md).
 | Método | Rota | Uso | Issue | Situação |
 |---|---|---|---|---|
 | GET | `/loja/categorias?tipo=` · `/loja/marcas?destaque=` | menu, home (marcas em destaque) | #21 | a fazer |
-| GET | `/loja/produtos?categoria=&subcategoria=&marca=&precoMin=&precoMax=&alcance=&autonomia=&ordem=&page=` | Drones, Acessórios (só ATIVO, RN17; um item por grupo, "a partir de", D40) | #21 | a fazer |
-| GET | `/loja/filtros?categoria=` | contagens de cada filtro (facetas) | #21 | a fazer |
+| GET | `/loja/produtos?categoria=&subcategoria=&marca=&precoMin=&precoMax=&alcance=&autonomia=&ordem=&page=` | Drones, Acessórios (só ATIVO, RN17; um item por grupo, "a partir de", D40). O item traz `versoes` (rótulos do grupo), `resumo` (linha de especificações do card) e `precoDe` (preço cheio quando há promoção vigente; `precoMinimo` já vem com o desconto) | #21 | a fazer |
+| GET | `/loja/filtros?categoria=&tipo=` | contagens de cada filtro (facetas); `tipo` (DRONE, ACESSORIO) conta só os itens daquela página | #21 | a fazer |
 | GET | `/loja/produtos/{slug}` | Produto (specs, mídias e `grupo` com as versões: `rotulo`, `slug`, `preco`, `disponivel`, D40) | #21 | a fazer |
 | GET | `/loja/produtos/{slug}/compativeis` | Acessórios compatíveis; só ATIVO com `sugerirNosCompativeis=true` (#84) | #21, #84 | a fazer (#21; complemento #84 pronto) |
 | GET | `/loja/ofertas` | Promoções vigentes e kits ATIVOS com `exibirEmOfertas=true`; kit retorna soma dos componentes em `precoDe` e `promocao: null` (#84) | #21, #84 | a fazer (#21; complemento #84 pronto) |

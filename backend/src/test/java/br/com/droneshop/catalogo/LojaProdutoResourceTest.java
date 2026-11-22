@@ -3,6 +3,7 @@ package br.com.droneshop.catalogo;
 import static br.com.droneshop.testes.Api.anonimo;
 import static br.com.droneshop.testes.Api.given;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
@@ -173,5 +174,23 @@ class LojaProdutoResourceTest {
                 .body("marcas.find { it.slug == '" + a.slugMarca() + "' }.quantidade", equalTo(2))
                 .body("preco.min", equalTo(1000.0f))
                 .body("preco.max", equalTo(3000.0f));
+    }
+
+    @Test
+    void cardDoGrupoTrazAsVersoesEFiltrosContamSoOTipoPedido() {
+        Fixtures.Arvore a = Fixtures.arvore();
+        long idGrupo = grupo();
+        versao(a, idGrupo, "Pro", 9000.0, Fixtures.PRODUTO_ATIVO);
+        versao(a, idGrupo, "Standard", 7000.0, Fixtures.PRODUTO_ATIVO);
+        Fixtures.criarAcessorio(a, 100.0, 2);
+        anonimo().queryParam("marca", a.slugMarca()).queryParam("tipo", "DRONE").when().get("/loja/produtos")
+                .then().statusCode(200)
+                .body("totalItems", equalTo(1))
+                .body("items[0].versoes", containsInAnyOrder("Pro", "Standard"))
+                .body("items[0].precoMinimo", equalTo(7000.0f))
+                .body("items[0].precoDe", equalTo(null));
+        anonimo().queryParam("categoria", a.slugCategoria()).queryParam("tipo", "DRONE").when().get("/loja/filtros")
+                .then().statusCode(200)
+                .body("marcas.find { it.slug == '" + a.slugMarca() + "' }.quantidade", equalTo(1));
     }
 }

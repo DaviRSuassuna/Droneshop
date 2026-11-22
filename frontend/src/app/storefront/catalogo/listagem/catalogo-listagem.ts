@@ -114,7 +114,7 @@ export class CatalogoListagem {
 
   constructor() {
     this.loja.listarCategorias(this.tipo).subscribe((c) => this.categorias.set(c));
-    this.loja.buscarFiltros().subscribe((f) => this.facetas.set(f));
+    this.loja.buscarFiltros(undefined, this.tipo).subscribe((f) => this.facetas.set(f));
     effect(() => {
       this.loja.listarProdutos(this.filtro(), this.pagina(), POR_PAGINA).subscribe((p) => {
         this.produtos.set(p.items);
