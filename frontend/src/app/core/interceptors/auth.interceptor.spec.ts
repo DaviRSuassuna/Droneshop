@@ -70,9 +70,10 @@ describe('authInterceptor', () => {
     req.flush({});
   });
 
-  it('limpa a sessão e redireciona ao login quando a API responde 401', () => {
+  it('limpa a sessão e redireciona ao login quando a API responde 401 na área protegida', () => {
     const router = TestBed.inject(Router);
     vi.spyOn(router, 'navigate').mockResolvedValue(true);
+    vi.spyOn(router, 'url', 'get').mockReturnValue('/admin/marcas');
 
     TestBed.inject(HttpClient).get(`${environment.apiUrl}/marcas`).subscribe({
       error: () => {},
@@ -84,7 +85,24 @@ describe('authInterceptor', () => {
 
     expect(localStorage.getItem(CHAVE_TOKEN)).toBeNull();
     expect(router.navigate).toHaveBeenCalledWith(['/entrar'], {
-      queryParams: { returnUrl: '/' },
+      queryParams: { returnUrl: '/admin/marcas' },
     });
+  });
+
+  it('na loja pública, com a sessão vencida, refaz a chamada sem o token e não redireciona', () => {
+    const router = TestBed.inject(Router);
+    vi.spyOn(router, 'navigate').mockResolvedValue(true);
+    vi.spyOn(router, 'url', 'get').mockReturnValue('/drones');
+    let resposta: unknown;
+
+    TestBed.inject(HttpClient).get(`${environment.apiUrl}/carrinho`).subscribe((r) => (resposta = r));
+    http.expectOne(`${environment.apiUrl}/carrinho`).flush({}, { status: 401, statusText: 'Unauthorized' });
+    const repetida = http.expectOne(`${environment.apiUrl}/carrinho`);
+    expect(repetida.request.headers.has('Authorization')).toBe(false);
+    repetida.flush({ itens: [] });
+
+    expect(resposta).toEqual({ itens: [] });
+    expect(localStorage.getItem(CHAVE_TOKEN)).toBeNull();
+    expect(router.navigate).not.toHaveBeenCalled();
   });
 });
