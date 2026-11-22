@@ -19,7 +19,8 @@ public interface LojaService {
 
     PageResponse<ProdutoLojaItemDTO> listarProdutos(Filtro filtro, String ordem, int page, int pageSize);
 
-    FiltrosLojaDTO buscarFiltros(String categoria);
+    /** Marcas com quantidade e faixa de preço; o tipo (DRONE, ACESSORIO) é opcional. */
+    FiltrosLojaDTO buscarFiltros(String categoria, String tipo);
 
     ProdutoLojaDetalheDTO buscarProduto(String slug);
 

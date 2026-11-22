@@ -46,6 +46,6 @@ export class MidiaProdutoService {
   }
 
   urlArquivo(url: string): string {
-    return `${this.baseUrl}${url}`;
+    return url.startsWith('http') ? url : `${this.baseUrl}${url}`;
   }
 }

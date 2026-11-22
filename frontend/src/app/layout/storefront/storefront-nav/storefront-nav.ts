@@ -41,6 +41,8 @@ const CONSULTA_CELULAR = '(max-width: 900px)';
   imports: [RouterLink, RouterLinkActive, NgOptimizedImage, ContaFolha],
   templateUrl: './storefront-nav.html',
   host: {
+    // sem caixa própria: a .navwrap (sticky) precisa da página como contêiner para ficar presa no topo
+    style: 'display: contents',
     '(window:scroll)': 'aoRolar()',
     '(document:keydown)': 'aoTeclar($event)',
   },

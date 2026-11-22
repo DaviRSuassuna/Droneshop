@@ -84,8 +84,8 @@ public class LojaResource {
 
     @GET
     @Path("/filtros")
-    public FiltrosLojaDTO buscarFiltros(@QueryParam("categoria") String categoria) {
-        return service.buscarFiltros(categoria);
+    public FiltrosLojaDTO buscarFiltros(@QueryParam("categoria") String categoria, @QueryParam("tipo") String tipo) {
+        return service.buscarFiltros(categoria, tipo);
     }
 
     @GET

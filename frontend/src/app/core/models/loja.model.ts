@@ -36,6 +36,12 @@ export interface ProdutoLojaItem {
   precoMinimo: number | null;
   imagemPrincipal: string | null;
   disponivel: boolean;
+  /** Rótulos das versões do grupo (D40); vazio sem grupo. */
+  versoes?: string[];
+  /** Linha curta de especificações do card. */
+  resumo?: string | null;
+  /** Preço cheio quando há promoção vigente. */
+  precoDe?: number | null;
 }
 
 export interface FiltroProdutosLoja {

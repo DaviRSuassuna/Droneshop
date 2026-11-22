@@ -1,6 +1,8 @@
 package br.com.droneshop.catalogo.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.text.Normalizer;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -22,6 +24,8 @@ import br.com.droneshop.catalogo.model.Categoria;
 import br.com.droneshop.catalogo.model.Drone;
 import br.com.droneshop.catalogo.model.Marca;
 import br.com.droneshop.catalogo.model.Produto;
+import br.com.droneshop.catalogo.model.Promocao;
+import br.com.droneshop.catalogo.model.EscopoPromocao;
 import br.com.droneshop.catalogo.model.StatusCategoria;
 import br.com.droneshop.catalogo.model.StatusMarca;
 import br.com.droneshop.catalogo.model.StatusProduto;
@@ -31,6 +35,7 @@ import br.com.droneshop.catalogo.repository.CategoriaRepository;
 import br.com.droneshop.catalogo.repository.MarcaRepository;
 import br.com.droneshop.catalogo.repository.MidiaProdutoRepository;
 import br.com.droneshop.catalogo.repository.ProdutoRepository;
+import br.com.droneshop.catalogo.repository.PromocaoRepository;
 import br.com.droneshop.catalogo.repository.SubcategoriaRepository;
 import br.com.droneshop.catalogo.repository.TermoBuscadoRepository;
 import br.com.droneshop.exception.ValidationException;
@@ -60,6 +65,9 @@ public class LojaServiceImpl implements LojaService {
 
     @Inject
     MidiaProdutoRepository midiaRepository;
+
+    @Inject
+    PromocaoRepository promocaoRepository;
 
     /** Item da vitrine: a versão que representa o grupo (a mais barata) e o que vale para o grupo todo. */
     private record Item(Produto representante, BigDecimal precoMinimo, boolean disponivel) {
@@ -112,8 +120,8 @@ public class LojaServiceImpl implements LojaService {
 
     @Override
     @Transactional
-    public FiltrosLojaDTO buscarFiltros(String categoria) {
-        List<Item> itens = itens(new Filtro(categoria, null, null, null, null, null, null, null, null, null));
+    public FiltrosLojaDTO buscarFiltros(String categoria, String tipo) {
+        List<Item> itens = itens(new Filtro(categoria, null, null, tipo, null, null, null, null, null, null));
         Map<String, FiltrosLojaDTO.Marca> marcas = new LinkedHashMap<>();
         itens.stream()
                 .map(i -> i.representante().getMarca())
@@ -237,9 +245,60 @@ public class LojaServiceImpl implements LojaService {
     private ProdutoLojaItemDTO paraItem(Item i) {
         Produto p = i.representante();
         String nome = p.getGrupo() != null && p.getGrupo().getNome() != null ? p.getGrupo().getNome() : p.getNome();
+        List<Produto> versoes = p.getGrupo() == null ? List.of(p)
+                : p.getGrupo().getProdutos().stream()
+                        .filter(v -> v.getStatus() == StatusProduto.ATIVO)
+                        .sorted(Comparator.comparingInt(Produto::getOrdemNoGrupo))
+                        .toList();
+        List<String> rotulos = p.getGrupo() == null ? List.of()
+                : versoes.stream().map(Produto::getRotuloNoGrupo).filter(Objects::nonNull).toList();
+        BigDecimal preco = i.precoMinimo();
+        BigDecimal precoDe = null;
+        Promocao promocao = promocaoVigente(p);
+        if (promocao != null && preco != null) {
+            precoDe = preco;
+            preco = comDesconto(preco, promocao);
+        }
         return new ProdutoLojaItemDTO(p.getId(), nome, p.getSlug(), p.getTipo(),
                 p.getMarca() == null ? null : new ProdutoLojaItemDTO.Marca(p.getMarca().getNome()),
-                i.precoMinimo(), p.getImagemPrincipal(), i.disponivel());
+                preco, p.getImagemPrincipal(), i.disponivel(), rotulos, resumo(p, versoes), precoDe);
+    }
+
+    private Promocao promocaoVigente(Produto p) {
+        return promocaoRepository.findBySituacao("VIGENTE", LocalDateTime.now()).list().stream()
+                .filter(pr -> pr.getEscopo() == EscopoPromocao.PRODUTO)
+                .filter(pr -> pr.getProdutos().stream().anyMatch(x -> x.getId().equals(p.getId())))
+                .findFirst().orElse(null);
+    }
+
+    private static BigDecimal comDesconto(BigDecimal preco, Promocao promocao) {
+        BigDecimal desconto = promocao.getPercentualDesconto() != null
+                ? preco.multiply(promocao.getPercentualDesconto()).movePointLeft(2)
+                : promocao.getValorDesconto();
+        return preco.subtract(desconto == null ? BigDecimal.ZERO : desconto).max(BigDecimal.ZERO)
+                .setScale(2, RoundingMode.HALF_UP);
+    }
+
+    /** Linha do card como no protótipo: "até 43 min · até 15 km · 4K" no grupo, sem "até" no avulso. */
+    private static String resumo(Produto p, List<Produto> versoes) {
+        if (!(p instanceof Drone))
+            return p.getDescricaoCurta();
+        List<Drone> drones = versoes.stream().filter(Drone.class::isInstance).map(Drone.class::cast).toList();
+        if (drones.isEmpty())
+            return null;
+        String ate = drones.size() > 1 ? "até " : "";
+        List<String> partes = new ArrayList<>();
+        Drone d = (Drone) p;
+        if (drones.size() == 1 && d.getPesoGramas() != null && d.getPesoGramas() < 250)
+            partes.add(d.getPesoGramas() + " g");
+        drones.stream().map(Drone::getAutonomiaMinutos).filter(Objects::nonNull).max(Integer::compare)
+                .ifPresent(m -> partes.add(ate + m + " min"));
+        drones.stream().map(Drone::getAlcanceMetros).filter(Objects::nonNull).max(Integer::compare)
+                .ifPresent(m -> partes.add(ate + (m >= 1000 ? (m / 1000) + " km" : m + " m")));
+        String video = drones.get(0).getResolucaoVideo();
+        if (video != null)
+            partes.add(video);
+        return partes.isEmpty() ? null : String.join(" · ", partes);
     }
 
     private Comparator<Item> ordenacao(String ordem) {

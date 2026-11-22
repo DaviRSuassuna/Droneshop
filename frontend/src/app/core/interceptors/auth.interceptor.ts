@@ -5,6 +5,8 @@ import { catchError, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../services/auth.service';
 
+const AREA_PROTEGIDA = /^\/(admin|conta|checkout|pedido-confirmado)(\/|\?|$)/;
+
 export const authInterceptor: HttpInterceptorFn = (requisicao, proximo) => {
   const autenticacao = inject(AuthService);
   const router = inject(Router);
@@ -20,10 +22,13 @@ export const authInterceptor: HttpInterceptorFn = (requisicao, proximo) => {
 
   return proximo(autenticada).pipe(
     catchError((erro: unknown) => {
-      if (erro instanceof HttpErrorResponse && erro.status === 401 && requisicaoDaApi && !requisicaoDeLogin) {
-        autenticacao.limparSessao();
-        void router.navigate(['/entrar'], { queryParams: { returnUrl: router.url } });
-      }
+      const sessaoExpirada =
+        erro instanceof HttpErrorResponse && erro.status === 401 && autenticada !== requisicao;
+      if (!sessaoExpirada) return throwError(() => erro);
+      autenticacao.limparSessao();
+      // na loja pública a sessão vencida não impede de navegar: refaz a chamada sem o token
+      if (!AREA_PROTEGIDA.test(router.url)) return proximo(requisicao);
+      void router.navigate(['/entrar'], { queryParams: { returnUrl: router.url } });
       return throwError(() => erro);
     }),
   );

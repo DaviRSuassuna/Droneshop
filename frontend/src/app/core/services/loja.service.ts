@@ -60,8 +60,10 @@ export class LojaService {
     return this.http.get<Comparacao>(`${this.baseUrl}/comparar`, { params });
   }
 
-  buscarFiltros(categoria?: string): Observable<FiltrosLoja> {
-    const params = categoria ? new HttpParams().set('categoria', categoria) : new HttpParams();
+  buscarFiltros(categoria?: string, tipo?: string): Observable<FiltrosLoja> {
+    let params = new HttpParams();
+    if (categoria) params = params.set('categoria', categoria);
+    if (tipo) params = params.set('tipo', tipo);
     return this.http.get<FiltrosLoja>(`${this.baseUrl}/filtros`, { params });
   }
 
