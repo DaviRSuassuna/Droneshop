@@ -1,12 +1,14 @@
 package br.com.droneshop.identidade.resource;
 
 import br.com.droneshop.identidade.model.TipoPessoa;
+import jakarta.annotation.security.PermitAll;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
 // Público: a tela de criar conta precisa da lista antes do login (D31).
+@PermitAll
 @Path("tipos-pessoa")
 @Produces(MediaType.APPLICATION_JSON)
 public class TipoPessoaResource {

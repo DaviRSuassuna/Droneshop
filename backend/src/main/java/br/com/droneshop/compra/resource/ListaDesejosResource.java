@@ -2,7 +2,7 @@ package br.com.droneshop.compra.resource;
 
 import java.util.List;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
+import br.com.droneshop.identidade.resource.UsuarioAtual;
 
 import br.com.droneshop.compra.dto.CompartilharResponseDTO;
 import br.com.droneshop.compra.dto.ItemListaDesejosRequestDTO;
@@ -30,7 +30,7 @@ import jakarta.ws.rs.core.Response;
 public class ListaDesejosResource {
 
     @Inject
-    JsonWebToken token;
+    UsuarioAtual usuarioAtual;
 
     @Inject
     ListaDesejosService desejos;
@@ -39,7 +39,7 @@ public class ListaDesejosResource {
     FavoritosService favoritos;
 
     private Long usuario() {
-        return Long.valueOf(token.getSubject());
+        return usuarioAtual.id();
     }
 
     @GET

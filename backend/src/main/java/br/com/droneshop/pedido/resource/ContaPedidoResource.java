@@ -2,7 +2,7 @@ package br.com.droneshop.pedido.resource;
 
 import java.util.List;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
+import br.com.droneshop.identidade.resource.UsuarioAtual;
 
 import br.com.droneshop.dto.PageResponse;
 import br.com.droneshop.exception.ResourceNotFoundException;
@@ -32,7 +32,7 @@ import jakarta.ws.rs.core.MediaType;
 public class ContaPedidoResource {
 
     @Inject
-    JsonWebToken token;
+    UsuarioAtual usuarioAtual;
 
     @Inject
     PedidoRepository pedidos;
@@ -41,7 +41,7 @@ public class ContaPedidoResource {
     NotaFiscalService notasFiscais;
 
     private Long usuario() {
-        return Long.valueOf(token.getSubject());
+        return usuarioAtual.id();
     }
 
     /** Pedido do cliente logado, ou 404. */

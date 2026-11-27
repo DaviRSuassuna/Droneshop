@@ -9,6 +9,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class UsuarioRepository implements PanacheRepository<Usuario> {
 
+    public Usuario porSub(String sub) {
+        return sub == null ? null : find("keycloakSub", sub).firstResult();
+    }
+
     public Usuario porEmail(String email) {
         return find("email", email.trim().toLowerCase(Locale.ROOT)).firstResult();
     }

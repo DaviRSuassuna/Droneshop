@@ -2,7 +2,7 @@ package br.com.droneshop.pagamento.resource;
 
 import java.util.List;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
+import br.com.droneshop.identidade.resource.UsuarioAtual;
 
 import br.com.droneshop.administracao.ModuloAdmin;
 import br.com.droneshop.administracao.model.ModuloSistema;
@@ -27,7 +27,7 @@ import jakarta.ws.rs.core.MediaType;
 public class PagamentoResource {
 
     @Inject
-    JsonWebToken token;
+    UsuarioAtual usuarioAtual;
 
     @Inject
     PagamentoService pagamentos;
@@ -36,7 +36,7 @@ public class PagamentoResource {
     @RolesAllowed("CLIENTE")
     @Consumes(MediaType.APPLICATION_JSON)
     public PagamentoResponseDTO pagar(@PathParam("id") Long idPedido, @Valid PagamentoRequestDTO dto) {
-        return PagamentoResponseDTO.de(pagamentos.pagar(Long.valueOf(token.getSubject()), idPedido, dto));
+        return PagamentoResponseDTO.de(pagamentos.pagar(usuarioAtual.id(), idPedido, dto));
     }
 
     @GET

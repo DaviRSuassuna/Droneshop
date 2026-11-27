@@ -2,7 +2,7 @@ package br.com.droneshop.notificacao.resource;
 
 import java.util.List;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
+import br.com.droneshop.identidade.resource.UsuarioAtual;
 
 import br.com.droneshop.notificacao.dto.PreferenciaNotificacaoDTO;
 import br.com.droneshop.notificacao.service.PreferenciaNotificacaoService;
@@ -27,15 +27,15 @@ public class PreferenciaNotificacaoResource {
     PreferenciaNotificacaoService service;
 
     @Inject
-    JsonWebToken token;
+    UsuarioAtual usuarioAtual;
 
     @GET
     public List<PreferenciaNotificacaoDTO> listar() {
-        return service.doUsuario(Long.valueOf(token.getSubject()));
+        return service.doUsuario(usuarioAtual.id());
     }
 
     @PUT
     public void salvar(List<@Valid PreferenciaNotificacaoDTO> preferencias) {
-        service.salvar(Long.valueOf(token.getSubject()), preferencias);
+        service.salvar(usuarioAtual.id(), preferencias);
     }
 }

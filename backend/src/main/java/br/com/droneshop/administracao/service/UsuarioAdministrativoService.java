@@ -22,7 +22,7 @@ import br.com.droneshop.exception.ResourceNotFoundException;
 import br.com.droneshop.exception.ValidationException;
 import br.com.droneshop.identidade.model.Usuario;
 import br.com.droneshop.identidade.repository.UsuarioRepository;
-import io.quarkus.elytron.security.common.BcryptUtil;
+import br.com.droneshop.identidade.client.KeycloakClient;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -33,6 +33,9 @@ public class UsuarioAdministrativoService {
     private static final Pattern EMAIL_VALIDO = Pattern.compile(
             "^[A-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?(?:\\.[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?)+$",
             Pattern.CASE_INSENSITIVE);
+
+    @Inject
+    KeycloakClient keycloak;
 
     @Inject
     UsuarioRepository usuarioRepository;
@@ -103,8 +106,6 @@ public class UsuarioAdministrativoService {
             usuario = new Usuario();
             usuario.setNome(nome);
             usuario.setEmail(emailNorm);
-            usuario.setSenhaHash(BcryptUtil.bcryptHash(dto.senha()));
-            usuario.setEmailVerificado(true);
             usuario.setAtivo(dto.ativo() == null || dto.ativo());
         } else {
             usuario = existente;
@@ -132,9 +133,14 @@ public class UsuarioAdministrativoService {
         usuario.setPerfilAdministrativo(perfil);
 
         if (existente == null) {
+            usuario.setKeycloakSub(keycloak.criar(nome, emailNorm, dto.senha(), usuario.isAtivo(), true,
+                    papelKeycloak(papel)));
             usuarioRepository.persist(usuario);
         } else {
             perfilAdministrativoRepository.persist(perfil);
+            keycloak.papelAdministrativo(usuario.getKeycloakSub(), papelKeycloak(papel));
+            if (dto.ativo() != null)
+                keycloak.atualizar(usuario.getKeycloakSub(), usuario.getNome(), emailNorm, usuario.isAtivo());
         }
 
         return toResponseDTO(usuario);
@@ -221,7 +227,6 @@ public class UsuarioAdministrativoService {
             if (dto.senha().length() < 8) {
                 throw ValidationException.of("senha", "A senha deve ter no mínimo 8 caracteres.");
             }
-            usuario.setSenhaHash(BcryptUtil.bcryptHash(dto.senha()));
         }
         boolean papelAlterado = false;
         if (dto.idPapel() != null) {
@@ -238,6 +243,18 @@ public class UsuarioAdministrativoService {
         if (dto.permissoes() != null) {
             aplicarOverrides(perfil, mapearOverrides(dto.permissoes()));
         }
+
+        usuarioRepository.flush();
+        String sub = usuario.getKeycloakSub();
+        if (dto.nome() != null || dto.email() != null || dto.ativo() != null)
+            keycloak.atualizar(sub, usuario.getNome(), usuario.getEmail(), usuario.isAtivo());
+        if (papelAlterado) keycloak.papelAdministrativo(sub, papelKeycloak(perfil.getPapel()));
+        if (dto.senha() != null && !dto.senha().isBlank()) keycloak.trocarSenha(sub, dto.senha());
+        if (papelAlterado || Boolean.FALSE.equals(dto.ativo())) keycloak.revogarSessoes(sub);
+    }
+
+    private static String papelKeycloak(PapelAdministrativo papel) {
+        return papel == PapelAdministrativo.ADMIN ? "ADMIN" : "ADMINISTRATIVO";
     }
 
     private static boolean emailValido(String email) {
@@ -319,7 +336,7 @@ public class UsuarioAdministrativoService {
                 u.getNome(),
                 u.getEmail(),
                 u.isAtivo(),
-                p != null && p.isTwoFAHabilitado(),
+                p != null && keycloak.temOtp(u.getKeycloakSub()),
                 p != null ? p.getPapel() : null,
                 permissoes);
     }

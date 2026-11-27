@@ -1,7 +1,6 @@
 package br.com.droneshop.administracao;
 
 import java.lang.reflect.Method;
-import java.util.Set;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
@@ -11,6 +10,7 @@ import br.com.droneshop.administracao.model.PerfilAdministrativo;
 import br.com.droneshop.administracao.model.PermissaoModulo;
 import br.com.droneshop.identidade.model.Usuario;
 import br.com.droneshop.identidade.repository.UsuarioRepository;
+import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -30,6 +30,9 @@ public class PermissaoModuloFilter implements ContainerRequestFilter {
 
     @Inject
     JsonWebToken jwt;
+
+    @Inject
+    SecurityIdentity identidade;
 
     @Inject
     UsuarioRepository usuarioRepository;
@@ -56,19 +59,11 @@ public class PermissaoModuloFilter implements ContainerRequestFilter {
             throw new NotAuthorizedException("Credenciais ausentes ou inválidas.");
         }
 
-        Set<String> groups = jwt.getGroups();
-        if (groups == null || !groups.contains("ADMINISTRATIVO")) {
+        if (!identidade.hasRole("ADMINISTRATIVO")) {
             throw new ForbiddenException("Usuário sem perfil administrativo.");
         }
 
-        Long usuarioId;
-        try {
-            usuarioId = Long.valueOf(jwt.getSubject());
-        } catch (NumberFormatException e) {
-            throw new ForbiddenException("Token inválido.");
-        }
-
-        Usuario usuario = usuarioRepository.findById(usuarioId);
+        Usuario usuario = usuarioRepository.porSub(jwt.getSubject());
         if (usuario == null || !usuario.isAtivo() || usuario.getPerfilAdministrativo() == null) {
             throw new ForbiddenException("Usuário inativo ou sem perfil administrativo.");
         }

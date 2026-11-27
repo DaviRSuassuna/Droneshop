@@ -2,8 +2,6 @@ package br.com.droneshop.identidade.resource;
 
 import java.util.List;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
-
 import br.com.droneshop.identidade.dto.ConsentimentoRequestDTO;
 import br.com.droneshop.identidade.dto.ConsentimentoResponseDTO;
 import br.com.droneshop.identidade.service.LgpdService;
@@ -25,20 +23,20 @@ import jakarta.ws.rs.core.Response;
 public class ConsentimentoResource {
 
     @Inject
-    JsonWebToken token;
+    UsuarioAtual usuarioAtual;
 
     @Inject
     LgpdService lgpd;
 
     @GET
     public List<ConsentimentoResponseDTO> listar() {
-        return lgpd.doUsuario(Long.valueOf(token.getSubject())).stream().map(ConsentimentoResponseDTO::de).toList();
+        return lgpd.doUsuario(usuarioAtual.id()).stream().map(ConsentimentoResponseDTO::de).toList();
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response consentir(@Valid ConsentimentoRequestDTO dto) {
-        lgpd.consentir(Long.valueOf(token.getSubject()), dto);
+        lgpd.consentir(usuarioAtual.id(), dto);
         return Response.noContent().build();
     }
 }

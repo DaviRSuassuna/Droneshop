@@ -40,11 +40,11 @@ class LgpdResourceTest {
     void contaSemConsentimentoObrigatorioResponde400() {
         Map<String, Object> c = Fixtures.novaConta(Dados.sufixo() + "@cliente.com.br");
         c.put("consentimentos", List.of(Map.of("tipo", "TERMOS_USO", "versao", "2026-10")));
-        anonimo().contentType(ContentType.JSON).body(c).when().post("/clientes")
+        anonimo().contentType(ContentType.JSON).body(c).when().post("/auth/cadastro")
                 .then().statusCode(400).body("errors.field", hasItem("consentimentos"));
         c.put("consentimentos", List.of(Map.of("tipo", "TERMOS_USO", "versao", "2000-01"),
                 Map.of("tipo", "POLITICA_PRIVACIDADE", "versao", "2026-10")));
-        anonimo().contentType(ContentType.JSON).body(c).when().post("/clientes")
+        anonimo().contentType(ContentType.JSON).body(c).when().post("/auth/cadastro")
                 .then().statusCode(400).body("errors.field", hasItem("consentimentos"));
     }
 

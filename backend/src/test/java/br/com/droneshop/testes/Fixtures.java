@@ -320,7 +320,7 @@ public final class Fixtures {
     public static Cliente novoCliente() {
         String email = Dados.sufixo() + "@cliente.com.br";
         long id = RestAssured.given().contentType(ContentType.JSON).body(novaConta(email))
-                .when().post("/clientes").then().statusCode(200).extract().jsonPath().getLong("id");
+                .when().post("/auth/cadastro").then().statusCode(200).extract().jsonPath().getLong("id");
         return new Cliente(id, email, "segredo123", Api.login(email, "segredo123"));
     }
 

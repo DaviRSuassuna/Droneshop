@@ -21,8 +21,6 @@ import org.junit.jupiter.api.Test;
 
 import br.com.droneshop.catalogo.model.Promocao;
 import br.com.droneshop.identidade.model.PerfilCliente;
-import br.com.droneshop.identidade.model.TipoPessoa;
-import br.com.droneshop.identidade.model.Usuario;
 import br.com.droneshop.pedido.model.DescontoPedido;
 import br.com.droneshop.pedido.model.OrigemDesconto;
 import br.com.droneshop.pedido.model.Pedido;
@@ -144,23 +142,13 @@ class PromocaoResourceTest {
     void promocaoAplicadaEmPedidoNaoPodeSerExcluida() {
         long produto = Fixtures.criarDrone(1000.0, 5).id();
         long idPromocao = post(promocao(produto, -1, 5)).statusCode(200).extract().jsonPath().getLong("id");
-        String sufixo = Dados.sufixo();
-        long[] ids = new long[3]; // pedido, perfil, usuario
+        var conta = Fixtures.novoCliente();
+        long[] ids = new long[1];
 
         QuarkusTransaction.requiringNew().run(() -> {
             Promocao promocao = entityManager.find(Promocao.class, idPromocao);
-            Usuario usuario = new Usuario();
-            usuario.setNome("Cliente " + sufixo);
-            usuario.setEmail(sufixo + "@cliente.com.br");
-            usuario.setEmailVerificado(true);
-            usuario.setAtivo(true);
-            entityManager.persist(usuario);
-            PerfilCliente cliente = new PerfilCliente();
-            cliente.setUsuario(usuario);
-            cliente.setTipoPessoa(TipoPessoa.PF);
-            cliente.setNome(usuario.getNome());
-            cliente.setDocumento(Fixtures.cpfValido());
-            entityManager.persist(cliente);
+            PerfilCliente cliente = entityManager.createQuery("from PerfilCliente where usuario.id = :id", PerfilCliente.class)
+                    .setParameter("id", conta.id()).getSingleResult();
 
             Pedido pedido = new Pedido();
             pedido.setCliente(cliente);
@@ -177,8 +165,6 @@ class PromocaoResourceTest {
             pedido.setDescontos(new ArrayList<>(List.of(desconto)));
             entityManager.persist(pedido);
             ids[0] = pedido.getId();
-            ids[1] = cliente.getId();
-            ids[2] = usuario.getId();
         });
 
         try {
@@ -187,8 +173,6 @@ class PromocaoResourceTest {
             // O pedido sem itens não pode sobrar: Fixtures.pedidoDaCarga() pega o mais recente de cada status.
             QuarkusTransaction.requiringNew().run(() -> {
                 entityManager.remove(entityManager.find(Pedido.class, ids[0])); // o desconto vai junto (cascade)
-                entityManager.remove(entityManager.find(PerfilCliente.class, ids[1]));
-                entityManager.remove(entityManager.find(Usuario.class, ids[2]));
             });
         }
     }

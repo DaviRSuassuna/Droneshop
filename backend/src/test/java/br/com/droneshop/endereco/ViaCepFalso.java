@@ -2,6 +2,7 @@ package br.com.droneshop.endereco;
 
 import java.util.Map;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -17,6 +18,7 @@ import jakarta.ws.rs.core.Response;
  * teste depende da internet nem do ViaCEP estar no ar. Cada CEP abaixo
  * reproduz uma resposta real do ViaCEP.
  */
+@PermitAll
 @Path("/viacep-falso/ws")
 @Produces(MediaType.APPLICATION_JSON)
 public class ViaCepFalso {

@@ -28,12 +28,6 @@ public class PerfilAdministrativo extends DefaultEntity {
     @OneToMany(mappedBy = "perfil", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<PermissaoModulo> permissoes = new ArrayList<>();
 
-    @Column(name = "two_fa_habilitado", nullable = false)
-    private boolean twoFAHabilitado;
-
-    @Column(name = "two_fa_secret")
-    private String twoFASecret;
-
     public PapelAdministrativo getPapel() {
         return papel;
     }
@@ -56,21 +50,5 @@ public class PerfilAdministrativo extends DefaultEntity {
 
     public void setPermissoes(List<PermissaoModulo> permissoes) {
         this.permissoes = permissoes;
-    }
-
-    public boolean isTwoFAHabilitado() {
-        return twoFAHabilitado;
-    }
-
-    public void setTwoFAHabilitado(boolean twoFAHabilitado) {
-        this.twoFAHabilitado = twoFAHabilitado;
-    }
-
-    public String getTwoFASecret() {
-        return twoFASecret;
-    }
-
-    public void setTwoFASecret(String twoFASecret) {
-        this.twoFASecret = twoFASecret;
     }
 }

@@ -24,7 +24,8 @@ import org.jboss.logging.Logger;
 import br.com.droneshop.administracao.model.AcaoAuditoria;
 import br.com.droneshop.administracao.model.LogAuditoria;
 import br.com.droneshop.catalogo.model.TermoBuscado;
-import br.com.droneshop.identidade.model.SessaoUsuario;
+import br.com.droneshop.identidade.model.Usuario;
+import jakarta.transaction.Transactional;
 import br.com.droneshop.model.DefaultEntity;
 import br.com.droneshop.notificacao.model.Notificacao;
 import io.quarkus.arc.Arc;
@@ -54,7 +55,7 @@ public class AuditoriaInterceptor implements Interceptor {
     private static final Set<String> IGNORADOS = Set.of("dataCadastro", "dataAlteracao");
     private static final Set<Class<?>> FORA = Set.of(LogAuditoria.class, TermoBuscado.class, Notificacao.class);
 
-    private record Contexto(Long autor, String ip) {
+    private record Contexto(Long autor, String sub, String ip) {
     }
 
     @Override
@@ -79,12 +80,6 @@ public class AuditoriaInterceptor implements Interceptor {
 
     @Override
     public boolean onPersist(Object entity, Object id, Object[] state, String[] nomes, Type[] tipos) {
-        if (entity instanceof SessaoUsuario s && s.getPerfilAtivo() != null
-                && "ADMINISTRATIVO".equals(s.getPerfilAtivo().getNome()) && s.getUsuario() != null) {
-            gravar(AcaoAuditoria.LOGIN, s.getUsuario(), s.getUsuario().getId(), null, null, null,
-                    new Contexto(s.getUsuario().getId(), ip()));
-            return false;
-        }
         Contexto ctx = administrativo(entity);
         if (ctx != null)
             gravar(AcaoAuditoria.CRIACAO, entity, id, null, null, null, ctx);
@@ -108,17 +103,17 @@ public class AuditoriaInterceptor implements Interceptor {
             SecurityIdentity identidade = h.isAvailable() ? h.get() : null;
             if (identidade == null || identidade.isAnonymous() || !identidade.hasRole("ADMINISTRATIVO"))
                 return null;
-            Long autor = null;
-            try (InstanceHandle<JsonWebToken> jwt = Arc.container().instance(JsonWebToken.class)) {
-                if (jwt.isAvailable() && jwt.get().getSubject() != null)
-                    autor = Long.valueOf(jwt.get().getSubject());
-            } catch (RuntimeException e) {
-                // sem id numérico no token, a linha fica sem autor
-            }
-            return new Contexto(autor, ip());
+            return identidade.getPrincipal() instanceof JsonWebToken jwt
+                    ? new Contexto(null, jwt.getSubject(), ip()) : null;
         } catch (RuntimeException e) {
             return null;
         }
+    }
+
+    @Transactional
+    public void registrarLogin(Usuario usuario) {
+        gravar(AcaoAuditoria.LOGIN, usuario, usuario.getId(), null, null, null,
+                new Contexto(usuario.getId(), null, ip()));
     }
 
     private static String ip() {
@@ -168,7 +163,8 @@ public class AuditoriaInterceptor implements Interceptor {
             String novo, Contexto ctx) {
         DataSource ds = Arc.container().instance(DataSource.class).get();
         String sql = "insert into log_auditoria (acao, entidade, entidade_id, campo, valor_anterior, valor_novo,"
-                + " id_autor, ip, dataCadastro) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + " id_autor, ip, dataCadastro) values (?, ?, ?, ?, ?, ?, "
+                + "coalesce(?, (select id from usuario where keycloak_sub = ?)), ?, ?)";
         // a conexão é a mesma da transação JTA em curso (Agroal); fechar só devolve o handle
         try (Connection con = ds.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, acao.getId());
@@ -181,8 +177,9 @@ public class AuditoriaInterceptor implements Interceptor {
                 ps.setNull(7, Types.BIGINT);
             else
                 ps.setLong(7, ctx.autor());
-            ps.setString(8, ctx.ip());
-            ps.setTimestamp(9, Timestamp.valueOf(LocalDateTime.now()));
+            ps.setString(8, ctx.sub());
+            ps.setString(9, ctx.ip());
+            ps.setTimestamp(10, Timestamp.valueOf(LocalDateTime.now()));
             ps.executeUpdate();
         } catch (SQLException e) {
             LOG.warnf("Auditoria não gravada (%s %s): %s", acao.getNome(), entidade(entity), e.getMessage());

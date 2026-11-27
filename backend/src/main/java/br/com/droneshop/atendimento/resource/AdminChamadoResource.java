@@ -1,6 +1,6 @@
 package br.com.droneshop.atendimento.resource;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
+import br.com.droneshop.identidade.resource.UsuarioAtual;
 
 import br.com.droneshop.administracao.ModuloAdmin;
 import br.com.droneshop.administracao.model.ModuloSistema;
@@ -36,7 +36,7 @@ public class AdminChamadoResource {
     ChamadoService service;
 
     @Inject
-    JsonWebToken token;
+    UsuarioAtual usuarioAtual;
 
     @GET
     public PageResponse<ChamadoResponseDTO> listar(@QueryParam("idStatus") Long idStatus,
@@ -54,7 +54,7 @@ public class AdminChamadoResource {
     @POST
     @Path("{id}/mensagens")
     public MensagemResponseDTO atender(@PathParam("id") Long id, @Valid MensagemRequestDTO dto) {
-        return service.responderComoAtendente(Long.valueOf(token.getSubject()), id, dto.texto());
+        return service.responderComoAtendente(usuarioAtual.id(), id, dto.texto());
     }
 
     @PATCH

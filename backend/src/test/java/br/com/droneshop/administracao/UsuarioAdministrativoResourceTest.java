@@ -15,16 +15,11 @@ import java.util.Map;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import br.com.droneshop.identidade.model.Usuario;
-import br.com.droneshop.identidade.repository.UsuarioRepository;
 import br.com.droneshop.testes.Api;
 import br.com.droneshop.testes.Dados;
 import br.com.droneshop.testes.Fixtures;
-import io.quarkus.elytron.security.common.BcryptUtil;
-import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import jakarta.inject.Inject;
 
 /**
  * #5 PerfilAdministrativo com papéis e permissões por módulo.
@@ -33,9 +28,6 @@ import jakarta.inject.Inject;
 @QuarkusTest
 @Tag("issue-5")
 class UsuarioAdministrativoResourceTest {
-
-    @Inject
-    UsuarioRepository usuarioRepository;
 
     static final long MODULO_CATALOGO = 1, MODULO_ESTOQUE = 2, MODULO_ADMINISTRACAO = 8;
 
@@ -137,14 +129,8 @@ class UsuarioAdministrativoResourceTest {
 
     @Test
     void contaExistenteRecebePerfilAdministrativoSemTrocarSenha() {
-        String email = Dados.sufixo() + "@cliente.com.br";
-        Usuario existente = new Usuario();
-        existente.setNome("Cliente " + email);
-        existente.setEmail(email);
-        existente.setSenhaHash(BcryptUtil.bcryptHash("senha-original"));
-        existente.setEmailVerificado(true);
-        existente.setAtivo(true);
-        QuarkusTransaction.requiringNew().run(() -> usuarioRepository.persist(existente));
+        var existente = Fixtures.novoCliente();
+        String email = existente.email();
 
         Map<String, Object> novoPerfil = usuario(email, Fixtures.PAPEL_CATALOGO);
         novoPerfil.put("senha", "ignorada");
@@ -155,7 +141,7 @@ class UsuarioAdministrativoResourceTest {
                 .body("email", equalTo(email))
                 .body("papel.nome", equalTo("CATALOGO"));
 
-        Api.tentarLogin(email, "senha-original").then().statusCode(200);
+        Api.tentarLogin(email, existente.senha()).then().statusCode(200);
         Api.tentarLogin(email, "ignorada").then().statusCode(401);
     }
 
@@ -208,7 +194,7 @@ class UsuarioAdministrativoResourceTest {
 
     @Test
     void ninguemDesativaOProprioUsuario() {
-        long idAdmin = given().when().get("/auth/me").then().statusCode(200).extract().jsonPath().getLong("id");
+        long idAdmin = given().when().get("/auth/eu").then().statusCode(200).extract().jsonPath().getLong("id");
         Map<String, Object> u = usuario(Api.ADMIN_EMAIL, Fixtures.PAPEL_ADMIN);
         u.put("ativo", false);
         u.remove("senha");

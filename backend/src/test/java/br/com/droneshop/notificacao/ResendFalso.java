@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -24,6 +25,7 @@ import jakarta.ws.rs.core.Response;
  * endereço dá erro 500. A rota só de teste GET /emails?para= lista o que foi
  * enviado para um endereço, do mais recente para o mais antigo.
  */
+@PermitAll
 @Path("/resend-falso")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

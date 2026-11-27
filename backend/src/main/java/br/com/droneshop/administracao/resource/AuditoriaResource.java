@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
+import br.com.droneshop.identidade.resource.UsuarioAtual;
 
 import br.com.droneshop.administracao.ModuloAdmin;
 import br.com.droneshop.administracao.model.AcaoAuditoria;
@@ -56,7 +56,7 @@ public class AuditoriaResource {
     EntityManager em;
 
     @Inject
-    JsonWebToken token;
+    UsuarioAtual usuarioAtual;
 
     @GET
     @Transactional
@@ -65,7 +65,7 @@ public class AuditoriaResource {
             @QueryParam("idUsuario") Long idUsuario,
             @QueryParam("page") @DefaultValue("0") int page,
             @QueryParam("pageSize") @DefaultValue("20") int pageSize) {
-        Usuario eu = em.find(Usuario.class, Long.valueOf(token.getSubject()));
+        Usuario eu = em.find(Usuario.class, usuarioAtual.id());
         if (eu == null || eu.getPerfilAdministrativo() == null
                 || eu.getPerfilAdministrativo().getPapel() != PapelAdministrativo.ADMIN)
             throw new ForbiddenException("Só o papel ADMIN consulta a auditoria.");

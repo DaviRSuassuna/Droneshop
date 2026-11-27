@@ -106,7 +106,7 @@ class EnderecoClienteResourceTest {
     @Test
     void editarEnderecoNaoMudaOPedido() {
         String token = Api.login(Api.CLIENTE_EMAIL, Api.CLIENTE_SENHA);
-        String nome = como(token).when().get("/auth/me").then().statusCode(200).extract().jsonPath().getString("nome");
+        String nome = como(token).when().get("/auth/eu").then().statusCode(200).extract().jsonPath().getString("nome");
         long idPedido = given().queryParam("busca", nome).queryParam("pageSize", 1).when().get("/pedidos")
                 .then().statusCode(200).extract().jsonPath().getLong("items[0].id");
         JsonPath antes = given().when().get("/pedidos/{id}", idPedido).then().statusCode(200).extract().jsonPath();

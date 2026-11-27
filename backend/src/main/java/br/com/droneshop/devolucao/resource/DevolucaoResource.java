@@ -1,6 +1,6 @@
 package br.com.droneshop.devolucao.resource;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
+import br.com.droneshop.identidade.resource.UsuarioAtual;
 
 import br.com.droneshop.administracao.ModuloAdmin;
 import br.com.droneshop.administracao.model.ModuloSistema;
@@ -34,7 +34,7 @@ import jakarta.ws.rs.core.Response;
 public class DevolucaoResource {
 
     @Inject
-    JsonWebToken token;
+    UsuarioAtual usuarioAtual;
 
     @Inject
     DevolucaoService service;
@@ -65,7 +65,7 @@ public class DevolucaoResource {
     @Path("{id}/status")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response status(@PathParam("id") Long id, @Valid StatusDevolucaoRequestDTO dto) {
-        service.mudarStatus(id, dto.idStatus(), dto.observacao(), Long.valueOf(token.getSubject()));
+        service.mudarStatus(id, dto.idStatus(), dto.observacao(), usuarioAtual.id());
         return Response.noContent().build();
     }
 }

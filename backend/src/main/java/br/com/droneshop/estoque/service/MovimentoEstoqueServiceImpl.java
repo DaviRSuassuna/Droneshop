@@ -186,7 +186,7 @@ public class MovimentoEstoqueServiceImpl implements MovimentoEstoqueService {
         Usuario usuario = null;
         try {
             if (jwt != null && jwt.getSubject() != null)
-                usuario = usuarioRepository.findById(Long.valueOf(jwt.getSubject()));
+                usuario = usuarioRepository.porSub(jwt.getSubject());
         } catch (NumberFormatException e) {
             usuario = null;
         }

@@ -17,11 +17,10 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import br.com.droneshop.identidade.model.PerfilCliente;
-import br.com.droneshop.identidade.model.TipoPessoa;
-import br.com.droneshop.identidade.model.Usuario;
 import br.com.droneshop.pedido.model.Pedido;
 import br.com.droneshop.pedido.model.StatusPedido;
 import br.com.droneshop.testes.Dados;
+import br.com.droneshop.testes.Fixtures;
 import br.com.droneshop.compra.model.Cupom;
 import br.com.droneshop.compra.model.UsoCupom;
 import io.quarkus.narayana.jta.QuarkusTransaction;
@@ -125,24 +124,13 @@ public class CupomResourceTest {
     void cupomUsadoNaoPodeSerExcluido() {
         String codigo = "USADO" + Dados.sufixo().toUpperCase();
         long id = post(cupom(codigo, PERCENTUAL, 10)).statusCode(200).extract().jsonPath().getLong("id");
-        String sufixo = Dados.sufixo();
-        long[] ids = new long[4]; // uso, pedido, perfil, usuario
+        var conta = Fixtures.novoCliente();
+        long[] ids = new long[2];
 
         QuarkusTransaction.requiringNew().run(() -> {
             Cupom cupom = entityManager.find(Cupom.class, id);
-            Usuario usuario = new Usuario();
-            usuario.setNome("Cliente " + sufixo);
-            usuario.setEmail(sufixo + "@cliente.com.br");
-            usuario.setEmailVerificado(true);
-            usuario.setAtivo(true);
-            entityManager.persist(usuario);
-
-            PerfilCliente cliente = new PerfilCliente();
-            cliente.setUsuario(usuario);
-            cliente.setTipoPessoa(TipoPessoa.PF);
-            cliente.setNome(usuario.getNome());
-            cliente.setDocumento(br.com.droneshop.testes.Fixtures.cpfValido());
-            entityManager.persist(cliente);
+            PerfilCliente cliente = entityManager.createQuery("from PerfilCliente where usuario.id = :id", PerfilCliente.class)
+                    .setParameter("id", conta.id()).getSingleResult();
 
             Pedido pedido = new Pedido();
             pedido.setCliente(cliente);
@@ -159,8 +147,6 @@ public class CupomResourceTest {
             entityManager.persist(uso);
             ids[0] = uso.getId();
             ids[1] = pedido.getId();
-            ids[2] = cliente.getId();
-            ids[3] = usuario.getId();
         });
 
         try {
@@ -168,14 +154,12 @@ public class CupomResourceTest {
             given().when().get("/cupons/{id}/usos", id).then().statusCode(200)
                     .body("totalItems", equalTo(1))
                     .body("items[0].pedido.id", org.hamcrest.Matchers.notNullValue())
-                    .body("items[0].cliente.nome", equalTo("Cliente " + sufixo));
+                    .body("items[0].cliente.nome", equalTo("Cliente " + conta.email().split("@", 2)[0]));
         } finally {
             // O pedido sem itens não pode sobrar: Fixtures.pedidoDaCarga() pega o mais recente de cada status.
             QuarkusTransaction.requiringNew().run(() -> {
                 entityManager.remove(entityManager.find(UsoCupom.class, ids[0]));
                 entityManager.remove(entityManager.find(Pedido.class, ids[1]));
-                entityManager.remove(entityManager.find(PerfilCliente.class, ids[2]));
-                entityManager.remove(entityManager.find(Usuario.class, ids[3]));
             });
         }
     }

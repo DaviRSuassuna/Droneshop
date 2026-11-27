@@ -1,6 +1,7 @@
 package br.com.droneshop.notificacao;
 
 import static br.com.droneshop.testes.Api.anonimo;
+import static br.com.droneshop.testes.Api.como;
 import static br.com.droneshop.testes.Api.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -26,6 +27,17 @@ import io.restassured.response.ValidatableResponse;
 @QuarkusTest
 @Tag("issue-32")
 class NotificacaoResourceTest {
+
+    @Test
+    void semTokenDa401() {
+        anonimo().when().get("/admin/notificacoes").then().statusCode(401);
+    }
+
+    @Test
+    void clienteRecebe403EmRotaAdministrativa() {
+        Fixtures.Cliente cliente = Fixtures.novoCliente();
+        como(cliente.token()).when().get("/admin/notificacoes").then().statusCode(403);
+    }
 
     static ValidatableResponse notificacoes(String email) {
         return given().queryParam("destinatario", email).queryParam("pageSize", 50)
@@ -88,7 +100,7 @@ class NotificacaoResourceTest {
     void falhaNoEnvioNaoDerrubaOPedido() {
         String email = "falha-envio-" + Dados.sufixo() + "@cliente.com.br";
         Api.anonimo().contentType(ContentType.JSON).body(Fixtures.novaConta(email))
-                .when().post("/clientes").then().statusCode(200);
+                .when().post("/auth/cadastro").then().statusCode(200);
         Fixtures.Cliente c = new Fixtures.Cliente(0, email, "segredo123", Api.login(email, "segredo123"));
         long pedido = Fixtures.pedidoPendente(c, Fixtures.criarAcessorio(100.0, 5).id(), 1, Fixtures.PIX);
         given().when().get("/pedidos/{id}", pedido).then().statusCode(200);

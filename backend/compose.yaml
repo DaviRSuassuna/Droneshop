@@ -1,4 +1,24 @@
 services:
+  keycloak:
+    build: ./keycloak
+    command: start-dev --import-realm
+    environment:
+      AERIA_KEYCLOAK_CLIENT_SECRET: ${AERIA_KEYCLOAK_CLIENT_SECRET:-aeria-dev}
+      AERIA_SMTP_HOST: ${AERIA_SMTP_HOST:-mailpit}
+      AERIA_SMTP_PORT: ${AERIA_SMTP_PORT:-1025}
+      AERIA_SMTP_FROM: ${AERIA_SMTP_FROM:-contato@aeria.invalid}
+    ports:
+      - "127.0.0.1:8180:8080"
+    volumes:
+      - ./keycloak/aeria-realm.json:/opt/keycloak/data/import/aeria-realm.json:ro
+    depends_on:
+      - mailpit
+
+  mailpit:
+    image: docker.io/axllent/mailpit:v1.27.8
+    ports:
+      - "127.0.0.1:8025:8025"
+
   postgres:
     image: docker.io/postgres:16
     container_name: droneshop-postgres

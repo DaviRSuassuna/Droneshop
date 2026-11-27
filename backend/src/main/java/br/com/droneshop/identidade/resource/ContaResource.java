@@ -2,8 +2,6 @@ package br.com.droneshop.identidade.resource;
 
 import java.util.List;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
-
 import br.com.droneshop.identidade.dto.EnderecoClienteRequestDTO;
 import br.com.droneshop.identidade.dto.EnderecoClienteResponseDTO;
 import br.com.droneshop.identidade.dto.PerfilClienteResponseDTO;
@@ -36,7 +34,7 @@ import jakarta.ws.rs.core.Response;
 public class ContaResource {
 
     @Inject
-    JsonWebToken token;
+    UsuarioAtual usuarioAtual;
 
     @Inject
     ClienteService clientes;
@@ -45,7 +43,7 @@ public class ContaResource {
     EnderecoClienteService enderecos;
 
     private Long usuario() {
-        return Long.valueOf(token.getSubject());
+        return usuarioAtual.id();
     }
 
     @GET

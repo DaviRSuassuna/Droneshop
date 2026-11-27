@@ -2,6 +2,7 @@ package br.com.droneshop.pedido.resource;
 
 import br.com.droneshop.exception.ResourceNotFoundException;
 import br.com.droneshop.pedido.model.OrigemDesconto;
+import jakarta.annotation.security.PermitAll;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -9,6 +10,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
+@PermitAll
 @Path("origens-desconto")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

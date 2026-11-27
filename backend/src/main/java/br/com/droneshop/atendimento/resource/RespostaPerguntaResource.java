@@ -1,6 +1,6 @@
 package br.com.droneshop.atendimento.resource;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
+import br.com.droneshop.identidade.resource.UsuarioAtual;
 
 import br.com.droneshop.atendimento.dto.PerguntaDTOs.RespostaRequestDTO;
 import br.com.droneshop.atendimento.dto.PerguntaDTOs.RespostaResponseDTO;
@@ -25,12 +25,12 @@ public class RespostaPerguntaResource {
     PerguntaService service;
 
     @Inject
-    JsonWebToken token;
+    UsuarioAtual usuarioAtual;
 
     @POST
     @Path("{id}/respostas")
     @RolesAllowed("CLIENTE")
     public RespostaResponseDTO responder(@PathParam("id") Long id, @Valid RespostaRequestDTO dto) {
-        return service.responder(Long.valueOf(token.getSubject()), id, dto.texto(), false);
+        return service.responder(usuarioAtual.id(), id, dto.texto(), false);
     }
 }

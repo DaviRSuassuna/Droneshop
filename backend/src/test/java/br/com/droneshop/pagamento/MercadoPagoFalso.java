@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -26,6 +27,7 @@ import jakarta.ws.rs.core.Response;
  * Rota só de teste: POST /teste/{id}/status muda o status, como se o cliente
  * tivesse pago o PIX.
  */
+@PermitAll
 @Path("/mercadopago-falso")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

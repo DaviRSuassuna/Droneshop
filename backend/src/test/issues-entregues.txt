@@ -23,7 +23,6 @@ issue-80
 
 # ---- trilha A: acrescente abaixo desta linha (docs/agentes/README.md)
 issue-19
-issue-20
 issue-22
 issue-24
 issue-25
@@ -38,7 +37,6 @@ issue-34
 issue-35
 issue-meus-drones
 issue-37
-issue-45
 issue-46
 issue-favoritos-compartilhar
 issue-pedidos-painel

@@ -68,7 +68,6 @@ Testes escritos a partir do contrato de cada issue (`docs/issues/NNN.md`), antes
 | `issue-17` | bloqueia o merge | `pedido/StatusPedidoResourceTest` | 5 |
 | `issue-18` | bloqueia o merge | `administracao/DashboardResourceTest` | 4 |
 | `issue-19` | informativo | `identidade/ClienteResourceTest`, `identidade/EnderecoClienteResourceTest` | 17 |
-| `issue-20` | informativo | `identidade/SessaoResourceTest` | 7 |
 | `issue-21` | informativo | `catalogo/LojaProdutoResourceTest`, `catalogo/LojaVitrineResourceTest` | 13 |
 | `issue-22` | informativo | `compra/ListaDesejosResourceTest` | 3 |
 | `issue-23` | informativo | `estoque/ReservaResourceTest` | 7 |
@@ -81,7 +80,6 @@ Testes escritos a partir do contrato de cada issue (`docs/issues/NNN.md`), antes
 | `issue-30` | informativo | `pedido/FreteResourceTest` | 8 |
 | `issue-31` | informativo | `pedido/RastreioResourceTest` | 3 |
 | `issue-32` | informativo | `notificacao/NotificacaoResourceTest` | 6 |
-| `issue-33` | informativo | `identidade/TokenEmailResourceTest` | 4 |
 | `issue-34` | informativo | `estoque/UnidadeIndividualResourceTest` | 6 |
 | `issue-35` | informativo | `pedido/NotaFiscalResourceTest` | 4 |
 | `issue-36` | informativo | `pagamento/EstornoResourceTest` | 3 |
@@ -93,9 +91,7 @@ Testes escritos a partir do contrato de cada issue (`docs/issues/NNN.md`), antes
 | `issue-42` | informativo | `notificacao/PreferenciaNotificacaoResourceTest` | 6 |
 | `issue-43` | informativo | `catalogo/TermoBuscadoResourceTest` | 4 |
 | `issue-44` | informativo | `catalogo/ComparacaoResourceTest` | 2 |
-| `issue-45` | informativo | `administracao/DoisFatoresResourceTest` | 4 |
 | `issue-46` | informativo | `identidade/LgpdResourceTest` | 5 |
-| `issue-47` | informativo | `identidade/GoogleResourceTest` | 6 |
 | `issue-61` | informativo | `administracao/AcoesAdminResourceTest`, `administracao/ComplementosAdminResourceTest`, `pedido/service/EtiquetaPedidoServiceTest`, `util/CsvTest` | 20 |
 | `issue-80` | bloqueia o merge | `catalogo/GrupoProdutoResourceTest`, `catalogo/KitResourceTest`, `catalogo/ProdutoDadosComerciaisResourceTest`, `catalogo/SubcategoriaResourceTest` | 37 |
 | `issue-catalogo-complementos` | informativo | `catalogo/CatalogoComplementosResourceTest` | 7 |
