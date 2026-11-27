@@ -5,7 +5,6 @@ import { environment } from '../../../environments/environment';
 import { PerfilCliente, PerfilDTO, SenhaDTO } from '../models/cliente.model';
 import { StatusRef } from '../models/status.model';
 
-/** Perfil do cliente logado (#19). */
 @Injectable({ providedIn: 'root' })
 export class ClienteService {
   private readonly http = inject(HttpClient);

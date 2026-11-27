@@ -133,7 +133,7 @@ export class AuthService {
     try {
       token = localStorage.getItem(CHAVE_CARRINHO);
     } catch {
-      // O carrinho anônimo depende do armazenamento do navegador.
+      // Sem acesso ao armazenamento, a requisição segue sem o carrinho anônimo.
     }
     return token ? new HttpHeaders({ [HEADER_CARRINHO]: token }) : new HttpHeaders();
   }
