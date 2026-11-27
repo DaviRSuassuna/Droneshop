@@ -68,11 +68,14 @@ export class AuthService {
       if (this.renovacao) return this.renovacao;
       const versao = this.versao;
       this.renovacao = this.http
-        .post<LoginResponse>(`${this.baseUrl}/renovar`, null, {
+        .post<LoginResponse | null>(`${this.baseUrl}/renovar`, null, {
           ...this.credenciais,
           timeout: 10000,
         })
         .pipe(
+          switchMap((resposta) =>
+            resposta ? of(resposta) : throwError(() => new Error('Sem sessão para renovar.')),
+          ),
           tap((resposta) => {
             if (this.versao === versao) this.sessao.set(resposta);
           }),

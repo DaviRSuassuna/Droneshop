@@ -142,6 +142,6 @@ class AutenticacaoResourceTest {
         anonimo().cookie(nomeCookie, renovado).post("/auth/sair").then().statusCode(204)
                 .header("Set-Cookie", containsString("Max-Age=0"));
         anonimo().cookie(nomeCookie, renovado).post("/auth/renovar").then().statusCode(401);
-        anonimo().post("/auth/renovar").then().statusCode(401);
+        anonimo().post("/auth/renovar").then().statusCode(204);
     }
 }

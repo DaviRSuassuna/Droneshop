@@ -96,6 +96,8 @@ public class AutenticacaoResource {
     @Path("renovar")
     @PermitAll
     public Response renovar(@CookieParam(REFRESH) String refresh) {
+        // Visitante sem sessão (vitrine, catálogo) não é erro: 401 fica para cookie vencido ou revogado.
+        if (refresh == null || refresh.isBlank()) return Response.noContent().build();
         return comSessao(autenticacao.renovar(refresh));
     }
 

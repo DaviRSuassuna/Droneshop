@@ -106,7 +106,7 @@ As telas citadas são as do [protótipo](design/README.md).
 | POST | `/auth/login` | Recebe `email`, `senha` e `codigoOtp` opcional. Responde 200 com `accessToken`, `expiraEm` em segundos e `papeis`. Se o OTP é exigido e está ausente, responde 401 Problem com `codigo` igual a `otp-necessario` | D56 | pronto |
 | POST | `/auth/cadastro` | Preserva corpo, resposta 200 e validações do cadastro #19, incluindo documento e consentimentos. Cria papel CLIENTE e solicita VERIFY_EMAIL no Keycloak | D56 | pronto |
 | GET | `/auth/eu` | Responde 200 com `id` local, `nome`, `email` e `papeis`. Exige Bearer | D56 | pronto |
-| POST | `/auth/renovar` | Responde 200 com o mesmo corpo do login e troca o cookie. Cookie inválido ou ausente responde 401 Problem | D56 | pronto |
+| POST | `/auth/renovar` | Responde 200 com o mesmo corpo do login e troca o cookie. Sem cookie (visitante) responde 204 sem corpo; cookie inválido, vencido ou revogado responde 401 Problem | D56 | pronto |
 | POST | `/auth/recuperar-senha` | Recebe `email`. Solicita UPDATE_PASSWORD para a conta ativa e responde 204 também para e-mail desconhecido | D56 | pronto |
 | POST | `/auth/sair` | Encerra a sessão no Keycloak, solicita a revogação do refresh token e expira o cookie. Responde 204 | D56 | pronto |
 | GET | `/tipos-pessoa` | Tipos de pessoa (público) | #19 | pronto |

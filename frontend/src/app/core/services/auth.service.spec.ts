@@ -93,6 +93,14 @@ describe('AuthService', () => {
     expect(auth.token()).toBe('novo');
   });
 
+  it('trata 204 de renovar (visitante sem sessão) como falha, sem estado de login', () => {
+    const erro = vi.fn();
+    auth.renovar().subscribe({ error: erro });
+    requisicao('renovar', 'POST', null).flush(null, { status: 204, statusText: 'No Content' });
+    expect(erro).toHaveBeenCalled();
+    expect(auth.token()).toBeNull();
+  });
+
   it('solicita recuperação por e-mail', () => {
     auth.recuperarSenha('ana@exemplo.com').subscribe();
     requisicao('recuperar-senha', 'POST', { email: 'ana@exemplo.com' }).flush(null, {
