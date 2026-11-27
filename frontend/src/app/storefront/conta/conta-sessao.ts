@@ -2,7 +2,6 @@ import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { ResumoConta } from '../../layout/storefront/account-menu/areas-conta';
 import { AuthService } from '../../core/services/auth.service';
-import { ClienteService } from '../../core/services/cliente.service';
 
 /**
  * Dados do menu da "Minha conta" (<app-account-menu>) e o "Sair" de verdade (#19).
@@ -10,14 +9,13 @@ import { ClienteService } from '../../core/services/cliente.service';
  */
 @Injectable()
 export class ContaSessao {
-  private readonly clientes = inject(ClienteService);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
   readonly resumo = signal<ResumoConta | null>(null);
 
   carregar(): void {
-    this.clientes.perfil().subscribe((p) => this.resumo.set({ nome: p.nome, detalhe: p.email }));
+    this.auth.eu().subscribe((p) => this.resumo.set({ nome: p.nome, detalhe: p.email }));
   }
 
   /** Atualiza o nome mostrado no menu depois de salvar o perfil. */
@@ -26,7 +24,7 @@ export class ContaSessao {
   }
 
   sair(): void {
-    this.auth.logout().subscribe({
+    this.auth.sair().subscribe({
       complete: () => void this.router.navigateByUrl('/entrar'),
       error: () => void this.router.navigateByUrl('/entrar'),
     });

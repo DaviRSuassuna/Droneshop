@@ -1,108 +1,161 @@
 import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter, Router } from '@angular/router';
-import { vi } from 'vitest';
+import { Router, provideRouter } from '@angular/router';
 import { environment } from '../../../environments/environment';
-import { CHAVE_TOKEN } from '../services/auth.service';
+import { AuthService } from '../services/auth.service';
 import { authInterceptor } from './auth.interceptor';
 
-function token(): string {
-  const payload = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }))
-    .replace(/=/g, '')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_');
-  return `eyJhbGciOiJSUzI1NiJ9.${payload}.assinatura`;
-}
-
-function storage(): Storage {
-  const dados = new Map<string, string>();
-  return {
-    get length() {
-      return dados.size;
-    },
-    clear: () => dados.clear(),
-    getItem: (chave) => dados.get(chave) ?? null,
-    key: (indice) => Array.from(dados.keys())[indice] ?? null,
-    removeItem: (chave) => void dados.delete(chave),
-    setItem: (chave, valor) => void dados.set(String(chave), String(valor)),
-  };
-}
-
 describe('authInterceptor', () => {
+  const api = environment.apiUrl;
+  const login = `${api}/auth/login`;
+  const renovar = `${api}/auth/renovar`;
+  const eu = `${api}/auth/eu`;
+  const perfil = `${api}/conta/perfil`;
+  const sessao = { accessToken: 'acesso', expiraEm: 300, papeis: ['CLIENTE'] };
+  const naoAutorizado = { status: 401, statusText: 'Unauthorized' };
+  let auth: AuthService;
+  let client: HttpClient;
   let http: HttpTestingController;
+  let router: Router;
 
   beforeEach(() => {
-    Object.defineProperty(globalThis, 'localStorage', { configurable: true, value: storage() });
-    Object.defineProperty(globalThis, 'sessionStorage', { configurable: true, value: storage() });
-    localStorage.setItem(CHAVE_TOKEN, token());
     TestBed.configureTestingModule({
       providers: [
+        provideRouter([]),
         provideHttpClient(withInterceptors([authInterceptor])),
         provideHttpClientTesting(),
-        provideRouter([]),
       ],
     });
+    auth = TestBed.inject(AuthService);
+    client = TestBed.inject(HttpClient);
     http = TestBed.inject(HttpTestingController);
+    router = TestBed.inject(Router);
+    vi.spyOn(router, 'navigate').mockResolvedValue(true);
+    vi.spyOn(router, 'url', 'get').mockReturnValue('/conta/perfil?aba=dados');
   });
 
   afterEach(() => http.verify());
 
-  it('envia o bearer token somente à API configurada', () => {
-    const client = TestBed.inject(HttpClient);
-    client.get(`${environment.apiUrl}/marcas`).subscribe();
-    client.get('https://servico-externo.example/dados').subscribe();
+  function autenticar() {
+    auth.login('ana@exemplo.com', 'senha-ficticia').subscribe();
+    http.expectOne(login).flush(sessao);
+  }
 
-    const apiRequest = http.expectOne(`${environment.apiUrl}/marcas`);
-    expect(apiRequest.request.headers.get('Authorization')).toBe(`Bearer ${localStorage.getItem(CHAVE_TOKEN)}`);
-    apiRequest.flush({});
-
-    const externa = http.expectOne('https://servico-externo.example/dados');
-    expect(externa.request.headers.has('Authorization')).toBe(false);
-    externa.flush({});
-  });
-
-  it('não envia token para o endpoint público de login', () => {
-    const client = TestBed.inject(HttpClient);
-    client.post(`${environment.apiUrl}/auth/login`, {}).subscribe();
-    const req = http.expectOne(`${environment.apiUrl}/auth/login`);
-    expect(req.request.headers.has('Authorization')).toBe(false);
+  it('anexa Bearer a /auth/eu e não envia o token a outro domínio', () => {
+    autenticar();
+    auth.eu().subscribe();
+    const req = http.expectOne(eu);
+    expect(req.request.headers.get('Authorization')).toBe('Bearer acesso');
     req.flush({});
+
+    const externa = 'https://exemplo.com/catalogo';
+    client.get(externa).subscribe();
+    const reqExterna = http.expectOne(externa);
+    expect(reqExterna.request.headers.has('Authorization')).toBe(false);
+    reqExterna.flush({});
   });
 
-  it('limpa a sessão e redireciona ao login quando a API responde 401 na área protegida', () => {
-    const router = TestBed.inject(Router);
-    vi.spyOn(router, 'navigate').mockResolvedValue(true);
-    vi.spyOn(router, 'url', 'get').mockReturnValue('/admin/marcas');
+  it('entrega o desafio OTP ao login sem tentar renovar ou navegar', () => {
+    autenticar();
+    const falha = vi.fn();
+    auth.login('ana@exemplo.com', 'senha-ficticia').subscribe({ error: falha });
+    const req = http.expectOne(login);
+    expect(req.request.headers.has('Authorization')).toBe(false);
+    req.flush({ codigo: 'otp-necessario' }, naoAutorizado);
 
-    TestBed.inject(HttpClient).get(`${environment.apiUrl}/marcas`).subscribe({
-      error: () => {},
-    });
-    http.expectOne(`${environment.apiUrl}/marcas`).flush(
-      { detail: 'Não autenticado.' },
-      { status: 401, statusText: 'Unauthorized' },
-    );
-
-    expect(localStorage.getItem(CHAVE_TOKEN)).toBeNull();
-    expect(router.navigate).toHaveBeenCalledWith(['/entrar'], {
-      queryParams: { returnUrl: '/admin/marcas' },
-    });
-  });
-
-  it('na loja pública, com a sessão vencida, refaz a chamada sem o token e não redireciona', () => {
-    const router = TestBed.inject(Router);
-    vi.spyOn(router, 'navigate').mockResolvedValue(true);
-    vi.spyOn(router, 'url', 'get').mockReturnValue('/drones');
-    let resposta: unknown;
-
-    TestBed.inject(HttpClient).get(`${environment.apiUrl}/carrinho`).subscribe((r) => (resposta = r));
-    http.expectOne(`${environment.apiUrl}/carrinho`).flush({}, { status: 401, statusText: 'Unauthorized' });
-    const repetida = http.expectOne(`${environment.apiUrl}/carrinho`);
-    expect(repetida.request.headers.has('Authorization')).toBe(false);
-    repetida.flush({ itens: [] });
-
-    expect(resposta).toEqual({ itens: [] });
-    expect(localStorage.getItem(CHAVE_TOKEN)).toBeNull();
+    http.expectNone(renovar);
+    expect(falha.mock.calls[0]?.[0].error.codigo).toBe('otp-necessario');
     expect(router.navigate).not.toHaveBeenCalled();
+  });
+
+  it('renova uma vez para dois 401 simultâneos e repete as chamadas com o novo Bearer', () => {
+    autenticar();
+    const sucesso = vi.fn();
+    client.get(perfil).subscribe(sucesso);
+    auth.eu().subscribe(sucesso);
+    http.expectOne(perfil).flush(null, naoAutorizado);
+    http.expectOne(eu).flush(null, naoAutorizado);
+    const refresh = http.expectOne(renovar);
+    expect(refresh.request.headers.has('Authorization')).toBe(false);
+    refresh.flush({ ...sessao, accessToken: 'novo' });
+    for (const url of [perfil, eu]) {
+      const repetida = http.expectOne(url);
+      expect(repetida.request.headers.get('Authorization')).toBe('Bearer novo');
+      repetida.flush({});
+    }
+    expect(sucesso).toHaveBeenCalledTimes(2);
+    expect(router.navigate).not.toHaveBeenCalled();
+  });
+
+  it('aproveita uma renovação concluída se um 401 do token antigo chegar depois', () => {
+    autenticar();
+    client.get(perfil).subscribe();
+    auth.eu().subscribe();
+    const atrasada = http.expectOne(eu);
+    http.expectOne(perfil).flush(null, naoAutorizado);
+    http.expectOne(renovar).flush({ ...sessao, accessToken: 'novo' });
+    http.expectOne(perfil).flush({});
+
+    atrasada.flush(null, naoAutorizado);
+    const repetida = http.expectOne(eu);
+    expect(repetida.request.headers.get('Authorization')).toBe('Bearer novo');
+    repetida.flush({});
+    http.expectNone(renovar);
+  });
+
+  it('não repete chamada de uma conta anterior ao entrar em outra', () => {
+    autenticar();
+    const falha = vi.fn();
+    client.get(perfil).subscribe({ error: falha });
+    const anterior = http.expectOne(perfil);
+    auth.login('bia@exemplo.com', 'senha-ficticia').subscribe();
+    http.expectOne(login).flush({ ...sessao, accessToken: 'outra-conta' });
+
+    anterior.flush(null, naoAutorizado);
+    http.expectNone(renovar);
+    http.expectNone(perfil);
+    expect(falha).toHaveBeenCalledOnce();
+    expect(auth.token()).toBe('outra-conta');
+    expect(router.navigate).not.toHaveBeenCalled();
+  });
+
+  it('limpa a sessão e redireciona com volta se a renovação falhar', () => {
+    autenticar();
+    const falha = vi.fn();
+    client.get(perfil).subscribe({ error: falha });
+    http.expectOne(perfil).flush(null, naoAutorizado);
+    http.expectOne(renovar).flush(null, naoAutorizado);
+    expect(falha).toHaveBeenCalledOnce();
+    expect(auth.token()).toBeNull();
+    expect(router.navigate).toHaveBeenCalledWith(['/entrar'], {
+      queryParams: { volta: '/conta/perfil?aba=dados' },
+    });
+  });
+
+  it('não renova de novo se a repetição também receber 401', () => {
+    autenticar();
+    const falha = vi.fn();
+    client.get(perfil).subscribe({ error: falha });
+    http.expectOne(perfil).flush(null, naoAutorizado);
+    http.expectOne(renovar).flush({ ...sessao, accessToken: 'novo' });
+    http.expectOne(perfil).flush(null, naoAutorizado);
+    http.expectNone(renovar);
+    expect(falha).toHaveBeenCalledOnce();
+    expect(auth.token()).toBeNull();
+    expect(router.navigate).toHaveBeenCalledWith(['/entrar'], {
+      queryParams: { volta: '/conta/perfil?aba=dados' },
+    });
+  });
+
+  it('exibe acesso negado no 403 e preserva a sessão', () => {
+    autenticar();
+    const falha = vi.fn();
+    client.get(perfil).subscribe({ error: falha });
+    http.expectOne(perfil).flush(null, { status: 403, statusText: 'Forbidden' });
+    http.expectNone(renovar);
+    expect(falha).toHaveBeenCalledOnce();
+    expect(auth.token()).toBe('acesso');
+    expect(router.navigate).toHaveBeenCalledWith(['/acesso-negado']);
   });
 });

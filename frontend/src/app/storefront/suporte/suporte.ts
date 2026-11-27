@@ -52,7 +52,7 @@ export class Suporte implements OnInit {
     'Outro',
   ];
 
-  readonly logado = signal(this.auth.autenticado());
+  readonly logado = signal(this.auth.temPapel('CLIENTE'));
   readonly pedidos = signal<PedidoListagem[]>([]);
   readonly meus = signal<Chamado[]>([]);
   readonly aberto = signal<Chamado | null>(null);

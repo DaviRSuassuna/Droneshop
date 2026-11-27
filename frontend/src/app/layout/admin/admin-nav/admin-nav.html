@@ -53,7 +53,7 @@
         </svg>
         Buscar no painel<kbd>/</kbd>
       </div>
-      <span class="avatar" title="Usuário do painel">DR</span>
+      <button class="btn sm" type="button" [disabled]="saindo()" (click)="sairDaConta()">Sair</button>
     </div>
   </div>
   <nav class="mnav" aria-label="Painel (celular)">

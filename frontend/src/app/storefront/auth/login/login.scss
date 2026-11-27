@@ -97,21 +97,6 @@
   margin: 0 0 6px;
   font: 300 26px var(--display);
 }
-.or {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--mute);
-  font-size: 12.5px;
-  margin: 18px 0;
-}
-.or::before,
-.or::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--line);
-}
 @media (max-width: 900px) {
   .auth {
     grid-template-columns: minmax(0, 1fr);
@@ -141,14 +126,10 @@
 .aside-art h1 {
   margin-top: 12px;
 }
-.login-options {
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-.login-options label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.recuperar {
+  padding: 0;
+  border: 0;
+  background: none;
   cursor: pointer;
 }
 .login-error {

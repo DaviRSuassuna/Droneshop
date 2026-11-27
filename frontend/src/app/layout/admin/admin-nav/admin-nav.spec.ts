@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 import { AdminNav } from './admin-nav';
 
 @Component({ template: '' })
@@ -9,7 +10,10 @@ class Vazia {}
 async function montar(url: string) {
   TestBed.configureTestingModule({
     imports: [AdminNav],
-    providers: [provideRouter([{ path: '**', component: Vazia }])],
+    providers: [
+      provideRouter([{ path: '**', component: Vazia }]),
+      { provide: AuthService, useValue: { sair: vi.fn() } },
+    ],
   });
   await TestBed.inject(Router).navigateByUrl(url);
   const fixture = TestBed.createComponent(AdminNav);

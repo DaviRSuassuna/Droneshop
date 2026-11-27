@@ -9,6 +9,7 @@ export interface ProblemDetail {
   title?: string;
   status?: number;
   detail?: string;
+  codigo?: string;
   instance?: string;
   timestamp?: string;
   traceId?: string;

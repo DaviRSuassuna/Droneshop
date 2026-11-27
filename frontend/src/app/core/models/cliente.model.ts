@@ -4,7 +4,7 @@ import { Municipio } from './endereco.model';
 /** Ids do enum TipoPessoa (GET /tipos-pessoa). */
 export const TIPO_PESSOA = { PF: 1, PJ: 2 } as const;
 
-/** Corpo do POST /clientes (criar conta). Documento e telefone podem ir com máscara. */
+/** Corpo do POST /auth/cadastro (criar conta). Documento e telefone podem ir com máscara. */
 export interface ContaDTO {
   nome: string;
   email: string;
@@ -16,7 +16,7 @@ export interface ContaDTO {
   consentimentos?: { tipo: string; versao: string }[];
 }
 
-/** Resposta do POST /clientes; id é o do usuário (o mesmo de /auth/me). */
+/** Resposta do POST /auth/cadastro; id é o do usuário (o mesmo de /auth/eu). */
 export interface Cliente {
   id: number;
   nome: string;

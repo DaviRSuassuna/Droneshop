@@ -38,97 +38,67 @@
           </button>
         </div>
         <div id="entrar" role="tabpanel" aria-labelledby="aba-entrar" [hidden]="aba() !== 'entrar'">
-          @if (tokenTemporario()) {
-            <h2>Verificação em duas etapas</h2>
-            <p class="formnote intro">Digite o código de 6 dígitos do seu app autenticador.</p>
-            <form class="fg" (ngSubmit)="confirmar2fa()">
+          <h2>Bem-vindo de volta</h2>
+          <p class="formnote intro">Entre para acompanhar pedidos, garantia e registro ANAC.</p>
+          <form class="fg" (ngSubmit)="entrar()">
+            <div class="f w6">
+              <label for="email">E-mail <span class="req">*</span></label
+              ><input
+                #emailLogin
+                id="email"
+                name="email"
+                type="email"
+                autocomplete="username"
+                [(ngModel)]="email"
+                (ngModelChange)="limparOtp()"
+                required
+              />
+            </div>
+            <div class="f w6">
+              <label for="senha">Senha <span class="req">*</span></label
+              ><input
+                id="senha"
+                name="senha"
+                type="password"
+                autocomplete="current-password"
+                [(ngModel)]="senha"
+                required
+              />
+            </div>
+            @if (otpNecessario()) {
               <div class="f w6">
-                <label for="codigo2fa">Código <span class="req">*</span></label
-                ><input
-                  id="codigo2fa"
-                  name="codigo2fa"
+                <label for="codigoOtp">Código do app autenticador <span class="req">*</span></label>
+                <input
+                  id="codigoOtp"
+                  name="codigoOtp"
                   inputmode="numeric"
                   autocomplete="one-time-code"
                   maxlength="6"
-                  [(ngModel)]="codigo2fa"
+                  [(ngModel)]="codigoOtp"
                   required
                 />
               </div>
-              @if (erro()) {
-                <p class="login-error check" role="alert">{{ erro() }}</p>
-              }
-              <button class="btn p check" type="submit" [disabled]="carregando()">Confirmar</button>
-            </form>
-          } @else if (escolhendoPerfil()) {
-            <h2>Com qual perfil entrar?</h2>
-            <p class="formnote intro">
-              Sua conta tem acesso de cliente e ao painel administrativo.
-            </p>
-            <div class="fg">
+            }
+            <div class="check">
               <button
-                class="btn p check"
+                class="tlink recuperar"
                 type="button"
                 [disabled]="carregando()"
-                (click)="escolher(PERFIL_ATIVO.CLIENTE)"
+                (click)="recuperarSenha(emailLogin)"
               >
-                Entrar como cliente
+                Esqueci minha senha
               </button>
-              <button
-                class="btn check"
-                type="button"
-                [disabled]="carregando()"
-                (click)="escolher(PERFIL_ATIVO.ADMINISTRATIVO)"
-              >
-                Entrar no painel administrativo
-              </button>
-              @if (erro()) {
-                <p class="login-error check" role="alert">{{ erro() }}</p>
-              }
             </div>
-          } @else {
-            <h2>Bem-vindo de volta</h2>
-            <p class="formnote intro">Entre para acompanhar pedidos, garantia e registro ANAC.</p>
-            <form class="fg" (ngSubmit)="entrar()">
-              <div class="f w6">
-                <label for="email">E-mail <span class="req">*</span></label
-                ><input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autocomplete="username"
-                  [(ngModel)]="email"
-                  required
-                />
-              </div>
-              <div class="f w6">
-                <label for="senha">Senha <span class="req">*</span></label
-                ><input
-                  id="senha"
-                  name="senha"
-                  type="password"
-                  autocomplete="current-password"
-                  [(ngModel)]="senha"
-                  required
-                />
-              </div>
-              <div class="check login-options">
-                <label
-                  ><input
-                    class="ck"
-                    name="manterConectado"
-                    type="checkbox"
-                    [(ngModel)]="manterConectado"
-                  />Manter conectado</label
-                ><span class="formnote">Recuperação de senha em breve.</span>
-              </div>
-              @if (erro()) {
-                <p class="login-error check" role="alert">{{ erro() }}</p>
-              }
-              <button class="btn p check" type="submit" [disabled]="carregando()">
-                {{ carregando() ? 'Entrando…' : 'Entrar' }}
-              </button>
-            </form>
-          }
+            @if (aviso()) {
+              <p class="formnote check" role="status">{{ aviso() }}</p>
+            }
+            @if (erro()) {
+              <p class="login-error check" role="alert">{{ erro() }}</p>
+            }
+            <button class="btn p check" type="submit" [disabled]="carregando()">
+              {{ carregando() ? 'Entrando…' : 'Entrar' }}
+            </button>
+          </form>
         </div>
         <div id="criar" role="tabpanel" aria-labelledby="aba-criar" [hidden]="aba() !== 'criar'">
           <h2>Criar conta</h2>

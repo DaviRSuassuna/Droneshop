@@ -66,7 +66,7 @@ for (const tela of TELAS) {
     });
 
     test('estrutura igual à do protótipo', async ({ page }, info) => {
-      await simularApi(page, tela.api);
+      await simularApi(page, tela.api, tela.area === 'admin');
       await abrirTela(page, tela.rota);
       await tela.preparar?.(page);
       const real = await lerEsqueleto(page);
@@ -99,7 +99,7 @@ for (const tela of TELAS) {
     });
 
     test('estilo igual ao do protótipo', async ({ page }) => {
-      await simularApi(page, tela.api);
+      await simularApi(page, tela.api, tela.area === 'admin');
       await abrirTela(page, tela.rota);
       await tela.preparar?.(page);
       const real = await lerTokens(page);
@@ -118,7 +118,7 @@ for (const tela of TELAS) {
 
     test('abre no celular sem rolagem horizontal (D20)', async ({ page }, info) => {
       await page.setViewportSize({ width: 390, height: 844 });
-      await simularApi(page, tela.api);
+      await simularApi(page, tela.api, tela.area === 'admin');
       await abrirTela(page, tela.rota);
       await tela.preparar?.(page);
       await info.attach('tela real (celular)', {
