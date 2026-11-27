@@ -21,10 +21,13 @@ public class UsuarioAtual {
     private boolean consultado;
 
     public Usuario usuario() {
-        Usuario atual = consultar();
-        if (atual == null || !atual.isAtivo())
+        if (!consultado) {
+            usuario = usuarios.porSub(token.getSubject());
+            consultado = true;
+        }
+        if (usuario == null || !usuario.isAtivo())
             throw new ForbiddenException("Usuário inativo ou sem cadastro local.");
-        return atual;
+        return usuario;
     }
 
     public Long id() {
@@ -33,13 +36,5 @@ public class UsuarioAtual {
 
     public Long idOuNulo() {
         return token.getSubject() == null ? null : id();
-    }
-
-    private Usuario consultar() {
-        if (!consultado) {
-            usuario = usuarios.porSub(token.getSubject());
-            consultado = true;
-        }
-        return usuario;
     }
 }

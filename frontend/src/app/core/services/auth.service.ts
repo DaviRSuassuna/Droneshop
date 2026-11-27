@@ -116,11 +116,8 @@ export class AuthService {
   }
 
   temPapel(papel: Papel): boolean {
-    const papeis = this.sessao()?.papeis;
-    return (
-      !!papeis &&
-      (papeis.includes(papel) || (papel === 'ADMINISTRATIVO' && papeis.includes('ADMIN')))
-    );
+    const papeis = this.sessao()?.papeis ?? [];
+    return papeis.includes(papel) || (papel === 'ADMINISTRATIVO' && papeis.includes('ADMIN'));
   }
 
   limparSessao(): void {

@@ -65,11 +65,11 @@ public class KeycloakFalso implements QuarkusTestResourceLifecycleManager {
             chaves = gerador.generateKeyPair();
             servidor = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
             emissor = "http://localhost:" + servidor.getAddress().getPort() + REALM;
-            semear(new Usuario("aeria-admin", "admin@aeria.com.br", "aeria123", "ADMIN"));
-            semear(new Usuario("aeria-cliente", "cliente@aeria.com.br", "aeria123", "CLIENTE"));
+            var admin = new Usuario("aeria-admin", "admin@aeria.com.br", "aeria123", "ADMIN");
+            var cliente = new Usuario("aeria-cliente", "cliente@aeria.com.br", "aeria123", "CLIENTE");
             var otp = new Usuario("aeria-admin-otp", "otp@aeria.com.br", "aeria123", "ADMIN");
             otp.otp = true;
-            semear(otp);
+            for (Usuario usuario : List.of(admin, cliente, otp)) usuarios.put(usuario.sub, usuario);
             servidor.createContext("/", this::atender);
             servidor.start();
             return Map.of("quarkus.oidc.auth-server-url", emissor, "aeria.keycloak.segredo", "segredo-falso");
@@ -85,10 +85,6 @@ public class KeycloakFalso implements QuarkusTestResourceLifecycleManager {
 
     public static List<String> acoesEnviadas(String email) {
         return EMAILS.getOrDefault(email, List.of());
-    }
-
-    private void semear(Usuario usuario) {
-        usuarios.put(usuario.sub, usuario);
     }
 
     private synchronized void atender(HttpExchange ex) throws IOException {
@@ -140,8 +136,7 @@ public class KeycloakFalso implements QuarkusTestResourceLifecycleManager {
         switch (operacao) {
             case "token" -> emitir(ex, form);
             case "logout" -> {
-                String sub = form.get("refresh_token");
-                sessoes.remove(sub);
+                sessoes.remove(form.get("refresh_token"));
                 responder(ex, 204, null);
             }
             case "revoke" -> {
@@ -209,7 +204,7 @@ public class KeycloakFalso implements QuarkusTestResourceLifecycleManager {
             String sub = UUID.randomUUID().toString();
             Usuario usuario = new Usuario(sub, email, dados.path("credentials").get(0).path("value").asText());
             usuario.ativo = dados.path("enabled").asBoolean();
-            semear(usuario);
+            usuarios.put(sub, usuario);
             ex.getResponseHeaders().set("Location", ADMIN + "/users/" + sub);
             responder(ex, 201, null);
             return;

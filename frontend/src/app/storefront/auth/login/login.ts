@@ -112,10 +112,6 @@ export class Login implements OnInit {
     });
   }
 
-  private termosObrigatorios(): { tipo: string; versao: string }[] {
-    return this.termos();
-  }
-
   erroCampo(campo: string): string | null {
     return this.errosCampo()[campo] ?? null;
   }
@@ -145,7 +141,7 @@ export class Login implements OnInit {
         idTipoPessoa: documento.length === 14 ? TIPO_PESSOA.PJ : TIPO_PESSOA.PF,
         documento,
         telefone: '',
-        consentimentos: this.termosObrigatorios(),
+        consentimentos: this.termos(),
       })
       .subscribe({
         next: () => {
