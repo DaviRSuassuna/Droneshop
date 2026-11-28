@@ -151,7 +151,9 @@ export class Login implements OnInit {
           this.senha = '';
           this.limparOtp();
           this.erro.set(null);
-          this.aviso.set('Conta criada. Verifique seu e-mail para ativar o acesso.');
+          this.aviso.set(
+            'Conta criada. Você já pode entrar; enviamos um e-mail para confirmar o endereço.',
+          );
           this.aba.set('entrar');
         },
         error: (resposta: HttpErrorResponse) => {
