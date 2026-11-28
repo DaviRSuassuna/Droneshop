@@ -1,6 +1,6 @@
 package br.com.droneshop.compra.resource;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
+import br.com.droneshop.identidade.resource.UsuarioAtual;
 
 import br.com.droneshop.compra.dto.CarrinhoResponseDTO;
 import br.com.droneshop.compra.dto.CupomCarrinhoRequestDTO;
@@ -33,10 +33,10 @@ public class CarrinhoResource {
     CarrinhoService carrinhos;
 
     @Inject
-    JsonWebToken token;
+    UsuarioAtual usuarioAtual;
 
     private Long usuarioOuNulo() {
-        return token == null || token.getSubject() == null ? null : Long.valueOf(token.getSubject());
+        return usuarioAtual.idOuNulo();
     }
 
     @POST
@@ -102,6 +102,6 @@ public class CarrinhoResource {
     @Path("vincular")
     @RolesAllowed("CLIENTE")
     public CarrinhoResponseDTO vincular(@HeaderParam(HEADER) String carrinho) {
-        return carrinhos.vincular(Long.valueOf(token.getSubject()), carrinho);
+        return carrinhos.vincular(usuarioAtual.id(), carrinho);
     }
 }

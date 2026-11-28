@@ -3,10 +3,9 @@ import { NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { switchMap } from 'rxjs';
 import { ContaService } from '../../../core/services/conta.service';
-import { AuthService, LoginResponse, PERFIL_ATIVO } from '../../../core/services/auth.service';
-import { ClienteService } from '../../../core/services/cliente.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { LoginResponse } from '../../../core/models/auth.model';
 import { TIPO_PESSOA } from '../../../core/models/cliente.model';
 import { ProblemDetail } from '../../../core/models/problem.model';
 import { somenteDigitos } from '../../../core/utils/documentos';
@@ -19,7 +18,6 @@ import { somenteDigitos } from '../../../core/utils/documentos';
 })
 export class Login implements OnInit {
   private readonly auth = inject(AuthService);
-  private readonly clientes = inject(ClienteService);
   private readonly conta = inject(ContaService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -28,15 +26,11 @@ export class Login implements OnInit {
 
   email = '';
   senha = '';
-  manterConectado = false;
   readonly carregando = signal(false);
   readonly erro = signal<string | null>(null);
-  /** Quem tem os dois perfis escolhe com qual entrar (#20). */
-  readonly escolhendoPerfil = signal(false);
-  /** 2FA ligado (#45): o login pede o código antes de entregar o token. */
-  readonly tokenTemporario = signal<string | null>(null);
-  codigo2fa = '';
-  protected readonly PERFIL_ATIVO = PERFIL_ATIVO;
+  readonly otpNecessario = signal(false);
+  readonly aviso = signal<string | null>(null);
+  codigoOtp = '';
 
   novo = { nome: '', email: '', documento: '', senha: '', confirmar: '' };
   readonly erroCriar = signal<string | null>(null);
@@ -44,36 +38,61 @@ export class Login implements OnInit {
 
   entrar(): void {
     if (this.carregando()) return;
-    this.carregando.set(true);
     this.erro.set(null);
-    this.auth.login(this.email.trim(), this.senha, this.manterConectado).subscribe({
+    this.aviso.set(null);
+    const codigoOtp = this.otpNecessario() ? this.codigoOtp.trim() : undefined;
+    if (codigoOtp !== undefined && !/^\d{6}$/.test(codigoOtp)) {
+      this.erro.set('Digite os 6 dígitos do seu app autenticador.');
+      return;
+    }
+
+    this.carregando.set(true);
+    this.auth.login(this.email.trim(), this.senha, codigoOtp).subscribe({
       next: (resposta) => {
         this.carregando.set(false);
+        this.senha = '';
+        this.limparOtp();
         this.irParaDestino(resposta);
       },
-      error: (resposta: { status?: number; error?: { detail?: string } }) => {
+      error: (resposta: HttpErrorResponse) => {
         this.carregando.set(false);
+        const problema = resposta.error as ProblemDetail | null;
+        if (resposta.status === 401 && problema?.codigo === 'otp-necessario') {
+          this.otpNecessario.set(true);
+          return;
+        }
         this.erro.set(
           resposta.status === 401
-            ? 'E-mail ou senha inválidos.'
-            : (resposta.error?.detail ?? 'Não foi possível entrar. Tente novamente.'),
+            ? codigoOtp
+              ? 'E-mail, senha ou código inválidos.'
+              : 'E-mail ou senha inválidos.'
+            : (problema?.detail ?? 'Não foi possível entrar. Tente novamente.'),
         );
       },
     });
   }
 
-  escolher(idPerfilAtivo: number): void {
-    if (this.carregando()) return;
+  limparOtp(): void {
+    this.otpNecessario.set(false);
+    this.codigoOtp = '';
+  }
+
+  recuperarSenha(campo: HTMLInputElement): void {
+    if (this.carregando() || !campo.reportValidity()) return;
     this.carregando.set(true);
-    this.auth.escolherPerfil(idPerfilAtivo).subscribe({
-      next: (resposta) => {
+    this.aviso.set(null);
+    this.erro.set(null);
+    this.auth.recuperarSenha(this.email.trim()).subscribe({
+      next: () => {
         this.carregando.set(false);
-        this.escolhendoPerfil.set(false);
-        this.irParaDestino(resposta);
+        this.aviso.set(
+          'Se houver uma conta ativa com este e-mail, você receberá um link para redefinir a senha.',
+        );
       },
-      error: () => {
+      error: (resposta: HttpErrorResponse) => {
         this.carregando.set(false);
-        this.erro.set('Não foi possível entrar com esse perfil. Tente novamente.');
+        const problema = resposta.error as ProblemDetail | null;
+        this.erro.set(problema?.detail ?? 'Não foi possível solicitar a recuperação de senha.');
       },
     });
   }
@@ -93,15 +112,10 @@ export class Login implements OnInit {
     });
   }
 
-  private termosObrigatorios(): { tipo: string; versao: string }[] {
-    return this.termos();
-  }
-
   erroCampo(campo: string): string | null {
     return this.errosCampo()[campo] ?? null;
   }
 
-  /** Cria a conta (o tipo de pessoa sai do tamanho do documento) e já entra. */
   criarConta(): void {
     if (this.carregando()) return;
     this.erroCriar.set(null);
@@ -119,21 +133,28 @@ export class Login implements OnInit {
 
     this.carregando.set(true);
     const email = this.novo.email.trim();
-    this.clientes
-      .criarConta({
+    this.auth
+      .cadastro({
         nome: this.novo.nome.trim(),
         email,
         senha: this.novo.senha,
         idTipoPessoa: documento.length === 14 ? TIPO_PESSOA.PJ : TIPO_PESSOA.PF,
         documento,
         telefone: '',
-        consentimentos: this.termosObrigatorios(),
+        consentimentos: this.termos(),
       })
-      .pipe(switchMap(() => this.auth.login(email, this.novo.senha, false)))
       .subscribe({
-        next: (resposta) => {
+        next: () => {
           this.carregando.set(false);
-          this.irParaDestino(resposta);
+          this.novo = { nome: '', email: '', documento: '', senha: '', confirmar: '' };
+          this.email = email;
+          this.senha = '';
+          this.limparOtp();
+          this.erro.set(null);
+          this.aviso.set(
+            'Conta criada. Você já pode entrar; enviamos um e-mail para confirmar o endereço.',
+          );
+          this.aba.set('entrar');
         },
         error: (resposta: HttpErrorResponse) => {
           this.carregando.set(false);
@@ -150,40 +171,11 @@ export class Login implements OnInit {
       });
   }
 
-  /** Volta para onde estava; sem destino, cliente vai para a conta e admin para o painel. */
-  confirmar2fa(): void {
-    const temporario = this.tokenTemporario();
-    if (!temporario || this.carregando()) return;
-    this.carregando.set(true);
-    this.erro.set(null);
-    this.auth.login2fa(temporario, this.codigo2fa.trim(), this.manterConectado).subscribe({
-      next: (resposta) => {
-        this.carregando.set(false);
-        this.tokenTemporario.set(null);
-        this.irParaDestino(resposta);
-      },
-      error: () => {
-        this.carregando.set(false);
-        this.erro.set('Código inválido. Confira o app autenticador.');
-      },
-    });
-  }
-
   private irParaDestino(resposta: LoginResponse): void {
-    if (resposta.precisa2fa && resposta.tokenTemporario) {
-      this.tokenTemporario.set(resposta.tokenTemporario);
-      return;
-    }
-    if (resposta.escolherPerfil) {
-      this.escolhendoPerfil.set(true);
-      return;
-    }
-    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
-    const padrao =
-      (resposta.perfilAtivo ?? resposta.perfis[0]) === 'ADMINISTRATIVO'
-        ? '/admin/marcas'
-        : '/conta/perfil';
-    const destino = returnUrl?.startsWith('/') && !returnUrl.startsWith('//') ? returnUrl : padrao;
+    const volta = this.route.snapshot.queryParamMap.get('volta');
+    const admin = resposta.papeis.includes('ADMINISTRATIVO') || resposta.papeis.includes('ADMIN');
+    const padrao = admin ? '/admin/marcas' : '/conta/perfil';
+    const destino = volta && /^\/(?![\/\\])/.test(volta) ? volta : padrao;
     void this.router.navigateByUrl(destino);
   }
 }

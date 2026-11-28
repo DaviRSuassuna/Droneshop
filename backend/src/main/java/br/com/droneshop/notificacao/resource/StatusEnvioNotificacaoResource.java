@@ -2,6 +2,7 @@ package br.com.droneshop.notificacao.resource;
 
 import br.com.droneshop.notificacao.model.StatusEnvioNotificacao;
 import br.com.droneshop.exception.ResourceNotFoundException;
+import jakarta.annotation.security.PermitAll;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -9,6 +10,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
 /** Rota de leitura do enum (D31). */
+@PermitAll
 @Path("status-envio-notificacao")
 @Produces(MediaType.APPLICATION_JSON)
 public class StatusEnvioNotificacaoResource {

@@ -1,6 +1,6 @@
 package br.com.droneshop.administracao.resource;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
+import br.com.droneshop.identidade.resource.UsuarioAtual;
 
 import br.com.droneshop.administracao.ModuloAdmin;
 import br.com.droneshop.administracao.dto.UsuarioAdministrativoRequestDTO;
@@ -35,7 +35,7 @@ public class UsuarioAdministrativoResource {
     UsuarioAdministrativoService service;
 
     @Inject
-    JsonWebToken jwt;
+    UsuarioAtual usuarioAtual;
 
     @POST
     public UsuarioAdministrativoResponseDTO criar(@Valid UsuarioAdministrativoRequestDTO dto) {
@@ -61,14 +61,7 @@ public class UsuarioAdministrativoResource {
     @PUT
     @Path("/{id}")
     public Response atualizar(@PathParam("id") Long id, @Valid UsuarioAdministrativoRequestDTO dto) {
-        Long currentUserId = null;
-        if (jwt != null && jwt.getSubject() != null && !jwt.getSubject().isBlank()) {
-            try {
-                currentUserId = Long.valueOf(jwt.getSubject());
-            } catch (NumberFormatException e) {
-                throw new ForbiddenException("Token inválido.");
-            }
-        }
+        Long currentUserId = usuarioAtual.id();
         service.atualizar(id, dto, currentUserId);
         return Response.noContent().build();
     }

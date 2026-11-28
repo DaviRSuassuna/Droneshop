@@ -1,5 +1,6 @@
 package br.com.droneshop.devolucao;
 
+import static br.com.droneshop.testes.Api.anonimo;
 import static br.com.droneshop.testes.Api.como;
 import static br.com.droneshop.testes.Api.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -26,6 +27,17 @@ import io.restassured.response.ValidatableResponse;
 @QuarkusTest
 @Tag("issue-37")
 class DevolucaoResourceTest {
+
+    @Test
+    void semTokenDa401() {
+        anonimo().when().get("/admin/devolucoes").then().statusCode(401);
+    }
+
+    @Test
+    void clienteRecebe403EmRotaAdministrativa() {
+        Fixtures.Cliente cliente = Fixtures.novoCliente();
+        como(cliente.token()).when().get("/admin/devolucoes").then().statusCode(403);
+    }
 
     static final long SOLICITADA = 1, EM_ANALISE = 2, APROVADA = 3, RECUSADA = 4, POSTAGEM_REVERSA = 5,
             RECEBIDA = 6, REEMBOLSADA = 7, CONCLUIDA = 8;

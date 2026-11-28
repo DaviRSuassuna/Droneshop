@@ -658,8 +658,8 @@ export const TELAS: Tela[] = [
     rota: '/entrar',
     etiqueta: 'issue-4',
     area: 'loja',
-    // Busca da loja (#43), recuperação de senha e acesso fictício não existem na tela atual.
-    ignorar: ['Buscar', 'Esqueci minha senha', 'Continuar como Marina (protótipo)'],
+    // O cookie do Keycloak controla a duração da sessão (D56).
+    ignorar: ['Buscar', 'Manter conectado', 'Continuar como Marina (protótipo)'],
   },
   {
     prototipo: 'conta-perfil.html',

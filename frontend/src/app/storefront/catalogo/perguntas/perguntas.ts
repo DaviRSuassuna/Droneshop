@@ -19,7 +19,7 @@ export class Perguntas {
   readonly slug = input.required<string>();
 
   readonly perguntas = signal<Pergunta[]>([]);
-  readonly logado = signal(this.auth.autenticado());
+  readonly logado = signal(this.auth.temPapel('CLIENTE'));
   readonly aviso = signal<string | null>(null);
   readonly respondendo = signal<number | null>(null);
 

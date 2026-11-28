@@ -15,19 +15,10 @@ note bottom of DefaultEntity
 end note
 
 class Usuario {
+  -nome: String
   -email: String
-  -senhaHash: String
-  -emailVerificado: boolean
+  -keycloakSub: String
   -ativo: boolean
-}
-
-enum ProvedorSocial {
-  GOOGLE
-}
-
-class ContaSocial {
-  -provedor: ProvedorSocial
-  -identificadorExterno: String
 }
 
 enum TipoPessoa {
@@ -59,18 +50,6 @@ class Municipio <<externo>> {
   módulo endereco (D32)
 }
 
-enum PerfilAtivo {
-  CLIENTE
-  ADMINISTRATIVO
-}
-
-class SessaoUsuario {
-  -perfilAtivo: PerfilAtivo
-  -token: String
-  -expiraEm: LocalDateTime
-  -revogada: boolean
-}
-
 class ConsentimentoLGPD {
   -tipo: String
   -versao: String
@@ -89,10 +68,16 @@ class ListaDesejos <<externo>> {
   aeria-compra.puml
 }
 
-Usuario "1" *-- "*" ContaSocial
+class Keycloak <<externo>> {
+  realm aeria
+  sub: String
+  papéis: CLIENTE, ADMINISTRATIVO, ADMIN
+  credenciais e sessões
+}
+
+Usuario --> "1" Keycloak : keycloakSub
 Usuario "1" o-- "0..1" PerfilCliente
 Usuario "1" o-- "0..1" PerfilAdministrativo
-Usuario "1" *-- "*" SessaoUsuario
 Usuario "1" *-- "*" ConsentimentoLGPD
 PerfilCliente "1" *-- "*" EnderecoCliente
 EnderecoCliente *-- "1" Endereco

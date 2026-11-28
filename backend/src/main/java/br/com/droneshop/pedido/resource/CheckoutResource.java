@@ -1,6 +1,6 @@
 package br.com.droneshop.pedido.resource;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
+import br.com.droneshop.identidade.resource.UsuarioAtual;
 
 import br.com.droneshop.compra.resource.CarrinhoResource;
 import br.com.droneshop.pedido.dto.CheckoutRequestDTO;
@@ -25,7 +25,7 @@ import jakarta.ws.rs.core.MediaType;
 public class CheckoutResource {
 
     @Inject
-    JsonWebToken token;
+    UsuarioAtual usuarioAtual;
 
     @Inject
     CheckoutService checkout;
@@ -33,6 +33,6 @@ public class CheckoutResource {
     @POST
     public PedidoResponseDTO fechar(@HeaderParam(CarrinhoResource.HEADER) String carrinho,
             @Valid CheckoutRequestDTO dto) {
-        return PedidoResponseMapper.toResponse(checkout.fechar(Long.valueOf(token.getSubject()), carrinho, dto));
+        return PedidoResponseMapper.toResponse(checkout.fechar(usuarioAtual.id(), carrinho, dto));
     }
 }

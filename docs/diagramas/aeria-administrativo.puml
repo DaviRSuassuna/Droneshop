@@ -29,8 +29,6 @@ package "Papéis e Permissões" {
 
   class PerfilAdministrativo {
     -papel: PapelAdministrativo
-    -twoFAHabilitado: boolean
-    -twoFASecret: String
   }
 
   enum ModuloSistema {

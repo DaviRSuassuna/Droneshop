@@ -1,101 +1,133 @@
 package br.com.droneshop.identidade.resource;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
-
+import br.com.droneshop.administracao.service.AuditoriaInterceptor;
 import br.com.droneshop.compra.resource.CarrinhoResource;
 import br.com.droneshop.compra.service.CarrinhoService;
 import br.com.droneshop.exception.ResourceNotFoundException;
-import br.com.droneshop.identidade.dto.GoogleLoginRequestDTO;
-import br.com.droneshop.identidade.dto.Login2faRequestDTO;
+import br.com.droneshop.identidade.dto.ClienteResponseDTO;
+import br.com.droneshop.identidade.dto.ContaRequestDTO;
 import br.com.droneshop.identidade.dto.LoginRequestDTO;
 import br.com.droneshop.identidade.dto.LoginResponseDTO;
-import br.com.droneshop.identidade.dto.PerfilAtivoRequestDTO;
+import br.com.droneshop.identidade.dto.RecuperarSenhaRequestDTO;
 import br.com.droneshop.identidade.dto.UsuarioResponseDTO;
+import br.com.droneshop.identidade.mapper.ClienteMapper;
 import br.com.droneshop.identidade.service.AutenticacaoService;
-import br.com.droneshop.identidade.service.GoogleService;
-import io.quarkus.security.Authenticated;
+import br.com.droneshop.identidade.service.AutenticacaoService.Sessao;
+import br.com.droneshop.identidade.service.ClienteService;
+import io.quarkus.hibernate.orm.PersistenceUnitExtension;
+import io.quarkus.security.identity.SecurityIdentity;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.CookieParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
 
 @Path("auth")
 @Produces(MediaType.APPLICATION_JSON)
 public class AutenticacaoResource {
 
+    private static final String REFRESH = "aeria_refresh";
+
     @Inject
     AutenticacaoService autenticacao;
 
     @Inject
-    JsonWebToken token;
+    ClienteService clientes;
+
+    @Inject
+    UsuarioAtual usuarioAtual;
+
+    @Inject
+    SecurityIdentity identidade;
 
     @Inject
     CarrinhoService carrinhos;
 
     @Inject
-    GoogleService google;
+    @PersistenceUnitExtension
+    AuditoriaInterceptor auditoria;
 
     @POST
     @Path("login")
+    @PermitAll
     @Consumes(MediaType.APPLICATION_JSON)
-    public LoginResponseDTO login(@Valid LoginRequestDTO dto, @HeaderParam(CarrinhoResource.HEADER) String carrinho) {
-        LoginResponseDTO resposta = autenticacao.login(dto);
-        // Login com o carrinho anônimo no header já vincula (RF17, #24)
-        if (carrinho != null && !carrinho.isBlank() && resposta.token() != null && resposta.perfis().contains("CLIENTE")) {
+    public Response login(@NotNull @Valid LoginRequestDTO dto, @HeaderParam(CarrinhoResource.HEADER) String carrinho) {
+        Sessao sessao = autenticacao.login(dto.email(), dto.senha(), dto.codigoOtp());
+        if (sessao.papeis().contains("ADMINISTRATIVO"))
+            auditoria.registrarLogin(sessao.usuario());
+        if (carrinho != null && !carrinho.isBlank() && sessao.papeis().contains("CLIENTE")) {
             try {
-                carrinhos.vincular(resposta.usuario().id(), carrinho);
+                carrinhos.vincular(sessao.usuario().getId(), carrinho);
             } catch (ResourceNotFoundException e) {
-                // token de carrinho desconhecido não impede o login
+                // Um carrinho expirado não impede o login.
             }
         }
-        return resposta;
+        return comSessao(sessao);
     }
 
     @POST
-    @Path("login/2fa")
+    @Path("cadastro")
+    @PermitAll
     @Consumes(MediaType.APPLICATION_JSON)
-    public LoginResponseDTO login2fa(Login2faRequestDTO dto) {
-        return autenticacao.login2fa(dto == null ? null : dto.tokenTemporario(), dto == null ? null : dto.codigo());
-    }
-
-    // Login com Google: o ID token do Google Identity Services é validado no backend (#47, D37)
-    @POST
-    @Path("google")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public LoginResponseDTO google(@Valid GoogleLoginRequestDTO dto) {
-        return google.entrar(dto.idToken());
+    public ClienteResponseDTO cadastro(@NotNull @Valid ContaRequestDTO dto) {
+        return ClienteMapper.toConta(clientes.criarConta(dto));
     }
 
     @GET
-    @Path("me")
-    @Authenticated
-    public UsuarioResponseDTO me() {
-        return autenticacao.usuarioAtivo(Long.valueOf(token.getSubject()));
+    @Path("eu")
+    @RolesAllowed({"CLIENTE", "ADMINISTRATIVO", "ADMIN"})
+    public UsuarioResponseDTO eu() {
+        var usuario = usuarioAtual.usuario();
+        var papeis = AutenticacaoService.PAPEIS.stream().filter(identidade::hasRole).toList();
+        return new UsuarioResponseDTO(usuario.getId(), usuario.getNome(), usuario.getEmail(), papeis);
     }
 
-    // Token de quem ainda vai escolher o perfil (sem groups) também chega aqui (#20).
     @POST
-    @Path("perfil-ativo")
-    @Authenticated
+    @Path("renovar")
+    @PermitAll
+    public Response renovar(@CookieParam(REFRESH) String refresh) {
+        // Visitante sem sessão (vitrine, catálogo) não é erro: 401 fica para cookie vencido ou revogado.
+        if (refresh == null || refresh.isBlank()) return Response.noContent().build();
+        return comSessao(autenticacao.renovar(refresh));
+    }
+
+    @POST
+    @Path("recuperar-senha")
+    @PermitAll
     @Consumes(MediaType.APPLICATION_JSON)
-    public LoginResponseDTO perfilAtivo(@Valid PerfilAtivoRequestDTO dto) {
-        return autenticacao.escolherPerfil(Long.valueOf(token.getSubject()), SessaoAtual.id(token),
-                dto.idPerfilAtivo());
+    public Response recuperarSenha(@NotNull @Valid RecuperarSenhaRequestDTO dto) {
+        autenticacao.recuperarSenha(dto.email());
+        return Response.noContent().build();
     }
 
     @POST
-    @Path("logout")
-    @Authenticated
-    public Response logout() {
-        Long sid = SessaoAtual.id(token);
-        if (sid != null)
-            autenticacao.revogar(Long.valueOf(token.getSubject()), sid);
-        return Response.noContent().build();
+    @Path("sair")
+    @PermitAll
+    public Response sair(@CookieParam(REFRESH) String refresh) {
+        autenticacao.sair(refresh);
+        return Response.noContent().cookie(cookie("", 0)).build();
+    }
+
+    private static Response comSessao(Sessao sessao) {
+        var tokens = sessao.tokens();
+        return Response.ok(new LoginResponseDTO(tokens.accessToken(), tokens.expiraEm(), sessao.papeis()))
+                .cookie(cookie(tokens.refreshToken(), Math.toIntExact(tokens.refreshExpiraEm())))
+                .header("Cache-Control", "no-store")
+                .build();
+    }
+
+    private static NewCookie cookie(String valor, int duracao) {
+        return new NewCookie.Builder(REFRESH).value(valor).path("/auth")
+                .httpOnly(true).secure(true).sameSite(NewCookie.SameSite.STRICT).maxAge(duracao).build();
     }
 }

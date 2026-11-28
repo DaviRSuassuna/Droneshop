@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { clienteAuthGuard } from './core/guards/cliente-auth.guard';
-import { adminAuthGuard } from './core/guards/admin-auth.guard';
+import { authGuard } from './core/guards/auth.guard';
+import { papelGuard } from './core/guards/papel.guard';
 import { AdminLayout } from './layout/admin/admin-layout';
 import { StorefrontLayout } from './layout/storefront/storefront-layout';
 import { TIPO_PRODUTO } from './core/models/produto.model';
@@ -9,7 +9,7 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminLayout,
-    canActivateChild: [adminAuthGuard],
+    canActivateChild: [authGuard, papelGuard(['ADMINISTRATIVO'])],
     children: [
       {
         path: '',
@@ -324,7 +324,7 @@ export const routes: Routes = [
       // loja do cliente (trilha A): Minha conta
       {
         path: 'conta',
-        canActivate: [clienteAuthGuard],
+        canActivateChild: [authGuard, papelGuard(['CLIENTE'])],
         children: [
           { path: '', pathMatch: 'full', redirectTo: 'perfil' },
           {
@@ -375,15 +375,21 @@ export const routes: Routes = [
       },
       {
         path: 'checkout',
-        canActivate: [clienteAuthGuard],
+        canActivate: [authGuard, papelGuard(['CLIENTE'])],
         loadComponent: () =>
           import('./storefront/compra/checkout/checkout').then((m) => m.Checkout),
       },
       {
         path: 'pedido-confirmado/:id',
-        canActivate: [clienteAuthGuard],
+        canActivate: [authGuard, papelGuard(['CLIENTE'])],
         loadComponent: () =>
           import('./storefront/compra/confirmacao/confirmacao').then((m) => m.Confirmacao),
+      },
+      {
+        path: 'acesso-negado',
+        title: 'Acesso negado | Aeria Drones',
+        loadComponent: () =>
+          import('./storefront/auth/acesso-negado').then((m) => m.AcessoNegado),
       },
       {
         path: 'entrar',

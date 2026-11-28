@@ -1,6 +1,7 @@
 package br.com.droneshop.catalogo.resource;
 
 import br.com.droneshop.catalogo.service.MidiaProdutoService;
+import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -11,6 +12,7 @@ import jakarta.ws.rs.core.Response;
 
 // Publico: a vitrine e o <img> do admin carregam o arquivo sem token. O bucket e privado (D42):
 // a API le o objeto e devolve; ?download=true baixa com Content-Disposition: attachment.
+@PermitAll
 @Path("midias/arquivos")
 public class ArquivoMidiaResource {
 

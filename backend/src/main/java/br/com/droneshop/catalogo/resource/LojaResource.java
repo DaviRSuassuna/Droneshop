@@ -13,6 +13,7 @@ import br.com.droneshop.catalogo.dto.ProdutoLojaResumoDTO;
 import br.com.droneshop.catalogo.service.LojaComplementoService;
 import br.com.droneshop.catalogo.service.LojaService;
 import br.com.droneshop.dto.PageResponse;
+import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
@@ -23,6 +24,7 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
 /** Rotas públicas da vitrine (#21): só o que está ATIVO aparece (RN17). */
+@PermitAll
 @Path("loja")
 @Produces(MediaType.APPLICATION_JSON)
 public class LojaResource {

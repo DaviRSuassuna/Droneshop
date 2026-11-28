@@ -61,17 +61,6 @@ describe('ContaService', () => {
     expect(ex.request.body).toEqual({ senha: 'segredo' });
   });
 
-  it('2FA: gera, confirma e desliga (#45)', () => {
-    service.gerar2fa().subscribe();
-    expect(http.expectOne(`${api}/conta/2fa`).request.method).toBe('POST');
-    service.confirmar2fa('123456').subscribe();
-    expect(http.expectOne(`${api}/conta/2fa/confirmar`).request.body).toEqual({ codigo: '123456' });
-    service.desligar2fa('123456').subscribe();
-    const del = http.expectOne(`${api}/conta/2fa`);
-    expect(del.request.method).toBe('DELETE');
-    expect(del.request.body).toEqual({ codigo: '123456' });
-  });
-
   it('favoritos: mover, compartilhar e lista pública (#86)', () => {
     service.moverFavoritosParaCarrinho().subscribe();
     expect(http.expectOne(`${api}/conta/desejos/mover-para-carrinho`).request.method).toBe('POST');

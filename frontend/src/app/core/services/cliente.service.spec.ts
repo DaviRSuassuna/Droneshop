@@ -3,7 +3,6 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { environment } from '../../../environments/environment';
 import { ClienteService } from './cliente.service';
-import { ContaDTO } from '../models/cliente.model';
 
 describe('ClienteService', () => {
   const api = environment.apiUrl;
@@ -25,22 +24,6 @@ describe('ClienteService', () => {
     const req = http.expectOne(`${api}/tipos-pessoa`);
     expect(req.request.method).toBe('GET');
     req.flush([]);
-  });
-
-  it('cria a conta com POST /clientes', () => {
-    const conta: ContaDTO = {
-      nome: 'Ana Lima',
-      email: 'ana@exemplo.com',
-      senha: 'segredo123',
-      idTipoPessoa: 1,
-      documento: '529.982.247-25',
-      telefone: '',
-    };
-    service.criarConta(conta).subscribe();
-    const req = http.expectOne(`${api}/clientes`);
-    expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual(conta);
-    req.flush({ id: 20 });
   });
 
   it('lê e altera o perfil do cliente logado', () => {

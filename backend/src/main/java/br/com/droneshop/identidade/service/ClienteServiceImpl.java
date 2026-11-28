@@ -10,7 +10,7 @@ import br.com.droneshop.identidade.model.Usuario;
 import br.com.droneshop.identidade.repository.PerfilClienteRepository;
 import br.com.droneshop.identidade.repository.UsuarioRepository;
 import br.com.droneshop.util.Documentos;
-import io.quarkus.elytron.security.common.BcryptUtil;
+import br.com.droneshop.identidade.client.KeycloakClient;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -18,6 +18,9 @@ import jakarta.ws.rs.ForbiddenException;
 
 @ApplicationScoped
 public class ClienteServiceImpl implements ClienteService {
+
+    @Inject
+    KeycloakClient keycloak;
 
     @Inject
     LgpdService lgpd;
@@ -48,7 +51,8 @@ public class ClienteServiceImpl implements ClienteService {
         Usuario usuario = new Usuario();
         usuario.setNome(dto.nome().trim());
         usuario.setEmail(dto.email());
-        usuario.setSenhaHash(BcryptUtil.bcryptHash(dto.senha()));
+        String sub = keycloak.criar(usuario.getNome(), dto.email(), dto.senha(), true, false, "CLIENTE");
+        usuario.setKeycloakSub(sub);
         usuario.setAtivo(true);
         usuarios.persist(usuario);
 
@@ -61,6 +65,8 @@ public class ClienteServiceImpl implements ClienteService {
         perfis.persist(perfil);
         usuario.setPerfilCliente(perfil);
         lgpd.registrar(usuario, dto.consentimentos());
+        usuarios.flush();
+        keycloak.enviarAcao(sub, "VERIFY_EMAIL");
         return perfil;
     }
 
@@ -78,15 +84,17 @@ public class ClienteServiceImpl implements ClienteService {
         PerfilCliente perfil = perfilDoUsuario(idUsuario);
         perfil.setNome(dto.nome().trim());
         perfil.setTelefone(Documentos.somenteDigitosOuNulo(dto.telefone()));
-        perfil.getUsuario().setNome(dto.nome().trim());
+        Usuario usuario = perfil.getUsuario();
+        usuario.setNome(dto.nome().trim());
+        keycloak.atualizar(usuario.getKeycloakSub(), usuario.getNome(), usuario.getEmail(), usuario.isAtivo());
     }
 
     @Override
     @Transactional
     public void trocarSenha(Long idUsuario, SenhaRequestDTO dto) {
         Usuario usuario = perfilDoUsuario(idUsuario).getUsuario();
-        if (usuario.getSenhaHash() == null || !BcryptUtil.matches(dto.senhaAtual(), usuario.getSenhaHash()))
+        if (!keycloak.confirmarSenha(usuario.getEmail(), dto.senhaAtual()))
             throw ValidationException.of("senhaAtual", "Senha atual incorreta.");
-        usuario.setSenhaHash(BcryptUtil.bcryptHash(dto.senhaNova()));
+        keycloak.trocarSenha(usuario.getKeycloakSub(), dto.senhaNova());
     }
 }

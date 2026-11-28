@@ -22,7 +22,7 @@ export class Avaliacoes {
   readonly drone = input(true);
 
   readonly dados = signal<AvaliacoesProduto>({ media: null, quantidade: 0, itens: [] });
-  readonly logado = signal(this.auth.autenticado());
+  readonly logado = signal(this.auth.temPapel('CLIENTE'));
   readonly aviso = signal<string | null>(null);
   readonly notas = [5, 4, 3, 2, 1];
 

@@ -22,11 +22,16 @@ public class Usuario extends DefaultEntity {
     @Column(nullable = false, unique = true, length = 254)
     private String email;
 
-    @Column(name = "senha_hash", length = 60)
-    private String senhaHash;
+    @Column(name = "keycloak_sub", nullable = false, unique = true, length = 100)
+    private String keycloakSub;
 
-    @Column(name = "email_verificado", nullable = false)
-    private boolean emailVerificado;
+    public String getKeycloakSub() {
+        return keycloakSub;
+    }
+
+    public void setKeycloakSub(String keycloakSub) {
+        this.keycloakSub = keycloakSub;
+    }
 
     @Column(nullable = false)
     private boolean ativo;
@@ -59,22 +64,6 @@ public class Usuario extends DefaultEntity {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getSenhaHash() {
-        return senhaHash;
-    }
-
-    public void setSenhaHash(String senhaHash) {
-        this.senhaHash = senhaHash;
-    }
-
-    public boolean isEmailVerificado() {
-        return emailVerificado;
-    }
-
-    public void setEmailVerificado(boolean emailVerificado) {
-        this.emailVerificado = emailVerificado;
     }
 
     public boolean isAtivo() {

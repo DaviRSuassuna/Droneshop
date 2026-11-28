@@ -22,8 +22,8 @@ As telas citadas são as do [protótipo](design/README.md).
 | Exclusão | excluir o que não existe responde 404 (D22) |
 | Rascunho | `RASCUNHO` (id 1) aceita campos vazios; obrigatórios só ao publicar (D21, D28) |
 | Rotinas | Rotinas agendadas também rodam por `POST /admin/rotinas/{nome}?referencia=` (D33) |
-| Integrações | Mercado Pago, agregador de frete, Resend e Google têm REST Client com URL configurável; nos testes apontam para falsos em `src/test` (D34) |
-| Autenticação | JWT (#4). Rotas do admin exigem perfil administrativo e a permissão do módulo (#5); rotas de `/conta` exigem perfil de cliente. Até a #4, nada é protegido. Nos testes, `testes/Api.java` entra como o admin semente `admin@aeria.com.br` (D25) |
+| Integrações | Mercado Pago, agregador de frete e Resend têm REST Client com URL configurável; nos testes apontam para falsos em `src/test` (D34) |
+| Autenticação | Bearer JWT emitido pelo Keycloak (D56). Rotas administrativas exigem ADMINISTRATIVO (também concedido por ADMIN) e a permissão local do módulo. Rotas de conta exigem CLIENTE. Falhas de autenticação e autorização respondem 401 e 403 em Problem. |
 | Prefixos | cadastro do admin na raiz (`/marcas`); leitura pública da loja em `/loja`; dados do cliente logado em `/conta` |
 
 ## Endereço
@@ -96,7 +96,6 @@ As telas citadas são as do [protótipo](design/README.md).
 | GET PUT | `/admin/configuracao` | parâmetros da loja (registro único) | #6 | pronto |
 | GET | `/loja/configuracao` | o que a loja mostra da configuração | #21 | a fazer |
 | GET | `/admin/auditoria?idUsuario=&entidade=` | Ver log de auditoria | #41 | a fazer |
-| POST · DELETE · POST | `/conta/2fa` · `/conta/2fa/confirmar` · `/auth/login/2fa` | 2FA opcional do admin | #45 | a fazer |
 | GET PUT · GET | `/admin/templates-email` · `/admin/templates-email/{codigo}` · `/admin/notificacoes` | templates editáveis e histórico de envio | #32 | a fazer |
 | GET | `/admin/termos-buscados` | relatório de buscas | #43 | a fazer |
 
@@ -104,18 +103,24 @@ As telas citadas são as do [protótipo](design/README.md).
 
 | Método | Rota | Uso | Issue | Situação |
 |---|---|---|---|---|
-| POST | `/auth/login` · `/auth/logout` | Entrar (e-mail e senha, D1) | #4 | a fazer |
-| GET | `/auth/me` | quem está logado e perfis disponíveis | #4 | a fazer |
-| POST | `/auth/perfil-ativo` | escolher perfil cliente/admin no login | #20 | a fazer |
-| GET DELETE | `/conta/sessoes` · `/conta/sessoes/{id}` | sessões ativas e revogação | #20 | a fazer |
-| GET · POST | `/tipos-pessoa` · `/clientes` | Tipos de pessoa e criar conta (público) | #19 | pronto |
+| POST | `/auth/login` | Recebe `email`, `senha` e `codigoOtp` opcional. Responde 200 com `accessToken`, `expiraEm` em segundos e `papeis`. Se o OTP é exigido e está ausente, responde 401 Problem com `codigo` igual a `otp-necessario` | D56 | pronto |
+| POST | `/auth/cadastro` | Preserva corpo, resposta 200 e validações do cadastro #19, incluindo documento e consentimentos. Cria papel CLIENTE e solicita VERIFY_EMAIL no Keycloak | D56 | pronto |
+| GET | `/auth/eu` | Responde 200 com `id` local, `nome`, `email` e `papeis`. Exige Bearer | D56 | pronto |
+| POST | `/auth/renovar` | Responde 200 com o mesmo corpo do login e troca o cookie. Sem cookie (visitante) responde 204 sem corpo; cookie inválido, vencido ou revogado responde 401 Problem | D56 | pronto |
+| POST | `/auth/recuperar-senha` | Recebe `email`. Solicita UPDATE_PASSWORD para a conta ativa e responde 204 também para e-mail desconhecido | D56 | pronto |
+| POST | `/auth/sair` | Encerra a sessão no Keycloak, solicita a revogação do refresh token e expira o cookie. Responde 204 | D56 | pronto |
+| GET | `/tipos-pessoa` | Tipos de pessoa (público) | #19 | pronto |
 | GET PUT | `/conta/perfil` | Perfil e dados | #19 | pronto |
 | PUT | `/conta/senha` | Atualizar senha | #19 | pronto |
 | GET POST · PUT DELETE · PATCH | `/conta/enderecos` · `/conta/enderecos/{id}` · `/conta/enderecos/{id}/principal` | Endereços | #19 | pronto |
-| POST | `/auth/verificar-email/enviar` · `/auth/verificar-email` · `/auth/recuperar-senha` · `/auth/redefinir-senha` | tokens de e-mail e senha | #33 | a fazer |
-| POST | `/auth/google` | login com Google por ID token (D6, D37) | #47 | a fazer |
 | GET PUT · POST | `/conta/consentimentos` · `/conta/exclusao` | LGPD: consentimentos e exclusão/anonimização | #46 | a fazer |
 | GET PUT · GET | `/conta/preferencias-notificacao` · `/descadastro/{token}` | preferências e descadastro de e-mail | #42 | a fazer |
+
+Login e renovação enviam `aeria_refresh` com `HttpOnly; Secure; SameSite=Strict; Path=/auth`.
+Envie credenciais nas chamadas de autenticação quando a origem do frontend for diferente da API.
+No Compose local, o Keycloak escuta em `http://localhost:8180` e o Mailpit recebe os e-mails em `http://localhost:8025`.
+Para exercitar o OTP local, cadastre a conta semente `otp@aeria.com.br` no autenticador com a chave Base32 `GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ` (TOTP de 6 dígitos, período de 30 segundos, SHA-1).
+O backend em produção usa `AERIA_KEYCLOAK_URL` para a URL do realm e `AERIA_KEYCLOAK_CLIENT_SECRET` para o segredo do client.
 
 ## Loja (storefront, leitura pública)
 

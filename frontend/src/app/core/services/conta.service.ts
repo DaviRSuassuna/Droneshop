@@ -75,18 +75,6 @@ export class ContaService {
     return this.http.post<void>(`${this.api}/conta/exclusao`, { senha });
   }
 
-  gerar2fa(): Observable<{ secret: string; otpauthUrl: string }> {
-    return this.http.post<{ secret: string; otpauthUrl: string }>(`${this.api}/conta/2fa`, null);
-  }
-
-  confirmar2fa(codigo: string): Observable<void> {
-    return this.http.post<void>(`${this.api}/conta/2fa/confirmar`, { codigo });
-  }
-
-  desligar2fa(codigo: string): Observable<void> {
-    return this.http.delete<void>(`${this.api}/conta/2fa`, { body: { codigo } });
-  }
-
   moverFavoritosParaCarrinho(): Observable<MoverParaCarrinho> {
     return this.http.post<MoverParaCarrinho>(`${this.api}/conta/desejos/mover-para-carrinho`, null);
   }

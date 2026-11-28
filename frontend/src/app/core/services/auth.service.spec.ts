@@ -2,139 +2,133 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { environment } from '../../../environments/environment';
-import { AuthService, CHAVE_TOKEN } from './auth.service';
-
-function token(exp: number): string {
-  const payload = btoa(JSON.stringify({ exp }))
-    .replace(/=/g, '')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_');
-  return `eyJhbGciOiJSUzI1NiJ9.${payload}.assinatura`;
-}
-
-function storage(): Storage {
-  const dados = new Map<string, string>();
-  return {
-    get length() {
-      return dados.size;
-    },
-    clear: () => dados.clear(),
-    getItem: (chave) => dados.get(chave) ?? null,
-    key: (indice) => Array.from(dados.keys())[indice] ?? null,
-    removeItem: (chave) => void dados.delete(chave),
-    setItem: (chave, valor) => void dados.set(String(chave), String(valor)),
-  };
-}
+import { LoginResponse } from '../models/auth.model';
+import { ContaDTO } from '../models/cliente.model';
+import { AuthService } from './auth.service';
+import { CHAVE_CARRINHO, HEADER_CARRINHO } from './carrinho.service';
 
 describe('AuthService', () => {
-  let service: AuthService;
-  let http: HttpTestingController | undefined;
+  const base = `${environment.apiUrl}/auth`;
+  const sessao: LoginResponse = { accessToken: 'acesso', expiraEm: 300, papeis: ['ADMIN'] };
+  let auth: AuthService;
+  let http: HttpTestingController;
 
   beforeEach(() => {
-    Object.defineProperty(globalThis, 'localStorage', { configurable: true, value: storage() });
-    Object.defineProperty(globalThis, 'sessionStorage', { configurable: true, value: storage() });
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting()],
     });
-    service = TestBed.inject(AuthService);
+    auth = TestBed.inject(AuthService);
     http = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => http?.verify());
+  afterEach(() => {
+    http.verify();
+    localStorage.removeItem(CHAVE_CARRINHO);
+  });
 
-  it('autentica e guarda o token na sessão por padrão', () => {
-    const accessToken = token(Math.floor(Date.now() / 1000) + 3600);
-    service.login('admin@aeria.com.br', 'aeria123', false).subscribe();
-    const req = http!.expectOne(`${environment.apiUrl}/auth/login`);
-    expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ email: 'admin@aeria.com.br', senha: 'aeria123' });
-    req.flush({
-      token: accessToken,
-      expiraEm: '2026-10-15T06:00:00',
-      usuario: {
-        id: 1,
-        nome: 'Administrador',
-        email: 'admin@aeria.com.br',
-        perfis: ['ADMINISTRATIVO'],
-      },
-      perfis: ['ADMINISTRATIVO'],
+  function requisicao(rota: string, method: 'GET' | 'POST', corpo: unknown) {
+    const req = http.expectOne({ url: `${base}/${rota}`, method });
+    expect(req.request.withCredentials).toBe(true);
+    expect(req.request.body).toEqual(corpo);
+    return req;
+  }
+
+  it('faz login com o carrinho anônimo e inclui OTP apenas quando informado', () => {
+    localStorage.setItem(CHAVE_CARRINHO, 'carrinho');
+    const credenciais = { email: 'ana@exemplo.com', senha: 'senha-ficticia' };
+    const falha = vi.fn();
+    auth.login(credenciais.email, credenciais.senha).subscribe({ error: falha });
+    const inicial = requisicao('login', 'POST', credenciais);
+    expect(inicial.request.headers.get(HEADER_CARRINHO)).toBe('carrinho');
+    inicial.flush({ codigo: 'otp-necessario' }, { status: 401, statusText: 'Unauthorized' });
+    expect(falha).toHaveBeenCalledOnce();
+    expect(auth.autenticado()).toBe(false);
+
+    auth.login(credenciais.email, credenciais.senha, '012345').subscribe();
+    requisicao('login', 'POST', { ...credenciais, codigoOtp: '012345' }).flush(sessao);
+    expect(auth.token()).toBe('acesso');
+    expect(auth.temPapel('ADMINISTRATIVO')).toBe(true);
+    expect(auth.temPapel('CLIENTE')).toBe(false);
+    expect(localStorage.getItem('aeria-auth-token')).toBeNull();
+    expect(sessionStorage.getItem('aeria-auth-token')).toBeNull();
+  });
+
+  it('envia documento e consentimentos ao cadastrar', () => {
+    const conta: ContaDTO = {
+      nome: 'Ana Lima',
+      email: 'ana@exemplo.com',
+      senha: 'senha-ficticia',
+      idTipoPessoa: 1,
+      documento: '529.982.247-25',
+      telefone: '',
+      consentimentos: [{ tipo: 'TERMOS', versao: '2026-10' }],
+    };
+    const resposta = vi.fn();
+    auth.cadastro(conta).subscribe(resposta);
+    requisicao('cadastro', 'POST', conta).flush({ id: 20 });
+    expect(resposta).toHaveBeenCalledWith({ id: 20 });
+    expect(auth.autenticado()).toBe(false);
+  });
+
+  it('consulta o usuário autenticado', () => {
+    const usuario = { id: 20, nome: 'Ana', email: 'ana@exemplo.com', papeis: ['ADMIN'] };
+    const resposta = vi.fn();
+    auth.eu().subscribe(resposta);
+    requisicao('eu', 'GET', null).flush(usuario);
+    expect(resposta).toHaveBeenCalledWith(usuario);
+  });
+
+  it('compartilha uma renovação entre chamadas simultâneas e atualiza o estado', () => {
+    const primeira = vi.fn();
+    const segunda = vi.fn();
+    auth.renovar().subscribe(primeira);
+    auth.renovar().subscribe(segunda);
+    requisicao('renovar', 'POST', null).flush(sessao);
+    expect(primeira).toHaveBeenCalledWith(sessao);
+    expect(segunda).toHaveBeenCalledWith(sessao);
+    expect(auth.token()).toBe('acesso');
+
+    auth.renovar().subscribe();
+    requisicao('renovar', 'POST', null).flush({ ...sessao, accessToken: 'novo' });
+    expect(auth.token()).toBe('novo');
+  });
+
+  it('trata 204 de renovar (visitante sem sessão) como falha, sem estado de login', () => {
+    const erro = vi.fn();
+    auth.renovar().subscribe({ error: erro });
+    requisicao('renovar', 'POST', null).flush(null, { status: 204, statusText: 'No Content' });
+    expect(erro).toHaveBeenCalled();
+    expect(auth.token()).toBeNull();
+  });
+
+  it('solicita recuperação por e-mail', () => {
+    auth.recuperarSenha('ana@exemplo.com').subscribe();
+    requisicao('recuperar-senha', 'POST', { email: 'ana@exemplo.com' }).flush(null, {
+      status: 204,
+      statusText: 'No Content',
     });
-
-    expect(sessionStorage.getItem(CHAVE_TOKEN)).toBe(accessToken);
-    expect(localStorage.getItem(CHAVE_TOKEN)).toBeNull();
-    expect(service.autenticado()).toBe(true);
   });
 
-  it('guarda o token em armazenamento persistente quando solicitado', () => {
-    const accessToken = token(Math.floor(Date.now() / 1000) + 3600);
-    service.login('admin@aeria.com.br', 'aeria123', true).subscribe();
-    http!.expectOne(`${environment.apiUrl}/auth/login`).flush({
-      token: accessToken,
-      expiraEm: '2026-10-15T06:00:00',
-      usuario: { id: 1, nome: 'Administrador', email: 'admin@aeria.com.br', perfis: [] },
-      perfis: [],
-    });
+  it('limpa o estado ao sair e aguarda uma renovação pendente antes de revogar o cookie', () => {
+    auth.renovar().subscribe();
+    requisicao('renovar', 'POST', null).flush(sessao);
+    auth.renovar().subscribe();
+    const renovacao = requisicao('renovar', 'POST', null);
+    const falha = vi.fn();
+    auth.sair().subscribe({ error: falha });
 
-    expect(localStorage.getItem(CHAVE_TOKEN)).toBe(accessToken);
-    expect(sessionStorage.getItem(CHAVE_TOKEN)).toBeNull();
-  });
+    expect(auth.token()).toBeNull();
+    http.expectNone(`${base}/sair`);
+    renovacao.flush({ ...sessao, accessToken: 'novo' });
+    const sair = requisicao('sair', 'POST', null);
+    sair.flush(null, { status: 500, statusText: 'Internal Server Error' });
+    expect(falha).toHaveBeenCalledOnce();
+    expect(auth.token()).toBeNull();
+    expect(auth.temPapel('ADMIN')).toBe(false);
 
-  it('remove tokens expirados e tokens malformados', () => {
-    localStorage.setItem(CHAVE_TOKEN, token(Math.floor(Date.now() / 1000) - 1));
-    expect(service.autenticado()).toBe(false);
-    expect(localStorage.getItem(CHAVE_TOKEN)).toBeNull();
-
-    sessionStorage.setItem(CHAVE_TOKEN, 'nao-e-um-jwt');
-    expect(service.autenticado()).toBe(false);
-    expect(sessionStorage.getItem(CHAVE_TOKEN)).toBeNull();
-  });
-
-  it('limpa a sessão ao encerrar a autenticação', () => {
-    sessionStorage.setItem(CHAVE_TOKEN, token(Math.floor(Date.now() / 1000) + 3600));
-    service.logout().subscribe();
-    const req = http!.expectOne(`${environment.apiUrl}/auth/logout`);
-    expect(req.request.method).toBe('POST');
-    req.flush(null);
-
-    expect(service.autenticado()).toBe(false);
-  });
-
-  it('escolhe o perfil ativo com POST /auth/perfil-ativo e guarda o novo token (#20)', () => {
-    const novo = token(Math.floor(Date.now() / 1000) + 3600);
-    service.escolherPerfil(2).subscribe();
-    const req = http!.expectOne(`${environment.apiUrl}/auth/perfil-ativo`);
-    expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ idPerfilAtivo: 2 });
-    req.flush({ token: novo, perfilAtivo: 'ADMINISTRATIVO', escolherPerfil: false, perfis: [] });
-    expect(sessionStorage.getItem(CHAVE_TOKEN)).toBe(novo);
-  });
-
-  it('lista e revoga as sessões da conta (#20)', () => {
-    service.sessoes().subscribe();
-    const lista = http!.expectOne(`${environment.apiUrl}/conta/sessoes`);
-    expect(lista.request.method).toBe('GET');
-    lista.flush([]);
-    service.revogarSessao(7).subscribe();
-    const del = http!.expectOne(`${environment.apiUrl}/conta/sessoes/7`);
-    expect(del.request.method).toBe('DELETE');
-    del.flush(null);
-  });
-
-  it('segunda etapa do 2FA com POST /auth/login/2fa (#45)', () => {
-    const novo = token(Math.floor(Date.now() / 1000) + 3600);
-    service.login2fa('temp', '123456', false).subscribe();
-    const req = http!.expectOne(`${environment.apiUrl}/auth/login/2fa`);
-    expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ tokenTemporario: 'temp', codigo: '123456' });
-    req.flush({ token: novo, perfis: [], perfilAtivo: 'ADMINISTRATIVO', escolherPerfil: false });
-    expect(sessionStorage.getItem(CHAVE_TOKEN)).toBe(novo);
-  });
-
-  it('login com Google manda o ID token (#47)', () => {
-    service.google('id-token').subscribe();
-    const req = http!.expectOne(`${environment.apiUrl}/auth/google`);
-    expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ idToken: 'id-token' });
-    req.flush({ token: null, perfis: [], perfilAtivo: null, escolherPerfil: false });
+    const renovacaoAposSair = vi.fn();
+    auth.renovar().subscribe({ error: renovacaoAposSair });
+    http.expectNone(`${base}/renovar`);
+    expect(renovacaoAposSair).toHaveBeenCalledOnce();
   });
 });

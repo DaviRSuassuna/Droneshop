@@ -9,23 +9,29 @@ import { Page } from '@playwright/test';
  *   - 204 em POST, PUT, PATCH e DELETE.
  */
 const API = 'http://localhost:8080';
-const ENUM = /^\/(status|tipos|origens|papeis|modulos|escopos|metodos|modalidades|perfis|provedores|acoes|resolucoes)-/;
-const LISTA_SIMPLES = /^\/(estados|loja\/categorias|loja\/marcas|conta\/enderecos|conta\/desejos|conta\/cartoes|conta\/sessoes)$/;
+const ENUM =
+  /^\/(status|tipos|origens|papeis|modulos|escopos|metodos|modalidades|perfis|provedores|acoes|resolucoes)-/;
+const LISTA_SIMPLES =
+  /^\/(estados|loja\/categorias|loja\/marcas|conta\/enderecos|conta\/desejos|conta\/cartoes)$/;
 
-export async function simularApi(page: Page, especificas: Record<string, unknown> = {}): Promise<void> {
-  await page.addInitScript(() => {
-    const payload = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }))
-      .replace(/=/g, '')
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_');
-    localStorage.setItem('aeria-auth-token', `eyJhbGciOiJub25lIn0.${payload}.`);
-  });
+export async function simularApi(
+  page: Page,
+  especificas: Record<string, unknown> = {},
+  administrativo = false,
+): Promise<void> {
   await page.route(`${API}/**`, async (route) => {
     const req = route.request();
     const caminho = new URL(req.url()).pathname;
     const json = (corpo: unknown) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(corpo) });
 
+    if (caminho === '/auth/renovar' && req.method() === 'POST') {
+      return json({
+        accessToken: 'token-conformidade',
+        expiraEm: 3600,
+        papeis: [administrativo ? 'ADMINISTRATIVO' : 'CLIENTE'],
+      });
+    }
     if (caminho in especificas) return json(especificas[caminho]);
     if (req.method() !== 'GET') return route.fulfill({ status: 204 });
     if (ENUM.test(caminho) || LISTA_SIMPLES.test(caminho)) return json([]);

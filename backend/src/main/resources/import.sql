@@ -12,11 +12,14 @@ insert into cupom (codigo, tipo_desconto, valor, data_inicio, data_fim, valor_mi
     ('AERIA10', 1, 10.00, '2026-01-01 00:00:00', '2030-12-31 23:59:59', 0.00, 500, 1, true);
 
 -- Administrador semente: login admin@aeria.com.br / aeria123
-insert into usuario (nome, email, senha_hash, email_verificado, ativo)
-values ('Administrador', 'admin@aeria.com.br',
-        '$2a$10$DvWOf27oHRLntAxdCeuH0.l7dTe/yzd3gcRdmdOAV4u6XqEmZ6Nka', true, true);
-insert into perfil_administrativo (papel, usuario_id, two_fa_habilitado)
-select 1, id, false from usuario where email = 'admin@aeria.com.br';
+insert into usuario (nome, email, keycloak_sub, ativo)
+values ('Administrador', 'admin@aeria.com.br', 'aeria-admin', true);
+insert into perfil_administrativo (papel, usuario_id)
+select 1, id from usuario where email = 'admin@aeria.com.br';
+insert into usuario (nome, email, keycloak_sub, ativo)
+values ('Administrador OTP', 'otp@aeria.com.br', 'aeria-admin-otp', true);
+insert into perfil_administrativo (papel, usuario_id)
+select 1, id from usuario where email = 'otp@aeria.com.br';
 insert into permissao_modulo (perfil_administrativo_id, modulo, pode_ver, pode_editar, pode_excluir)
 select p.id, m.id, true, true, true
 from perfil_administrativo p
@@ -200,9 +203,8 @@ order by p.id;
 -- do produto congelado (RN06). Status: 1 PENDENTE, 2 PAGO, 3 SEPARACAO, 4 ENVIADO, 5 ENTREGUE,
 -- 6 EM_DEVOLUCAO, 7 DEVOLVIDO, 8 CANCELADO. Origem do historico: 1 MANUAL (autor = admin), 2 SISTEMA, 3 INTEGRACAO.
 -- Os ENTREGUE foram entregues ha 60 dias (#37). O endereco de entrega e a fotografia congelada (D12).
-insert into usuario (nome, email, senha_hash, email_verificado, ativo)
-values ('Cliente Semente', 'cliente@aeria.com.br',
-        '$2a$10$DvWOf27oHRLntAxdCeuH0.l7dTe/yzd3gcRdmdOAV4u6XqEmZ6Nka', true, true);
+insert into usuario (nome, email, keycloak_sub, ativo)
+values ('Cliente Semente', 'cliente@aeria.com.br', 'aeria-cliente', true);
 insert into perfil_cliente (tipo_pessoa, nome, documento, telefone, usuario_id)
 select 1, 'Cliente Semente', '52998224725', '63999990000', id from usuario where email = 'cliente@aeria.com.br';
 

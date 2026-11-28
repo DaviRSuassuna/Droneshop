@@ -11,10 +11,7 @@ import io.restassured.specification.RequestSpecification;
  * Ponto de partida de toda requisição dos testes (D25).
  *
  * {@link #given()} entra como o administrador semente da carga de dados
- * (admin@aeria.com.br) e manda o token em toda chamada. Enquanto a rota
- * /auth/login não existir (antes da #4), manda a requisição sem token, e os
- * testes já entregues continuam passando do mesmo jeito. Por isso a #4 pode
- * proteger as rotas do admin sem precisar mexer nos testes antigos.
+ * (admin@aeria.com.br) e manda o token em toda chamada.
  *
  * Uso: {@code import static br.com.droneshop.testes.Api.given;} no lugar do
  * given() do RestAssured.
@@ -28,7 +25,7 @@ public final class Api {
     public static final String HEADER_CARRINHO = "X-Carrinho-Token";
 
     private static String tokenAdmin;
-    private static boolean tentouAdmin;
+    private static long expiraEm;
 
     private Api() {
     }
@@ -36,8 +33,7 @@ public final class Api {
     /** Requisição como administrador semente (sem token antes da #4). */
     public static RequestSpecification given() {
         RequestSpecification r = RestAssured.given();
-        String t = tokenAdmin();
-        return t == null ? r : r.auth().oauth2(t);
+        return r.auth().oauth2(tokenAdmin());
     }
 
     /** Requisição sem nenhum token (rotas públicas e testes de 401). */
@@ -60,13 +56,12 @@ public final class Api {
         return como(tokenCliente).header(HEADER_CARRINHO, tokenCarrinho);
     }
 
-    /** Token do admin semente, ou null enquanto não houver login. */
     public static synchronized String tokenAdmin() {
-        if (!tentouAdmin) {
-            tentouAdmin = true;
-            Response r = tentarLogin(ADMIN_EMAIL, ADMIN_SENHA);
-            if (r.statusCode() == 200)
-                tokenAdmin = r.jsonPath().getString("token");
+        long agora = System.nanoTime();
+        if (tokenAdmin == null || agora >= expiraEm) {
+            var resposta = tentarLogin(ADMIN_EMAIL, ADMIN_SENHA).then().statusCode(200).extract().jsonPath();
+            tokenAdmin = resposta.getString("accessToken");
+            expiraEm = agora + java.util.concurrent.TimeUnit.SECONDS.toNanos(resposta.getLong("expiraEm") - 5);
         }
         return tokenAdmin;
     }
@@ -74,7 +69,7 @@ public final class Api {
     /** Faz login e exige 200; devolve o token. */
     public static String login(String email, String senha) {
         return tentarLogin(email, senha).then().statusCode(200)
-                .extract().jsonPath().getString("token");
+                .extract().jsonPath().getString("accessToken");
     }
 
     public static Response tentarLogin(String email, String senha) {

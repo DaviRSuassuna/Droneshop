@@ -1,6 +1,6 @@
 package br.com.droneshop.atendimento.resource;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
+import br.com.droneshop.identidade.resource.UsuarioAtual;
 
 import br.com.droneshop.atendimento.dto.AvaliacaoDTOs.AvaliacaoRequestDTO;
 import br.com.droneshop.atendimento.dto.AvaliacaoDTOs.AvaliacaoResponseDTO;
@@ -28,7 +28,7 @@ public class AvaliacaoResource {
     AvaliacaoService service;
 
     @Inject
-    JsonWebToken token;
+    UsuarioAtual usuarioAtual;
 
     @GET
     @PermitAll
@@ -39,6 +39,6 @@ public class AvaliacaoResource {
     @POST
     @RolesAllowed("CLIENTE")
     public AvaliacaoResponseDTO avaliar(@PathParam("slug") String slug, @Valid AvaliacaoRequestDTO dto) {
-        return service.avaliar(Long.valueOf(token.getSubject()), slug, dto);
+        return service.avaliar(usuarioAtual.id(), slug, dto);
     }
 }

@@ -10,10 +10,11 @@ Drone não é um produto de varejo comum: tem alto valor unitário, ficha técni
 
 | Camada | Tecnologia |
 |---|---|
-| Backend | Java 25, Quarkus 3, Maven, Hibernate ORM com Panache, Hibernate Validator, Quarkus REST + Jackson, REST Client, SmallRye JWT, SmallRye OpenAPI |
+| Backend | Java 25, Quarkus 3, Maven, Hibernate ORM com Panache, Hibernate Validator, Quarkus REST + Jackson, REST Client, Quarkus OIDC, SmallRye OpenAPI |
+| Identidade | Keycloak 26 (OAuth 2.0 / OpenID Connect), intermediado pela API: o Angular só fala com `/auth/*` |
 | Banco | PostgreSQL 16 (via Docker Compose) |
 | Frontend | Angular 22 (standalone components, lazy loading), TypeScript, SCSS, Vitest |
-| Integrações | ViaCEP (consulta de CEP) · previstas: armazenamento S3 com RustFS (D42), Mercado Pago sandbox, Resend, agregador de frete, login com Google |
+| Integrações | ViaCEP (consulta de CEP) · previstas: armazenamento S3 com RustFS (D42), Mercado Pago sandbox, Resend, agregador de frete |
 | Documentação | PlantUML (diagramas de classes), PRD em Markdown |
 
 ## Estrutura do repositório
@@ -90,9 +91,13 @@ Falta na fase 1: telas do admin no protótipo 02 (D41), imagem principal nas lis
 
 ```bash
 cd backend
-docker compose up -d postgres   # sobe o PostgreSQL em localhost:5432 (a trilha B usa postgres-b, em 5433)
+docker compose up -d postgres keycloak mailpit rustfs   # banco, Keycloak, caixa de e-mail e S3
 ./mvnw quarkus:dev              # API em http://localhost:8080
 ```
+
+Com Podman, troque `docker compose` por `podman compose`. O Keycloak sobe em http://localhost:8180 já com o realm `aeria` importado de `keycloak/aeria-realm.json` (client confidencial `aeria-api`, papéis `CLIENTE`, `ADMINISTRATIVO` e `ADMIN`). O segredo do client vem de `AERIA_KEYCLOAK_CLIENT_SECRET` (padrão `aeria-dev`, só para desenvolvimento). Os e-mails do Keycloak (confirmação de cadastro e recuperação de senha) chegam no Mailpit: http://localhost:8025.
+
+Para recriar o realm depois de mudar o `aeria-realm.json`: `docker compose rm -sf keycloak && docker compose up -d keycloak`.
 
 Em modo dev o schema é recriado a cada subida e carregado com dados de exemplo: `localidades.sql` (estados e municípios do IBGE), `import.sql` (base) e `import-b.sql` e `import-a.sql` (dados novos de cada trilha).
 
@@ -114,12 +119,13 @@ A API libera CORS para `http://localhost:4200`.
 
 ### Usuários de teste
 
-Criados pela carga de dados (`import.sql`) a cada subida em modo dev. Só para desenvolvimento e testes.
+Contas do realm `aeria-realm.json`, ligadas pelo `sub` aos perfis da carga de dados (`import.sql`). Só para desenvolvimento e testes; a senha fica só no Keycloak, nunca no banco da loja.
 
 | Perfil | E-mail | Senha | Onde entra |
 |---|---|---|---|
 | Administrador (papel `ADMIN`) | `admin@aeria.com.br` | `aeria123` | `http://localhost:4200/admin` |
-| Cliente | `cliente@aeria.com.br` | `aeria123` | loja (`/entrar`), dono dos 24 pedidos da carga |
+| Administrador com OTP | `otp@aeria.com.br` | `aeria123` | `/admin`, pede o código do app autenticador (chave Base32 `GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ`, TOTP de 6 dígitos) |
+| Cliente (papel `CLIENTE`) | `cliente@aeria.com.br` | `aeria123` | loja (`/entrar`), dono dos 24 pedidos da carga |
 
 ## Documentação
 

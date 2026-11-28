@@ -1,6 +1,6 @@
 package br.com.droneshop.pedido.resource;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
+import br.com.droneshop.identidade.resource.UsuarioAtual;
 
 import br.com.droneshop.exception.ResourceNotFoundException;
 import br.com.droneshop.pedido.model.NotaFiscal;
@@ -27,11 +27,11 @@ public class ArquivoNotaFiscalResource {
     SecurityIdentity identidade;
 
     @Inject
-    JsonWebToken token;
+    UsuarioAtual usuarioAtual;
 
     private NotaFiscal permitida(Long id) {
         NotaFiscal n = notas.buscar(id);
-        boolean dono = n.getPedido().getCliente().getUsuario().getId().equals(Long.valueOf(token.getSubject()));
+        boolean dono = n.getPedido().getCliente().getUsuario().getId().equals(usuarioAtual.id());
         if (!identidade.hasRole("ADMINISTRATIVO") && !dono)
             throw new ResourceNotFoundException("Nota fiscal não encontrada.");
         return n;

@@ -1,5 +1,7 @@
 package br.com.droneshop.pedido;
 
+import static br.com.droneshop.testes.Api.anonimo;
+import static br.com.droneshop.testes.Api.como;
 import static br.com.droneshop.testes.Api.given;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
@@ -28,6 +30,17 @@ import io.restassured.path.json.JsonPath;
 @QuarkusTest
 @Tag("issue-16")
 class PedidoResourceTest {
+
+    @Test
+    void semTokenDa401() {
+        anonimo().when().get("/pedidos").then().statusCode(401);
+    }
+
+    @Test
+    void clienteRecebe403EmRotaAdministrativa() {
+        Fixtures.Cliente cliente = Fixtures.novoCliente();
+        como(cliente.token()).when().get("/pedidos").then().statusCode(403);
+    }
 
     @Test
     void listaOsStatusDePedido() {

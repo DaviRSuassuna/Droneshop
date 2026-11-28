@@ -1,153 +1,137 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
-import { Observable, finalize, tap } from 'rxjs';
+import { Injectable, inject, signal } from '@angular/core';
+import {
+  Observable,
+  catchError,
+  defer,
+  finalize,
+  of,
+  shareReplay,
+  switchMap,
+  tap,
+  throwError,
+} from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { LoginResponse, Papel, UsuarioAutenticado } from '../models/auth.model';
+import { Cliente, ContaDTO } from '../models/cliente.model';
 import { CHAVE_CARRINHO, HEADER_CARRINHO } from './carrinho.service';
-
-export interface UsuarioAutenticado {
-  id: number;
-  nome: string;
-  email: string;
-  perfis: string[];
-}
-
-export interface LoginResponse {
-  token: string;
-  expiraEm: string;
-  usuario: UsuarioAutenticado;
-  perfis: string[];
-  /** Perfil com que a sessão entrou; null enquanto quem tem os dois perfis não escolhe (#20). */
-  perfilAtivo: 'CLIENTE' | 'ADMINISTRATIVO' | null;
-  escolherPerfil: boolean;
-  /** 2FA ligado (#45): token nulo até POST /auth/login/2fa com o tokenTemporario. */
-  precisa2fa?: boolean;
-  tokenTemporario?: string | null;
-}
-
-/** Ids do enum PerfilAtivo (GET /perfis-ativos). */
-export const PERFIL_ATIVO = { CLIENTE: 1, ADMINISTRATIVO: 2 } as const;
-
-/** GET /conta/sessoes. */
-export interface SessaoUsuario {
-  id: number;
-  perfilAtivo: { id: number; nome: string } | null;
-  dataCadastro: string;
-  expiraEm: string;
-  atual: boolean;
-}
-
-export const CHAVE_TOKEN = 'aeria-auth-token';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/auth`;
+  private readonly credenciais = { withCredentials: true };
+  private readonly sessao = signal<LoginResponse | null>(null);
+  private renovacao?: Observable<LoginResponse>;
+  private versao = 0;
+  private saiu = false;
 
-  login(email: string, senha: string, manterConectado: boolean): Observable<LoginResponse> {
-    return this.http
-      .post<LoginResponse>(
-        `${this.baseUrl}/login`,
-        { email, senha },
-        { headers: this.headersCarrinho() },
-      )
-      .pipe(tap((resposta) => this.guardar(resposta, manterConectado)));
-  }
-
-  /** Segunda etapa do login com 2FA (#45). */
-  login2fa(
-    tokenTemporario: string,
-    codigo: string,
-    manterConectado: boolean,
-  ): Observable<LoginResponse> {
-    return this.http
-      .post<LoginResponse>(`${this.baseUrl}/login/2fa`, { tokenTemporario, codigo })
-      .pipe(tap((resposta) => this.guardar(resposta, manterConectado)));
-  }
-
-  /** Login com o ID token do Google Identity Services (#47). */
-  google(idToken: string): Observable<LoginResponse> {
-    return this.http
-      .post<LoginResponse>(
-        `${this.baseUrl}/google`,
-        { idToken },
-        { headers: this.headersCarrinho() },
-      )
-      .pipe(tap((resposta) => this.guardar(resposta, false)));
-  }
-
-  // O carrinho anônimo vai junto: o backend vincula no login (RF17)
-  private headersCarrinho(): HttpHeaders {
-    let t: string | null = null;
+  constructor() {
     try {
-      t = localStorage.getItem(CHAVE_CARRINHO);
+      localStorage.removeItem('aeria-auth-token');
+      sessionStorage.removeItem('aeria-auth-token');
     } catch {
-      t = null;
+      // O navegador pode bloquear o armazenamento.
     }
-    return t ? new HttpHeaders({ [HEADER_CARRINHO]: t }) : new HttpHeaders();
   }
 
-  private guardar(resposta: LoginResponse, manterConectado: boolean): void {
-    if (resposta.token) this.salvarToken(resposta.token, manterConectado);
+  login(email: string, senha: string, codigoOtp?: string): Observable<LoginResponse> {
+    return defer(() => {
+      const versao = ++this.versao;
+      return this.http
+        .post<LoginResponse>(
+          `${this.baseUrl}/login`,
+          { email, senha, ...(codigoOtp === undefined ? {} : { codigoOtp }) },
+          { ...this.credenciais, headers: this.headersCarrinho() },
+        )
+        .pipe(
+          tap((resposta) => {
+            if (this.versao !== versao) return;
+            this.saiu = false;
+            this.sessao.set(resposta);
+          }),
+        );
+    });
   }
 
-  /** Troca o token parcial pelo do perfil escolhido, no mesmo armazenamento do login. */
-  escolherPerfil(idPerfilAtivo: number): Observable<LoginResponse> {
-    const manter = localStorage.getItem(CHAVE_TOKEN) !== null;
-    return this.http
-      .post<LoginResponse>(`${this.baseUrl}/perfil-ativo`, { idPerfilAtivo })
-      .pipe(tap((resposta) => this.salvarToken(resposta.token, manter)));
+  cadastro(conta: ContaDTO): Observable<Cliente> {
+    return this.http.post<Cliente>(`${this.baseUrl}/cadastro`, conta, this.credenciais);
   }
 
-  sessoes(): Observable<SessaoUsuario[]> {
-    return this.http.get<SessaoUsuario[]>(`${environment.apiUrl}/conta/sessoes`);
+  eu(): Observable<UsuarioAutenticado> {
+    return this.http.get<UsuarioAutenticado>(`${this.baseUrl}/eu`, this.credenciais);
   }
 
-  revogarSessao(id: number): Observable<void> {
-    return this.http.delete<void>(`${environment.apiUrl}/conta/sessoes/${id}`);
+  renovar(): Observable<LoginResponse> {
+    return defer(() => {
+      if (this.saiu) return throwError(() => new Error('A sessão foi encerrada.'));
+      if (this.renovacao) return this.renovacao;
+      const versao = this.versao;
+      this.renovacao = this.http
+        .post<LoginResponse | null>(`${this.baseUrl}/renovar`, null, {
+          ...this.credenciais,
+          timeout: 10000,
+        })
+        .pipe(
+          switchMap((resposta) =>
+            resposta ? of(resposta) : throwError(() => new Error('Sem sessão para renovar.')),
+          ),
+          tap((resposta) => {
+            if (this.versao === versao) this.sessao.set(resposta);
+          }),
+          finalize(() => (this.renovacao = undefined)),
+          shareReplay(1),
+        );
+      return this.renovacao;
+    });
   }
 
-  logout(): Observable<void> {
-    return this.http
-      .post<void>(`${this.baseUrl}/logout`, {})
-      .pipe(finalize(() => this.limparSessao()));
+  recuperarSenha(email: string): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/recuperar-senha`, { email }, this.credenciais);
+  }
+
+  sair(): Observable<void> {
+    return defer(() => {
+      this.saiu = true;
+      this.limparSessao();
+      // Aguarda a troca do cookie em andamento para revogar o refresh mais recente.
+      const pendente: Observable<LoginResponse | null> = this.renovacao ?? of(null);
+      return pendente.pipe(
+        catchError(() => of(null)),
+        switchMap(() => this.http.post<void>(`${this.baseUrl}/sair`, null, this.credenciais)),
+      );
+    });
+  }
+
+  versaoSessao(): number {
+    return this.versao;
   }
 
   token(): string | null {
-    for (const armazenamento of [localStorage, sessionStorage]) {
-      const token = armazenamento.getItem(CHAVE_TOKEN);
-      if (!token) continue;
-      if (this.tokenAindaValido(token)) return token;
-      armazenamento.removeItem(CHAVE_TOKEN);
-    }
-    return null;
+    return this.sessao()?.accessToken ?? null;
   }
 
   autenticado(): boolean {
     return this.token() !== null;
   }
 
-  private salvarToken(token: string, manterConectado: boolean): void {
-    this.limparSessao();
-    const armazenamento = manterConectado ? localStorage : sessionStorage;
-    armazenamento.setItem(CHAVE_TOKEN, token);
+  temPapel(papel: Papel): boolean {
+    const papeis = this.sessao()?.papeis ?? [];
+    return papeis.includes(papel) || (papel === 'ADMINISTRATIVO' && papeis.includes('ADMIN'));
   }
 
   limparSessao(): void {
-    localStorage.removeItem(CHAVE_TOKEN);
-    sessionStorage.removeItem(CHAVE_TOKEN);
+    this.versao++;
+    this.sessao.set(null);
   }
 
-  private tokenAindaValido(token: string): boolean {
+  private headersCarrinho(): HttpHeaders {
+    let token: string | null = null;
     try {
-      const parte = token.split('.')[1];
-      if (!parte) return false;
-      const base64 = parte.replace(/-/g, '+').replace(/_/g, '/');
-      const claims = JSON.parse(atob(base64.padEnd(Math.ceil(base64.length / 4) * 4, '='))) as {
-        exp?: unknown;
-      };
-      return typeof claims.exp === 'number' && claims.exp * 1000 > Date.now();
+      token = localStorage.getItem(CHAVE_CARRINHO);
     } catch {
-      return false;
+      // Sem acesso ao armazenamento, a requisição segue sem o carrinho anônimo.
     }
+    return token ? new HttpHeaders({ [HEADER_CARRINHO]: token }) : new HttpHeaders();
   }
 }

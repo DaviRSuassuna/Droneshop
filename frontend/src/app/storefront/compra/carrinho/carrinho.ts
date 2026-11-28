@@ -61,7 +61,7 @@ export class CarrinhoPagina implements OnInit {
   readonly total = computed(() => (this.carrinho()?.total ?? 0) + (this.cotacao()?.custo ?? 0));
 
   ngOnInit(): void {
-    const logado = this.auth.autenticado();
+    const logado = this.auth.temPapel('CLIENTE');
     const req = logado
       ? this.carrinhos.doCliente()
       : this.carrinhos.token()
@@ -146,7 +146,7 @@ export class CarrinhoPagina implements OnInit {
   }
 
   salvarNosFavoritos(i: ItemCarrinho): void {
-    if (!this.auth.autenticado()) {
+    if (!this.auth.temPapel('CLIENTE')) {
       this.erro.set('Entre na sua conta para salvar nos favoritos.');
       return;
     }

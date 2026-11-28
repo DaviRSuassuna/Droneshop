@@ -2,7 +2,7 @@ package br.com.droneshop.estoque.resource;
 
 import java.util.List;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
+import br.com.droneshop.identidade.resource.UsuarioAtual;
 
 import br.com.droneshop.estoque.dto.DroneDaContaResponseDTO;
 import br.com.droneshop.estoque.dto.RegistroAnacRequestDTO;
@@ -27,7 +27,7 @@ import jakarta.ws.rs.core.Response;
 public class ContaDronesResource {
 
     @Inject
-    JsonWebToken token;
+    UsuarioAtual usuarioAtual;
 
     @Inject
     UnidadeIndividualRepository unidades;
@@ -38,7 +38,7 @@ public class ContaDronesResource {
     @GET
     @Transactional
     public List<DroneDaContaResponseDTO> listar() {
-        return unidades.doCliente(Long.valueOf(token.getSubject())).stream().map(DroneDaContaResponseDTO::de)
+        return unidades.doCliente(usuarioAtual.id()).stream().map(DroneDaContaResponseDTO::de)
                 .toList();
     }
 
@@ -46,7 +46,7 @@ public class ContaDronesResource {
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response registrarAnac(@PathParam("id") Long id, RegistroAnacRequestDTO dto) {
-        service.registrarAnac(Long.valueOf(token.getSubject()), id, dto == null ? null : dto.registroAnac());
+        service.registrarAnac(usuarioAtual.id(), id, dto == null ? null : dto.registroAnac());
         return Response.noContent().build();
     }
 }

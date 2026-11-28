@@ -1,7 +1,5 @@
 package br.com.droneshop.identidade.resource;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
-
 import br.com.droneshop.identidade.dto.ExclusaoContaRequestDTO;
 import br.com.droneshop.identidade.service.LgpdService;
 import jakarta.annotation.security.RolesAllowed;
@@ -18,7 +16,7 @@ import jakarta.ws.rs.core.Response;
 public class ExclusaoContaResource {
 
     @Inject
-    JsonWebToken token;
+    UsuarioAtual usuarioAtual;
 
     @Inject
     LgpdService lgpd;
@@ -26,7 +24,7 @@ public class ExclusaoContaResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response excluir(ExclusaoContaRequestDTO dto) {
-        lgpd.excluir(Long.valueOf(token.getSubject()), dto == null ? null : dto.senha());
+        lgpd.excluir(usuarioAtual.id(), dto == null ? null : dto.senha());
         return Response.noContent().build();
     }
 }

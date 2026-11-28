@@ -3,6 +3,7 @@ package br.com.droneshop.endereco.resource;
 import java.util.List;
 
 import br.com.droneshop.dto.PageResponse;
+import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DefaultValue;
@@ -19,6 +20,7 @@ import br.com.droneshop.endereco.model.Estado;
 import br.com.droneshop.endereco.service.EstadoService;
 
 // Somente leitura: dados oficiais do IBGE, usados no select de Estado.
+@PermitAll
 @Path("estados")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

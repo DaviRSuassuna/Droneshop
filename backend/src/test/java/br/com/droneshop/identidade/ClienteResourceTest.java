@@ -31,7 +31,7 @@ import io.restassured.response.ValidatableResponse;
 class ClienteResourceTest {
 
     static ValidatableResponse criarConta(Map<String, Object> conta) {
-        return anonimo().contentType(ContentType.JSON).body(conta).when().post("/clientes").then();
+        return anonimo().contentType(ContentType.JSON).body(conta).when().post("/auth/cadastro").then();
     }
 
     static String email() {
@@ -51,7 +51,7 @@ class ClienteResourceTest {
                 .body("email", equalTo(email))
                 .body("tipoPessoa.nome", equalTo("PF"))
                 .body(not(containsString("senha")));
-        Api.tentarLogin(email, "segredo123").then().statusCode(200).body("perfis", contains("CLIENTE"));
+        Api.tentarLogin(email, "segredo123").then().statusCode(200).body("papeis", contains("CLIENTE"));
     }
 
     @Test

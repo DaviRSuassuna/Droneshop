@@ -13,7 +13,7 @@ import br.com.droneshop.identidade.model.Usuario;
 import br.com.droneshop.identidade.repository.ConsentimentoRepository;
 import br.com.droneshop.identidade.repository.EnderecoClienteRepository;
 import br.com.droneshop.identidade.repository.UsuarioRepository;
-import io.quarkus.elytron.security.common.BcryptUtil;
+import br.com.droneshop.identidade.client.KeycloakClient;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -41,7 +41,7 @@ public class LgpdService {
     EnderecoClienteRepository enderecos;
 
     @Inject
-    AutenticacaoService autenticacao;
+    KeycloakClient keycloak;
 
     public List<TermoResponseDTO> termos() {
         return List.of(new TermoResponseDTO(TERMOS_USO, VIGENTES.get(TERMOS_USO), true),
@@ -93,11 +93,10 @@ public class LgpdService {
     @Transactional
     public void excluir(Long idUsuario, String senha) {
         Usuario u = usuarios.findById(idUsuario);
-        if (u == null || u.getSenhaHash() == null || senha == null || !BcryptUtil.matches(senha, u.getSenhaHash()))
+        if (u == null || !keycloak.confirmarSenha(u.getEmail(), senha))
             throw ValidationException.of("senha", "Senha incorreta (back)");
         u.setNome("Cliente removido");
         u.setEmail("removido-" + u.getId() + "@aeria.invalid");
-        u.setSenhaHash(null);
         u.setAtivo(false);
         PerfilCliente p = u.getPerfilCliente();
         if (p != null) {
@@ -106,6 +105,7 @@ public class LgpdService {
             p.setTelefone(null);
             enderecos.delete("perfilCliente", p);
         }
-        autenticacao.revogarTodas(idUsuario);
+        usuarios.flush();
+        keycloak.remover(u.getKeycloakSub());
     }
 }

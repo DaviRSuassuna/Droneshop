@@ -49,6 +49,7 @@ const CONSULTA_CELULAR = '(max-width: 900px)';
 })
 export class StorefrontNav {
   private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
   private readonly doc = inject(DOCUMENT);
   private readonly folha = viewChild.required(ContaFolha);
   private readonly campoBusca = viewChild.required<ElementRef<HTMLInputElement>>('buscaDesktop');
@@ -110,7 +111,7 @@ export class StorefrontNav {
   /** Número da sacola ao abrir a loja: carrinho do cliente logado ou o anônimo do token. */
   private carregarSacola(): void {
     const carrinho = inject(CarrinhoService);
-    const req = inject(AuthService).autenticado()
+    const req = this.auth.temPapel('CLIENTE')
       ? carrinho.doCliente()
       : carrinho.token()
         ? carrinho.buscar()
@@ -185,7 +186,14 @@ export class StorefrontNav {
   }
 
   sairDaConta(): void {
-    this.router.navigateByUrl('/entrar');
+    if (!this.auth.autenticado()) {
+      void this.router.navigateByUrl('/entrar');
+      return;
+    }
+
+    this.auth.sair().pipe(catchError(() => of(null))).subscribe(() => {
+      void this.router.navigateByUrl('/entrar');
+    });
   }
 
   private fecharTudo(): void {

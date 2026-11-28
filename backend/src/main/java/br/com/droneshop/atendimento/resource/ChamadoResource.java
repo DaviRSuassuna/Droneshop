@@ -2,7 +2,7 @@ package br.com.droneshop.atendimento.resource;
 
 import java.util.List;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
+import br.com.droneshop.identidade.resource.UsuarioAtual;
 
 import br.com.droneshop.atendimento.dto.ChamadoDTOs.ChamadoRequestDTO;
 import br.com.droneshop.atendimento.dto.ChamadoDTOs.ChamadoResponseDTO;
@@ -31,22 +31,22 @@ public class ChamadoResource {
     ChamadoService service;
 
     @Inject
-    JsonWebToken token;
+    UsuarioAtual usuarioAtual;
 
     @POST
     public ChamadoResponseDTO abrir(@Valid ChamadoRequestDTO dto) {
-        return service.abrir(Long.valueOf(token.getSubject()), dto);
+        return service.abrir(usuarioAtual.id(), dto);
     }
 
     @GET
     @Path("{id}/mensagens")
     public List<MensagemResponseDTO> mensagens(@PathParam("id") Long id) {
-        return service.mensagensDoCliente(Long.valueOf(token.getSubject()), id);
+        return service.mensagensDoCliente(usuarioAtual.id(), id);
     }
 
     @POST
     @Path("{id}/mensagens")
     public MensagemResponseDTO responder(@PathParam("id") Long id, @Valid MensagemRequestDTO dto) {
-        return service.responderComoCliente(Long.valueOf(token.getSubject()), id, dto.texto());
+        return service.responderComoCliente(usuarioAtual.id(), id, dto.texto());
     }
 }

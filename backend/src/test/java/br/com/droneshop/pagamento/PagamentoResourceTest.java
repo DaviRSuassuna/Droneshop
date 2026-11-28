@@ -16,6 +16,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import br.com.droneshop.testes.Dados;
 import br.com.droneshop.testes.Fixtures;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
@@ -27,6 +28,17 @@ import io.restassured.http.ContentType;
 @QuarkusTest
 @Tag("issue-27")
 class PagamentoResourceTest {
+
+    @Test
+    void semTokenDa401() {
+        anonimo().when().get("/pedidos/{id}/pagamentos", Dados.ID_INEXISTENTE).then().statusCode(401);
+    }
+
+    @Test
+    void clienteRecebe403EmRotaAdministrativa() {
+        Fixtures.Cliente cliente = Fixtures.novoCliente();
+        como(cliente.token()).when().get("/pedidos/{id}/pagamentos", Dados.ID_INEXISTENTE).then().statusCode(403);
+    }
 
     static int estoque(long idProduto) {
         return given().when().get("/produtos/{id}", idProduto).then().statusCode(200)

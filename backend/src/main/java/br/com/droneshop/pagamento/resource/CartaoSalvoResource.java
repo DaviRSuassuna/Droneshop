@@ -2,7 +2,7 @@ package br.com.droneshop.pagamento.resource;
 
 import java.util.List;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
+import br.com.droneshop.identidade.resource.UsuarioAtual;
 
 import br.com.droneshop.pagamento.dto.CartaoSalvoRequestDTO;
 import br.com.droneshop.pagamento.dto.CartaoSalvoResponseDTO;
@@ -28,13 +28,13 @@ import jakarta.ws.rs.core.Response;
 public class CartaoSalvoResource {
 
     @Inject
-    JsonWebToken token;
+    UsuarioAtual usuarioAtual;
 
     @Inject
     CartaoSalvoService cartoes;
 
     private Long usuario() {
-        return Long.valueOf(token.getSubject());
+        return usuarioAtual.id();
     }
 
     @GET

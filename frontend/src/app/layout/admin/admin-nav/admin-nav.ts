@@ -9,7 +9,8 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
-import { filter, map } from 'rxjs';
+import { catchError, filter, map, of } from 'rxjs';
+import { AuthService } from '../../../core/services/auth.service';
 
 export interface LinkAdmin {
   rotulo: string;
@@ -213,6 +214,8 @@ export class AdminNav {
   readonly aberto = signal<number | null>(null);
 
   private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
+  protected readonly saindo = signal(false);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly url = toSignal(
     this.router.events.pipe(
@@ -258,6 +261,14 @@ export class AdminNav {
   abrir(i: number): void {
     clearTimeout(this.timer);
     this.aberto.set(i);
+  }
+
+  sairDaConta(): void {
+    if (this.saindo()) return;
+    this.saindo.set(true);
+    this.auth.sair().pipe(catchError(() => of(null))).subscribe(() => {
+      void this.router.navigateByUrl('/entrar');
+    });
   }
 
   sairDepois(): void {

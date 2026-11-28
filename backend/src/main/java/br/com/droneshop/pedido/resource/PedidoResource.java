@@ -5,7 +5,7 @@ import java.util.Arrays;
 import br.com.droneshop.util.Csv;
 import java.util.List;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
+import br.com.droneshop.identidade.resource.UsuarioAtual;
 
 import br.com.droneshop.administracao.ModuloAdmin;
 import br.com.droneshop.administracao.model.ModuloSistema;
@@ -25,7 +25,6 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.validation.constraints.NotNull;
@@ -50,7 +49,7 @@ public class PedidoResource {
     PedidoService service;
 
     @Inject
-    JsonWebToken jwt;
+    UsuarioAtual usuarioAtual;
 
     @Inject
     EtiquetaPedidoService etiquetaService;
@@ -132,11 +131,7 @@ public class PedidoResource {
 
     // o autor da mudança manual é o administrador do token (D11)
     private long idUsuarioLogado() {
-        try {
-            return Long.parseLong(jwt.getSubject());
-        } catch (RuntimeException e) {
-            throw new NotAuthorizedException("Credenciais ausentes ou inválidas.");
-        }
+        return usuarioAtual.id();
     }
 
 }

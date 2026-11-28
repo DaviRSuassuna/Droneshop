@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public final class Problem {
     public String type; // ex.: "https://api.seudominio.com/errors/validation-error"
     public String title; // "Erro de validação"
+    public String codigo;
     public Integer status; // 400
     public String detail; // mensagem específica
     public String instance; // path/URI da requisição

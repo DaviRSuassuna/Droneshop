@@ -127,7 +127,7 @@ class CarrinhoResourceTest {
         adicionar(c, p.id(), 1).statusCode(200);
         String token = carrinho(c).contentType(ContentType.JSON)
                 .body(Map.of("email", cli.email(), "senha", cli.senha()))
-                .when().post("/auth/login").then().statusCode(200).extract().jsonPath().getString("token");
+                .when().post("/auth/login").then().statusCode(200).extract().jsonPath().getString("accessToken");
         como(token).when().get("/conta/carrinho").then().statusCode(200)
                 .body("itens.produto.id", hasItem((int) p.id()));
     }

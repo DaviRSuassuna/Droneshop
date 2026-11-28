@@ -2,7 +2,7 @@ package br.com.droneshop.devolucao.resource;
 
 import java.util.List;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
+import br.com.droneshop.identidade.resource.UsuarioAtual;
 
 import br.com.droneshop.devolucao.dto.DevolucaoRequestDTO;
 import br.com.droneshop.devolucao.dto.DevolucaoResponseDTO;
@@ -26,13 +26,13 @@ import jakarta.ws.rs.core.MediaType;
 public class ContaDevolucaoResource {
 
     @Inject
-    JsonWebToken token;
+    UsuarioAtual usuarioAtual;
 
     @Inject
     DevolucaoService service;
 
     private Long usuario() {
-        return Long.valueOf(token.getSubject());
+        return usuarioAtual.id();
     }
 
     @POST
