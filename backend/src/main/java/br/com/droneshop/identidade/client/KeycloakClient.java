@@ -60,6 +60,9 @@ public class KeycloakClient {
     @ConfigProperty(name = "aeria.keycloak.segredo")
     String segredo;
 
+    @ConfigProperty(name = "aeria.loja.url", defaultValue = "http://localhost:4200")
+    String loja;
+
     public Tokens login(String email, String senha, String otp) {
         Map<String, String> dados = new HashMap<>(Map.of("grant_type", "password",
                 "username", email.strip().toLowerCase(Locale.ROOT), "password", senha));
@@ -98,7 +101,7 @@ public class KeycloakClient {
                 "username", normalizado, "email", normalizado, "firstName", nome, "lastName", nome,
                 "enabled", ativo, "emailVerified", verificado, "credentials", List.of(credencial(senha))));
         if (resposta.statusCode() == 409)
-            throw ValidationException.of("email", "J? existe uma conta com esse e-mail.");
+            throw ValidationException.of("email", "Já existe uma conta com esse e-mail.");
         conferir(resposta);
         String local = resposta.headers().firstValue("Location").orElseThrow(KeycloakClient::indisponivel);
         String caminho = URI.create(local).getPath();
@@ -162,7 +165,9 @@ public class KeycloakClient {
     }
 
     public void enviarAcao(String sub, String acao) {
-        conferir(admin(tokenAdmin(), "PUT", usuario(sub) + "/execute-actions-email", List.of(acao)));
+        // Depois da ação no Keycloak, o link "Voltar" leva de volta ao login da loja.
+        String volta = "?client_id=" + CLIENTE_OIDC + "&redirect_uri=" + codificar(loja + "/entrar");
+        conferir(admin(tokenAdmin(), "PUT", usuario(sub) + "/execute-actions-email" + volta, List.of(acao)));
     }
 
     public void revogarSessoes(String sub) {

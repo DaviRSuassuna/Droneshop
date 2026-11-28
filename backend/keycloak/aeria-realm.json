@@ -6,6 +6,9 @@
   "duplicateEmailsAllowed": false,
   "eventsEnabled": true,
   "bruteForceProtected": true,
+  "internationalizationEnabled": true,
+  "supportedLocales": ["pt-BR"],
+  "defaultLocale": "pt-BR",
   "directGrantFlow": "aeria direct grant",
   "authenticationFlows": [
     {
@@ -80,6 +83,7 @@
       "directAccessGrantsEnabled": true,
       "standardFlowEnabled": false,
       "serviceAccountsEnabled": true,
+      "redirectUris": ["http://localhost:4200/entrar"],
       "protocolMappers": [
         {
           "name": "audiencia aeria-api",
